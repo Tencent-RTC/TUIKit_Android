@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>CallStore</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>AtomicX Core API</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":atomicxcore:dokkaHtml/release">androidJvm</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="AtomicX Core API::io.trtc.tuikit.atomicxcore.api.call/CallStore///PointingToDeclaration//-1933612244">
+  <div class="breadcrumbs"><a href="../../../index.html">AtomicX Core API</a><span class="delimiter">/</span><a href="../index.html">io.trtc.tuikit.atomicxcore.api.call</a><span class="delimiter">/</span><span class="current">CallStore</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Call</span><wbr></wbr><span><span>Store</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">CallStore</a></div><p class="paragraph">Audio/video call management APIs for initiating, answering, rejecting, hanging up calls, group call management, and call history management.</p><h2 class=""> Overview</h2><p class="paragraph"><code class="lang-kotlin">CallStore</code> Manages all audio/video call related operations, including initiating, answering, rejecting, hanging up, group call management, and call history management. Audio/video call functionality is implemented through <code class="lang-kotlin">CallStore</code> for real-time audio/video interaction between users. <code class="lang-kotlin">CallStore</code> provides a comprehensive set of APIs to manage the entire call lifecycle.</p><h3 class=""> Key Features</h3><ul><li><p class="paragraph"><strong>Create Audio/Video Calls</strong>：Support initiating audio or video calls to one or multiple users, with configurable timeout, custom data, and other parameters</p></li><li><p class="paragraph"><strong>Answer/Reject Audio/Video Calls</strong>：When receiving an incoming call invitation, you can choose to answer or reject</p></li><li><p class="paragraph"><strong>Hang Up Audio/Video Calls</strong>：End the current ongoing audio/video call</p></li><li><p class="paragraph"><strong>Group Call Management</strong>：Support joining existing group calls or inviting other users to join during a call</p></li><li><p class="paragraph"><strong>Call History Management</strong>：Query recent call records (with pagination support), delete specified call records</p></li><li><p class="paragraph"><strong>Event-Driven Architecture</strong>：Provides event listeners for call started, call received, call ended, etc.</p></li><li><p class="paragraph"><strong>State Subscription</strong>：Real-time subscription to current call state, including participant list, volume information, network quality, etc.</p></li></ul><blockquote class="quotation"><p class="paragraph"><strong>Important</strong>: Ensure the SDK is initialized before accessing the <a href="-companion/shared.html">CallStore.shared</a> singleton. Do not instantiate it directly, as doing so will prevent you from receiving call state updates.</p></blockquote><blockquote class="quotation"><p class="paragraph"><strong>Tip</strong>: Call state updates are delivered through the callState publisher. Subscribe to it to receive real-time updates of call data.</p></blockquote><h3 class=""> Call Operations Overview</h3><p class="paragraph">The following table shows the main call operations</p><table><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td>Feature</td><td>Method</td><td>Description</td></tr><tr><td>Create Call</td><td><a href="calls.html">calls</a></td><td>Create an audio or video call to specified users</td></tr><tr><td>Answer Call</td><td><a href="accept.html">accept</a></td><td>Answer an incoming call</td></tr><tr><td>Reject Call</td><td><a href="reject.html">reject</a></td><td>Reject an incoming call</td></tr><tr><td>Hang Up Call</td><td><a href="hangup.html">hangup</a></td><td>Hang up the current call</td></tr><tr><td>Join Call</td><td><a href="join.html">join</a></td><td>Actively join a group call</td></tr><tr><td>Invite Users</td><td><a href="invite.html">invite</a></td><td>Invite other users to join the current call</td></tr></tbody></table><h3 class=""> Call History Management</h3><table><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td>Feature</td><td>Method</td><td>Description</td></tr><tr><td>Query Records</td><td><a href="query-recent-calls.html">queryRecentCalls</a></td><td>Query recent call records (with pagination support)</td></tr><tr><td>Delete Records</td><td><a href="delete-recent-calls.html">deleteRecentCalls</a></td><td>Delete specified call records</td></tr></tbody></table><h3 class=""> Usage Example</h3><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">import io.trtc.tuikit.atomicxcore.api.call.*<br><br>// Create a video call<br>CallStore.shared.calls(<br>    participantIds = listOf(&quot;mike&quot;),<br>    callMediaType = CallMediaType.VIDEO,<br>    params = null<br>) { code, message -&gt;<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><blockquote class="quotation"><p class="paragraph"><strong>Warning</strong>: Please ensure proper handling of UI state after the call ends to avoid UI anomalies.</p></blockquote><h2 class=""> Topics</h2><h3 class=""> Get Instance</h3><ul><li><p class="paragraph"><a href="-companion/shared.html">CallStore.shared</a> - Get the CallStore singleton instance</p></li></ul><h3 class=""> Observe State and Events</h3><ul><li><p class="paragraph"><a href="observer-state.html">observerState</a> - Reactive state containing active call, participant list, volume information, and network quality</p></li><li><p class="paragraph"><a href="add-listener.html">addListener</a>/<a href="remove-listener.html">removeListener</a> - Call event publisher</p></li></ul><h3 class=""> Call Operations</h3><ul><li><p class="paragraph"><a href="calls.html">calls</a> - Create a call</p></li><li><p class="paragraph"><a href="accept.html">accept</a> - Answer a call</p></li><li><p class="paragraph"><a href="reject.html">reject</a> - Reject a call</p></li><li><p class="paragraph"><a href="hangup.html">hangup</a> - Hang up a call</p></li><li><p class="paragraph"><a href="join.html">join</a> - Join a group call</p></li><li><p class="paragraph"><a href="invite.html">invite</a> - Invite users to join a call</p></li></ul><h3 class=""> Call History</h3><ul><li><p class="paragraph"><a href="query-recent-calls.html">queryRecentCalls</a> - Query recent call records</p></li><li><p class="paragraph"><a href="delete-recent-calls.html">deleteRecentCalls</a> - Delete call records</p></li></ul><h2 class=""> See Also</h2><ul><li><p class="paragraph"><a href="../-call-media-type/index.html">CallMediaType</a></p></li><li><p class="paragraph"><a href="../-call-end-reason/index.html">CallEndReason</a></p></li><li><p class="paragraph"><a href="../-call-direction/index.html">CallDirection</a></p></li><li><p class="paragraph"><a href="../-call-participant-status/index.html">CallParticipantStatus</a></p></li><li><p class="paragraph"><a href="../-call-params/index.html">CallParams</a></p></li><li><p class="paragraph"><a href="../-call-participant-info/index.html">CallParticipantInfo</a></p></li><li><p class="paragraph"><a href="../-call-info/index.html">CallInfo</a></p></li><li><p class="paragraph"><a href="../-call-state/index.html">CallState</a></p></li><li><p class="paragraph"><a href="../-call-listener/index.html">CallListener</a></p></li></ul></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="129819834%2FConstructors%2F-1933612244" anchor-label="CallStore" id="129819834%2FConstructors%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-call-store.html"><span>Call</span><wbr></wbr><span><span>Store</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="129819834%2FConstructors%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-846428%2FClasslikes%2F-1933612244" anchor-label="Companion" id="-846428%2FClasslikes%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-846428%2FClasslikes%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div><div class="brief "><p class="paragraph">CallStore singleton instance</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-65762974%2FProperties%2F-1933612244" anchor-label="observerState" id="-65762974%2FProperties%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="observer-state.html"><span>observer</span><wbr></wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-65762974%2FProperties%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">val </span><a href="observer-state.html">observerState</a><span class="token operator">: </span><a href="../-call-state/index.html">CallState</a></div><div class="brief "><p class="paragraph">Current call state, including active call, participant list, volume information, network quality, etc.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-2084852961%2FFunctions%2F-1933612244" anchor-label="accept" id="-2084852961%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="accept.html"><span><span>accept</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2084852961%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="accept.html"><span class="token function">accept</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Answer a call. Call this method to answer the call when receiving an incoming call invitation.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-301404413%2FFunctions%2F-1933612244" anchor-label="addListener" id="-301404413%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-listener.html"><span>add</span><wbr></wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-301404413%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="add-listener.html"><span class="token function">addListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="../-call-listener/index.html">CallListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Add call event callback listener</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-628449544%2FFunctions%2F-1933612244" anchor-label="calls" id="-628449544%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="calls.html"><span><span>calls</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-628449544%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="calls.html"><span class="token function">calls</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">userIdList<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">mediaType<span class="token operator">: </span><a href="../-call-media-type/index.html">CallMediaType</a><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-call-params/index.html">CallParams</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Create an audio or video call to specified users, supporting both one-on-one and group calls.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-627875347%2FFunctions%2F-1933612244" anchor-label="deleteRecentCalls" id="-627875347%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-recent-calls.html"><span>delete</span><wbr></wbr><span>Recent</span><wbr></wbr><span><span>Calls</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-627875347%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="delete-recent-calls.html"><span class="token function">deleteRecentCalls</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callIdList<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Delete specified call records.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="393766500%2FFunctions%2F-1933612244" anchor-label="hangup" id="393766500%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="hangup.html"><span><span>hangup</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="393766500%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="hangup.html"><span class="token function">hangup</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Hang up and end the current ongoing call.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1736608402%2FFunctions%2F-1933612244" anchor-label="invite" id="-1736608402%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="invite.html"><span><span>invite</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1736608402%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="invite.html"><span class="token function">invite</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantIds<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../-call-params/index.html">CallParams</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Invite other users to join during an ongoing call.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1864143206%2FFunctions%2F-1933612244" anchor-label="join" id="1864143206%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="join.html"><span><span>join</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1864143206%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="join.html"><span class="token function">join</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Join an ongoing group call using a specific call ID.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-161216039%2FFunctions%2F-1933612244" anchor-label="queryRecentCalls" id="-161216039%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="query-recent-calls.html"><span>query</span><wbr></wbr><span>Recent</span><wbr></wbr><span><span>Calls</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-161216039%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="query-recent-calls.html"><span class="token function">queryRecentCalls</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cursor<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">count<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Query recent call records with pagination support. Pass an empty string as the initial cursor. For subsequent requests, use the cursor returned in the previous response to fetch the next page. Results are updated asynchronously in <code class="lang-kotlin">state.recentCalls</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1559027466%2FFunctions%2F-1933612244" anchor-label="reject" id="-1559027466%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="reject.html"><span><span>reject</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1559027466%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="reject.html"><span class="token function">reject</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">completion<span class="token operator">: </span><a href="../../io.trtc.tuikit.atomicxcore.api/-completion-handler/index.html">CompletionHandler</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Reject a call. Call this method to reject the call when receiving an incoming call invitation.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="698463296%2FFunctions%2F-1933612244" anchor-label="removeListener" id="698463296%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-listener.html"><span>remove</span><wbr></wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="698463296%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="remove-listener.html"><span class="token function">removeListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="../-call-listener/index.html">CallListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Remove call event callback listener</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>

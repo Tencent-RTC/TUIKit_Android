@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>CallCoreView</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>AtomicX Core API</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":atomicxcore:dokkaHtml/release">androidJvm</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="AtomicX Core API::io.trtc.tuikit.atomicxcore.api.view/CallCoreView///PointingToDeclaration//-1933612244">
+  <div class="breadcrumbs"><a href="../../../index.html">AtomicX Core API</a><span class="delimiter">/</span><a href="../index.html">io.trtc.tuikit.atomicxcore.api.view</a><span class="delimiter">/</span><span class="current">CallCoreView</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Call</span><wbr></wbr><span>Core</span><wbr></wbr><span><span>View</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">CallCoreView</a> <span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a> </span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/androidx/constraintlayout/widget/ConstraintLayout.html">ConstraintLayout</a></div><p class="paragraph">Core call view component responsible for video rendering and interactive display of the call interface. Supports multi-layout switching (single-person float/multi-person grid/picture-in-picture), call waiting animations, and personalized configuration of volume, network status, and user avatars.</p><h2 class=""> Overview</h2><p class="paragraph"><code class="lang-kotlin">CallCoreView</code> Core view component for displaying call screens. <code class="lang-kotlin">CallCoreView</code> is the main container for the call interface, providing the following core capabilities:</p><ul><li><p class="paragraph"><strong>Multi-Layout Switching</strong>: Supports switching between single-person float, multi-person grid, and picture-in-picture layouts.</p></li><li><p class="paragraph"><strong>Call Waiting Interaction</strong>: Supports custom waiting animations before call connection.</p></li><li><p class="paragraph"><strong>Status Visualization</strong>: Supports custom icons for different volume levels and network quality states.</p></li><li><p class="paragraph"><strong>User Personalization</strong>: Supports setting participant avatars through User ID mapping.</p></li></ul><h3 class=""> Key Features</h3><ul><li><p class="paragraph"><strong>Multi-Layout Switching</strong>：Supports switching between single-person float, multi-person grid, and picture-in-picture layouts</p></li><li><p class="paragraph"><strong>Call Waiting Interaction</strong>：Supports custom waiting animations before call connection</p></li><li><p class="paragraph"><strong>Status Visualization</strong>：Supports custom icons for different volume levels and network quality states</p></li><li><p class="paragraph"><strong>User Personalization</strong>：Supports setting participant avatars through User ID mapping</p></li></ul><blockquote class="quotation"><p class="paragraph"><strong>Tip</strong>: This view component must be used together with CallStore to properly display call screens and receive call state updates.</p></blockquote><h3 class=""> Method Overview</h3><table><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td>Feature</td><td>Method</td><td>Description</td></tr><tr><td>Multi-Layout Switching</td><td><a href="set-layout-template.html">setLayoutTemplate</a></td><td>Switch call interface layout (single-person float/multi-person grid/PiP)</td></tr><tr><td>Waiting Animation</td><td><a href="set-waiting-animation.html">setWaitingAnimation</a></td><td>Set the loading animation during call waiting state</td></tr><tr><td>Volume Icons</td><td><a href="set-volume-level-icons.html">setVolumeLevelIcons</a></td><td>Customize icons for each volume level</td></tr><tr><td>Network Icons</td><td><a href="set-network-quality-icons.html">setNetworkQualityIcons</a></td><td>Customize icons for each network quality level</td></tr><tr><td>User Avatars</td><td><a href="set-participant-avatars.html">setParticipantAvatars</a></td><td>Set participant avatar images</td></tr></tbody></table><h3 class=""> Usage Example</h3><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">import io.trtc.tuikit.atomicxcore.api.view.*<br><br>// Create call view<br>val callCoreView = CallCoreView(context)<br>addView(callCoreView)<br><br>// Set layout mode<br>callCoreView.setLayoutTemplate(CallLayoutTemplate.GRID)<br><br>// Set waiting animation<br>callCoreView.setWaitingAnimation(&quot;waiting_animation.json&quot;)<br><br>// Set volume icons<br>callCoreView.setVolumeLevelIcons(mapOf(<br>    VolumeLevel.MUTE to &quot;volume_mute&quot;,<br>    VolumeLevel.LOW to &quot;volume_low&quot;,<br>    VolumeLevel.MEDIUM to &quot;volume_medium&quot;,<br>    VolumeLevel.HIGH to &quot;volume_high&quot;,<br>    VolumeLevel.PEAK to &quot;volume_peak&quot;<br>))<br><br>// Set network quality icons<br>callCoreView.setNetworkQualityIcons(mapOf(<br>    NetworkQuality.UNKNOWN to &quot;network_unknown&quot;,<br>    NetworkQuality.EXCELLENT to &quot;network_excellent&quot;,<br>    NetworkQuality.GOOD to &quot;network_good&quot;,<br>    NetworkQuality.POOR to &quot;network_poor&quot;,<br>    NetworkQuality.BAD to &quot;network_bad&quot;,<br>    NetworkQuality.VERY_BAD to &quot;network_very_bad&quot;,<br>    NetworkQuality.DOWN to &quot;network_down&quot;<br>))<br><br>// Set participant avatars<br>callCoreView.setParticipantAvatars(mapOf(<br>    &quot;user_123&quot; to &quot;avatar_user_123&quot;,<br>    &quot;user_456&quot; to &quot;avatar_user_456&quot;<br>))</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><h2 class=""> Topics</h2><h3 class=""> Static Properties</h3><ul><li><p class="paragraph">defaultAvatarImage - Default placeholder avatar</p></li><li><p class="paragraph">waitingAnimationImage - Call waiting animation</p></li><li><p class="paragraph">volumeImages - Volume status icon collection</p></li><li><p class="paragraph">networkQualityImages - Network signal icon collection</p></li><li><p class="paragraph">participantAvatars - Participant avatar collection</p></li></ul><h3 class=""> Configuration Methods</h3><ul><li><p class="paragraph"><a href="set-layout-template.html">setLayoutTemplate</a> - Multi-layout switching</p></li><li><p class="paragraph"><a href="set-waiting-animation.html">setWaitingAnimation</a> - Configure waiting animation</p></li><li><p class="paragraph"><a href="set-volume-level-icons.html">setVolumeLevelIcons</a> - Configure volume icons</p></li><li><p class="paragraph"><a href="set-network-quality-icons.html">setNetworkQualityIcons</a> - Configure network icons</p></li><li><p class="paragraph"><a href="set-participant-avatars.html">setParticipantAvatars</a> - Configure participant avatars</p></li></ul><h2 class=""> See Also</h2><ul><li><p class="paragraph"><a href="../-call-layout-template/index.html">CallLayoutTemplate</a></p></li><li><p class="paragraph"><a href="../-volume-level/index.html">VolumeLevel</a></p></li></ul></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-429844362%2FConstructors%2F-1933612244" anchor-label="CallCoreView" id="-429844362%2FConstructors%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-call-core-view.html"><span>Call</span><wbr></wbr><span>Core</span><wbr></wbr><span><span>View</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-429844362%2FConstructors%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1439331511%2FFunctions%2F-1933612244" anchor-label="setLayoutTemplate" id="-1439331511%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-layout-template.html"><span>set</span><wbr></wbr><span>Layout</span><wbr></wbr><span><span>Template</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1439331511%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-layout-template.html"><span class="token function">setLayoutTemplate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">template<span class="token operator">: </span><a href="../-call-layout-template/index.html">CallLayoutTemplate</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Switch the layout mode of the call interface.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1320598340%2FFunctions%2F-1933612244" anchor-label="setNetworkQualityIcons" id="-1320598340%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-network-quality-icons.html"><span>set</span><wbr></wbr><span>Network</span><wbr></wbr><span>Quality</span><wbr></wbr><span><span>Icons</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1320598340%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-network-quality-icons.html"><span class="token function">setNetworkQualityIcons</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">icons<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../io.trtc.tuikit.atomicxcore.api.device/-network-quality/index.html">NetworkQuality</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Customize network quality icons.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1951476764%2FFunctions%2F-1933612244" anchor-label="setParticipantAvatars" id="1951476764%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-participant-avatars.html"><span>set</span><wbr></wbr><span>Participant</span><wbr></wbr><span><span>Avatars</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1951476764%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-participant-avatars.html"><span class="token function">setParticipantAvatars</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">avatars<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Set participant avatars.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="519620741%2FFunctions%2F-1933612244" anchor-label="setVolumeLevelIcons" id="519620741%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-volume-level-icons.html"><span>set</span><wbr></wbr><span>Volume</span><wbr></wbr><span>Level</span><wbr></wbr><span><span>Icons</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="519620741%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-volume-level-icons.html"><span class="token function">setVolumeLevelIcons</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">icons<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-volume-level/index.html">VolumeLevel</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Customize volume level icons.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="748099200%2FFunctions%2F-1933612244" anchor-label="setWaitingAnimation" id="748099200%2FFunctions%2F-1933612244" data-filterable-set=":atomicxcore:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":atomicxcore:dokkaHtml/release" data-filterable-set=":atomicxcore:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-waiting-animation.html"><span>set</span><wbr></wbr><span>Waiting</span><wbr></wbr><span><span>Animation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="748099200%2FFunctions%2F-1933612244"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":atomicxcore:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-waiting-animation.html"><span class="token function">setWaitingAnimation</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">path<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configure call waiting animation.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>
