@@ -218,7 +218,6 @@ class TUICallKitImpl private constructor(context: Context) : TUICallKit() {
             if (selfInfo.status != CallParticipantStatus.Waiting || selfIsCaller()) {
                 return@collect
             }
-            CallManager.instance.startForegroundService()
             handleNewCall()
         }
     }

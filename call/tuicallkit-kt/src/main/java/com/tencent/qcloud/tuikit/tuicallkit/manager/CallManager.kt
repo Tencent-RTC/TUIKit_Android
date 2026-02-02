@@ -32,7 +32,6 @@ class CallManager private constructor(context: Context) {
 
     fun reset() {
         viewState.reset()
-        stopForegroundService()
     }
 
     fun calls(
@@ -308,7 +307,7 @@ class CallManager private constructor(context: Context) {
         }
     }
 
-    private fun stopForegroundService() {
+    fun stopForegroundService() {
         VideoForegroundService.stop(TUIConfig.getAppContext())
         AudioForegroundService.stop(TUIConfig.getAppContext())
     }
