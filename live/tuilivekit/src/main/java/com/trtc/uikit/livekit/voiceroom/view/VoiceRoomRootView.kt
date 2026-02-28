@@ -97,6 +97,7 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.MetaDataCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.StopLiveCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
@@ -507,13 +508,11 @@ class VoiceRoomRootView @JvmOverloads constructor(
     private fun start() {
         setComponent(COMPONENT_VOICE_ROOM)
         val prepareState = voiceRoomManager?.prepareStore?.prepareState
-        val liveInfo = LiveInfo()
-        liveInfo.isSeatEnabled = true
+        val seatCount = prepareState?.liveInfo?.value?.maxSeatCount ?: 9
+        val liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.AudioSalon(seatCount))
         liveInfo.keepOwnerOnSeat = true
-        liveInfo.seatLayoutTemplateID = TEMPLATE_ID_VOICE_ROOM
         liveInfo.liveID = prepareState?.liveInfo?.value?.liveID ?: ""
         liveInfo.liveName = prepareState?.liveInfo?.value?.liveName ?: ""
-        liveInfo.maxSeatCount = prepareState?.liveInfo?.value?.maxSeatCount ?: 9
         liveInfo.seatMode = prepareState?.liveInfo?.value?.seatMode ?: TakeSeatMode.FREE
         liveInfo.backgroundURL =
             prepareState?.liveInfo?.value?.backgroundURL ?: DEFAULT_BACKGROUND_URL

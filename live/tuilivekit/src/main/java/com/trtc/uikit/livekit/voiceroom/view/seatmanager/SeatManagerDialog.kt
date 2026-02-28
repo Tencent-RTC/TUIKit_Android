@@ -22,6 +22,7 @@ import io.trtc.tuikit.atomicxcore.api.live.CoGuestStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -217,7 +218,7 @@ class SeatManagerDialog(
         } else {
             TUIRoomDefine.SeatMode.FREE_TO_TAKE
         }
-        val info = LiveInfo().apply {
+        val info = LiveInfo(seatTemplate = SeatLayoutTemplate.AudioSalon(0)).apply {
             this.seatMode = seatModeFromEngineSeatMode(seatMode)
             this.liveID = liveListStore.liveState.currentLive.value.liveID
         }

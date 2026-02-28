@@ -17,6 +17,7 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveListState
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatState
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -39,7 +40,7 @@ class AudienceStore(liveID: String) {
     private val roomEngineObserver: RoomEngineObserver
     private val audienceViewListenerList: AudienceViewListenerList
     private var audienceContainerViewListenerList: AudienceContainerViewListenerList? = null
-    private val _liveInfo = MutableStateFlow(LiveInfo())
+    private val _liveInfo = MutableStateFlow(LiveInfo(seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats))
 
     val audienceState = AudienceState(_liveInfo)
 
@@ -170,7 +171,7 @@ class AudienceStore(liveID: String) {
                     ownerInfo.avatarURL
                 )
             }
-            updateLiveInfo(LiveInfo())
+            updateLiveInfo(LiveInfo(seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats))
         }
     }
 

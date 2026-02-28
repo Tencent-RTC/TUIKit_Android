@@ -104,6 +104,7 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.NoResponseReason
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.StopLiveCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode

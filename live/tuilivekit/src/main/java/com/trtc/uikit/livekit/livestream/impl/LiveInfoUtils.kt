@@ -5,6 +5,7 @@ import com.tencent.cloud.tuikit.engine.extension.TUILiveListManager
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
 
 object LiveInfoUtils {
@@ -26,9 +27,7 @@ object LiveInfoUtils {
             putString("ownerAvatarUrl", liveInfo.liveOwner.avatarURL)
             putString("name", liveInfo.liveName)
             putBoolean("isMessageDisableForAllUser", liveInfo.isMessageDisable)
-            putBoolean("isSeatEnabled", liveInfo.isSeatEnabled)
             putInt("seatMode", liveInfo.seatMode.ordinal)
-            putInt("maxSeatCount", liveInfo.maxSeatCount)
             putLong("createTime", liveInfo.createTime)
         }
     }
@@ -40,19 +39,18 @@ object LiveInfoUtils {
                 userName = liveBundle.getString("ownerName", "")
                 avatarURL = liveBundle.getString("ownerAvatarUrl", "")
             },
-            createTime = liveBundle.getLong("createTime", 0)
+            createTime = liveBundle.getLong("createTime", 0),
+            seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats
         ).apply {
             liveID = liveBundle.getString("roomId", "")
 
             liveName = liveBundle.getString("name", "")
             isMessageDisable = liveBundle.getBoolean("isMessageDisableForAllUser", false)
-            isSeatEnabled = liveBundle.getBoolean("isSeatEnabled", false)
             seatMode = if (liveBundle.getInt("seatMode", 0) == 0) {
                 TakeSeatMode.FREE
             } else {
                 TakeSeatMode.APPLY
             }
-            maxSeatCount = liveBundle.getInt("maxSeatCount", 0)
             coverURL = liveBundle.getString("coverUrl", "")
             backgroundURL = liveBundle.getString("backgroundUrl", "")
             categoryList = liveBundle.getIntegerArrayList("categoryList") ?: emptyList()
@@ -73,6 +71,7 @@ object LiveInfoUtils {
             keepOwnerOnSeat = this.keepOwnerOnSeat,
             maxSeatCount = this.maxSeatCount,
             seatMode = this.seatMode.toTakeSeatMode(),
+            seatTemplate = getSeatLayoutTemplateByID(this.seatLayoutTemplateId, this.maxSeatCount),
             seatLayoutTemplateID = this.seatLayoutTemplateId,
             coverURL = this.coverUrl ?: "",
             backgroundURL = this.backgroundUrl ?: "",
@@ -128,6 +127,19 @@ object LiveInfoUtils {
         return when (this) {
             TakeSeatMode.FREE -> TUIRoomDefine.SeatMode.FREE_TO_TAKE
             TakeSeatMode.APPLY -> TUIRoomDefine.SeatMode.APPLY_TO_TAKE
+        }
+    }
+
+    fun getSeatLayoutTemplateByID(seatLayoutTemplateID: Int, maxSeatCount: Int): SeatLayoutTemplate {
+        return when (seatLayoutTemplateID) {
+            600 -> SeatLayoutTemplate.VideoDynamicGrid9Seats
+            601 -> SeatLayoutTemplate.VideoDynamicFloat7Seats
+            800 -> SeatLayoutTemplate.VideoFixedGrid9Seats
+            801 -> SeatLayoutTemplate.VideoFixedFloat7Seats
+            200 -> SeatLayoutTemplate.VideoLandscape4Seats
+            70 -> SeatLayoutTemplate.AudioSalon(maxSeatCount)
+            50 -> SeatLayoutTemplate.Karaoke(maxSeatCount)
+            else -> SeatLayoutTemplate.VideoDynamicGrid9Seats
         }
     }
 }

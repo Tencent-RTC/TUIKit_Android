@@ -11,6 +11,7 @@ import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.common.seatModeFromEngineSeatMode
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -54,7 +55,8 @@ class PrepareStore {
         MutableStateFlow(
             LiveInfo(
                 coverURL = DEFAULT_COVER_URL,
-                backgroundURL = DEFAULT_BACKGROUND_URL
+                backgroundURL = DEFAULT_BACKGROUND_URL,
+                seatTemplate = SeatLayoutTemplate.AudioSalon(0),
             )
         )
     private val _layoutType = MutableStateFlow(LayoutType.VOICE_ROOM)
@@ -179,7 +181,8 @@ class PrepareStore {
     fun destroy() {
         _liveInfo.value = LiveInfo(
             coverURL = DEFAULT_COVER_URL,
-            backgroundURL = DEFAULT_BACKGROUND_URL
+            backgroundURL = DEFAULT_BACKGROUND_URL,
+            seatTemplate = SeatLayoutTemplate.AudioSalon(0),
         )
         _liveExtraInfo.value = LiveExtraInfo()
         _liveStatus.value = LiveStatus.NONE

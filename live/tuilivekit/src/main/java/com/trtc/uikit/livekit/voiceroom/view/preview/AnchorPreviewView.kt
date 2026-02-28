@@ -25,6 +25,7 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfoCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -116,13 +117,14 @@ class AnchorPreviewView @JvmOverloads constructor(
         }
         view.isEnabled = false
         val prepareState = voiceRoomManager?.prepareStore?.prepareState
-        val liveInfo = LiveInfo()
+        val maxSeatCount = prepareState?.liveInfo?.value?.maxSeatCount ?: 9
+        val liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.AudioSalon(maxSeatCount))
         liveInfo.isSeatEnabled = true
         liveInfo.keepOwnerOnSeat = true
         liveInfo.seatLayoutTemplateID = TEMPLATE_ID_VOICE_ROOM
         liveInfo.liveID = prepareState?.liveInfo?.value?.liveID ?: ""
         liveInfo.liveName = prepareState?.liveInfo?.value?.liveName ?: ""
-        liveInfo.maxSeatCount = prepareState?.liveInfo?.value?.maxSeatCount ?: 9
+        liveInfo.maxSeatCount = maxSeatCount
         liveInfo.seatMode = prepareState?.liveInfo?.value?.seatMode ?: TakeSeatMode.FREE
         liveInfo.backgroundURL = prepareState?.liveInfo?.value?.backgroundURL ?: DEFAULT_BACKGROUND_URL
         liveInfo.coverURL = prepareState?.liveInfo?.value?.coverURL ?: DEFAULT_COVER_URL

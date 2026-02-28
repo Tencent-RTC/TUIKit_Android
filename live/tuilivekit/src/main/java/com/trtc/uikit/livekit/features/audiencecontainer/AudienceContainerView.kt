@@ -20,6 +20,7 @@ import com.trtc.uikit.livekit.features.audiencecontainer.view.AudienceView
 import com.trtc.uikit.livekit.features.audiencecontainer.view.liveListviewpager.LiveListViewPager
 import com.trtc.uikit.livekit.features.audiencecontainer.view.liveListviewpager.LiveListViewPagerAdapter
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 
 class AudienceContainerView @JvmOverloads constructor(
     context: Context,
@@ -45,7 +46,7 @@ class AudienceContainerView @JvmOverloads constructor(
     }
 
     fun init(fragmentActivity: FragmentActivity, roomId: String) {
-        val liveInfo = LiveInfo().apply {
+        val liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats).apply {
             this.liveID = roomId
         }
         this.fragmentActivity = fragmentActivity
@@ -65,7 +66,7 @@ class AudienceContainerView @JvmOverloads constructor(
         dataSource: AudienceContainerViewDefine.LiveListDataSource
     ) {
         this.fragmentActivity = fragmentActivity
-        val liveInfo = LiveInfo().apply {
+        val liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats).apply {
             this.liveID = roomId
         }
         init(fragmentActivity, liveInfo, dataSource)

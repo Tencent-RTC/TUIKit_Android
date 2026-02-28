@@ -86,6 +86,7 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveSeatListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.NoResponseReason
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
@@ -310,7 +311,7 @@ class AudienceView @JvmOverloads constructor(
         stopPreviewLiveStream()
         audienceStore.removeObserver()
         audienceStore.getLiveListStore().leaveLive(null)
-        audienceStore.updateLiveInfo(LiveInfo())
+        audienceStore.updateLiveInfo(LiveInfo(seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats))
         liveCoreView.setLocalVideoMuteImage(null, null)
         mediaStore.releaseVideoMuteBitmap()
         roomInfoView.unInit()

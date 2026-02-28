@@ -21,6 +21,7 @@ import com.trtc.uikit.livekit.voiceroom.view.preview.StreamPresetImagePicker
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 
 class SettingsListAdapter(
     private val context: Context
@@ -111,7 +112,8 @@ class SettingsListAdapter(
                     val liveInfo =
                         LiveInfo(
                             liveListStore.liveState.currentLive.value.liveID,
-                            backgroundURL = backgroundUrl
+                            backgroundURL = backgroundUrl,
+                            seatTemplate = SeatLayoutTemplate.AudioSalon(0),
                         )
                     liveListStore.updateLiveInfo(
                         liveInfo,

@@ -29,6 +29,7 @@ import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfoCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.StopLiveCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import java.lang.ref.WeakReference
@@ -106,7 +107,7 @@ class VideoLiveKitImpl private constructor(context: Context) : VideoLiveKit {
     }
 
     override fun joinLive(roomId: String) {
-        val liveInfo = io.trtc.tuikit.atomicxcore.api.live.LiveInfo().apply {
+        val liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats).apply {
             liveID = roomId
             backgroundURL = DEFAULT_BACKGROUND_URL
             coverURL = DEFAULT_COVER_URL

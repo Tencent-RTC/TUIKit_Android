@@ -35,11 +35,12 @@ import com.trtc.uikit.livekit.livestream.impl.LiveInfoUtils
 import com.trtc.uikit.livekit.livestream.impl.VideoLiveKitImpl
 import io.trtc.tuikit.atomicx.pictureinpicture.PictureInPictureStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 
-class VideoLiveAnchorActivity : FullScreenActivity(), 
-    VideoLiveKitImpl.CallingAPIListener, 
-    AnchorPrepareViewListener, 
-    AnchorViewListener, 
+class VideoLiveAnchorActivity : FullScreenActivity(),
+    VideoLiveKitImpl.CallingAPIListener,
+    AnchorPrepareViewListener,
+    AnchorViewListener,
     ITUINotification {
 
     companion object {
@@ -59,7 +60,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
     private var anchorEndStatisticsView: AnchorEndStatisticsView? = null
     private var needCreateRoom = true
     private var roomId = ""
-    private var liveInfo = LiveInfo()
+    private var liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats)
     private val anchorEndStatisticsInfo = AnchorEndStatisticsInfo()
 
     override fun attachBaseContext(context: Context?) {
@@ -76,24 +77,24 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         setContentView(R.layout.livekit_activity_video_live_anchor)
-        
+
         roomId = intent.getStringExtra(INTENT_KEY_ROOM_ID) ?: ""
         liveInfo.liveID = roomId
         needCreateRoom = intent.getBooleanExtra(INTENT_KEY_NEED_CREATE, true)
-        
+
         val liveBundle = intent.extras
         if (liveBundle != null && !liveBundle.containsKey(INTENT_KEY_ROOM_ID)) {
             liveInfo = LiveInfoUtils.convertBundleToLiveInfo(liveBundle)
         }
-        
+
         layoutContainer = findViewById(R.id.fl_container)
-        
+
         if (needCreateRoom) {
             addPrepareView()
         } else {
             addAnchorView()
         }
-        
+
         TUICore.registerEvent(KEY_EXTENSION_NAME, NOTIFY_START_ACTIVITY, this)
         TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, this)
         VideoLiveKitImpl.createInstance(applicationContext).addCallingAPIListener(this)
@@ -127,7 +128,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         super.onDestroy()
         PIPPanelStore.sharedInstance().reset()
         TUICore.unRegisterEvent(this)
-        
+
         anchorPrepareView?.removeAnchorPrepareViewListener(this)
         anchorView?.removeAnchorViewListener(this)
 
@@ -142,7 +143,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         PictureInPictureStore.shared.updateIsPictureInPictureMode(isInPictureInPictureMode)
         PIPPanelStore.sharedInstance().state.anchorIsPictureInPictureMode = isInPictureInPictureMode
         anchorView?.enablePipMode(isInPictureInPictureMode)
-        
+
         if (!isInPictureInPictureMode && lifecycle.currentState == Lifecycle.State.CREATED) {
             finishAndRemoveTask()
             anchorView?.unInit()
@@ -154,7 +155,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
             init(liveInfo.liveID, null)
             addAnchorPrepareViewListener(this@VideoLiveAnchorActivity)
         }
-        
+
         val layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
@@ -168,22 +169,22 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
             anchorPrepareView?.let { prepareView ->
                 params["coHostTemplateId"] = prepareView.getState()?.coHostTemplateId?.value ?: ""
                 init(
-                    liveInfo, 
+                    liveInfo,
                     prepareView.getCoreView(),
                     if (needCreateRoom) RoomBehavior.CREATE_ROOM else RoomBehavior.ENTER_ROOM,
                     params
                 )
             } ?: run {
                 init(
-                    liveInfo, 
-                    null, 
-                    if (needCreateRoom) RoomBehavior.CREATE_ROOM else RoomBehavior.ENTER_ROOM, 
+                    liveInfo,
+                    null,
+                    if (needCreateRoom) RoomBehavior.CREATE_ROOM else RoomBehavior.ENTER_ROOM,
                     params
                 )
             }
             addAnchorViewListener(this@VideoLiveAnchorActivity)
         }
-        
+
         val layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
@@ -201,7 +202,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
             liveInfo.isPublicVisible = it.liveMode.value == LiveStreamPrivacyStatus.PUBLIC
             liveInfo.coverURL = it.coverURL.value
             liveInfo.backgroundURL = it.coverURL.value
-            liveInfo.seatLayoutTemplateID = it.coGuestTemplateId.value
+            liveInfo.seatTemplate = LiveInfoUtils.getSeatLayoutTemplateByID(it.coGuestTemplateId.value, 0)
         }
     }
 
@@ -233,7 +234,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
 
             })
         }
-        
+
         val layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
@@ -279,11 +280,13 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
             TextUtils.equals(key, KEY_EXTENSION_NAME) && TextUtils.equals(subKey, NOTIFY_START_ACTIVITY) -> {
                 param?.get("requestCode")?.let { requestCode ->
                     startActivityRequestCode = requestCode as Int
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) 
-                        == PackageManager.PERMISSION_GRANTED) {
-                        val intentToPickPic = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI).apply {
-                            setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, PICK_CONTENT_ALL)
-                        }
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        val intentToPickPic =
+                            Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI).apply {
+                                setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, PICK_CONTENT_ALL)
+                            }
                         startActivityForResult(intentToPickPic, startActivityRequestCode)
                     } else {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -296,6 +299,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
                     }
                 }
             }
+
             TextUtils.equals(key, EVENT_KEY_LIVE_KIT) && TextUtils.equals(subKey, EVENT_SUB_KEY_DESTROY_LIVE_VIEW) -> {
                 destroyAnchorView()
             }
