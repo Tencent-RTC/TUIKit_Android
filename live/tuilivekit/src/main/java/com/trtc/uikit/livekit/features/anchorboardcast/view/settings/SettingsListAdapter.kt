@@ -86,14 +86,6 @@ class SettingsListAdapter(
                 ITEM_TYPE_DASHBOARD
             )
         )
-
-        data.add(
-            SettingsItem(
-                context.getString(R.string.common_video_settings_item_pip),
-                R.drawable.livekit_pip_icon,
-                ITEM_TYPE_PIP
-            )
-        )
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

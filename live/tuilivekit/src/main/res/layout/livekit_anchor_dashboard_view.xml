@@ -5,224 +5,243 @@
     android:layout_height="match_parent"
     android:background="@color/common_design_standard_g2">
 
-    <ImageView
-        android:id="@+id/iv_back"
-        android:layout_width="@dimen/livekit_top_btn_size"
-        android:layout_height="@dimen/livekit_top_btn_size"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="58dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/livekit_ic_audience_exit"
-        android:importantForAccessibility="no" />
 
     <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
-        android:id="@+id/tv_title"
+        android:id="@+id/tv_title_pip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp"
+        android:layout_centerInParent="true"
         android:text="@string/common_live_has_stop"
         android:textColor="@color/text_color_primary"
-        android:textSize="@dimen/text_size_20"
+        android:textSize="@dimen/text_size_12"
+        android:visibility="gone"
         tools:ignore="RelativeOverlap" />
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/rl_statistics_data"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_below="@+id/tv_title"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/livekit_live_end_data_bg"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="@dimen/livekit_top_btn_size"
+            android:layout_height="@dimen/livekit_top_btn_size"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="58dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/livekit_ic_audience_exit"
+            android:importantForAccessibility="no" />
 
         <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="5dp"
-            android:text="@string/common_common_this_live_data"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="120dp"
+            android:text="@string/common_live_has_stop"
             android:textColor="@color/text_color_primary"
-            android:textSize="@dimen/text_size_14"
+            android:textSize="@dimen/text_size_20"
             tools:ignore="RelativeOverlap" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:orientation="horizontal"
-            tools:ignore="DisableBaselineAlignment">
+            android:layout_height="160dp"
+            android:layout_below="@+id/tv_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/livekit_live_end_data_bg"
+            android:orientation="vertical">
+
+            <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/common_common_this_live_data"
+                android:textColor="@color/text_color_primary"
+                android:textSize="@dimen/text_size_14"
+                tools:ignore="RelativeOverlap" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_height="70dp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
 
-                <TextView
-                    android:id="@+id/tv_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="15dp"
-                    android:textColor="@color/common_design_standard_flowkit_white"
-                    android:textSize="12sp"
-                    tools:ignore="RelativeOverlap" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/common_common_live_duration"
-                    android:textColor="@color/text_color_secondary"
-                    android:textSize="@dimen/text_size_12"
-                    tools:ignore="RelativeOverlap" />
+                    <TextView
+                        android:id="@+id/tv_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/common_design_standard_flowkit_white"
+                        android:textSize="12sp"
+                        tools:ignore="RelativeOverlap" />
+
+                    <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/common_common_live_duration"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="@dimen/text_size_12"
+                        tools:ignore="RelativeOverlap" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_viewers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/common_design_standard_flowkit_white"
+                        android:textSize="12sp"
+                        tools:ignore="RelativeOverlap" />
+
+                    <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/common_common_live_people_number"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="@dimen/text_size_12"
+                        tools:ignore="RelativeOverlap" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/common_design_standard_flowkit_white"
+                        android:textSize="12sp"
+                        tools:ignore="RelativeOverlap" />
+
+                    <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/common_common_message_count"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="@dimen/text_size_12"
+                        tools:ignore="RelativeOverlap" />
+                </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_height="70dp"
+                android:orientation="horizontal"
+                tools:ignore="DisableBaselineAlignment">
 
-                <TextView
-                    android:id="@+id/tv_viewers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="15dp"
-                    android:textColor="@color/common_design_standard_flowkit_white"
-                    android:textSize="12sp"
-                    tools:ignore="RelativeOverlap" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/common_common_live_people_number"
-                    android:textColor="@color/text_color_secondary"
-                    android:textSize="@dimen/text_size_12"
-                    tools:ignore="RelativeOverlap" />
+                    <TextView
+                        android:id="@+id/tv_gift_income"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/common_design_standard_flowkit_white"
+                        android:textSize="12sp"
+                        tools:ignore="RelativeOverlap" />
+
+                    <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/common_common_gift_income"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="@dimen/text_size_12"
+                        tools:ignore="RelativeOverlap" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_gift_people"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/common_design_standard_flowkit_white"
+                        android:textSize="12sp"
+                        tools:ignore="RelativeOverlap" />
+
+                    <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/common_common_send_gift_people_count"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="@dimen/text_size_12"
+                        tools:ignore="RelativeOverlap" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_like"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="15dp"
+                        android:textColor="@color/common_design_standard_flowkit_white"
+                        android:textSize="12sp"
+                        tools:ignore="RelativeOverlap" />
+
+                    <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/common_common_like_count"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="@dimen/text_size_12"
+                        tools:ignore="RelativeOverlap" />
+                </LinearLayout>
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_message"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="15dp"
-                    android:textColor="@color/common_design_standard_flowkit_white"
-                    android:textSize="12sp"
-                    tools:ignore="RelativeOverlap" />
-
-                <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/common_common_message_count"
-                    android:textColor="@color/text_color_secondary"
-                    android:textSize="@dimen/text_size_12"
-                    tools:ignore="RelativeOverlap" />
-            </LinearLayout>
-
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:orientation="horizontal"
-            tools:ignore="DisableBaselineAlignment">
+    </RelativeLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_gift_income"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="15dp"
-                    android:textColor="@color/common_design_standard_flowkit_white"
-                    android:textSize="12sp"
-                    tools:ignore="RelativeOverlap" />
-
-                <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/common_common_gift_income"
-                    android:textColor="@color/text_color_secondary"
-                    android:textSize="@dimen/text_size_12"
-                    tools:ignore="RelativeOverlap" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_gift_people"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="15dp"
-                    android:textColor="@color/common_design_standard_flowkit_white"
-                    android:textSize="12sp"
-                    tools:ignore="RelativeOverlap" />
-
-                <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/common_common_send_gift_people_count"
-                    android:textColor="@color/text_color_secondary"
-                    android:textSize="@dimen/text_size_12"
-                    tools:ignore="RelativeOverlap" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_like"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="15dp"
-                    android:textColor="@color/common_design_standard_flowkit_white"
-                    android:textSize="12sp"
-                    tools:ignore="RelativeOverlap" />
-
-                <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/common_common_like_count"
-                    android:textColor="@color/text_color_secondary"
-                    android:textSize="@dimen/text_size_12"
-                    tools:ignore="RelativeOverlap" />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
 </RelativeLayout>

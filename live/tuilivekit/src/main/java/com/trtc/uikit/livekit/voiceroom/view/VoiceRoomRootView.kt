@@ -22,7 +22,6 @@ import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUILogin
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.trtc.tuikit.common.imageloader.ImageLoader
-import com.trtc.tuikit.common.permission.PermissionCallback
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.COMPONENT_VOICE_ROOM
 import com.trtc.uikit.livekit.common.DEFAULT_BACKGROUND_URL
@@ -33,7 +32,6 @@ import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_FINISH_ACTIVITY
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
-import com.trtc.uikit.livekit.common.TEMPLATE_ID_VOICE_ROOM
 import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.common.setComponent
 import com.trtc.uikit.livekit.component.barrage.BarrageStreamView
@@ -68,6 +66,7 @@ import com.trtc.uikit.livekit.voiceroom.view.topview.TopView
 import com.trtc.uikit.livekit.voiceroomcore.SeatGridView
 import com.trtc.uikit.livekit.voiceroomcore.SeatGridViewObserver
 import com.trtc.uikit.livekit.voiceroomcore.VoiceRoomDefine
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.addItem
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
@@ -339,8 +338,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
 
     private fun startMicrophone() {
         PermissionRequest.requestMicrophonePermissions(
-            rootViewContext,
-            object : PermissionCallback() {
+            rootViewContext, object : PermissionCallback() {
                 override fun onRequesting() {
                     LOGGER.info("requestMicrophonePermissions")
                 }

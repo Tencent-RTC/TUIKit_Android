@@ -32,6 +32,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:supportsPictureInPicture="true"
+            android:taskAffinity="com.trtc.uikit.livekit.pip.live.stream"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <activity
@@ -48,6 +49,7 @@
             android:screenOrientation="portrait"
             android:supportsPictureInPicture="true"
             android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:taskAffinity="com.trtc.uikit.livekit.pip.live.stream"
             android:windowSoftInputMode="adjustNothing" />
 
         <activity

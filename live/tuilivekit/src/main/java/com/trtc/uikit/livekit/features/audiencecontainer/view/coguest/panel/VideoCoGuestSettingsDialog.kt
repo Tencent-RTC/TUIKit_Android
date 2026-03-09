@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.widget.Button
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.tencent.qcloud.tuicore.util.ScreenUtil
-import com.trtc.tuikit.common.permission.PermissionCallback
-import com.trtc.tuikit.common.system.ContextProvider
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
@@ -17,6 +15,8 @@ import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.common.ui.RoundFrameLayout
 import com.trtc.uikit.livekit.component.beauty.BeautyUtils
 import com.trtc.uikit.livekit.features.audiencecontainer.store.AudienceStore
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.view.CameraView
@@ -86,53 +86,67 @@ class VideoCoGuestSettingsDialog(
             view.isEnabled = false
             AtomicToast.show(context, context.getString(R.string.common_toast_apply_link_mic), AtomicToast.Style.INFO)
             LOGGER.info("requestMicrophonePermissions success")
-            PermissionRequest.requestCameraPermissions(
-                ContextProvider.getApplicationContext(),
-                object : PermissionCallback() {
-                    override fun onGranted() {
-                        LOGGER.info("requestCameraPermissions:[onGranted]")
-                        PermissionRequest.requestMicrophonePermissions(
-                            ContextProvider.getApplicationContext(),
-                            object : PermissionCallback() {
-                                override fun onGranted() {
-                                    audienceStore.getViewStore()
-                                        .updateTakeSeatState(true)
-                                    audienceStore.getViewStore().updateOpenCameraAfterTakeSeatState(true)
-                                    this@VideoCoGuestSettingsDialog.audienceStore.getCoGuestStore()
-                                        .applyForSeat(seatIndex, 60, true.toString(), completionHandler {
-                                            onSuccess {
-                                                audienceStore.getViewStore().updateTakeSeatState(false)
-                                            }
-                                            onError { code, _ ->
-                                                audienceStore.getViewStore().updateTakeSeatState(false)
-                                                ErrorLocalized.onError(code)
-                                            }
-                                        })
-                                }
+            ContextProvider.getApplicationContext()?.apply {
+                PermissionRequest.requestCameraPermissions(
+                    this,
+                    object : PermissionCallback() {
+                        override fun onGranted() {
+                            LOGGER.info("requestCameraPermissions:[onGranted]")
+                            PermissionRequest.requestMicrophonePermissions(
+                                this@apply,
+                                object : PermissionCallback() {
+                                    override fun onGranted() {
+                                        PermissionRequest.sendRequestCompleteEvent()
+                                        audienceStore.getViewStore()
+                                            .updateTakeSeatState(true)
+                                        audienceStore.getViewStore()
+                                            .updateOpenCameraAfterTakeSeatState(true)
+                                        this@VideoCoGuestSettingsDialog.audienceStore.getCoGuestStore()
+                                            .applyForSeat(
+                                                seatIndex,
+                                                60,
+                                                true.toString(),
+                                                completionHandler {
+                                                    onSuccess {
+                                                        audienceStore.getViewStore()
+                                                            .updateTakeSeatState(false)
+                                                    }
+                                                    onError { code, _ ->
+                                                        audienceStore.getViewStore()
+                                                            .updateTakeSeatState(false)
+                                                        ErrorLocalized.onError(code)
+                                                    }
+                                                })
+                                    }
 
-                                override fun onDenied() {
-                                    LOGGER.error("requestCameraPermissions:[onDenied]")
-                                }
-                            })
-                    }
+                                    override fun onDenied() {
+                                        LOGGER.error("requestCameraPermissions:[onDenied]")
+                                        PermissionRequest.sendRequestCompleteEvent()
+                                    }
+                                })
+                        }
 
-                    override fun onDenied() {
-                        LOGGER.error("requestCameraPermissions:[onDenied]")
-                    }
-                })
+                        override fun onDenied() {
+                            LOGGER.error("requestCameraPermissions:[onDenied]")
+                            PermissionRequest.sendRequestCompleteEvent()
+                        }
+                    })
+            }
             dismiss()
         }
     }
 
     private fun initCameraView() {
-        PermissionRequest.requestCameraPermissions(
-            ContextProvider.getApplicationContext(),
-            object : PermissionCallback() {
-                override fun onGranted() {
-                    audienceStore.getDeviceStore().switchCamera(true)
-                    DeviceStore.shared().startCameraTest(cameraView, null)
-                }
-            })
+        ContextProvider.getApplicationContext()?.apply {
+            PermissionRequest.requestCameraPermissions(
+                this,
+                object : PermissionCallback() {
+                    override fun onGranted() {
+                        audienceStore.getDeviceStore().switchCamera(true)
+                        DeviceStore.shared().startCameraTest(cameraView, null)
+                    }
+                })
+        }
     }
 
     private fun initRecycleSettingsOption() {

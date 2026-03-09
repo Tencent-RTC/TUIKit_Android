@@ -5,16 +5,17 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.trtc.tuikit.common.permission.PermissionCallback
-import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
-import com.trtc.tuikit.common.system.ContextProvider
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
-import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import com.trtc.uikit.livekit.features.audiencecontainer.store.AudienceStore
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+
 
 @SuppressLint("ViewConstructor")
 class TypeSelectDialog(
@@ -92,61 +93,75 @@ class TypeSelectDialog(
     }
 
     private fun applyLinkMic(openCamera: Boolean) {
-        AtomicToast.show(context, context.getString(R.string.common_toast_apply_link_mic), AtomicToast.Style.INFO)
-        PermissionRequest.requestMicrophonePermissions(
-            ContextProvider.getApplicationContext(),
-            object : PermissionCallback() {
-                override fun onGranted() {
-                    if (openCamera) {
-                        PermissionRequest.requestCameraPermissions(
-                            ContextProvider.getApplicationContext(),
-                            object : PermissionCallback() {
-                                override fun onGranted() {
-                                    LOGGER.info("requestCameraPermissions:[onGranted]")
-                                    audienceStore.getViewStore()
-                                        .updateTakeSeatState(true)
-                                    audienceStore.getViewStore().updateOpenCameraAfterTakeSeatState(openCamera)
-                                    audienceStore.getCoGuestStore().applyForSeat(
-                                        seatIndex, 60, openCamera.toString(),
-                                        completionHandler {
-                                            onSuccess {
-                                                audienceStore.getViewStore().updateTakeSeatState(false)
-                                            }
-                                            onError { code, _ ->
-                                                audienceStore.getViewStore().updateTakeSeatState(false)
-                                                ErrorLocalized.onError(code)
-                                            }
-                                        })
-                                }
+        AtomicToast.show(
+            context,
+            context.getString(R.string.common_toast_apply_link_mic),
+            AtomicToast.Style.INFO
+        )
+        ContextProvider.getApplicationContext()?.apply {
+            PermissionRequest.requestMicrophonePermissions(
+                this,
+                object : PermissionCallback() {
+                    override fun onGranted() {
+                        if (openCamera) {
+                            PermissionRequest.requestCameraPermissions(
+                                this@apply,
+                                object : PermissionCallback() {
+                                    override fun onGranted() {
+                                        LOGGER.info("requestCameraPermissions:[onGranted]")
+                                        PermissionRequest.sendRequestCompleteEvent()
+                                        audienceStore.getViewStore()
+                                            .updateTakeSeatState(true)
+                                        audienceStore.getViewStore()
+                                            .updateOpenCameraAfterTakeSeatState(openCamera)
+                                        audienceStore.getCoGuestStore().applyForSeat(
+                                            seatIndex, 60, openCamera.toString(),
+                                            completionHandler {
+                                                onSuccess {
+                                                    audienceStore.getViewStore()
+                                                        .updateTakeSeatState(false)
+                                                }
+                                                onError { code, _ ->
+                                                    audienceStore.getViewStore()
+                                                        .updateTakeSeatState(false)
+                                                    ErrorLocalized.onError(code)
+                                                }
+                                            })
+                                    }
 
-                                override fun onDenied() {
-                                    LOGGER.error("requestCameraPermissions:[onDenied]")
-                                }
-                            })
-                    } else {
-                        audienceStore.getViewStore()
-                            .updateTakeSeatState(true)
-                        audienceStore.getViewStore().updateOpenCameraAfterTakeSeatState(openCamera)
-                        audienceStore.getCoGuestStore().applyForSeat(
-                            seatIndex, 60, openCamera.toString(),
-                            completionHandler {
-                                onSuccess {
-                                    audienceStore.getViewStore()
-                                        .updateTakeSeatState(false)
-                                }
-                                onError { code, _ ->
-                                    audienceStore.getViewStore()
-                                        .updateTakeSeatState(false)
-                                    ErrorLocalized.onError(code)
-                                }
-                            })
+                                    override fun onDenied() {
+                                        LOGGER.error("requestCameraPermissions:[onDenied]")
+                                        PermissionRequest.sendRequestCompleteEvent()
+                                    }
+                                })
+                        } else {
+                            PermissionRequest.sendRequestCompleteEvent()
+                            audienceStore.getViewStore()
+                                .updateTakeSeatState(true)
+                            audienceStore.getViewStore()
+                                .updateOpenCameraAfterTakeSeatState(openCamera)
+                            audienceStore.getCoGuestStore().applyForSeat(
+                                seatIndex, 60, openCamera.toString(),
+                                completionHandler {
+                                    onSuccess {
+                                        audienceStore.getViewStore()
+                                            .updateTakeSeatState(false)
+                                    }
+                                    onError { code, _ ->
+                                        audienceStore.getViewStore()
+                                            .updateTakeSeatState(false)
+                                        ErrorLocalized.onError(code)
+                                    }
+                                })
+                        }
                     }
-                }
 
-                override fun onDenied() {
-                    LOGGER.error("requestCameraPermissions:[onDenied]")
-                }
-            })
+                    override fun onDenied() {
+                        LOGGER.error("requestCameraPermissions:[onDenied]")
+                        PermissionRequest.sendRequestCompleteEvent()
+                    }
+                })
+        }
         dismiss()
     }
 

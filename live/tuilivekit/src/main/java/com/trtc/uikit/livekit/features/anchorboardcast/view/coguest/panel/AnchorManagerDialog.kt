@@ -10,7 +10,6 @@ import android.widget.TextView
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomObserver
-import com.trtc.tuikit.common.permission.PermissionCallback
 import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
@@ -19,6 +18,7 @@ import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.features.anchorboardcast.store.AnchorStore
 import com.trtc.uikit.livekit.features.anchorboardcast.store.MediaStore
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton

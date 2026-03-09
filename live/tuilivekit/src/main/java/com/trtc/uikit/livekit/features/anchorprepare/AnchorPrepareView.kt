@@ -2,13 +2,13 @@ package com.trtc.uikit.livekit.features.anchorprepare
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import com.tencent.qcloud.tuicore.util.ScreenUtil
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
@@ -20,6 +20,8 @@ import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareConfig
 import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareState
 import com.trtc.uikit.livekit.features.anchorprepare.view.function.PrepareFunctionView
 import com.trtc.uikit.livekit.features.anchorprepare.view.liveinfoedit.LiveInfoEditView
+import com.trtc.uikit.livekit.livestream.VideoLiveAnchorActivity
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.ButtonColorType
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.ButtonIconPosition
@@ -46,6 +48,8 @@ class AnchorPrepareView @JvmOverloads constructor(
     private var state: AnchorPrepareState? = null
     private var liveCoreView: LiveCoreView? = null
     private var functionView: PrepareFunctionView? = null
+    private lateinit var layoutCoreViewContainer: RoundFrameLayout
+    private var layoutComponentContainer: FrameLayout? = null
     private lateinit var imageBack: ImageView
     private var subscribeStateJob: Job? = null
 
@@ -58,6 +62,8 @@ class AnchorPrepareView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.anchor_prepare_layout_prepare_view, this, true)
         layoutRoot = findViewById(R.id.fl_root)
         imageBack = findViewById(R.id.iv_back)
+        layoutCoreViewContainer = findViewById(R.id.fl_video_view_container)
+        layoutComponentContainer = findViewById(R.id.fl_component_container)
     }
 
     fun init(roomId: String, liveCoreView: LiveCoreView?) {
@@ -135,25 +141,31 @@ class AnchorPrepareView @JvmOverloads constructor(
             return
         }
 
-        val frameLayout = findViewById<RoundFrameLayout>(R.id.fl_video_view_container)
         if (coreView.parent == null) {
-            frameLayout.setRadius(com.trtc.tuikit.common.util.ScreenUtil.dip2px(16.0f))
+            layoutCoreViewContainer.setRadius(ScreenUtil.dip2px(16.0f))
             val layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT
             )
-            frameLayout.addView(coreView, layoutParams)
+            layoutCoreViewContainer.addView(coreView, layoutParams)
             layoutRoot.setBackgroundColor(resources.getColor(R.color.common_black))
         } else {
-            frameLayout.visibility = GONE
+            layoutCoreViewContainer.visibility = GONE
             layoutRoot.setBackgroundColor(resources.getColor(R.color.common_design_standard_transparent))
         }
 
         state?.useFrontCamera?.value = DeviceStore.shared().deviceState.isFrontCamera.value
         prepareStore?.startPreview(object : CompletionHandler {
-            override fun onSuccess() {}
+            override fun onSuccess() {
+                val intent = Intent(context, VideoLiveAnchorActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            }
 
             override fun onFailure(code: Int, desc: String) {
+                logger.info("startPreview onFailure. code:$code,desc:$desc")
                 ErrorLocalized.onError(code)
                 val context = this@AnchorPrepareView.context
                 if (context is Activity) {
@@ -176,7 +188,7 @@ class AnchorPrepareView @JvmOverloads constructor(
                 gravity = Gravity.CENTER_HORIZONTAL
             }
 
-            addView(liveInfoEditView, layoutParams)
+            layoutComponentContainer?.addView(liveInfoEditView, layoutParams)
         }
     }
 
@@ -204,7 +216,7 @@ class AnchorPrepareView @JvmOverloads constructor(
                         gravity = Gravity.BOTTOM
                         bottomMargin = ScreenUtil.dip2px(144.0f)
                     }
-                    addView(functionView, layoutParams)
+                    layoutComponentContainer?.addView(functionView, layoutParams)
                 }
             }
         }
@@ -235,7 +247,7 @@ class AnchorPrepareView @JvmOverloads constructor(
                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
             }
 
-            addView(startLiveButton, layoutParams)
+            layoutComponentContainer?.addView(startLiveButton, layoutParams)
         }
     }
 
@@ -245,6 +257,20 @@ class AnchorPrepareView @JvmOverloads constructor(
 
     fun getState(): PrepareState? {
         return prepareStore?.getExternalState()
+    }
+
+    fun enablePipMode(inPictureInPictureMode: Boolean) {
+        val layoutParams = layoutCoreViewContainer.layoutParams as FrameLayout.LayoutParams
+        if (inPictureInPictureMode) {
+            layoutParams.setMargins(0, 0, 0, 0)
+            layoutCoreViewContainer.setRadius(ScreenUtil.dip2px(0f))
+            layoutComponentContainer?.visibility = GONE
+        } else {
+            layoutParams.setMargins(0, ScreenUtil.dip2px(44f), 0, ScreenUtil.dip2px(96f))
+            layoutCoreViewContainer.setRadius(ScreenUtil.dip2px(16f))
+            layoutComponentContainer?.visibility = VISIBLE
+        }
+        layoutCoreViewContainer.layoutParams = layoutParams
     }
 
     fun disableFeatureMenu(disable: Boolean) {

@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +18,6 @@ import com.tencent.cloud.tuikit.engine.extension.TUILiveListManager
 import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUIThemeManager
-import com.trtc.tuikit.common.foregroundservice.VideoForegroundService
-import com.trtc.tuikit.common.permission.PermissionCallback
-import com.trtc.tuikit.common.system.ContextProvider
-import com.trtc.tuikit.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.COMPONENT_LIVE_STREAM
 import com.trtc.uikit.livekit.common.ErrorLocalized
@@ -71,6 +66,11 @@ import com.trtc.uikit.livekit.features.anchorboardcast.view.cohost.widgets.CoHos
 import com.trtc.uikit.livekit.features.anchorboardcast.view.cohost.widgets.CoHostForegroundWidgetsView
 import com.trtc.uikit.livekit.features.anchorboardcast.view.settings.SettingsPanelDialog
 import com.trtc.uikit.livekit.features.anchorboardcast.view.usermanage.UserManagerDialog
+import io.trtc.tuikit.atomicx.common.foregroundservice.VideoForegroundService
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dip2px
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.addItem
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
@@ -108,7 +108,6 @@ import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.StopLiveCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
-import io.trtc.tuikit.atomicxcore.api.live.deprecated.LiveCoreViewDeprecated
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.view.CoreViewType
 import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
@@ -118,8 +117,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.json.JSONException
-import org.json.JSONObject
 import java.util.Locale
 import java.util.Objects
 
@@ -236,12 +233,13 @@ class AnchorView @JvmOverloads constructor(
         override fun onHostInvitationNoResponse(guestUser: LiveUserInfo, reason: NoResponseReason) {
             if (reason == NoResponseReason.TIMEOUT) {
                 logger.info("${hashCode()} onUserConnectionAccepted:[guestUser:$guestUser]")
-                val context = ContextProvider.getApplicationContext()
-                AtomicToast.show(
-                    context,
-                    context.resources.getString(R.string.common_voiceroom_take_seat_timeout),
-                    AtomicToast.Style.INFO
-                )
+                ContextProvider.getApplicationContext()?.apply {
+                    AtomicToast.show(
+                        context,
+                        context.resources.getString(R.string.common_voiceroom_take_seat_timeout),
+                        AtomicToast.Style.INFO
+                    )
+                }
             }
         }
     }
@@ -546,8 +544,6 @@ class AnchorView @JvmOverloads constructor(
             }
         })
 
-        PIPPanelStore.sharedInstance().state.isAnchorStreaming = true
-
         if (behavior == RoomBehavior.ENTER_ROOM) {
             enterRoom()
         } else {
@@ -563,6 +559,7 @@ class AnchorView @JvmOverloads constructor(
             val liveListStore = LiveListStore.shared()
             liveListStore.joinLive(it.roomId, object : LiveInfoCompletionHandler {
                 override fun onSuccess(liveInfo: LiveInfo) {
+                    setCoreViewLayoutParamsWhenLandscape(liveInfo.seatTemplate)
                     startLocalPreview(liveInfo)
                     val activity = baseContext as Activity
                     if (activity.isFinishing || activity.isDestroyed) {
@@ -634,37 +631,39 @@ class AnchorView @JvmOverloads constructor(
 
     private fun startLocalPreview(liveInfo: LiveInfo) {
         if (liveInfo.keepOwnerOnSeat) {
-            PermissionRequest.requestCameraPermissions(
-                ContextProvider.getApplicationContext(), object : PermissionCallback() {
-                    override fun onGranted() {
-                        logger.info("requestCameraPermissions:[onGranted]")
-                        DeviceStore.shared().openLocalCamera(true, object : CompletionHandler {
-                            override fun onSuccess() {
-                                logger.info("startCamera success, requestMicrophonePermissions")
-                                PermissionRequest.requestMicrophonePermissions(
-                                    ContextProvider.getApplicationContext(), object : PermissionCallback() {
-                                        override fun onGranted() {
-                                            logger.info("requestMicrophonePermissions success")
-                                            DeviceStore.shared().openLocalMicrophone(null)
-                                        }
+            ContextProvider.getApplicationContext()?.apply {
+                PermissionRequest.requestCameraPermissions(
+                    this, object : PermissionCallback() {
+                        override fun onGranted() {
+                            logger.info("requestCameraPermissions:[onGranted]")
+                            DeviceStore.shared().openLocalCamera(true, object : CompletionHandler {
+                                override fun onSuccess() {
+                                    logger.info("startCamera success, requestMicrophonePermissions")
+                                    PermissionRequest.requestMicrophonePermissions(
+                                        this@apply, object : PermissionCallback() {
+                                            override fun onGranted() {
+                                                logger.info("requestMicrophonePermissions success")
+                                                DeviceStore.shared().openLocalMicrophone(null)
+                                            }
 
-                                        override fun onDenied() {
-                                            logger.error("requestMicrophonePermissions:[onDenied]")
-                                        }
-                                    })
-                            }
+                                            override fun onDenied() {
+                                                logger.error("requestMicrophonePermissions:[onDenied]")
+                                            }
+                                        })
+                                }
 
-                            override fun onFailure(code: Int, desc: String) {
-                                logger.error("startCamera failed:code:$code,desc:$desc")
-                            }
+                                override fun onFailure(code: Int, desc: String) {
+                                    logger.error("startCamera failed:code:$code,desc:$desc")
+                                }
 
-                        })
-                    }
+                            })
+                        }
 
-                    override fun onDenied() {
-                        logger.error("requestCameraPermissions:[onDenied]")
-                    }
-                })
+                        override fun onDenied() {
+                            logger.error("requestCameraPermissions:[onDenied]")
+                        }
+                    })
+            }
         }
     }
 
@@ -748,6 +747,17 @@ class AnchorView @JvmOverloads constructor(
     private fun initBarrageInputView() {
         anchorState?.let {
             barrageInputView.init(it.roomId)
+        }
+    }
+
+    private fun setCoreViewLayoutParamsWhenLandscape(template: SeatLayoutTemplate) {
+        logger.info("setCoreViewLayoutParamsWhenLandscape:template:$template,")
+        if (template == SeatLayoutTemplate.VideoLandscape4Seats) {
+            layoutCoreViewContainer.setRadius(0)
+            val layoutParams: FrameLayout.LayoutParams = layoutCoreViewContainer.layoutParams as FrameLayout.LayoutParams
+            layoutParams.topMargin = dip2px(150f)
+            layoutParams.height = ScreenUtil.getScreenWidth(context) * 720 / 1280
+            layoutCoreViewContainer.layoutParams = layoutParams
         }
     }
 
@@ -1393,18 +1403,18 @@ class AnchorView @JvmOverloads constructor(
     }
 
     private fun startForegroundService() {
-        val context = ContextProvider.getApplicationContext()
-        VideoForegroundService.start(
-            context,
-            context.getString(context.applicationInfo.labelRes),
-            context.getString(R.string.common_app_running),
-            0
-        )
+        ContextProvider.getApplicationContext()?.apply {
+            VideoForegroundService.start(
+                context,
+                context.getString(context.applicationInfo.labelRes),
+                context.getString(R.string.common_app_running),
+                0
+            )
+        }
     }
 
     private fun stopForegroundService() {
-        val context = ContextProvider.getApplicationContext()
-        VideoForegroundService.stop(context)
+        ContextProvider.getApplicationContext()?.apply { VideoForegroundService.stop(context) }
     }
 
     private fun onCoGuestApplicantsChange(applicants: List<LiveUserInfo>) {

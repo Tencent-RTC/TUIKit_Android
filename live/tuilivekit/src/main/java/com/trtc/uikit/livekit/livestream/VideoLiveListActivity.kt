@@ -14,22 +14,26 @@ import android.widget.ImageView
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.util.SPUtils
-import com.trtc.tuikit.common.FullScreenActivity
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
+import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveIdentityGenerator
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
 import com.trtc.uikit.livekit.features.livelist.LiveListView
 import com.trtc.uikit.livekit.features.livelist.Style
 import com.trtc.uikit.livekit.livestream.impl.LiveInfoUtils.asEngineLiveInfo
 import com.trtc.uikit.livekit.voiceroom.VoiceRoomKit
+import io.trtc.tuikit.atomicx.common.FullScreenActivity
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 
@@ -45,25 +49,25 @@ class VideoLiveListActivity : FullScreenActivity() {
     }
 
     private var isAdvanceSettingsViewVisible = false
-    private var mStyle: Style = Style.DOUBLE_COLUMN
-    private lateinit var mMainLayout: ConstraintLayout
-    private lateinit var mLiveListView: LiveListView
-    private lateinit var mToolbarLiveView: View
-    private lateinit var mStartLiveView: View
-    private lateinit var mLiveListColumnTypeView: ImageView
+    private var style: Style = Style.DOUBLE_COLUMN
+    private lateinit var mainLayout: ConstraintLayout
+    private lateinit var liveListView: LiveListView
+    private lateinit var toolbarLiveView: View
+    private lateinit var startLiveView: View
+    private lateinit var liveListColumnTypeView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.livekit_activity_video_live_list)
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
-        mMainLayout = findViewById(R.id.main)
-        mLiveListView = findViewById(R.id.live_list_view)
-        mToolbarLiveView = findViewById(R.id.toolbar_live)
-        mStartLiveView = findViewById(R.id.atomic_btn_start)
-        mLiveListColumnTypeView = findViewById(R.id.btn_live_list_column_type)
+        mainLayout = findViewById(R.id.main)
+        liveListView = findViewById(R.id.live_list_view)
+        toolbarLiveView = findViewById(R.id.toolbar_live)
+        startLiveView = findViewById(R.id.atomic_btn_start)
+        liveListColumnTypeView = findViewById(R.id.btn_live_list_column_type)
 
-        mLiveListColumnTypeView.setOnClickListener { changeColumnStyle() }
+        liveListColumnTypeView.setOnClickListener { changeColumnStyle() }
         initStartLiveView()
         initBackButton()
         initVideoLiveTitle()
@@ -110,9 +114,9 @@ class VideoLiveListActivity : FullScreenActivity() {
     }
 
     private fun initLiveListView() {
-        mLiveListView.init(this, mStyle)
-        updateLiveStyleUI(mStyle)
-        mLiveListView.setOnItemClickListener { view, liveInfo ->
+        liveListView.init(this, style)
+        updateLiveStyleUI(style)
+        liveListView.setOnItemClickListener { view, liveInfo ->
             if (!view.isEnabled) return@setOnItemClickListener
             view.isEnabled = false
             view.postDelayed({ view.isEnabled = true }, 1000)
@@ -121,36 +125,46 @@ class VideoLiveListActivity : FullScreenActivity() {
     }
 
     private fun changeColumnStyle() {
-        mStyle = if (mStyle == Style.DOUBLE_COLUMN) Style.SINGLE_COLUMN else Style.DOUBLE_COLUMN
-        updateLiveStyleUI(mStyle)
+        style = if (style == Style.DOUBLE_COLUMN) Style.SINGLE_COLUMN else Style.DOUBLE_COLUMN
+        updateLiveStyleUI(style)
     }
 
     private fun updateLiveStyleUI(style: Style) {
         val constraintSet = ConstraintSet()
-        constraintSet.clone(mMainLayout)
+        constraintSet.clone(mainLayout)
         if (style == Style.DOUBLE_COLUMN) {
-            constraintSet.connect(mLiveListView.id, ConstraintSet.TOP, mToolbarLiveView.id, ConstraintSet.BOTTOM)
-            mLiveListColumnTypeView.setImageResource(R.drawable.livekit_ic_single_item_type)
-            constraintSet.setVisibility(mStartLiveView.id, VISIBLE)
+            constraintSet.connect(liveListView.id, ConstraintSet.TOP, toolbarLiveView.id, ConstraintSet.BOTTOM)
+            liveListColumnTypeView.setImageResource(R.drawable.livekit_ic_single_item_type)
+            constraintSet.setVisibility(startLiveView.id, VISIBLE)
         } else {
-            constraintSet.connect(mLiveListView.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-            mLiveListColumnTypeView.setImageResource(R.drawable.livekit_ic_double_item_type)
-            constraintSet.setVisibility(mStartLiveView.id, GONE)
+            constraintSet.connect(liveListView.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+            liveListColumnTypeView.setImageResource(R.drawable.livekit_ic_double_item_type)
+            constraintSet.setVisibility(startLiveView.id, GONE)
         }
-        constraintSet.applyTo(mMainLayout)
-        mStyle = style
-        mLiveListView.updateColumnStyle(style)
+        constraintSet.applyTo(mainLayout)
+        this.style = style
+        liveListView.updateColumnStyle(style)
     }
 
     private fun initStartLiveView() {
-        mStartLiveView.setOnClickListener {
-            if (packageName == "com.tencent.trtc" &&
-                LoginStore.shared.loginState.loginUserInfo.value?.userID?.startsWith("moa")
-                == false) {
-                realNameVerifyAndStartLive()
-                return@setOnClickListener
-            }
-            startVideoLive()
+        startLiveView.setOnClickListener {
+            requestPermission(object : CompletionHandler {
+                override fun onSuccess() {
+                    if (packageName == "com.tencent.trtc" &&
+                        LoginStore.shared.loginState.loginUserInfo.value?.userID?.startsWith("moa")
+                        == false) {
+                        realNameVerifyAndStartLive()
+                        return
+                    }
+                    startVideoLive()
+                }
+
+                override fun onFailure(code: Int, desc: String) {
+                    LOGGER.info("requestPermission onFailure. code:$code,desc:$desc")
+                    ErrorLocalized.onError(code)
+                }
+            })
+
         }
     }
 
@@ -184,16 +198,6 @@ class VideoLiveListActivity : FullScreenActivity() {
     private fun initBackButton() {
         findViewById<View>(R.id.iv_back).setOnClickListener {
             hideAdvanceSettingView()
-            if (PIPPanelStore.sharedInstance().state.anchorIsPictureInPictureMode
-                || PIPPanelStore.sharedInstance().state.audienceIsPictureInPictureMode
-            ) {
-                val homeIntent = Intent(Intent.ACTION_MAIN).apply {
-                    addCategory(Intent.CATEGORY_HOME)
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                startActivity(homeIntent)
-                return@setOnClickListener
-            }
             finish()
         }
     }
@@ -216,6 +220,46 @@ class VideoLiveListActivity : FullScreenActivity() {
             VoiceRoomKit.createInstance(this).enterRoom(info.asEngineLiveInfo())
         } else {
             VideoLiveKit.createInstance(this).joinLive(info)
+        }
+    }
+
+    private fun requestPermission(callback: CompletionHandler?) {
+        LOGGER.info("requestCameraPermissions:[]")
+        ContextProvider.getApplicationContext()?.apply {
+            PermissionRequest.requestCameraPermissions(this, object :
+                PermissionCallback() {
+                override fun onRequesting() {
+                    LOGGER.info("requestCameraPermissions:[onRequesting]")
+                }
+
+                override fun onGranted() {
+                    LOGGER.info("requestCameraPermissions:[onGranted]")
+                    PermissionRequest.requestMicrophonePermissions(
+                        this@apply,
+                        object : PermissionCallback() {
+                            override fun onGranted() {
+                                LOGGER.info("requestMicrophonePermissions success")
+                                callback?.onSuccess()
+                            }
+
+                            override fun onDenied() {
+                                LOGGER.error("requestMicrophonePermissions:[onDenied]")
+                                callback?.onFailure(
+                                    -1101,
+                                    "requestMicrophonePermissions:[onDenied]"
+                                )
+                            }
+                        })
+                }
+
+                override fun onDenied() {
+                    LOGGER.error("requestCameraPermissions:[onDenied]")
+                    callback?.onFailure(
+                        -1101,
+                        "requestCameraPermissions:[onDenied]"
+                    )
+                }
+            })
         }
     }
 }

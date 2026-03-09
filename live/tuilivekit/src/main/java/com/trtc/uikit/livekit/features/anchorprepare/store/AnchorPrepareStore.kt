@@ -1,13 +1,13 @@
 package com.trtc.uikit.livekit.features.anchorprepare.store
 
 import android.text.TextUtils
-import com.trtc.tuikit.common.permission.PermissionCallback
 import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.features.anchorprepare.AnchorPrepareViewListener
 import com.trtc.uikit.livekit.features.anchorprepare.LiveStreamPrivacyStatus
 import com.trtc.uikit.livekit.features.anchorprepare.PrepareState
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore

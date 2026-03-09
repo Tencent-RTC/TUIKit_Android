@@ -7,7 +7,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
-import com.trtc.tuikit.common.permission.PermissionCallback
 import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
@@ -15,6 +14,7 @@ import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.features.audiencecontainer.store.AudienceStore
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton

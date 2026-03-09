@@ -6,44 +6,61 @@
     android:layout_height="match_parent"
     android:background="@color/common_design_standard_g2">
 
-    <ImageView
-        android:id="@+id/iv_back"
-        android:layout_width="@dimen/livekit_top_btn_size"
-        android:layout_height="@dimen/livekit_top_btn_size"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="58dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/livekit_ic_audience_exit"
-        android:importantForAccessibility="no" />
-
     <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
-        android:id="@+id/tv_title"
+        android:id="@+id/tv_title_pip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp"
+        android:layout_centerInParent="true"
         android:text="@string/common_live_has_stop"
         android:textColor="@color/text_color_primary"
-        android:textSize="@dimen/text_size_20"
+        android:textSize="@dimen/text_size_12"
+        android:visibility="gone"
         tools:ignore="RelativeOverlap" />
 
-    <io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
-        android:id="@+id/iv_head"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_title"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        app:avatarSize="xxl" />
+    <RelativeLayout
+        android:id="@+id/rl_statistics_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/iv_head"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:textColor="@color/common_design_standard_flowkit_white"
-        android:textSize="14sp"
-        tools:ignore="RelativeOverlap" />
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="@dimen/livekit_top_btn_size"
+            android:layout_height="@dimen/livekit_top_btn_size"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="58dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/livekit_ic_audience_exit"
+            android:importantForAccessibility="no" />
+
+        <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="120dp"
+            android:text="@string/common_live_has_stop"
+            android:textColor="@color/text_color_primary"
+            android:textSize="@dimen/text_size_20"
+            tools:ignore="RelativeOverlap" />
+
+        <io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
+            android:id="@+id/iv_head"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            app:avatarSize="xxl" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_head"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/common_design_standard_flowkit_white"
+            android:textSize="14sp"
+            tools:ignore="RelativeOverlap" />
+    </RelativeLayout>
 </RelativeLayout>

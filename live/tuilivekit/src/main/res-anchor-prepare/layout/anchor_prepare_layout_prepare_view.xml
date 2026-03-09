@@ -20,13 +20,18 @@
         android:layout_gravity="bottom"
         android:background="@drawable/anchor_prepare_preview_mask" />
 
-    <ImageView
-        android:id="@+id/iv_back"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="56dp"
-        android:layout_marginRight="16dp"
-        android:background="@drawable/livekit_return_arrow"
-        android:importantForAccessibility="no" />
+    <FrameLayout
+        android:id="@+id/fl_component_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="56dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/livekit_return_arrow"
+            android:importantForAccessibility="no" />
+    </FrameLayout>
 </FrameLayout>

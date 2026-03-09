@@ -6,12 +6,14 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.endstatistics.store.EndStatisticsStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
+import io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,6 +30,8 @@ class AudienceEndStatisticsView @JvmOverloads constructor(
     private var subscribeStateJob: Job? = null
     private lateinit var textName: TextView
     private lateinit var imageHead: AtomicAvatar
+    private lateinit var textPIPTitle: AtomicLabel
+    private lateinit var layoutContent: RelativeLayout
 
     private var listener: EndStatisticsDefine.AudienceEndStatisticsViewListener? = null
 
@@ -37,6 +41,8 @@ class AudienceEndStatisticsView @JvmOverloads constructor(
 
     private fun initView() {
         LayoutInflater.from(context).inflate(R.layout.livekit_audience_dashboard_view, this, true)
+        textPIPTitle = findViewById(R.id.tv_title_pip)
+        layoutContent = findViewById(R.id.rl_statistics_data)
         textName = findViewById(R.id.tv_name)
         imageHead = findViewById(R.id.iv_head)
         findViewById<ImageView>(R.id.iv_back).setOnClickListener { onExitClick() }
@@ -47,6 +53,16 @@ class AudienceEndStatisticsView @JvmOverloads constructor(
         store.setOwnerName(if (TextUtils.isEmpty(ownerName)) "" else ownerName!!)
         store.setOwnerAvatarUrl(if (TextUtils.isEmpty(ownerAvatarUrl)) "" else ownerAvatarUrl!!)
         logger.info("init, $state")
+    }
+
+    fun enablePipMode(inPictureInPictureMode: Boolean) {
+        if (inPictureInPictureMode) {
+            textPIPTitle.visibility = VISIBLE
+            layoutContent.visibility = GONE
+        } else {
+            textPIPTitle.visibility = GONE
+            layoutContent.visibility = VISIBLE
+        }
     }
 
     fun setListener(listener: EndStatisticsDefine.AudienceEndStatisticsViewListener?) {

@@ -5,10 +5,12 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.endstatistics.store.EndStatisticsStore
+import io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,7 +34,8 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
     private lateinit var textGiftSenderCount: TextView
     private lateinit var textGiftIncome: TextView
     private lateinit var textLikeCount: TextView
-
+    private lateinit var textPIPTitle: AtomicLabel
+    private lateinit var layoutContent: RelativeLayout
     private var listener: EndStatisticsDefine.AnchorEndStatisticsViewListener? = null
 
     init {
@@ -41,6 +44,8 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
 
     private fun initView() {
         LayoutInflater.from(context).inflate(R.layout.livekit_anchor_dashboard_view, this, true)
+        textPIPTitle = findViewById(R.id.tv_title_pip)
+        layoutContent = findViewById(R.id.rl_statistics_data)
         textDuration = findViewById(R.id.tv_duration)
         textViewersCount = findViewById(R.id.tv_viewers)
         textMessageCount = findViewById(R.id.tv_message)
@@ -62,6 +67,16 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
             store.setGiftIncome(info.giftIncome)
             store.setGiftSenderCount(info.giftSenderCount)
             logger.info("init, ${state}")
+        }
+    }
+
+    fun enablePipMode(inPictureInPictureMode: Boolean) {
+        if (inPictureInPictureMode) {
+            textPIPTitle.visibility = VISIBLE
+            layoutContent.visibility = GONE
+        } else {
+            textPIPTitle.visibility = GONE
+            layoutContent.visibility = VISIBLE
         }
     }
 
