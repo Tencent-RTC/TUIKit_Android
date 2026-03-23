@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">AtomicXCore Example</string>
+
+    <!-- Login View -->
+    <string name="login_title">LiveKit API Example</string>
+    <string name="login_subtitle">Login to start</string>
+    <string name="login_userID_placeholder">Enter User ID</string>
+    <string name="login_userSig_placeholder">User Sig (Auto-generated)</string>
+    <string name="login_button">Login</string>
+    <string name="login_status_notLoggedIn">Not logged in</string>
+    <string name="login_status_loggingIn">Logging in…</string>
+    <string name="login_status_loggedIn">Logged in</string>
+    <string name="login_error_emptyUserID">Please enter User ID</string>
+    <string name="login_error_loginFailed">Login failed: %1$s</string>
+    <string name="login_debug_tip">UserSig will be generated locally (debug mode only)</string>
+    <string name="login_error_kickedOffline">You have been kicked offline, please login again</string>
+    <string name="login_error_loginExpired">Login expired, please login again</string>
+
+    <!-- Profile Setup -->
+    <string name="profile_title">Profile Setup</string>
+    <string name="profile_header">Set Up Your Profile</string>
+    <string name="profile_subtitle">Set your nickname and avatar so others can recognize you</string>
+    <string name="profile_nickname_placeholder">Enter nickname</string>
+    <string name="profile_confirm">Done</string>
+    <string name="profile_skip">Skip</string>
+    <string name="profile_status_saved">Profile saved successfully</string>
+    <string name="profile_error_emptyNickname">Please enter a nickname</string>
+    <string name="profile_error_saveFailed">Save failed: %1$s</string>
+
+    <!-- Feature List -->
+    <string name="featureList_title">Features</string>
+    <string name="featureList_section_header">Select Feature</string>
+    <string name="featureList_language">Switch Language</string>
+
+    <!-- Role Select -->
+    <string name="roleSelect_title">Select Role</string>
+    <string name="roleSelect_subtitle">Choose your experience role</string>
+    <string name="roleSelect_anchor">Anchor</string>
+    <string name="roleSelect_anchor_desc">Can create live, initiate co-host, start PK</string>
+    <string name="roleSelect_audience">Audience</string>
+    <string name="roleSelect_audience_desc">Can watch live, send barrage, send gifts, apply for co-host</string>
+
+    <!-- Live ID Input -->
+    <string name="liveIDInput_title_anchor">Enter Room ID</string>
+    <string name="liveIDInput_title_audience">Enter Room ID</string>
+    <string name="liveIDInput_message_anchor">A random Room ID has been generated, you can modify or randomize it</string>
+    <string name="liveIDInput_message_audience">Please enter the Room ID to join</string>
+    <string name="liveIDInput_placeholder">9-digit Room ID</string>
+    <string name="liveIDInput_random">🎲 Randomize</string>
+    <string name="liveIDInput_error_empty">Room ID cannot be empty</string>
+
+    <!-- Feature Stages -->
+    <string name="stage_basicStreaming">Basic Streaming</string>
+    <string name="stage_basicStreaming_desc">start/join live</string>
+    <string name="stage_interactive">Interactive</string>
+    <string name="stage_interactive_desc">Barrage, gifts, likes, beauty, sound effects</string>
+    <string name="stage_coGuest">Co-Guest</string>
+    <string name="stage_coGuest_desc">Audience list, guest connection request, host invitation, seat management</string>
+    <string name="stage_livePK">Live PK</string>
+    <string name="stage_livePK_desc">Cross-room host connection, PK battle, score display</string>
+
+    <!-- BasicStreaming -->
+    <string name="basicStreaming_title">Basic Streaming</string>
+    <string name="basicStreaming_startLive">Start Live</string>
+    <string name="basicStreaming_status_creating">Creating live…</string>
+    <string name="basicStreaming_status_ending">Ending live…</string>
+    <string name="basicStreaming_status_joining">Joining live…</string>
+    <string name="basicStreaming_status_created">Live created: %1$s</string>
+    <string name="basicStreaming_status_joined">Joined live: %1$s</string>
+    <string name="basicStreaming_status_ended">Live ended</string>
+    <string name="basicStreaming_status_failed">Failed: %1$s</string>
+    <string name="basicStreaming_endLive_confirm_title">End Live</string>
+    <string name="basicStreaming_endLive_confirm_message">Are you sure you want to end the live?</string>
+
+    <!-- Interactive -->
+    <string name="interactive_title">Interactive</string>
+    <string name="interactive_settings_title">Settings</string>
+    <string name="interactive_barrage_title">Barrage</string>
+    <string name="interactive_barrage_description">Send and receive barrage messages</string>
+    <string name="interactive_barrage_placeholder">Say something…</string>
+    <string name="interactive_barrage_send">Send Barrage</string>
+    <string name="interactive_gift_title">Gifts</string>
+    <string name="interactive_gift_description">Send and receive gifts</string>
+    <string name="interactive_gift_send">Send</string>
+    <string name="interactive_gift_sent">sent</string>
+    <string name="interactive_like_title">Likes</string>
+    <string name="interactive_like_description">Send and receive likes</string>
+    <string name="interactive_like_send">Send Like</string>
+    <string name="interactive_beauty_title">Beauty</string>
+    <string name="interactive_beauty_description">Enable beauty effects</string>
+    <string name="interactive_beauty_smooth">Smooth</string>
+    <string name="interactive_beauty_whiteness">Whiteness</string>
+    <string name="interactive_beauty_ruddy">Ruddy</string>
+    <string name="interactive_beauty_reset">Reset All</string>
+    <string name="interactive_audioEffect_title">Audio Effects</string>
+    <string name="interactive_audioEffect_changer_title">Voice Changer</string>
+    <string name="interactive_audioEffect_changer_none">None</string>
+    <string name="interactive_audioEffect_changer_child">Child</string>
+    <string name="interactive_audioEffect_changer_littleGirl">Girl</string>
+    <string name="interactive_audioEffect_changer_man">Uncle</string>
+    <string name="interactive_audioEffect_changer_ethereal">Ethereal</string>
+    <string name="interactive_audioEffect_reverb_title">Reverb</string>
+    <string name="interactive_audioEffect_reverb_none">None</string>
+    <string name="interactive_audioEffect_reverb_ktv">KTV</string>
+    <string name="interactive_audioEffect_reverb_smallRoom">Room</string>
+    <string name="interactive_audioEffect_reverb_auditorium">Hall</string>
+    <string name="interactive_audioEffect_reverb_metallic">Metallic</string>
+    <string name="interactive_audioEffect_earMonitor">Ear Monitor</string>
+    <string name="interactive_audioEffect_earMonitorVolume">Monitor Volume</string>
+    <string name="interactive_audioEffect_reset">Reset All</string>
+    <string name="interactive_error_emptyContent">Please enter barrage content</string>
+    <string name="interactive_success_gift">Gift sent successfully</string>
+    <string name="interactive_success_like">Like sent successfully</string>
+
+    <!-- MultiConnect / CoGuest -->
+    <string name="multiConnect_title">Co-Guest</string>
+
+    <!-- CoGuest - Audience List -->
+    <string name="coGuest_audienceList_title">Online Audience</string>
+    <string name="coGuest_audienceList_empty">No audience online</string>
+    <string name="coGuest_audienceList_invite">Connect</string>
+    <string name="coGuest_audienceList_inviting">Inviting</string>
+    <string name="coGuest_audienceList_connected">Connected</string>
+    <string name="coGuest_audienceCount">%1$d Online</string>
+
+    <!-- CoGuest - Connection Status -->
+    <string name="coGuest_status_applying">Applying for connection…</string>
+    <string name="coGuest_status_cancelled">Connection request cancelled</string>
+    <string name="coGuest_status_connected">Connected successfully</string>
+    <string name="coGuest_status_disconnected">Disconnected</string>
+    <string name="coGuest_status_invited">Connection invitation sent</string>
+
+    <!-- CoGuest - Application Alert (Anchor Side) -->
+    <string name="coGuest_application_title">Connection Request</string>
+    <string name="coGuest_application_message">%1$s is requesting to connect</string>
+    <string name="coGuest_application_accept">Accept</string>
+    <string name="coGuest_application_reject">Reject</string>
+
+    <!-- CoGuest - Invitation Alert (Audience Side) -->
+    <string name="coGuest_invitation_title">Connection Invitation</string>
+    <string name="coGuest_invitation_message">Host %1$s is inviting you to connect</string>
+    <string name="coGuest_invitation_accept">Accept</string>
+    <string name="coGuest_invitation_reject">Reject</string>
+
+    <!-- CoGuest - Event Notifications -->
+    <string name="coGuest_event_inviteAccepted">%1$s accepted the connection invitation</string>
+    <string name="coGuest_event_inviteRejected">%1$s rejected the connection invitation</string>
+    <string name="coGuest_event_applicationCancelled">%1$s cancelled the connection request</string>
+    <string name="coGuest_event_applicationRejected">%1$s rejected your connection request</string>
+    <string name="coGuest_event_applicationTimeout">Connection request timed out, please try again</string>
+    <string name="coGuest_event_kickedOff">You have been removed from the connection</string>
+    <string name="coGuest_event_invitationCancelled">Host cancelled the connection invitation</string>
+
+    <!-- CoGuest - Device Management Alert (Anchor manages co-guest) -->
+    <string name="coGuest_manage_title">Manage %1$s</string>
+    <string name="coGuest_manage_openCamera">Request to open camera</string>
+    <string name="coGuest_manage_closeCamera">Close camera</string>
+    <string name="coGuest_manage_openMic">Request to open microphone</string>
+    <string name="coGuest_manage_closeMic">Close microphone</string>
+    <string name="coGuest_manage_kickOff">Remove from connection</string>
+
+    <!-- CoGuest - Device Management Alert (Audience manages self) -->
+    <string name="coGuest_selfManage_title">Device Settings</string>
+    <string name="coGuest_selfManage_disconnect">Disconnect</string>
+    <string name="coGuest_selfManage_openCamera">Turn On Camera</string>
+    <string name="coGuest_selfManage_closeCamera">Turn Off Camera</string>
+    <string name="coGuest_selfManage_openMic">Turn On Microphone</string>
+    <string name="coGuest_selfManage_closeMic">Turn Off Microphone</string>
+
+    <!-- CoGuest - Remote Device Request -->
+    <string name="coGuest_device_cameraRequest_title">Turn On Camera</string>
+    <string name="coGuest_device_cameraRequest_message">The host requests you to turn on your camera</string>
+    <string name="coGuest_device_micRequest_title">Turn On Microphone</string>
+    <string name="coGuest_device_micRequest_message">The host requests you to turn on your microphone</string>
+    <string name="coGuest_device_cameraClosed">Host has turned off your camera</string>
+    <string name="coGuest_device_micClosed">Host has turned off your microphone</string>
+
+    <!-- LivePK -->
+    <string name="livePK_title">Live PK</string>
+
+    <!-- LivePK - Co-Host Connection -->
+    <string name="livePK_coHost_connect">Connect</string>
+    <string name="livePK_coHost_disconnect">Disconnect</string>
+    <string name="livePK_coHost_connecting">Connecting…</string>
+    <string name="livePK_coHost_connected">Connected</string>
+    <string name="livePK_coHost_disconnected">Disconnected</string>
+    <string name="livePK_coHost_selectHost">Select Host</string>
+    <string name="livePK_coHost_emptyList">No other live rooms available</string>
+    <string name="livePK_coHost_request_received">%1$s requests to connect</string>
+    <string name="livePK_coHost_request_accepted">%1$s accepted the connection</string>
+    <string name="livePK_coHost_request_rejected">%1$s rejected the connection</string>
+    <string name="livePK_coHost_request_timeout">Connection request timed out</string>
+    <string name="livePK_coHost_request_cancelled">Connection request cancelled</string>
+    <string name="livePK_coHost_userLeft">%1$s left the connection</string>
+    <string name="livePK_coHost_confirm_disconnect">Are you sure you want to disconnect?</string>
+
+    <!-- LivePK - PK Battle -->
+    <string name="livePK_battle_title">PK Battle</string>
+    <string name="livePK_battle_start">Start PK</string>
+    <string name="livePK_battle_end">End PK</string>
+    <string name="livePK_battle_requesting">PK requesting…</string>
+    <string name="livePK_battle_started">PK Started!</string>
+    <string name="livePK_battle_ended">PK Ended</string>
+    <string name="livePK_battle_request_received">%1$s challenges you to PK</string>
+    <string name="livePK_battle_request_accepted">PK accepted</string>
+    <string name="livePK_battle_request_rejected">PK rejected</string>
+    <string name="livePK_battle_request_timeout">PK request timed out</string>
+    <string name="livePK_battle_duration">PK Duration: %1$d seconds</string>
+    <string name="livePK_battle_score">%1$d : %2$d</string>
+    <string name="livePK_battle_win">🏆 Win</string>
+    <string name="livePK_battle_lose">Lose</string>
+    <string name="livePK_battle_draw">Draw</string>
+    <string name="livePK_battle_me">Me</string>
+    <string name="livePK_battle_confirm_end">Are you sure you want to end PK?</string>
+
+    <!-- LivePK - Status -->
+    <string name="livePK_status_idle">Waiting to connect</string>
+    <string name="livePK_status_coHostConnected">Connected · Ready for PK</string>
+    <string name="livePK_status_battling">PK in progress</string>
+
+    <!-- Device Setting Panel -->
+    <string name="deviceSetting_title">Device Settings</string>
+    <string name="deviceSetting_camera">Camera</string>
+    <string name="deviceSetting_microphone">Microphone</string>
+    <string name="deviceSetting_frontCamera">Front Camera</string>
+    <string name="deviceSetting_mirror">Mirror Mode</string>
+    <string name="deviceSetting_videoQuality">Video Quality</string>
+
+    <!-- Common -->
+    <string name="common_cancel">Cancel</string>
+    <string name="common_confirm">OK</string>
+    <string name="common_error">Error</string>
+    <string name="common_success">Success</string>
+    <string name="common_warning">Warning</string>
+
+    <!-- Permission -->
+    <string name="permission_camera_mic_denied">Camera and microphone permissions are required for live streaming. Please grant them in Settings.</string>
+    <string name="permission_camera_mic_denied_coguest">Camera and microphone permissions are required for co-guesting. Please grant them in Settings.</string>
+    <string name="permission_network_unavailable">Network is unavailable. Please check your connection and try again.</string>
+</resources>

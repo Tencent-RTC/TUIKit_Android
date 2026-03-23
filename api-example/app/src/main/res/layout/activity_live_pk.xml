@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <!-- Video rendering area (placeholder for LiveCoreView, dynamically added in code) -->
+    <FrameLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Gift animation layer (full-screen overlay) -->
+    <com.example.atomicxcore.components.GiftAnimationView
+        android:id="@+id/giftAnimationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Top Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <TextView
+            android:id="@+id/tvLiveID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:breakStrategy="simple" />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Connection status indicator label (top center) -->
+    <TextView
+        android:id="@+id/connectionStatusLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="90dp"
+        android:background="@drawable/bg_audience_count"
+        android:gravity="center"
+        android:minWidth="120dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <!-- PK score panel -->
+    <LinearLayout
+        android:id="@+id/pkScoreView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/bg_pk_score"
+        android:gravity="center_horizontal"
+        android:minWidth="160dp"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="6dp"
+        android:visibility="gone">
+
+        <!-- PK status text -->
+        <TextView
+            android:id="@+id/pkStatusLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/livePK_status_battling"
+            android:textColor="#FFFFEB3B"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <!-- Dynamic score area (populated in code) -->
+        <LinearLayout
+            android:id="@+id/scoreContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:orientation="horizontal" />
+
+        <!-- Countdown label -->
+        <TextView
+            android:id="@+id/pkTimerLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="monospace"
+            android:textColor="#CCFFFFFF"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <!-- 底部互动区域 -->
+    <LinearLayout
+        android:id="@+id/bottomInteractionArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:visibility="gone">
+
+        <!-- Barrage component + buttons -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <!-- Barrage message list (left 50%) -->
+            <com.example.atomicxcore.components.BarrageView
+                android:id="@+id/barrageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="160dp"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Bottom-right button area -->
+            <LinearLayout
+                android:id="@+id/rightButtonArea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <!-- PK button (anchor only) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBattle"
+                    style="@style/Widget.App.Button.Circle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="5dp"
+                    android:backgroundTint="#FFF44336"
+                    android:enabled="false"
+                    android:alpha="0.5"
+                    android:text="PK"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <!-- Connection button (anchor only) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCoHost"
+                    style="@style/Widget.App.Button.Circle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="5dp"
+                    android:backgroundTint="#FFFF9800"
+                    android:visibility="gone"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    app:icon="@drawable/ic_link"
+                    app:iconSize="20dp"
+                    app:iconTint="@android:color/white" />
+
+                <!-- Gift entry button (audience only) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGift"
+                    style="@style/Widget.App.Button.Circle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="5dp"
+                    android:backgroundTint="#FFFFFFFF"
+                    android:visibility="gone"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    app:icon="@drawable/ic_gift"
+                    app:iconSize="20dp"
+                    app:iconTint="#FFFF4081" />
+
+                <!-- Like button -->
+                <com.example.atomicxcore.components.LikeButton
+                    android:id="@+id/likeButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
+
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Start live button (anchor only, center-bottom) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartLive"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="100dp"
+        android:text="@string/basicStreaming_startLive"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+</FrameLayout>

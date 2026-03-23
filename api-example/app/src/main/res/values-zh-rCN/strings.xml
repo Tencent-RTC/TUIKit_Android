@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">AtomicXCore 示例</string>
+
+    <!-- Login View -->
+    <string name="login_title">LiveKit API Example</string>
+    <string name="login_subtitle">登录以开始体验</string>
+    <string name="login_userID_placeholder">请输入 User ID</string>
+    <string name="login_userSig_placeholder">User Sig (自动生成)</string>
+    <string name="login_button">登录</string>
+    <string name="login_status_notLoggedIn">未登录</string>
+    <string name="login_status_loggingIn">登录中…</string>
+    <string name="login_status_loggedIn">已登录</string>
+    <string name="login_error_emptyUserID">请输入 User ID</string>
+    <string name="login_error_loginFailed">登录失败: %1$s</string>
+    <string name="login_debug_tip">UserSig 将由本地自动生成（仅调试模式）</string>
+    <string name="login_error_kickedOffline">您已被踢下线，请重新登录</string>
+    <string name="login_error_loginExpired">登录已过期，请重新登录</string>
+
+    <!-- Profile Setup -->
+    <string name="profile_title">完善资料</string>
+    <string name="profile_header">设置个人资料</string>
+    <string name="profile_subtitle">设置您的昵称和头像，让其他人更容易认识你</string>
+    <string name="profile_nickname_placeholder">请输入昵称</string>
+    <string name="profile_confirm">完成</string>
+    <string name="profile_skip">跳过</string>
+    <string name="profile_status_saved">资料保存成功</string>
+    <string name="profile_error_emptyNickname">请输入昵称</string>
+    <string name="profile_error_saveFailed">保存失败: %1$s</string>
+
+    <!-- Feature List -->
+    <string name="featureList_title">功能列表</string>
+    <string name="featureList_section_header">选择功能</string>
+    <string name="featureList_language">语言切换</string>
+
+    <!-- Role Select -->
+    <string name="roleSelect_title">请选择身份</string>
+    <string name="roleSelect_subtitle">选择您要体验的角色</string>
+    <string name="roleSelect_anchor">主播</string>
+    <string name="roleSelect_anchor_desc">可以创建直播、发起连麦、开启 PK</string>
+    <string name="roleSelect_audience">观众</string>
+    <string name="roleSelect_audience_desc">可以观看直播、发送弹幕、送礼、申请连麦</string>
+
+    <!-- Live ID Input -->
+    <string name="liveIDInput_title_anchor">输入房间号</string>
+    <string name="liveIDInput_title_audience">输入房间号</string>
+    <string name="liveIDInput_message_anchor">已随机生成房间号，您可以修改或重新随机</string>
+    <string name="liveIDInput_message_audience">请输入要加入的房间号</string>
+    <string name="liveIDInput_placeholder">9 位数字房间号</string>
+    <string name="liveIDInput_random">🎲 随机生成</string>
+    <string name="liveIDInput_error_empty">房间号不能为空</string>
+
+    <!-- Feature Stages -->
+    <string name="stage_basicStreaming">基础推拉流</string>
+    <string name="stage_basicStreaming_desc">开启/加入直播</string>
+    <string name="stage_interactive">实时互动</string>
+    <string name="stage_interactive_desc">弹幕、礼物、点赞、美颜、音效</string>
+    <string name="stage_coGuest">观众连线</string>
+    <string name="stage_coGuest_desc">观众列表、观众申请连线、主播邀请连线、麦位管理</string>
+    <string name="stage_livePK">直播 PK</string>
+    <string name="stage_livePK_desc">主播跨房连线、PK 对战、分数展示</string>
+
+    <!-- BasicStreaming -->
+    <string name="basicStreaming_title">基础推拉流</string>
+    <string name="basicStreaming_startLive">开始直播</string>
+    <string name="basicStreaming_status_creating">正在创建直播…</string>
+    <string name="basicStreaming_status_ending">正在结束直播…</string>
+    <string name="basicStreaming_status_joining">正在加入直播…</string>
+    <string name="basicStreaming_status_created">直播创建成功: %1$s</string>
+    <string name="basicStreaming_status_joined">已加入直播: %1$s</string>
+    <string name="basicStreaming_status_ended">直播已结束</string>
+    <string name="basicStreaming_status_failed">操作失败: %1$s</string>
+    <string name="basicStreaming_endLive_confirm_title">结束直播</string>
+    <string name="basicStreaming_endLive_confirm_message">确定要结束直播吗？</string>
+
+    <!-- Interactive -->
+    <string name="interactive_title">实时互动</string>
+    <string name="interactive_settings_title">设置</string>
+    <string name="interactive_barrage_title">弹幕功能</string>
+    <string name="interactive_barrage_description">发送和接收弹幕消息</string>
+    <string name="interactive_barrage_placeholder">说点什么…</string>
+    <string name="interactive_barrage_send">发送弹幕</string>
+    <string name="interactive_gift_title">礼物</string>
+    <string name="interactive_gift_description">发送礼物和接收礼物</string>
+    <string name="interactive_gift_send">发送</string>
+    <string name="interactive_gift_sent">送出了</string>
+    <string name="interactive_like_title">点赞功能</string>
+    <string name="interactive_like_description">发送点赞和接收点赞</string>
+    <string name="interactive_like_send">发送点赞</string>
+    <string name="interactive_beauty_title">美颜</string>
+    <string name="interactive_beauty_description">开启美颜效果</string>
+    <string name="interactive_beauty_smooth">磨皮</string>
+    <string name="interactive_beauty_whiteness">美白</string>
+    <string name="interactive_beauty_ruddy">红润</string>
+    <string name="interactive_beauty_reset">重置全部</string>
+    <string name="interactive_audioEffect_title">音效</string>
+    <string name="interactive_audioEffect_changer_title">变声效果</string>
+    <string name="interactive_audioEffect_changer_none">关闭</string>
+    <string name="interactive_audioEffect_changer_child">小孩</string>
+    <string name="interactive_audioEffect_changer_littleGirl">少女</string>
+    <string name="interactive_audioEffect_changer_man">大叔</string>
+    <string name="interactive_audioEffect_changer_ethereal">空灵</string>
+    <string name="interactive_audioEffect_reverb_title">混响效果</string>
+    <string name="interactive_audioEffect_reverb_none">关闭</string>
+    <string name="interactive_audioEffect_reverb_ktv">KTV</string>
+    <string name="interactive_audioEffect_reverb_smallRoom">小房间</string>
+    <string name="interactive_audioEffect_reverb_auditorium">大厅</string>
+    <string name="interactive_audioEffect_reverb_metallic">金属</string>
+    <string name="interactive_audioEffect_earMonitor">耳返</string>
+    <string name="interactive_audioEffect_earMonitorVolume">耳返音量</string>
+    <string name="interactive_audioEffect_reset">重置全部</string>
+    <string name="interactive_error_emptyContent">请输入弹幕内容</string>
+    <string name="interactive_success_gift">发送礼物成功</string>
+    <string name="interactive_success_like">发送点赞成功</string>
+
+    <!-- MultiConnect / CoGuest -->
+    <string name="multiConnect_title">观众连线</string>
+
+    <!-- CoGuest - 观众列表 -->
+    <string name="coGuest_audienceList_title">在线观众</string>
+    <string name="coGuest_audienceList_empty">暂无在线观众</string>
+    <string name="coGuest_audienceList_invite">连线</string>
+    <string name="coGuest_audienceList_inviting">邀请中</string>
+    <string name="coGuest_audienceList_connected">连线中</string>
+    <string name="coGuest_audienceCount">在线 %1$d 人</string>
+
+    <!-- CoGuest - 连线状态 -->
+    <string name="coGuest_status_applying">正在申请连线…</string>
+    <string name="coGuest_status_cancelled">已取消连线申请</string>
+    <string name="coGuest_status_connected">连线成功</string>
+    <string name="coGuest_status_disconnected">已断开连线</string>
+    <string name="coGuest_status_invited">已发送连线邀请</string>
+
+    <!-- CoGuest - 连线申请弹框（主播端） -->
+    <string name="coGuest_application_title">连线申请</string>
+    <string name="coGuest_application_message">%1$s 申请与您连线</string>
+    <string name="coGuest_application_accept">接受</string>
+    <string name="coGuest_application_reject">拒绝</string>
+
+    <!-- CoGuest - 连线邀请弹框（观众端） -->
+    <string name="coGuest_invitation_title">连线邀请</string>
+    <string name="coGuest_invitation_message">主播 %1$s 邀请您连线</string>
+    <string name="coGuest_invitation_accept">接受</string>
+    <string name="coGuest_invitation_reject">拒绝</string>
+
+    <!-- CoGuest - 事件通知 -->
+    <string name="coGuest_event_inviteAccepted">%1$s 已接受连线邀请</string>
+    <string name="coGuest_event_inviteRejected">%1$s 拒绝了连线邀请</string>
+    <string name="coGuest_event_applicationCancelled">%1$s 取消了连线申请</string>
+    <string name="coGuest_event_applicationRejected">%1$s 拒绝了您的连线申请</string>
+    <string name="coGuest_event_applicationTimeout">连线申请超时，请重试</string>
+    <string name="coGuest_event_kickedOff">您已被主播移出连线</string>
+    <string name="coGuest_event_invitationCancelled">主播取消了连线邀请</string>
+
+    <!-- CoGuest - 设备管理弹框（主播管理连线观众） -->
+    <string name="coGuest_manage_title">管理 %1$s</string>
+    <string name="coGuest_manage_openCamera">邀请打开摄像头</string>
+    <string name="coGuest_manage_closeCamera">关闭摄像头</string>
+    <string name="coGuest_manage_openMic">邀请打开麦克风</string>
+    <string name="coGuest_manage_closeMic">关闭麦克风</string>
+    <string name="coGuest_manage_kickOff">移出连线</string>
+
+    <!-- CoGuest - 设备管理弹框（观众管理自己） -->
+    <string name="coGuest_selfManage_title">设备管理</string>
+    <string name="coGuest_selfManage_disconnect">断开连线</string>
+    <string name="coGuest_selfManage_openCamera">打开摄像头</string>
+    <string name="coGuest_selfManage_closeCamera">关闭摄像头</string>
+    <string name="coGuest_selfManage_openMic">打开麦克风</string>
+    <string name="coGuest_selfManage_closeMic">关闭麦克风</string>
+
+    <!-- CoGuest - 远程设备操作请求 -->
+    <string name="coGuest_device_cameraRequest_title">打开摄像头</string>
+    <string name="coGuest_device_cameraRequest_message">主播请求您打开摄像头</string>
+    <string name="coGuest_device_micRequest_title">打开麦克风</string>
+    <string name="coGuest_device_micRequest_message">主播请求您打开麦克风</string>
+    <string name="coGuest_device_cameraClosed">主播已关闭您的摄像头</string>
+    <string name="coGuest_device_micClosed">主播已关闭您的麦克风</string>
+
+    <!-- LivePK -->
+    <string name="livePK_title">直播 PK</string>
+
+    <!-- LivePK - 连线 -->
+    <string name="livePK_coHost_connect">发起连线</string>
+    <string name="livePK_coHost_disconnect">断开连线</string>
+    <string name="livePK_coHost_connecting">连线请求中…</string>
+    <string name="livePK_coHost_connected">连线成功</string>
+    <string name="livePK_coHost_disconnected">已断开连线</string>
+    <string name="livePK_coHost_selectHost">选择连线主播</string>
+    <string name="livePK_coHost_emptyList">暂无其他直播间</string>
+    <string name="livePK_coHost_request_received">%1$s 请求与您连线</string>
+    <string name="livePK_coHost_request_accepted">%1$s 接受了连线</string>
+    <string name="livePK_coHost_request_rejected">%1$s 拒绝了连线</string>
+    <string name="livePK_coHost_request_timeout">连线请求超时</string>
+    <string name="livePK_coHost_request_cancelled">对方取消了连线请求</string>
+    <string name="livePK_coHost_userLeft">%1$s 已退出连线</string>
+    <string name="livePK_coHost_confirm_disconnect">确定要断开连线吗？</string>
+
+    <!-- LivePK - PK 对战 -->
+    <string name="livePK_battle_title">PK 对战</string>
+    <string name="livePK_battle_start">发起 PK</string>
+    <string name="livePK_battle_end">结束 PK</string>
+    <string name="livePK_battle_requesting">PK 请求中…</string>
+    <string name="livePK_battle_started">PK 已开始！</string>
+    <string name="livePK_battle_ended">PK 已结束</string>
+    <string name="livePK_battle_request_received">%1$s 向您发起 PK 挑战</string>
+    <string name="livePK_battle_request_accepted">对方接受了 PK</string>
+    <string name="livePK_battle_request_rejected">对方拒绝了 PK</string>
+    <string name="livePK_battle_request_timeout">PK 请求超时</string>
+    <string name="livePK_battle_duration">PK 时长 %1$d 秒</string>
+    <string name="livePK_battle_score">%1$d : %2$d</string>
+    <string name="livePK_battle_win">🏆 胜利</string>
+    <string name="livePK_battle_lose">失败</string>
+    <string name="livePK_battle_draw">平局</string>
+    <string name="livePK_battle_me">我</string>
+    <string name="livePK_battle_confirm_end">确定要结束 PK 吗？</string>
+
+    <!-- LivePK - 状态 -->
+    <string name="livePK_status_idle">等待连线</string>
+    <string name="livePK_status_coHostConnected">已连线 · 可发起 PK</string>
+    <string name="livePK_status_battling">PK 进行中</string>
+
+    <!-- Device Setting Panel -->
+    <string name="deviceSetting_title">设备管理</string>
+    <string name="deviceSetting_camera">摄像头</string>
+    <string name="deviceSetting_microphone">麦克风</string>
+    <string name="deviceSetting_frontCamera">前置摄像头</string>
+    <string name="deviceSetting_mirror">镜像模式</string>
+    <string name="deviceSetting_videoQuality">视频质量</string>
+
+    <!-- Common -->
+    <string name="common_cancel">取消</string>
+    <string name="common_confirm">确定</string>
+    <string name="common_error">错误</string>
+    <string name="common_success">成功</string>
+    <string name="common_warning">警告</string>
+
+    <!-- Permission -->
+    <string name="permission_camera_mic_denied">直播需要摄像头和麦克风权限，请在设置中授权。</string>
+    <string name="permission_camera_mic_denied_coguest">连线需要摄像头和麦克风权限，请在设置中授权。</string>
+    <string name="permission_network_unavailable">网络不可用，请检查网络连接后重试。</string>
+</resources>

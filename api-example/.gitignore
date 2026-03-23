@@ -1,0 +1,39 @@
+# =========================
+# Android 平台忽略规则
+# =========================
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android Studio
+*.iml
+.idea/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Local configuration
+local.properties
+keystore.properties
+
+# Signing
+*.jks
+*.keystore
+
+# Google Services (may contain API keys)
+google-services.json
+
+# NDK
+obj/
+
+# IntelliJ
+out/
+
+# Proguard
+proguard/
+
+# Log Files
+*.log

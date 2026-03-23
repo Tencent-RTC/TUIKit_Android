@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <!-- Video rendering area (placeholder for LiveCoreView, dynamically added in code) -->
+    <FrameLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Gift animation layer (full-screen overlay) -->
+    <com.example.atomicxcore.components.GiftAnimationView
+        android:id="@+id/giftAnimationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Top Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <TextView
+            android:id="@+id/tvLiveID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:breakStrategy="simple" />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Bottom interaction area -->
+    <LinearLayout
+        android:id="@+id/bottomInteractionArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:visibility="gone">
+
+        <!-- Barrage component + like/gift buttons -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <!-- Barrage message list (left 70%) -->
+            <com.example.atomicxcore.components.BarrageView
+                android:id="@+id/barrageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="100dp"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Bottom-right button area -->
+            <LinearLayout
+                android:id="@+id/rightButtonArea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <!-- Gift entry button (audience only) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGift"
+                    style="@style/Widget.App.Button.Circle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="5dp"
+                    android:backgroundTint="#FFFFFFFF"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_gift"
+                    app:iconSize="20dp"
+                    app:iconTint="#FFFF4081"
+                    xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+                <!-- Like button -->
+                <com.example.atomicxcore.components.LikeButton
+                    android:id="@+id/likeButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
+
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Start live button (anchor only, center-bottom) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartLive"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="100dp"
+        android:text="@string/basicStreaming_startLive"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+</FrameLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme: Material3 DayNight + NoActionBar (using Toolbar instead) -->
+    <style name="Theme.AtomicXCoreExample" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/primary_light</item>
+    </style>
+
+    <!-- Splash theme -->
+    <style name="Theme.AtomicXCoreExample.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- Transparent theme for live pages (BasicStreaming / Interactive / LivePK / MultiConnect) -->
+    <style name="Theme.AtomicXCoreExample.Transparent" parent="Theme.Material3.DayNight.NoActionBar" />
+
+    <!-- Circle ShapeAppearance (avatar, etc.) -->
+    <style name="ShapeAppearance.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Circle MaterialButton style (live page action buttons) -->
+    <style name="Widget.App.Button.Circle" parent="Widget.Material3.Button.IconButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Circle</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+    </style>
+</resources>
