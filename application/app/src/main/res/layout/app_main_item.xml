@@ -34,20 +34,6 @@
             android:textColor="@color/app_color_black"
             android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tv_main_tag"
-            android:layout_width="wrap_content"
-            android:layout_height="18dp"
-            android:gravity="center"
-            android:textColor="@color/app_color_white"
-            android:textSize="10sp" />
-
-        <ImageView
-            android:id="@+id/img_main_arrow"
-            android:layout_width="16dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/app_ic_details" />
-
     </LinearLayout>
 
     <TextView

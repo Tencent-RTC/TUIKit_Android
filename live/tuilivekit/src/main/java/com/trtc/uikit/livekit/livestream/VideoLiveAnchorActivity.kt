@@ -14,13 +14,11 @@ import android.widget.FrameLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
-import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
 import com.trtc.uikit.livekit.features.anchorboardcast.AnchorBoardcastState
 import com.trtc.uikit.livekit.features.anchorboardcast.AnchorView
@@ -38,9 +36,6 @@ import io.trtc.tuikit.atomicx.common.FullScreenActivity
 import io.trtc.tuikit.atomicx.pictureinpicture.PictureInPictureStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
-import io.trtc.tuikit.atomicxcore.api.login.LoginStatus
-import io.trtc.tuikit.atomicxcore.api.login.LoginStore
-import kotlinx.coroutines.launch
 
 class VideoLiveAnchorActivity : FullScreenActivity(),
     VideoLiveKitImpl.CallingAPIListener,
@@ -56,7 +51,6 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         const val METHOD_ACTIVITY_RESULT = "onActivityResult"
         const val PICK_CONTENT_ALL = "image/*|video/*"
         private const val REQUEST_CODE_PERMISSIONS = 1001
-        private val logger = LiveKitLogger.getLiveStreamLogger("VideoLiveAnchorActivity")
     }
 
     private var startActivityRequestCode = 0
@@ -83,7 +77,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         setContentView(R.layout.livekit_activity_video_live_anchor)
-        PIPPanelStore.sharedInstance().state.isAnchorStreaming = true
+
         roomId = intent.getStringExtra(INTENT_KEY_ROOM_ID) ?: ""
         liveInfo.liveID = roomId
         needCreateRoom = intent.getBooleanExtra(INTENT_KEY_NEED_CREATE, true)
@@ -100,14 +94,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         } else {
             addAnchorView()
         }
-        lifecycleScope.launchWhenStarted {
-            LoginStore.shared.loginState.loginStatus.collect {
-                if (it == LoginStatus.UNLOGIN) {
-                    finishAndRemoveTask()
-                    anchorView?.unInit()
-                }
-            }
-        }
+
         TUICore.registerEvent(KEY_EXTENSION_NAME, NOTIFY_START_ACTIVITY, this)
         TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, this)
         VideoLiveKitImpl.createInstance(applicationContext).addCallingAPIListener(this)
@@ -127,11 +114,14 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        logger.info("onUserLeaveHint: $isFinishing")
         if (PIPPanelStore.sharedInstance().state.anchorIsPictureInPictureMode) {
             return
         }
-        onClickFloatWindow()
+        if (PIPPanelStore.sharedInstance().state.isAnchorStreaming &&
+            PIPPanelStore.sharedInstance().state.enablePictureInPictureToggle
+        ) {
+            onClickFloatWindow()
+        }
     }
 
     override fun onDestroy() {
@@ -150,12 +140,9 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
 
     override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode)
-        logger.info("onPictureInPictureModeChanged: $isInPictureInPictureMode")
         PictureInPictureStore.shared.updateIsPictureInPictureMode(isInPictureInPictureMode)
         PIPPanelStore.sharedInstance().state.anchorIsPictureInPictureMode = isInPictureInPictureMode
-        anchorPrepareView?.enablePipMode(isInPictureInPictureMode)
         anchorView?.enablePipMode(isInPictureInPictureMode)
-        anchorEndStatisticsView?.enablePipMode(isInPictureInPictureMode)
 
         if (!isInPictureInPictureMode && lifecycle.currentState == Lifecycle.State.CREATED) {
             finishAndRemoveTask()

@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="@string/common_main_item_voice_room"
+                android:text="@string/karaoke_chat_room"
                 android:textColor="@color/common_design_standard_flowkit_white"
                 android:textSize="14sp" />
         </LinearLayout>

@@ -1,13 +1,13 @@
 package com.trtc.uikit.livekit.features.anchorprepare.store
 
 import android.text.TextUtils
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.features.anchorprepare.AnchorPrepareViewListener
 import com.trtc.uikit.livekit.features.anchorprepare.LiveStreamPrivacyStatus
 import com.trtc.uikit.livekit.features.anchorprepare.PrepareState
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
@@ -101,56 +101,69 @@ class AnchorPrepareStore() {
 
     fun startPreview(callback: CompletionHandler?) {
         LOGGER.info("requestCameraPermissions:[]")
-        PermissionRequest.requestCameraPermissions(ContextProvider.getApplicationContext(), object :
-            PermissionCallback() {
-            override fun onRequesting() {
-                LOGGER.info("requestCameraPermissions:[onRequesting]")
-            }
+        ContextProvider.getApplicationContext()?.apply {
+            PermissionRequest.requestCameraPermissions(this, object :
+                PermissionCallback() {
+                override fun onRequesting() {
+                    LOGGER.info("requestCameraPermissions:[onRequesting]")
+                }
 
-            override fun onGranted() {
-                LOGGER.info("requestCameraPermissions:[onGranted]")
-                DeviceStore.shared().openLocalCamera(internalState.useFrontCamera.value == true, object :
-                    CompletionHandler {
-                    override fun onSuccess() {
-                        LOGGER.info("startCamera success, requestMicrophonePermissions")
-                        PermissionRequest.requestMicrophonePermissions(
-                            ContextProvider.getApplicationContext(),
-                            object : PermissionCallback() {
-                                override fun onGranted() {
-                                    LOGGER.info("requestMicrophonePermissions success")
-                                    DeviceStore.shared().openLocalMicrophone(object : CompletionHandler {
-                                        override fun onSuccess() {
-                                            callback?.onSuccess()
+                override fun onGranted() {
+                    LOGGER.info("requestCameraPermissions:[onGranted]")
+                    DeviceStore.shared()
+                        .openLocalCamera(internalState.useFrontCamera.value == true, object :
+                            CompletionHandler {
+                            override fun onSuccess() {
+                                LOGGER.info("startCamera success, requestMicrophonePermissions")
+                                PermissionRequest.requestMicrophonePermissions(
+                                    this@apply,
+                                    object : PermissionCallback() {
+                                        override fun onGranted() {
+                                            LOGGER.info("requestMicrophonePermissions success")
+                                            DeviceStore.shared()
+                                                .openLocalMicrophone(object : CompletionHandler {
+                                                    override fun onSuccess() {
+                                                        callback?.onSuccess()
+                                                    }
+
+                                                    override fun onFailure(
+                                                        code: Int,
+                                                        desc: String
+                                                    ) {
+                                                        LOGGER.error("startMicrophone failed:code:$code,desc:$desc")
+                                                        callback?.onFailure(code, desc)
+                                                    }
+
+                                                })
                                         }
 
-                                        override fun onFailure(code: Int, desc: String) {
-                                            LOGGER.error("startMicrophone failed:code:$code,desc:$desc")
-                                            callback?.onFailure(code, desc)
+                                        override fun onDenied() {
+                                            LOGGER.error("requestCameraPermissions:[onDenied]")
+                                            callback?.onFailure(
+                                                CAMERA_NOT_AUTHORIZED,
+                                                "requestCameraPermissions:[onDenied]"
+                                            )
                                         }
-
                                     })
-                                }
+                            }
 
-                                override fun onDenied() {
-                                    LOGGER.error("requestCameraPermissions:[onDenied]")
-                                    callback?.onFailure(CAMERA_NOT_AUTHORIZED, "requestCameraPermissions:[onDenied]")
-                                }
-                            })
-                    }
+                            override fun onFailure(code: Int, desc: String) {
+                                LOGGER.error("startCamera failed:code:$code,desc:$desc")
+                                callback?.onFailure(code, desc)
+                            }
 
-                    override fun onFailure(code: Int, desc: String) {
-                        LOGGER.error("startCamera failed:code:$code,desc:$desc")
-                        callback?.onFailure(code, desc)
-                    }
+                        })
+                }
 
-                })
-            }
-
-            override fun onDenied() {
-                LOGGER.error("requestCameraPermissions:[onDenied]")
-                callback?.onFailure(CAMERA_NOT_AUTHORIZED, "requestCameraPermissions:[onDenied]")
-            }
-        })
+                override fun onDenied() {
+                    LOGGER.error("requestCameraPermissions:[onDenied]")
+                    callback?.onFailure(
+                        CAMERA_NOT_AUTHORIZED,
+                        "requestCameraPermissions:[onDenied]"
+                    )
+                }
+            })
+        }
     }
 
     fun stopPreview() {

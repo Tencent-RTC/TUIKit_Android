@@ -4,17 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
+    android:background="@color/white"
     android:layout_height="match_parent"
     tools:context="com.trtc.uikit.livekit.livestream.VideoLiveListActivity">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:adjustViewBounds="true"
-        android:background="@drawable/livekit_personal_background"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_live"
@@ -43,18 +35,19 @@
             android:singleLine="true"
             android:text="@string/common_main_item_voice_room"
             android:textColor="@color/black_2"
-            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
             android:textSize="@dimen/text_size_20" />
 
         <ImageButton
             android:id="@+id/btn_multi_function"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_gravity="right|center_vertical"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:padding="5dp"
+            android:layout_gravity="end"
             android:background="@null"
-            android:padding="21dp"
+            android:scaleType="fitXY"
             android:src="@drawable/livekit_question_link"
-            tools:ignore="ContentDescription,RtlHardcoded" />
+            tools:ignore="ContentDescription" />
     </androidx.appcompat.widget.Toolbar>
 
     <com.trtc.uikit.livekit.features.livelist.LiveListView
@@ -62,7 +55,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_live" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_live"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="-16dp" />
 
     <io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
         android:id="@+id/atomic_btn_start"
@@ -70,6 +65,7 @@
         android:layout_height="48dp"
         android:layout_marginBottom="20dp"
         android:text="@string/common_go_live"
+        android:fontFamily="sans-serif-medium"
         app:buttonColorType="primary"
         app:buttonIcon="@drawable/livekit_ic_add"
         app:buttonIconPosition="start"

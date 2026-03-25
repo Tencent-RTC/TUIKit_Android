@@ -27,27 +27,29 @@
         android:textColor="@color/common_design_standard_g6"
         android:textSize="16sp" />
 
-    <io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
+    <TextView
         android:id="@+id/atomic_btn_reject"
         android:layout_width="64dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+        android:layout_height="24dp"
+        android:layout_marginEnd="20dp"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="24dp"
-        app:customButtonSize="xs"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
         android:text="@string/common_reject"
-        app:buttonVariant="outlined"
-        app:buttonColorType="secondary" />
+        android:textSize="12sp"
+        android:textColor="@color/common_design_standard_b1"
+        android:background="@drawable/livekit_link_mic_reject_background"/>
 
-    <io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
+    <TextView
         android:id="@+id/atomic_btn_accept"
         android:layout_width="64dp"
-        android:layout_height="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
         android:layout_centerVertical="true"
-        android:text="@string/common_receive"
-        android:layout_marginEnd="10dp"
-        android:layout_toStartOf="@id/atomic_btn_reject"
-        app:customButtonSize="xs"
-        app:buttonVariant="filled"
-        app:buttonColorType="primary" />
+        android:layout_toStartOf="@+id/atomic_btn_reject"
+        android:gravity="center"
+        android:text="@string/common_accept"
+        android:textSize="12sp"
+        android:textColor="@color/common_design_standard_flowkit_white"
+        android:background="@drawable/livekit_link_mic_accept_background"/>
 </RelativeLayout>

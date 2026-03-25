@@ -11,10 +11,6 @@ class AnchorEndBattleDialog(
     context: Context,
 ) : AtomicPopover(context) {
 
-    companion object {
-        private val LOGGER = LiveKitLogger.getFeaturesLogger("AnchorEndBattleDialog")
-    }
-
     private var onEndBattleListener: OnEndBattleListener? = null
 
     init {

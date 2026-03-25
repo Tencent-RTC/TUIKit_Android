@@ -3,7 +3,7 @@ package com.trtc.uikit.livekit.component.giftaccess.service
 import android.text.TextUtils
 import android.util.Log
 import android.util.LruCache
-import com.trtc.tuikit.common.system.ContextProvider
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -24,8 +24,9 @@ class GiftCacheService {
     private var lruCache: LruCache<String, File>? = null
 
     init {
-        val appContext = ContextProvider.getApplicationContext()
-        setCacheDir(File(appContext.cacheDir.toString() + File.separator + "gift"))
+        ContextProvider.getApplicationContext()?.apply {
+            setCacheDir(File(this.cacheDir.toString() + File.separator + "gift"))
+        }
     }
 
     fun setCacheDir(file: File?) {

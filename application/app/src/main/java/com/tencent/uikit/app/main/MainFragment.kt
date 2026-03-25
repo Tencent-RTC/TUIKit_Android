@@ -3,7 +3,6 @@ package com.tencent.uikit.app.main
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,20 +13,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.tencent.imsdk.v2.V2TIMManager
-import com.tencent.imsdk.v2.V2TIMValueCallback
 import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUILogin
 import com.tencent.qcloud.tuicore.TUIThemeManager
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.tencent.uikit.app.R
-import com.tencent.uikit.app.main.call.GroupCallActivity
-import com.tencent.uikit.app.main.live.LiveActivity
-import com.trtc.uikit.roomkit.RoomHomeActivity
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
-import org.json.JSONObject
 
 class MainFragment : Fragment() {
     private var userCenter: AtomicAvatar? = null
@@ -71,7 +64,7 @@ class MainFragment : Fragment() {
         userCenter?.setOnClickListener { v: View? -> navController.navigate(R.id.mine_fragment) }
         val trtcMainData = TRTCMainData()
         trtcMainAdapter = TRTCMainAdapter(
-            isSmallScreenDevice, TUIThemeManager.getInstance().currentLanguage,
+            TUIThemeManager.getInstance().currentLanguage,
             trtcMainData.itemDataList as MutableList<MainItemData>, object : TRTCMainAdapter.OnItemClickListener {
                 override fun onItemClick(mainItemData: MainItemData?) {
                     mainItemData?.let { item ->
@@ -80,7 +73,6 @@ class MainFragment : Fragment() {
                         intent.putExtra("TITLE", getString(item.itemTitle))
                         intent.putExtra("TYPE", type)
                         startActivity(intent)
-                        observerTUI(item.itemTargetClass)
                     }
                 }
             })
@@ -94,36 +86,6 @@ class MainFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         userCenter?.setContent(AvatarContent.URL(TUILogin.getFaceUrl(),  R.drawable.app_ic_avatar))
     }
-
-    private fun observerTUI(activity: Class<*>?) {
-        var type = 0L
-        if (activity == GroupCallActivity::class.java) {
-            type = 1303
-        } else if (activity == LiveActivity::class.java) {
-            type = 1119
-        } else if (activity == RoomHomeActivity::class.java) {
-            type = 1205
-        }
-
-        val param = JSONObject().apply {
-            put("UIComponentType", type)
-        }.toString()
-        V2TIMManager.getInstance()
-            .callExperimentalAPI("reportTUIFeatureUsage", param, object : V2TIMValueCallback<Any> {
-                override fun onSuccess(t: Any?) {
-                }
-                override fun onError(code: Int, desc: String?) {
-                    Log.e(TAG, "reportFeatureUsage failed: $code $desc")
-                }
-            })
-    }
-
-    private val isSmallScreenDevice: Boolean
-        get() {
-            val displayMetrics = DisplayMetrics()
-            requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-            return displayMetrics.widthPixels <= 720
-        }
 
     private fun registerEvent() {
         TUICore.registerEvent(
@@ -165,7 +127,6 @@ class MainFragment : Fragment() {
             holder.icon.setImageResource(item.iconRes)
             holder.title.text = item.title
             holder.subtitle.text = item.subtitle
-            holder.tag.text = ""
             holder.itemView.setOnClickListener { onItemClick() }
         }
 
@@ -174,7 +135,6 @@ class MainFragment : Fragment() {
         class SimpleVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val icon: ImageView = itemView.findViewById(R.id.img_main_icon)
             val title: TextView = itemView.findViewById(R.id.tv_main_title)
-            val tag: TextView = itemView.findViewById(R.id.tv_main_tag)
             val subtitle: TextView = itemView.findViewById(R.id.tv_main_subtitle)
         }
     }

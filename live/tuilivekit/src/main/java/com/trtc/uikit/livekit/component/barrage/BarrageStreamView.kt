@@ -114,18 +114,23 @@ class BarrageStreamView @JvmOverloads constructor(
 
     fun getBarrageCount(): Int = barrageStore?.barrageState?.messageList?.value?.size ?: 0
 
+    fun scrollToLastPosition() {
+        if ((recyclerMsg as CustomRecyclerView).isLongPressed) return
+        val targetPosition = maxOf(0, adapter.itemCount - 1)
+        recyclerMsg.post {
+            if (smoothScroll) {
+                recyclerMsg.smoothScrollToPosition(targetPosition)
+            } else {
+                recyclerMsg.scrollToPosition(targetPosition)
+            }
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun notifyDataSetChanged() {
         timestampOnLastUpdate = System.currentTimeMillis()
         adapter.notifyDataSetChanged()
-        if ((recyclerMsg as CustomRecyclerView).isLongPressed) return
-
-        val targetPosition = maxOf(0, adapter.itemCount - 1)
-        if (smoothScroll) {
-            recyclerMsg.smoothScrollToPosition(targetPosition)
-        } else {
-            recyclerMsg.scrollToPosition(targetPosition)
-        }
+        scrollToLastPosition()
     }
 
     private fun reportData() {

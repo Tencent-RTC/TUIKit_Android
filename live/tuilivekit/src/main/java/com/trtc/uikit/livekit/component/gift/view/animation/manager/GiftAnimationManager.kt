@@ -1,15 +1,14 @@
 package com.trtc.uikit.livekit.component.gift.view.animation.manager
 
-import android.util.Log
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.LiveKitLogger.Companion.getComponentLogger
 import com.trtc.uikit.livekit.component.gift.viewmodel.GiftModel
 
-class GiftAnimationManager {
+class GiftAnimationManager(private val maxChannels: Int = 3) {
     private val logger: LiveKitLogger = getComponentLogger("GiftAnimationManager")
-    private val giftPrepareList: MutableList<GiftModel> = ArrayList()
+    private val giftWaitQueue: MutableList<GiftModel> = ArrayList()
     private var animationPlayer: AnimationPlayer? = null
-    private var isPlaying = false
+    private var currentPlayingCount = 0
 
     fun setPlayer(player: AnimationPlayer?) {
         animationPlayer = player
@@ -17,66 +16,71 @@ class GiftAnimationManager {
     }
 
     fun add(gift: GiftModel) {
-        if (gift.isFromSelf) {
-            if (giftPrepareList.isEmpty()) {
-                giftPrepareList.add(gift)
-            } else {
-                var lastIndex = 0
-                for (i in giftPrepareList.size - 1 downTo 1) {
-                    val giftModel = giftPrepareList.get(i)
-                    if (giftModel.isFromSelf) {
-                        lastIndex = i
-                        break
-                    }
-                }
-                giftPrepareList.add(lastIndex + 1, gift)
-            }
-        } else {
-            giftPrepareList.add(gift)
+        if (currentPlayingCount < maxChannels) {
+            playDirectly(gift)
+            return
         }
-        if (giftPrepareList.size == MAX_CACHE_SIZE + 1) {
-            var removeIndex = 1
-            for (i in giftPrepareList.indices) {
-                val giftModel = giftPrepareList[i]
-                if (!giftModel.isFromSelf) {
-                    removeIndex = i
-                    break
-                }
-            }
-            giftPrepareList.removeAt(removeIndex)
-        }
-        if (giftPrepareList.size == 1 && !isPlaying) {
-            preparePlay(giftPrepareList.removeAt(0))
-        }
+        addToQueueWithAggregation(gift)
     }
 
     fun startPlay(model: GiftModel) {
-        logger.info( "startPlay:${model.gift?.resourceURL},isPlaying:$isPlaying")
+        logger.info("startPlay:${model.gift?.resourceURL},currentPlayingCount:$currentPlayingCount")
         animationPlayer?.startPlay(model)
     }
 
     fun stopPlay() {
-        logger.info( "startPlay:isPlaying:$isPlaying")
-        isPlaying = false
+        logger.info("stopPlay:currentPlayingCount:$currentPlayingCount")
+        currentPlayingCount = 0
+        giftWaitQueue.clear()
         animationPlayer?.stopPlay()
     }
 
+    fun finishPlay() {
+        currentPlayingCount = maxOf(0, currentPlayingCount - 1)
+        if (giftWaitQueue.isNotEmpty()) {
+            val nextGift = giftWaitQueue.removeAt(0)
+            playDirectly(nextGift)
+        }
+    }
+
+    private fun playDirectly(gift: GiftModel) {
+        currentPlayingCount++
+        preparePlay(gift)
+    }
+
+    private fun addToQueueWithAggregation(gift: GiftModel) {
+        val existingIndex = giftWaitQueue.indexOfFirst { it.comboKey == gift.comboKey }
+
+        if (existingIndex != -1) {
+            giftWaitQueue[existingIndex].addGiftCount(gift.giftCount)
+        } else {
+            if (gift.isFromSelf) {
+                giftWaitQueue.add(0, gift)
+            } else {
+                giftWaitQueue.add(gift)
+            }
+
+            if (giftWaitQueue.size > MAX_QUEUE_LENGTH) {
+                val removeIndex = giftWaitQueue.indexOfLast { !it.isFromSelf }
+                if (removeIndex != -1) {
+                    giftWaitQueue.removeAt(removeIndex)
+                } else {
+                    giftWaitQueue.removeAt(0)
+                }
+            }
+        }
+    }
+
     private fun preparePlay(model: GiftModel) {
-        logger.info( "preparePlay:${model.gift?.resourceURL},isPlaying:$isPlaying")
-        isPlaying = true
+        logger.info("preparePlay:${model.gift?.resourceURL},currentPlayingCount:$currentPlayingCount")
         animationPlayer?.preparePlay(model)
     }
 
     private fun onFinished(error: Int) {
-        Log.i(TAG, "onFinished:$error")
-        isPlaying = false
-        if (!giftPrepareList.isEmpty()) {
-            preparePlay(giftPrepareList.removeAt(0))
-        }
+        finishPlay()
     }
 
     companion object {
-        private const val TAG = "GiftAnimationManager"
-        private const val MAX_CACHE_SIZE = 3
+        private const val MAX_QUEUE_LENGTH = 20
     }
 }

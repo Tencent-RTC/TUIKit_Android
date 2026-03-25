@@ -15,7 +15,6 @@ import io.trtc.tuikit.atomicxcore.api.live.BattleEndedReason
 import io.trtc.tuikit.atomicxcore.api.live.BattleInfo
 import io.trtc.tuikit.atomicxcore.api.live.BattleListener
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
-import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

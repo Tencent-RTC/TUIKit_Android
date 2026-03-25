@@ -59,6 +59,7 @@
     <string name="common_mute_audio">ミュート</string>
     <string name="common_mute_audio_by_master">あなたはアンカーによってミュートされました</string>
     <string name="common_mute_video_by_owner">あなたはアンカーによってオフにされました</string>
+    <string name="common_preview_video_live">ライブビデオ</string>
     <string name="common_recommended_list">推奨リスト</string>
     <string name="common_seat_application_title">接続を申請する（%1$s）</string>
     <string name="common_seat_list_title">現在の位置（%1$s）</string>
@@ -82,6 +83,7 @@
     <string name="common_video_ultimate">究極の画質</string>
     <string name="common_link_guest">聴衆でさえ</string>
     <string name="common_link_host">アンカーでさえ</string>
+    <string name="live_application_list_xxx">アプリケーションリスト（%1$d）</string>
     <string name="live_barrage_anchor">アンカー</string>
     <string name="live_barrage_error_content_is_long">コンテンツが長すぎるので、試す前にコンテンツを減らしてください</string>
     <string name="live_barrage_error_disable_message_by_admin">あなたは現在の部屋で禁止されています</string>
@@ -93,6 +95,7 @@
     <string name="live_error_connection_notexit">招待状リンクが存在しない部屋</string>
     <string name="live_error_connection_retry">内部エラー、再試行することをお勧めします。</string>
     <string name="live_error_room_mismatch">部屋のタイプが一致しません。接続は同じタイプの部屋でのみ開始できます。</string>
+    <string name="live_on_seat_list">接続済み（%1$d/%2$d）</string>
     <string name="livelist_loading">読み込み...</string>
     <string name="livelist_no_more_data">これ以上のデータはありません</string>
     <string name="livelist_empty_data">最初にライブブロードキャストルームを開いてください</string>
@@ -200,6 +203,7 @@
     <string name="common_more_settings">その他の設定</string>
     <string name="common_music_volume">音楽のボリューム</string>
     <string name="common_people_volume">人間の音量</string>
+    <string name="common_accept">同意する</string>
     <string name="common_receive">受け入れる</string>
     <string name="common_reject">拒否する</string>
     <string name="common_resolution_360p">360p</string>
@@ -372,6 +376,7 @@
     <string name="seat_unlocked">ロックを解除します</string>
     <string name="seat_no_guest">まだゲストはいません</string>
     <string name="seat_in_battle">戦闘中</string>
+    <string name="seat_in_connection">接続中</string>
     <string name="seat_cancel_invite">招待をキャンセルします</string>
     <string name="seat_request_battle">戦闘を開始します</string>
     <string name="seat_request_host">ホストを招待します</string>
@@ -390,4 +395,7 @@
     <string name="common_host_kick_user_after_connect">接続に成功しました。先着6席以外のユーザーはマイクを降りました。</string>
     <string name="common_audience_kicked_re_apply">接続は先着6席のみ表示されます。あなたはマイクから降ろされました。</string>
     <string name="common_back_seats_occupied">後方4席が占有されており、接続できません</string>
+    <string name="common_game_live">スマホゲーム実況</string>
+    <string name="common_live_game">ゲームライブ配信中</string>
+    <string name="common_gift_combo">コンボ</string>
 </resources>

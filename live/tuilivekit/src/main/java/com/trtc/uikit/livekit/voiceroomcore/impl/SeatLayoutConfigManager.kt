@@ -1,7 +1,7 @@
 package com.trtc.uikit.livekit.voiceroomcore.impl
 
-import com.trtc.tuikit.common.util.ScreenUtil
 import com.trtc.uikit.livekit.voiceroomcore.VoiceRoomDefine
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
 
 class SeatLayoutConfigManager {
@@ -17,7 +17,10 @@ class SeatLayoutConfigManager {
     val seatList: List<SeatInfoWrapper> get() = _seatList
     var maxSeatCount = 0
 
-    fun setLayoutMode(layoutMode: VoiceRoomDefine.LayoutMode, layoutConfig: VoiceRoomDefine.SeatViewLayoutConfig?) {
+    fun setLayoutMode(
+        layoutMode: VoiceRoomDefine.LayoutMode,
+        layoutConfig: VoiceRoomDefine.SeatViewLayoutConfig?
+    ) {
         this.layoutMode = layoutMode
         _layoutConfig = layoutConfig
         val resolvedConfig = layoutConfig.takeUnless {
@@ -30,34 +33,27 @@ class SeatLayoutConfigManager {
         }
         if (layoutMode == VoiceRoomDefine.LayoutMode.FREE) {
             _layoutConfig = resolvedConfig
+            initSeatList(maxSeatCount)
             return
         }
-        val seatSize = if (_seatList.isNotEmpty()) {
-            _seatList.size
-        } else {
-            maxSeatCount
-        }
-
-        if (seatSize > 0) {
-            _layoutConfig = generateSeatLayoutConfig(layoutMode, seatSize)
-            initSeatList(seatSize)
-        } else {
-            _layoutConfig = VoiceRoomDefine.SeatViewLayoutConfig()
-        }
+        initSeatList(maxSeatCount)
     }
 
-    fun initSeatList(maxSeatCount: Int) {
-        if (maxSeatCount <= 0) {
+    fun initSeatList(seatCount: Int) {
+        if (seatCount <= 0) {
             return
         }
-        this.maxSeatCount = maxSeatCount
+        this.maxSeatCount = seatCount
+        if (layoutMode != VoiceRoomDefine.LayoutMode.FREE) {
+            _layoutConfig = generateSeatLayoutConfig(layoutMode, seatCount)
+        }
         val config = _layoutConfig ?: return
         var seatIndex = 0
         var rowIndex = 0
         val list = mutableListOf<SeatInfoWrapper>()
         for (rowConfig in config.rowConfigs) {
             var columnIndex = 0
-            while (columnIndex < rowConfig.count && seatIndex < maxSeatCount) {
+            while (columnIndex < rowConfig.count && seatIndex < seatCount) {
                 val seat = _seatList.getOrNull(seatIndex) ?: SeatInfoWrapper()
                 seat.rowIndex = rowIndex
                 seat.columnIndex = columnIndex
@@ -68,7 +64,7 @@ class SeatLayoutConfigManager {
             rowIndex++
         }
 
-        while (seatIndex < maxSeatCount) {
+        while (seatIndex < seatCount) {
             list.add(SeatInfoWrapper().apply {
                 columnIndex = seatIndex - list.size
                 seatIndex++
@@ -113,17 +109,22 @@ class SeatLayoutConfigManager {
                         addAll(transferLayoutConfig(focusGridInfo.rows, focusGridInfo.columns))
 
                         if (focusGridInfo.remainder > 0) {
-                            add(VoiceRoomDefine.SeatViewLayoutRowConfig().apply { count = focusGridInfo.remainder })
+                            add(
+                                VoiceRoomDefine.SeatViewLayoutRowConfig()
+                                    .apply { count = focusGridInfo.remainder })
                         }
                     }
                 }
 
                 VoiceRoomDefine.LayoutMode.GRID -> {
                     val gridInfo = transferGridInfoByCount(seatCount)
-                    rowConfigs = transferLayoutConfig(gridInfo.rows, gridInfo.columns).toMutableList()
+                    rowConfigs =
+                        transferLayoutConfig(gridInfo.rows, gridInfo.columns).toMutableList()
 
                     if (gridInfo.remainder > 0) {
-                        rowConfigs.add(VoiceRoomDefine.SeatViewLayoutRowConfig().apply { count = gridInfo.remainder })
+                        rowConfigs.add(
+                            VoiceRoomDefine.SeatViewLayoutRowConfig()
+                                .apply { count = gridInfo.remainder })
                     }
                 }
 
@@ -136,7 +137,10 @@ class SeatLayoutConfigManager {
         }
     }
 
-    private fun transferLayoutConfig(row: Int, column: Int): List<VoiceRoomDefine.SeatViewLayoutRowConfig> {
+    private fun transferLayoutConfig(
+        row: Int,
+        column: Int
+    ): List<VoiceRoomDefine.SeatViewLayoutRowConfig> {
         return List(row) {
             VoiceRoomDefine.SeatViewLayoutRowConfig().apply { count = column }
         }
@@ -169,9 +173,9 @@ class SeatLayoutConfigManager {
     private fun isSeatInfoChanged(newSeatInfo: SeatInfo, oldSeatInfo: SeatInfoWrapper): Boolean {
         oldSeatInfo.seatInfo?.let {
             return newSeatInfo.isLocked != it.isLocked
-                    || newSeatInfo.userInfo.allowOpenMicrophone != it.userInfo.allowOpenMicrophone
-                    || newSeatInfo.userInfo.microphoneStatus != it.userInfo.microphoneStatus
-                    || newSeatInfo.userInfo.userID != it.userInfo.userID
+                   || newSeatInfo.userInfo.allowOpenMicrophone != it.userInfo.allowOpenMicrophone
+                   || newSeatInfo.userInfo.microphoneStatus != it.userInfo.microphoneStatus
+                   || newSeatInfo.userInfo.userID != it.userInfo.userID
         }
         return true
     }

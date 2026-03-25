@@ -105,4 +105,5 @@
     <string name="app_enable_hight_perperformance">Enable High Performance</string>
     <string name="app_disable_feature">Disable Feature</string>
     <string name="app_enable_test_env">Enable Test ENV</string>
+    <string name="app_toast_error_call_self">You cannot call yourself, please use a different user ID</string>
 </resources>

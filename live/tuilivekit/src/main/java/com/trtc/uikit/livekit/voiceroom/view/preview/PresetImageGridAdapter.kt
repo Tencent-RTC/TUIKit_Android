@@ -9,8 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.recyclerview.widget.RecyclerView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.livekit.R
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 
 class PresetImageGridAdapter(
     private val context: Context,
@@ -31,13 +31,13 @@ class PresetImageGridAdapter(
         val imageURL = dataList[position]
         ImageLoader.load(
             context,
-            holder.mImage,
-            imageURL,
+            holder.image,
+            imageURL.replace(".png", "_thumb.png"),
             R.drawable.anchor_prepare_live_stream_default_cover
         )
-        holder.mImageSelectedContainer.visibility =
+        holder.imageSelectedContainer.visibility =
             if (position == selectedPosition) View.VISIBLE else View.INVISIBLE
-        holder.mImage.setOnClickListener {
+        holder.image.setOnClickListener {
             notifyItemChanged(selectedPosition)
             selectedPosition = holder.bindingAdapterPosition
             notifyItemChanged(position)
@@ -50,16 +50,16 @@ class PresetImageGridAdapter(
     }
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val mImage: ImageFilterView = itemView.findViewById(R.id.image)
-        val mImageSelectedContainer: View = itemView.findViewById(R.id.image_selected_container)
+        val image: ImageFilterView = itemView.findViewById(R.id.image)
+        val imageSelectedContainer: View = itemView.findViewById(R.id.image_selected_container)
     }
 
     class GridDividerItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
-        private val mDividerValue: Int
+        private val dividerValue: Int
 
         init {
             val metrics: DisplayMetrics = context.resources.displayMetrics
-            mDividerValue =
+            dividerValue =
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14f, metrics).toInt()
         }
 
@@ -69,8 +69,8 @@ class PresetImageGridAdapter(
             parent: RecyclerView,
             state: RecyclerView.State
         ) {
-            outRect.top = mDividerValue
-            outRect.left = mDividerValue
+            outRect.top = dividerValue
+            outRect.left = dividerValue
         }
     }
 

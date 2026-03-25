@@ -292,7 +292,7 @@ class AnchorView @JvmOverloads constructor(
 
     private val liveListListener = object : LiveListListener() {
         override fun onLiveEnded(liveID: String, reason: LiveEndedReason, message: String) {
-            if (liveID == liveInfo.liveID) {
+            if (liveID == liveInfo.liveID && reason != LiveEndedReason.ENDED_BY_HOST) {
                 endLive(reason, false)
             }
         }
@@ -544,6 +544,8 @@ class AnchorView @JvmOverloads constructor(
             }
         })
 
+        PIPPanelStore.sharedInstance().state.isAnchorStreaming = true
+
         if (behavior == RoomBehavior.ENTER_ROOM) {
             enterRoom()
         } else {
@@ -694,7 +696,7 @@ class AnchorView @JvmOverloads constructor(
             if (!view.isEnabled) return@setOnClickListener
             view.isEnabled = false
             anchorStore?.let {
-                val settingsPanelDialog = SettingsPanelDialog(baseContext, it, liveCoreView)
+                val settingsPanelDialog = SettingsPanelDialog(baseContext, it)
                 settingsPanelDialog.setOnDismissListener { view.isEnabled = true }
                 settingsPanelDialog.show()
             }
@@ -784,7 +786,7 @@ class AnchorView @JvmOverloads constructor(
         viewCoGuest.setOnClickListener { view ->
             if (!view.isEnabled) return@setOnClickListener
             view.isEnabled = false
-            val dialog = AnchorCoGuestManageDialog(baseContext, anchorStore, liveCoreView)
+            val dialog = AnchorCoGuestManageDialog(baseContext)
             dialog.setOnDismissListener { view.isEnabled = true }
             dialog.show()
         }
@@ -795,7 +797,7 @@ class AnchorView @JvmOverloads constructor(
             if (!view.isEnabled) return@setOnClickListener
             view.isEnabled = false
             anchorStore?.let {
-                anchorCoHostManageDialog = AnchorCoHostManageDialog(baseContext, it, liveCoreView)
+                anchorCoHostManageDialog = AnchorCoHostManageDialog(baseContext, it)
                 anchorCoHostManageDialog?.setOnDismissListener { view.isEnabled = true }
                 anchorCoHostManageDialog?.show()
             }
@@ -1330,13 +1332,10 @@ class AnchorView @JvmOverloads constructor(
             return
         }
         if (anchorCoHostStore!!.isSelfInCoHost()) {
-            if (anchorBattleStore!!.isSelfInBattle()) {
-                battleIconView.setBackgroundResource(R.drawable.livekit_function_battle_exit)
-            } else {
-                battleIconView.setBackgroundResource(R.drawable.livekit_function_battle)
-            }
             if (battleResultDisplay == true) {
                 battleIconView.setBackgroundResource(R.drawable.livekit_function_battle_disable)
+            } else if (anchorBattleStore!!.isSelfInBattle()) {
+                battleIconView.setBackgroundResource(R.drawable.livekit_function_battle_exit)
             } else {
                 battleIconView.setBackgroundResource(R.drawable.livekit_function_battle)
             }
@@ -1428,7 +1427,6 @@ class AnchorView @JvmOverloads constructor(
                 postDelayed({
                     onReceivedCoHostRequest(CoHostStore.create(liveInfo.liveID).coHostState.applicant.value)
                     onReceivedBattleRequestChange(battleState?.receivedBattleRequest?.value)
-                    checkCameraStateAndRestore()
                 }, if (isPipModeAbnormalPhoneModel()) 500 else 0)
             }
         }
@@ -1436,19 +1434,6 @@ class AnchorView @JvmOverloads constructor(
 
     private fun isPipModeAbnormalPhoneModel(): Boolean {
         return Build.MANUFACTURER.equals("HUAWEI", ignoreCase = true) || Build.MANUFACTURER.equals("samsung", ignoreCase = true)
-    }
-
-    private fun checkCameraStateAndRestore() {
-        mediaState?.let {
-            if (DeviceStore.shared().deviceState.cameraLastError.value == DeviceError.OCCUPIED_ERROR &&
-                DeviceStore.shared().deviceState.cameraStatus.value == DeviceStatus.ON
-            ) {
-                DeviceStore.shared().closeLocalCamera()
-                postDelayed({
-                    DeviceStore.shared().openLocalCamera(DeviceStore.shared().deviceState.isFrontCamera.value, null)
-                }, 500)
-            }
-        }
     }
 
     private fun endLive(reason: LiveEndedReason = LiveEndedReason.ENDED_BY_HOST, isFinish: Boolean = true) {

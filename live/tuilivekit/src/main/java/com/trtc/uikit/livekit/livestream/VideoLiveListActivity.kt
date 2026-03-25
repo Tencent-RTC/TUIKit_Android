@@ -14,26 +14,21 @@ import android.widget.ImageView
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.util.SPUtils
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
-import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveIdentityGenerator
 import com.trtc.uikit.livekit.common.LiveKitLogger
-import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
 import com.trtc.uikit.livekit.features.livelist.LiveListView
 import com.trtc.uikit.livekit.features.livelist.Style
 import com.trtc.uikit.livekit.livestream.impl.LiveInfoUtils.asEngineLiveInfo
 import com.trtc.uikit.livekit.voiceroom.VoiceRoomKit
 import io.trtc.tuikit.atomicx.common.FullScreenActivity
-import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
-import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 
@@ -148,23 +143,13 @@ class VideoLiveListActivity : FullScreenActivity() {
 
     private fun initStartLiveView() {
         startLiveView.setOnClickListener {
-            requestPermission(object : CompletionHandler {
-                override fun onSuccess() {
-                    if (packageName == "com.tencent.trtc" &&
-                        LoginStore.shared.loginState.loginUserInfo.value?.userID?.startsWith("moa")
-                        == false) {
-                        realNameVerifyAndStartLive()
-                        return
-                    }
-                    startVideoLive()
-                }
-
-                override fun onFailure(code: Int, desc: String) {
-                    LOGGER.info("requestPermission onFailure. code:$code,desc:$desc")
-                    ErrorLocalized.onError(code)
-                }
-            })
-
+            if (packageName == "com.tencent.trtc" &&
+                LoginStore.shared.loginState.loginUserInfo.value?.userID?.startsWith("moa")
+                == false) {
+                realNameVerifyAndStartLive()
+                return@setOnClickListener
+            }
+            startVideoLive()
         }
     }
 
@@ -198,6 +183,16 @@ class VideoLiveListActivity : FullScreenActivity() {
     private fun initBackButton() {
         findViewById<View>(R.id.iv_back).setOnClickListener {
             hideAdvanceSettingView()
+            if (PIPPanelStore.sharedInstance().state.anchorIsPictureInPictureMode
+                || PIPPanelStore.sharedInstance().state.audienceIsPictureInPictureMode
+            ) {
+                val homeIntent = Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_HOME)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(homeIntent)
+                return@setOnClickListener
+            }
             finish()
         }
     }
@@ -220,46 +215,6 @@ class VideoLiveListActivity : FullScreenActivity() {
             VoiceRoomKit.createInstance(this).enterRoom(info.asEngineLiveInfo())
         } else {
             VideoLiveKit.createInstance(this).joinLive(info)
-        }
-    }
-
-    private fun requestPermission(callback: CompletionHandler?) {
-        LOGGER.info("requestCameraPermissions:[]")
-        ContextProvider.getApplicationContext()?.apply {
-            PermissionRequest.requestCameraPermissions(this, object :
-                PermissionCallback() {
-                override fun onRequesting() {
-                    LOGGER.info("requestCameraPermissions:[onRequesting]")
-                }
-
-                override fun onGranted() {
-                    LOGGER.info("requestCameraPermissions:[onGranted]")
-                    PermissionRequest.requestMicrophonePermissions(
-                        this@apply,
-                        object : PermissionCallback() {
-                            override fun onGranted() {
-                                LOGGER.info("requestMicrophonePermissions success")
-                                callback?.onSuccess()
-                            }
-
-                            override fun onDenied() {
-                                LOGGER.error("requestMicrophonePermissions:[onDenied]")
-                                callback?.onFailure(
-                                    -1101,
-                                    "requestMicrophonePermissions:[onDenied]"
-                                )
-                            }
-                        })
-                }
-
-                override fun onDenied() {
-                    LOGGER.error("requestCameraPermissions:[onDenied]")
-                    callback?.onFailure(
-                        -1101,
-                        "requestCameraPermissions:[onDenied]"
-                    )
-                }
-            })
         }
     }
 }

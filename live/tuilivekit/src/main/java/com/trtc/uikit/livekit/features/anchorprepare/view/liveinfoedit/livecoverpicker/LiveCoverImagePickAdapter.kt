@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.recyclerview.widget.RecyclerView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.livekit.R
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 
 class LiveCoverImagePickAdapter(
     private val context: Context,
@@ -27,7 +27,8 @@ class LiveCoverImagePickAdapter(
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         val imageURL = dataList[position]
-        ImageLoader.load(context, holder.image, imageURL, R.drawable.anchor_prepare_live_stream_default_cover)
+        ImageLoader.load(context, holder.image, imageURL.replace(".png", "_thumb.png"),
+            R.drawable.anchor_prepare_live_stream_default_cover)
         holder.imageSelectedContainer.visibility = if (position == selectedPosition) View.VISIBLE else View.INVISIBLE
         
         holder.image.setOnClickListener {

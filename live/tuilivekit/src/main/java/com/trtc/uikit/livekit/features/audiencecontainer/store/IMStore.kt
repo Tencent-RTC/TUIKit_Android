@@ -1,7 +1,6 @@
 package com.trtc.uikit.livekit.features.audiencecontainer.store
 
 import android.text.TextUtils
-import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.tencent.imsdk.v2.V2TIMFollowOperationResult
 import com.tencent.imsdk.v2.V2TIMFollowTypeCheckResult
 import com.tencent.imsdk.v2.V2TIMFollowTypeCheckResult.V2TIM_FOLLOW_TYPE_IN_BOTH_FOLLOWERS_LIST
@@ -10,9 +9,9 @@ import com.tencent.imsdk.v2.V2TIMFriendshipListener
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMUserFullInfo
 import com.tencent.imsdk.v2.V2TIMValueCallback
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +25,6 @@ data class IMState(
 class IMStore() {
 
     private val imFriendshipManager = V2TIMManager.getFriendshipManager()
-    private val roomEngine = TUIRoomEngine.sharedInstance()
     private val _followingUserList = MutableStateFlow<MutableSet<String>>(LinkedHashSet())
     val imState = IMState(followingUserList = _followingUserList)
     private val imFriendshipListener = object : V2TIMFriendshipListener() {
@@ -59,8 +57,9 @@ class IMStore() {
 
                 override fun onError(code: Int, desc: String) {
                     LOGGER.error("followUser failed:errorCode:message:$desc")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$desc", AtomicToast.Style.ERROR)
+                    ContextProvider.getApplicationContext()?.apply {
+                        AtomicToast.show(this, "$code,$desc", AtomicToast.Style.ERROR)
+                    }
                 }
             })
     }
@@ -77,8 +76,9 @@ class IMStore() {
 
                 override fun onError(code: Int, desc: String) {
                     LOGGER.error("unfollowUser failed:errorCode:message:$desc")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$desc", AtomicToast.Style.ERROR)
+                    ContextProvider.getApplicationContext()?.apply {
+                        AtomicToast.show(this, "$code,$desc", AtomicToast.Style.ERROR)
+                    }
                 }
             })
     }
@@ -93,19 +93,20 @@ class IMStore() {
         if (userId != LoginStore.shared.loginState.loginUserInfo.value?.userID) {
             return
         }
-        val context = ContextProvider.getApplicationContext()
-        if (isDisable) {
-            AtomicToast.show(
-                context,
-                context.resources.getString(R.string.common_send_message_disabled),
-                AtomicToast.Style.INFO
-            )
-        } else {
-            AtomicToast.show(
-                context,
-                context.resources.getString(R.string.common_send_message_enable),
-                AtomicToast.Style.INFO
-            )
+        ContextProvider.getApplicationContext()?.apply {
+            if (isDisable) {
+                AtomicToast.show(
+                    this,
+                    this.resources.getString(R.string.common_send_message_disabled),
+                    AtomicToast.Style.INFO
+                )
+            } else {
+                AtomicToast.show(
+                    this,
+                    this.resources.getString(R.string.common_send_message_enable),
+                    AtomicToast.Style.INFO
+                )
+            }
         }
     }
 
@@ -124,8 +125,9 @@ class IMStore() {
 
                 override fun onError(code: Int, desc: String) {
                     LOGGER.error("checkFollowType failed:errorCode:message:$desc")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$desc", AtomicToast.Style.ERROR)
+                    ContextProvider.getApplicationContext()?.apply {
+                        AtomicToast.show(this, "$code,$desc", AtomicToast.Style.ERROR)
+                    }
                 }
             })
     }

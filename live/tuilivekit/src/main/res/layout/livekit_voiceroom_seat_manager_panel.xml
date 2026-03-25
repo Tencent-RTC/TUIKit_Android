@@ -24,16 +24,12 @@
             android:textColor="@color/text_color_primary"
             android:textSize="@dimen/text_size_16" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/need_request"
-            android:layout_width="45dp"
+        <com.trtc.uikit.livekit.voiceroom.view.basic.Switch
+            android:id="@+id/switch_need_request"
+            android:layout_width="42dp"
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="@null"
-            android:checked="false"
-            app:thumbTint="@color/audio_effect_switch_thumb_bg"
-            app:trackTint="@color/audio_effect_switch_track_bg" />
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 
     <View

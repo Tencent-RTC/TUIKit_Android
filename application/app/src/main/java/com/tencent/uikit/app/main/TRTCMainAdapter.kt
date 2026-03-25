@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tencent.uikit.app.R
 
 class TRTCMainAdapter(
-    private val isSmallScreenDevice: Boolean,
     private val currentLanguage: String?,
     private val itemDataList: MutableList<MainItemData>,
     private val onItemClickListener: OnItemClickListener
@@ -24,7 +23,6 @@ class TRTCMainAdapter(
         if (position == itemCount - 1) {
             return ITEM_TYPE_FOOTER
         }
-        val item: MainItemData = itemDataList.get(position)
         return ITEM_TYPE_ITEM
     }
 
@@ -46,7 +44,7 @@ class TRTCMainAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ItemViewHolder) {
             val item: MainItemData? = itemDataList[position]
-            holder.bind(isSmallScreenDevice, currentLanguage, item, onItemClickListener)
+            holder.bind(item, onItemClickListener)
         } else if (holder is WebViewHolder) {
             val item: MainItemData? = itemDataList[position]
             holder.bind(item, currentLanguage, onItemClickListener)
@@ -65,11 +63,10 @@ class TRTCMainAdapter(
         private val imageIcon: ImageView = itemView.findViewById(R.id.img_main_icon)
         private val textTitle: TextView = itemView.findViewById(R.id.tv_main_title)
         private val textSubTitle: TextView = itemView.findViewById(R.id.tv_main_subtitle)
-        private val textTag: TextView = itemView.findViewById(R.id.tv_main_tag)
         private val constraintItem: ConstraintLayout = itemView.findViewById(R.id.cl_main_item)
 
         fun bind(
-            isSmallScreenDevice: Boolean, currentLanguage: String?, mainItemData: MainItemData?,
+            mainItemData: MainItemData?,
             onItemClickListener: OnItemClickListener
         ) {
             if (mainItemData == null) {
@@ -80,10 +77,7 @@ class TRTCMainAdapter(
                     mainItemData
                 )
             }
-            val category: MainItemData.Category? = mainItemData.category
-            textTag.visibility = if (category === MainItemData.Category.UNDEFINED) View.GONE else View.VISIBLE
-            textTag.setText(R.string.app_main_item_category_kit)
-            textTag.setBackgroundResource(R.drawable.app_bg_main_category_kit)
+
             constraintItem.setBackgroundResource(
                 if (mainItemData.category === MainItemData.Category.KIT)
                     R.drawable.app_bg_main_kit_item
@@ -93,21 +87,6 @@ class TRTCMainAdapter(
             textTitle.setText(mainItemData.itemTitle)
             imageIcon.setImageResource(mainItemData.itemResId)
             textSubTitle.setText(mainItemData.itemSubTitle)
-            val layoutParams = if (TextUtils.equals(currentLanguage, ENGLISH_LANGUAGE_CODE)) {
-                LinearLayout.LayoutParams(
-                    dp2px(ENGLISH_TEXT_WIDTH_DP.toFloat()),
-                    dp2px(ENGLISH_TEXT_HEIGHT_DP.toFloat())
-                )
-            } else {
-                LinearLayout.LayoutParams(
-                    dp2px(DEFAULT_TEXT_WIDTH_DP.toFloat()),
-                    dp2px(DEFAULT_TEXT_HEIGHT_DP.toFloat())
-                )
-            }
-            textTag.setLayoutParams(layoutParams)
-            if (isSmallScreenDevice) {
-                textTag.visibility = View.GONE
-            }
         }
     }
 
@@ -115,7 +94,11 @@ class TRTCMainAdapter(
         private val textTitle: TextView = itemView.findViewById(R.id.tv_main_title)
         private val textSubTitle: TextView = itemView.findViewById(R.id.tv_main_subtitle)
 
-        fun bind(mainItemData: MainItemData?, currentLanguage: String?, onItemClickListener: OnItemClickListener) {
+        fun bind(
+            mainItemData: MainItemData?,
+            currentLanguage: String?,
+            onItemClickListener: OnItemClickListener
+        ) {
             if (mainItemData == null) {
                 return
             }
@@ -131,7 +114,11 @@ class TRTCMainAdapter(
                     dp2px(DEFAULT_TEXT_HEIGHT_DP.toFloat())
                 )
             }
-            itemView.setOnClickListener(View.OnClickListener { v: View? -> onItemClickListener.onItemClick(mainItemData) })
+            itemView.setOnClickListener(View.OnClickListener { v: View? ->
+                onItemClickListener.onItemClick(
+                    mainItemData
+                )
+            })
             textTitle.setText(mainItemData.itemTitle)
             textSubTitle.setText(mainItemData.itemSubTitle)
         }
@@ -148,7 +135,11 @@ class TRTCMainAdapter(
         private const val DEFAULT_TEXT_WIDTH_DP = 32
         private const val DEFAULT_TEXT_HEIGHT_DP = 18
         private fun dp2px(dp: Float): Int {
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().displayMetrics)
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                Resources.getSystem().displayMetrics
+            )
                 .toInt()
         }
     }

@@ -22,6 +22,7 @@ class LiveTemplatePicker(
 
     private fun initView() {
         val view = View.inflate(context, R.layout.anchor_prepare_layout_select_template, null)
+        view.findViewById<View>(R.id.iv_back).setOnClickListener { dismiss() }
         initCoGuestTemplateView(view)
         initCoHostTemplateView(view)
         setContent(view)
@@ -36,13 +37,13 @@ class LiveTemplatePicker(
             store,
             listOf(TemplateType.VERTICAL_DYNAMIC_GRID_CO_HOST)
         ) { type ->
+            store.setCoHostTemplate(type.id)
+            recyclerCoHost.adapter?.notifyDataSetChanged()
             val viewRatio = coreView.width / coreView.height.toDouble()
             val canvasRatio = 9 / 16.0
             if (type == TemplateType.VERTICAL_DYNAMIC_FLOAT_CO_HOST && viewRatio > canvasRatio) {
                 AtomicToast.show(context, context.getString(R.string.common_template_601_ui_exception_toast), AtomicToast.Style.WARNING)
             }
-            store.setCoHostTemplate(type.id)
-            dismiss()
         }
         recyclerCoHost.adapter = adapter
     }
@@ -61,13 +62,13 @@ class LiveTemplatePicker(
                 TemplateType.VERTICAL_STATIC_FLOAT
             )
         ) { type ->
+            store.setCoGuestTemplate(type.id)
+            recyclerCoGuest.adapter?.notifyDataSetChanged()
             val viewRatio = coreView.width / coreView.height.toDouble()
             val canvasRatio = 9 / 16.0
             if (type == TemplateType.VERTICAL_DYNAMIC_FLOAT && viewRatio > canvasRatio) {
                 AtomicToast.show(context, context.getString(R.string.common_template_601_ui_exception_toast), AtomicToast.Style.WARNING)
             }
-            store.setCoGuestTemplate(type.id)
-            dismiss()
         }
         recyclerCoGuest.adapter = adapter
     }

@@ -6,11 +6,8 @@ import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.DEFAULT_BACKGROUND_URL
 import com.trtc.uikit.livekit.common.DEFAULT_COVER_URL
-import com.trtc.uikit.livekit.common.ErrorLocalized
-import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.common.seatModeFromEngineSeatMode
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
-import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -152,6 +149,19 @@ class PrepareStore {
 
     fun updateLayoutType(layoutType: LayoutType) {
         _layoutType.value = layoutType
+        val seatCount = _liveInfo.value.maxSeatCount
+        when (layoutType) {
+            LayoutType.KTV_ROOM -> {
+                _liveInfo.value = _liveInfo.value.copy().apply {
+                    this.seatTemplate = SeatLayoutTemplate.Karaoke(seatCount)
+                }
+            }
+            LayoutType.VOICE_ROOM -> {
+                _liveInfo.value = _liveInfo.value.copy().apply {
+                    this.seatTemplate = SeatLayoutTemplate.AudioSalon(seatCount)
+                }
+            }
+        }
     }
 
     fun getDefaultRoomName(): String {
@@ -161,21 +171,6 @@ class PrepareStore {
         } else {
             loginUserInfo.userName
         }
-    }
-
-    fun setLayoutMetaData(layout: LayoutType) {
-        if (_liveStatus.value === LiveStatus.PLAYING) return
-        if (_liveStatus.value === LiveStatus.PUSHING) {
-            val layoutStr: String = layout.desc
-            val hashMap = HashMap<String, String>()
-            hashMap.put(KEY_LAYOUT_TYPE, layoutStr)
-            LiveListStore.shared().updateLiveMetaData(hashMap, completionHandler {
-                onError { code, _ ->
-                    ErrorLocalized.onError(code)
-                }
-            })
-        }
-        _layoutType.value = layout
     }
 
     fun destroy() {
@@ -189,7 +184,4 @@ class PrepareStore {
         _layoutType.value = LayoutType.VOICE_ROOM
     }
 
-    companion object {
-        const val KEY_LAYOUT_TYPE: String = "LayoutType"
-    }
 }

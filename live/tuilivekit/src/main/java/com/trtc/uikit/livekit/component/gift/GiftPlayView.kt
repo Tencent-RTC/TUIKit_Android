@@ -10,9 +10,9 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.LiveKitLogger.Companion.getComponentLogger
 import com.trtc.uikit.livekit.common.ui.BasicView
-import com.trtc.uikit.livekit.component.gift.service.GiftConstants.LANGUAGE_EN
-import com.trtc.uikit.livekit.component.gift.service.GiftConstants.LANGUAGE_ZH_HANS
-import com.trtc.uikit.livekit.component.gift.service.GiftConstants.LANGUAGE_ZH_HANT
+import com.trtc.uikit.livekit.component.gift.viewmodel.GiftConstants.LANGUAGE_EN
+import com.trtc.uikit.livekit.component.gift.viewmodel.GiftConstants.LANGUAGE_ZH_HANS
+import com.trtc.uikit.livekit.component.gift.viewmodel.GiftConstants.LANGUAGE_ZH_HANT
 import com.trtc.uikit.livekit.component.gift.view.animation.AnimationView
 import com.trtc.uikit.livekit.component.gift.view.animation.ImageAnimationView
 import com.trtc.uikit.livekit.component.gift.view.animation.ImageAnimationView.GiftImageAnimationInfo
@@ -46,8 +46,11 @@ class GiftPlayView @JvmOverloads constructor(
     private var giftPlayViewListener: TUIGiftPlayViewListener? = null
     private var giftStore: GiftStore? = null
     private var likeStore: LikeStore? = null
-    private val giftAnimationManager = GiftAnimationManager()
-    private val giftImageAnimationManager = GiftAnimationManager()
+    
+    private val normalChannelCount = 2
+    private val giftAnimationManager = GiftAnimationManager(maxChannels = 1)
+    private val giftImageAnimationManager = GiftAnimationManager(maxChannels = normalChannelCount)
+    
     private val likeListenerImpl = LikeListenerImpl()
     private val giftListenerImpl = GiftListenerImpl()
 
@@ -128,15 +131,18 @@ class GiftPlayView @JvmOverloads constructor(
 
             override fun startPlay(model: GiftModel) {
                 if (isAttachedToWindow) {
-                    model.gift?.let {
-                        val info = GiftImageAnimationInfo()
-                        info.giftImageUrl = model.gift!!.iconURL
-                        info.giftName = model.gift!!.name
-                        info.giftCount = model.giftCount
-                        info.senderName = model.sender!!.userName
-                        info.senderAvatarUrl = model.sender!!.avatarURL
-                        imageAnimationView?.playAnimation(info)
-                    }
+                    val gift = model.gift ?: return
+                    val sender = model.sender ?: return
+                    val info = GiftImageAnimationInfo()
+                    info.giftImageUrl = gift.iconURL
+                    info.giftId = gift.giftID
+                    info.giftName = gift.name
+                    info.giftCount = model.giftCount
+                    info.senderName = sender.userName
+                    info.senderUserId = sender.userID
+                    info.isFromSelf = model.isFromSelf
+                    info.senderAvatarUrl = sender.avatarURL
+                    imageAnimationView?.playAnimation(info)
                 }
             }
 
@@ -162,12 +168,10 @@ class GiftPlayView @JvmOverloads constructor(
     }
 
     fun playGiftAnimation(playUrl: String) {
-        val model = GiftModel()
-        model.gift = Gift(resourceURL = playUrl)
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            giftAnimationManager.startPlay(model)
+            animationView?.playAnimation(playUrl)
         } else {
-            post(Runnable { giftAnimationManager.startPlay(model) })
+            post { animationView?.playAnimation(playUrl) }
         }
     }
 
@@ -181,20 +185,25 @@ class GiftPlayView @JvmOverloads constructor(
         fun onPlayGiftAnimation(view: GiftPlayView?, gift: Gift)
     }
 
-    private fun playGift(gift: Gift, giftCount: Int, sender: LiveUserInfo) {
+    private fun dispatchGift(gift: Gift, giftCount: Int, sender: LiveUserInfo) {
         val giftModel = GiftModel()
         giftModel.gift = gift
         giftModel.giftCount = giftCount
         giftModel.sender = sender
         giftModel.isFromSelf = TextUtils.equals(sender.userID, LoginStore.shared.loginState.loginUserInfo.value?.userID)
-        if (TextUtils.isEmpty(gift.resourceURL)) {
-            giftImageAnimationManager.add(giftModel)
-        } else {
+        
+        if (giftModel.isAdvanced) {
             giftAnimationManager.add(giftModel)
+        } else {
+            val merged = imageAnimationView?.tryMergeGift(sender.userID, gift.giftID, giftCount) ?: false
+            if (!merged) {
+                giftImageAnimationManager.add(giftModel)
+            }
         }
+        
         giftPlayViewListener?.onReceiveGift(this, gift, giftCount, sender)
     }
-
+    
     private fun playLike() {
         heartLayout?.addFavor()
     }
@@ -222,7 +231,6 @@ class GiftPlayView @JvmOverloads constructor(
     private fun getLanguage(): String {
         val language = Locale.getDefault().getLanguage()
         var languageTag = Locale.getDefault().toLanguageTag()
-        logger.info("getLanguage language:$language, languageTag:$languageTag")
         if (TextUtils.isEmpty(language) || TextUtils.isEmpty(languageTag)) {
             return LANGUAGE_EN
         }
@@ -247,7 +255,7 @@ class GiftPlayView @JvmOverloads constructor(
         override fun onReceiveGift(liveId: String, gift: Gift, count: Int, sender: LiveUserInfo) {
             logger.info("onReceiveGift: liveId:$liveId, gift:$gift, count:$count, sender:$sender")
             if (liveId == roomId) {
-                playGift(gift, count, sender)
+                dispatchGift(gift, count, sender)
             }
         }
     }
@@ -261,7 +269,6 @@ class GiftPlayView @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TAG = "GiftPlayView"
         private const val LIKE_ANIMATION_INTERVAL_MS = 100
         private const val LIKE_ANIMATION_COUNT_MAX = 30
     }

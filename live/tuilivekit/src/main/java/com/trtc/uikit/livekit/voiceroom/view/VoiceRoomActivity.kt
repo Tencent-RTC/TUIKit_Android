@@ -2,13 +2,12 @@ package com.trtc.uikit.livekit.voiceroom.view
 
 import android.content.Context
 import android.os.Bundle
-import android.view.View
 import android.view.WindowManager
-import com.trtc.tuikit.common.FullScreenActivity
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.voiceroom.VoiceRoomDefine
 import com.trtc.uikit.livekit.voiceroom.view.TUIVoiceRoomFragment.RoomBehavior
 import com.trtc.uikit.livekit.voiceroom.view.TUIVoiceRoomFragment.RoomParams
+import io.trtc.tuikit.atomicx.common.FullScreenActivity
 
 class VoiceRoomActivity : FullScreenActivity() {
 
@@ -31,7 +30,6 @@ class VoiceRoomActivity : FullScreenActivity() {
         super.onCreate(null)
         setContentView(R.layout.livekit_activity_video_live_audience)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
         val roomId = intent.getStringExtra(INTENT_KEY_ROOM_ID)!!
         val behavior = RoomBehavior.values()[intent.getIntExtra(INTENT_KEY_ROOM_BEHAVIOR, 0)]

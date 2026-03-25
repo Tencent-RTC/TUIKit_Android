@@ -5,17 +5,16 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
+import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import com.trtc.uikit.livekit.features.audiencecontainer.store.AudienceStore
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
-import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
-import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
-
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 
 @SuppressLint("ViewConstructor")
 class TypeSelectDialog(
@@ -109,7 +108,6 @@ class TypeSelectDialog(
                                 object : PermissionCallback() {
                                     override fun onGranted() {
                                         LOGGER.info("requestCameraPermissions:[onGranted]")
-                                        PermissionRequest.sendRequestCompleteEvent()
                                         audienceStore.getViewStore()
                                             .updateTakeSeatState(true)
                                         audienceStore.getViewStore()
@@ -131,11 +129,9 @@ class TypeSelectDialog(
 
                                     override fun onDenied() {
                                         LOGGER.error("requestCameraPermissions:[onDenied]")
-                                        PermissionRequest.sendRequestCompleteEvent()
                                     }
                                 })
                         } else {
-                            PermissionRequest.sendRequestCompleteEvent()
                             audienceStore.getViewStore()
                                 .updateTakeSeatState(true)
                             audienceStore.getViewStore()
@@ -158,7 +154,6 @@ class TypeSelectDialog(
 
                     override fun onDenied() {
                         LOGGER.error("requestCameraPermissions:[onDenied]")
-                        PermissionRequest.sendRequestCompleteEvent()
                     }
                 })
         }

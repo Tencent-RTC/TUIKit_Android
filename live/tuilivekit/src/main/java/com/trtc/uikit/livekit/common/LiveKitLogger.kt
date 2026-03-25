@@ -2,7 +2,7 @@ package com.trtc.uikit.livekit.common
 
 import android.util.Log
 import com.tencent.trtc.TRTCCloud
-import com.trtc.tuikit.common.system.ContextProvider
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import org.json.JSONException
 import org.json.JSONObject
 

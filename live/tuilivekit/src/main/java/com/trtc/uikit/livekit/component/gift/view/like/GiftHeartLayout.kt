@@ -61,15 +61,15 @@ class GiftHeartLayout(context: Context?, attrs: AttributeSet?) : RelativeLayout(
 
     private fun resourceLoad() {
         val hearts = arrayOfNulls<Bitmap>(mDrawableIds.size)
-        mHeartsDrawable = arrayOfNulls<BitmapDrawable>(mDrawableIds.size)
+        heartsDrawable = arrayOfNulls<BitmapDrawable>(mDrawableIds.size)
         for (i in mDrawableIds.indices) {
             hearts[i] = BitmapFactory.decodeResource(resources, mDrawableIds[i])
-            mHeartsDrawable[i] = BitmapDrawable(resources, hearts[i])
+            heartsDrawable[i] = BitmapDrawable(resources, hearts[i])
         }
     }
 
-    private val mRandom = SecureRandom()
-    private lateinit var mHeartsDrawable: Array<BitmapDrawable?>
+    private val random = SecureRandom()
+    private lateinit var heartsDrawable: Array<BitmapDrawable?>
 
     init {
         findViewById(context)
@@ -90,7 +90,7 @@ class GiftHeartLayout(context: Context?, attrs: AttributeSet?) : RelativeLayout(
                 return
             }
             heartView = GiftHeartView(getContext())
-            heartView.setDrawable(mHeartsDrawable[mRandom.nextInt(8)])
+            heartView.setDrawable(heartsDrawable[random.nextInt(8)])
             heartViewList.add(heartView)
         }
         animator?.start(heartView, this)

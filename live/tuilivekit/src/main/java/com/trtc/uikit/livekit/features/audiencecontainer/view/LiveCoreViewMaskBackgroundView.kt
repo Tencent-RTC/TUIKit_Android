@@ -18,10 +18,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
-import com.trtc.tuikit.common.imageloader.BlurUtils
-import com.trtc.tuikit.common.util.ScreenUtil
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.audiencecontainer.store.AudienceStore
+import io.trtc.tuikit.atomicx.common.imageloader.BlurUtils
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import io.trtc.tuikit.atomicx.pictureinpicture.PictureInPictureStore
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +41,7 @@ class LiveCoreViewMaskBackgroundView @JvmOverloads constructor(
     }
 
     private val oid = hashCode()
+    private val videoLandscape4SeatsTemplateID = 200
     private lateinit var audienceStore: AudienceStore
     private var parentWidth = ScreenUtil.dip2px(720f)
     private var parentHeight = ScreenUtil.dip2px(1080f)
@@ -276,7 +277,6 @@ class LiveCoreViewMaskBackgroundView @JvmOverloads constructor(
     }
 
     fun isFullScreenLayoutBySeatLayout(): Boolean {
-        val videoLandscape4SeatsTemplateID = 200
         if (audienceStore.getLiveSeatState().canvas.value.templateID == videoLandscape4SeatsTemplateID && isPortrait) {
             return false
         }
@@ -303,7 +303,7 @@ class LiveCoreViewMaskBackgroundView @JvmOverloads constructor(
             invalidate()
             return
         }
-        if (audienceStore.getLiveSeatState().canvas.value.templateID == 200 && isPortrait) {
+        if (audienceStore.getLiveSeatState().canvas.value.templateID == videoLandscape4SeatsTemplateID && isPortrait) {
             val screenWidth = ScreenUtil.getScreenWidth(context)
             val videoTop = ScreenUtil.dip2px(150f)
             val videoBottom = screenWidth * 9 / 16 + ScreenUtil.dip2px(150f)

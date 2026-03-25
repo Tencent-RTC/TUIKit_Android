@@ -16,7 +16,7 @@ data class ViewState(
     val durationCountDown: MutableStateFlow<Int>
 )
 
-class ViewStore(private val liveID: String) {
+class ViewStore(liveID: String) {
     private val mainHandler = Handler(Looper.getMainLooper())
     private val coGuestState = CoGuestStore.create(liveID).coGuestState
     private val battleListener = BattleEventListener()

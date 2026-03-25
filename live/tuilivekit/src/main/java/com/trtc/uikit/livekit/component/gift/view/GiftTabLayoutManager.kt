@@ -3,11 +3,13 @@ package com.trtc.uikit.livekit.component.gift.view
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.component.gift.view.adapter.GiftCategoryPagerAdapter
+import com.trtc.uikit.livekit.component.gift.view.cell.GiftBaseCell
 import io.trtc.tuikit.atomicxcore.api.gift.Gift
 import io.trtc.tuikit.atomicxcore.api.gift.GiftCategory
 
@@ -22,6 +24,9 @@ class GiftTabLayoutManager(private val context: Context) {
     private var dividerView: View? = null
     private var pagerAdapter: GiftCategoryPagerAdapter? = null
 
+    var cellFactory: ((ViewGroup, Gift) -> GiftBaseCell?)? = null
+    var onGiftSelectedListener: ((Gift) -> Unit)? = null
+
     fun setGiftClickListener(listener: GiftCategoryViewPagerManager.GiftClickListener) {
         giftClickListener = listener
     }
@@ -34,9 +39,11 @@ class GiftTabLayoutManager(private val context: Context) {
 
         tabManager = GiftCategoryTabManager(context)
         categoryViewManager = GiftCategoryViewPagerManager().apply {
+            this.cellFactory = this@GiftTabLayoutManager.cellFactory
+            this.onGiftSelectedListener = this@GiftTabLayoutManager.onGiftSelectedListener
             setGiftClickListener(object : GiftCategoryViewPagerManager.GiftClickListener {
-                override fun onClick(position: Int, gift: Gift) {
-                    giftClickListener?.onClick(position, gift)
+                override fun onClick(position: Int, gift: Gift, count: Int) {
+                    giftClickListener?.onClick(position, gift, count)
                 }
             })
         }
@@ -74,5 +81,12 @@ class GiftTabLayoutManager(private val context: Context) {
         })
 
         return mainLayout
+    }
+
+    fun selectCategory(index: Int) {
+        if (index in giftCategories.indices) {
+            viewPager?.setCurrentItem(index, true)
+            tabManager?.selectTab(index)
+        }
     }
 }

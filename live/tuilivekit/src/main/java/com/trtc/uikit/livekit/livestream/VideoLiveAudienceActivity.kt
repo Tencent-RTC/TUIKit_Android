@@ -11,15 +11,11 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
-import com.trtc.uikit.livekit.common.LiveKitLogger
-import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
 import com.trtc.uikit.livekit.features.audiencecontainer.AudienceContainerView
 import com.trtc.uikit.livekit.features.audiencecontainer.AudienceContainerViewDefine
@@ -29,21 +25,18 @@ import com.trtc.uikit.livekit.livestream.impl.LiveInfoUtils
 import com.trtc.uikit.livekit.livestream.impl.VideoLiveKitImpl
 import io.trtc.tuikit.atomicx.common.FullScreenActivity
 import io.trtc.tuikit.atomicx.common.foregroundservice.VideoForegroundService
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.pictureinpicture.PictureInPictureStore
-import io.trtc.tuikit.atomicxcore.api.login.LoginStatus
-import io.trtc.tuikit.atomicxcore.api.login.LoginStore
-import kotlinx.coroutines.launch
 
-class VideoLiveAudienceActivity : FullScreenActivity(),
+class VideoLiveAudienceActivity : FullScreenActivity(), 
     ITUINotification,
-    VideoLiveKitImpl.CallingAPIListener,
+    VideoLiveKitImpl.CallingAPIListener, 
     AudienceContainerViewDefine.AudienceContainerViewListener {
 
     companion object {
         const val KEY_EXTENSION_NAME = "TEBeautyExtension"
         const val NOTIFY_START_ACTIVITY = "onStartActivityNotifyEvent"
         const val METHOD_ACTIVITY_RESULT = "onActivityResult"
-        private val logger = LiveKitLogger.getLiveStreamLogger("VideoLiveAudienceActivity")
     }
 
     private lateinit var layoutContainer: FrameLayout
@@ -73,29 +66,15 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
 
         layoutContainer = findViewById(R.id.fl_container)
         val liveInfo = LiveInfoUtils.convertBundleToLiveInfo(liveBundle)
-
+        
         audienceContainerView = AudienceContainerView(this).apply {
             init(this@VideoLiveAudienceActivity, liveInfo)
             addListener(this@VideoLiveAudienceActivity)
         }
-
+        
         layoutContainer.addView(audienceContainerView)
         VideoLiveKitImpl.createInstance(applicationContext).addCallingAPIListener(this)
         TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, this)
-        lifecycleScope.launchWhenStarted {
-            launch {
-                PermissionRequest.requestCompleteEvent.collect {
-                    reorderToFront()
-                }
-            }
-            launch {
-                LoginStore.shared.loginState.loginStatus.collect {
-                    if (it == LoginStatus.UNLOGIN) {
-                        destroyAudienceView()
-                    }
-                }
-            }
-        }
         startForegroundService()
     }
 
@@ -104,7 +83,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
             TextUtils.equals(key, KEY_EXTENSION_NAME) && TextUtils.equals(subKey, NOTIFY_START_ACTIVITY) -> {
                 val intent = param?.get("intent") as? Intent
                 val requestCode = param?.get("requestCode") as? Int
-
+                
                 if (requestCode != null && intent != null) {
                     startActivityForResult(intent, requestCode)
                 } else if (intent != null) {
@@ -119,11 +98,14 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        logger.info("onUserLeaveHint: $isFinishing")
         if (PIPPanelStore.sharedInstance().state.audienceIsPictureInPictureMode) {
             return
         }
-        onPictureInPictureClick()
+        if (audienceContainerView?.isLiveStreaming() == true &&
+            PIPPanelStore.sharedInstance().state.enablePictureInPictureToggle
+        ) {
+            onPictureInPictureClick()
+        }
     }
 
     override fun onDestroy() {
@@ -173,12 +155,10 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
 
     override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode)
-        logger.info("onPictureInPictureModeChanged: $isInPictureInPictureMode")
         PIPPanelStore.sharedInstance().state.audienceIsPictureInPictureMode = isInPictureInPictureMode
         PictureInPictureStore.shared.updateIsPictureInPictureMode(isInPictureInPictureMode)
         audienceContainerView?.enablePictureInPictureMode(isInPictureInPictureMode)
-        audienceEndStatisticsView?.enablePipMode(isInPictureInPictureMode)
-
+        
         if (!isInPictureInPictureMode && lifecycle.currentState == Lifecycle.State.CREATED) {
             destroyAudienceView()
         }
@@ -212,7 +192,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
             finish()
             return
         }
-
+        
         audienceEndStatisticsView = AudienceEndStatisticsView(this).apply {
             init(roomId, ownerName, ownerAvatarUrl)
             setListener(object : EndStatisticsDefine.AudienceEndStatisticsViewListener {
@@ -221,7 +201,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
                 }
             })
         }
-
+        
         layoutContainer.removeAllViews()
         layoutContainer.addView(audienceEndStatisticsView)
     }
@@ -240,12 +220,5 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
         }
         audienceContainerView?.destroy()
         finishAndRemoveTask()
-    }
-
-    private fun reorderToFront() {
-        // 重新将当前 Activity 排到最前面, 当前 Activity 在 申请权限时，会被切换为画中画小窗，当权限申请完毕后，需要调用此 api 将当前 Activity 退出画中画回到大屏画面。
-        val intent = Intent(this, VideoLiveAudienceActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-        startActivity(intent)
     }
 }

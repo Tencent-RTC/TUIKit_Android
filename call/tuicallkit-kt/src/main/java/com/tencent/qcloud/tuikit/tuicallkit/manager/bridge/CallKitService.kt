@@ -49,6 +49,10 @@ class CallKitService private constructor(context: Context) : ITUINotification, I
             TUIConstants.TUILogin.EVENT_SUB_KEY_START_INIT, this
         )
         TUICore.registerEvent(
+            TUIConstants.TUILogin.EVENT_IMSDK_INIT_STATE_CHANGED,
+            TUIConstants.TUILogin.EVENT_SUB_KEY_INIT_SUCCESS, this
+        )
+        TUICore.registerEvent(
             TUIConstants.TIMPush.EVENT_IM_LOGIN_AFTER_APP_WAKEUP_KEY,
             TUIConstants.TIMPush.EVENT_IM_LOGIN_AFTER_APP_WAKEUP_SUB_KEY, this
         )
@@ -80,15 +84,20 @@ class CallKitService private constructor(context: Context) : ITUINotification, I
         if (TextUtils.isEmpty(key) || TextUtils.isEmpty(subKey)) {
             return
         }
-        if (TUIConstants.TUILogin.EVENT_IMSDK_INIT_STATE_CHANGED == key
-            && TUIConstants.TUILogin.EVENT_SUB_KEY_START_INIT == subKey
-        ) {
-            Logger.i(TAG, "onNotifyEvent, start, framework: " + Constants.framework)
-            if (Constants.framework == Constants.CALL_FRAMEWORK_NATIVE) {
-                TUICallKit.createInstance(appContext)
-                adaptiveComponentReport()
+        if (TUIConstants.TUILogin.EVENT_IMSDK_INIT_STATE_CHANGED == key) {
+            when (subKey) {
+                TUIConstants.TUILogin.EVENT_SUB_KEY_START_INIT -> {
+                    Logger.i(TAG, "onNotifyEvent, start, framework: " + Constants.framework)
+                    if (Constants.framework == Constants.CALL_FRAMEWORK_NATIVE) {
+                        TUICallKit.createInstance(appContext)
+                        adaptiveComponentReport()
+                    }
+                    setExcludeFromHistoryMessage()
+                }
+                TUIConstants.TUILogin.EVENT_SUB_KEY_INIT_SUCCESS -> {
+                    initCallEngine()
+                }
             }
-            setExcludeFromHistoryMessage()
         }
         if (TUIConstants.TIMPush.EVENT_IM_LOGIN_AFTER_APP_WAKEUP_KEY == key
             && TUIConstants.TIMPush.EVENT_IM_LOGIN_AFTER_APP_WAKEUP_SUB_KEY == subKey
@@ -106,14 +115,11 @@ class CallKitService private constructor(context: Context) : ITUINotification, I
                 TUIConstants.TIMPush.SERVICE_NAME, TUIConstants.TIMPush.METHOD_REPORT_NOTIFICATION_CLICKED, map
             )
         }
-        if (TUIConstants.TUILogin.EVENT_LOGIN_STATE_CHANGED == key) {
-            if (TUIConstants.TUILogin.EVENT_SUB_KEY_USER_LOGOUT_SUCCESS == subKey) {
-                CallStore.shared.hangup(null)
-                CallManager.instance.reset()
-                // TUICallEngine.destroyInstance() todo 待修复反复登录后收不到离线来电的问题后打开
-            } else if (TUIConstants.TUILogin.EVENT_SUB_KEY_USER_LOGIN_SUCCESS == subKey) {
-                initCallEngine()
-            }
+        if (TUIConstants.TUILogin.EVENT_LOGIN_STATE_CHANGED == key
+            && TUIConstants.TUILogin.EVENT_SUB_KEY_USER_LOGOUT_SUCCESS == subKey) {
+            CallStore.shared.hangup(null)
+            CallManager.instance.reset()
+            // TUICallEngine.destroyInstance() todo 待修复反复登录后收不到离线来电的问题后打开
         }
     }
 
@@ -158,7 +164,6 @@ class CallKitService private constructor(context: Context) : ITUINotification, I
         val sdkAppId = TUILogin.getSdkAppId()
         val userId = TUILogin.getLoginUser()
         val userSig = TUILogin.getUserSig()
-        Logger.i(TAG, "sdkAppId=$sdkAppId userId=$userId")
         LoginStore.shared.login(appContext, sdkAppId, userId, userSig, null)
         TUICallEngine.createInstance(appContext).init(sdkAppId, userId, userSig,
             object : TUICommonDefine.Callback {

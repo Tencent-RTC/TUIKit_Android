@@ -5,26 +5,9 @@ import android.content.Context
 import com.trtc.uikit.livekit.R
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.common.permission.PermissionRequester
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
 
 object PermissionRequest {
-    val requestCompleteEvent = MutableSharedFlow<Boolean>(
-        replay = 0,
-        extraBufferCapacity = 0,
-        onBufferOverflow = BufferOverflow.SUSPEND
-    )
-
-    fun sendRequestCompleteEvent() {
-        CoroutineScope(Dispatchers.Default).launch {
-            requestCompleteEvent.emit(true)
-        }
-    }
-
-    fun requestMicrophonePermissions(context: Context, callback: PermissionCallback) {
+    fun requestMicrophonePermissions(context: Context, callback: PermissionCallback?) {
         val title = context.getString(R.string.common_permission_microphone)
         val reason = context.getString(R.string.common_permission_mic_reason)
 
@@ -50,7 +33,7 @@ object PermissionRequest {
             .request()
     }
 
-    fun requestCameraPermissions(context: Context, callback: PermissionCallback) {
+    fun requestCameraPermissions(context: Context, callback: PermissionCallback?) {
         val title = context.getString(R.string.common_permission_camera)
         val reason = context.getString(R.string.common_permission_camera_reason)
 

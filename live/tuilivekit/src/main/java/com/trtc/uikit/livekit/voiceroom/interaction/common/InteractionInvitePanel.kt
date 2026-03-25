@@ -118,7 +118,9 @@ class InteractionInvitePanel(context: Context) : AtomicPopover(context) ,
         }
         LiveListStore.shared()
             .fetchLiveList(recommendedCursor, FETCH_LIST_COUNT, object : CompletionHandler {
-                override fun onSuccess() {}
+                override fun onSuccess() {
+                    recommendedCursor = liveListStore.liveState.liveListCursor.value
+                }
                 override fun onFailure(code: Int, desc: String) {
                     ErrorLocalized.onError(code)
                 }
@@ -144,7 +146,9 @@ class InteractionInvitePanel(context: Context) : AtomicPopover(context) ,
             NestedScrollView.OnScrollChangeListener
             { v, _, scrollY, _, _ ->
                 if (scrollY >= (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
-                    fetchLiveList(false)
+                    if (recommendedCursor.isNotEmpty()) {
+                        fetchLiveList(false)
+                    }
                 }
             })
     }

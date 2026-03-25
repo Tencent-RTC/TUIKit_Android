@@ -2,7 +2,6 @@ package com.trtc.uikit.livekit.voiceroom.view.seatmanager
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View

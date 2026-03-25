@@ -13,7 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.trtc.uikit.livekit.R
-import com.trtc.uikit.livekit.common.BACKGROUND_THUMB_URL_LIST
+import com.trtc.uikit.livekit.common.BACKGROUND_URL_LIST
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.component.audioeffect.AudioEffectPanel
@@ -100,7 +100,7 @@ class SettingsListAdapter(
             val config = StreamPresetImagePicker.Config().apply {
                 title = context.getString(R.string.common_settings_bg_image)
                 confirmButtonText = context.getString(R.string.common_set_as_background)
-                data = BACKGROUND_THUMB_URL_LIST
+                data = BACKGROUND_URL_LIST
                 currentImageUrl =
                     transferThumbUrlFromImage(liveListStore.liveState.currentLive.value.backgroundURL)
             }

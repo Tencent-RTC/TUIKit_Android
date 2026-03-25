@@ -10,9 +10,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.livekit.R
+import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import com.trtc.uikit.livekit.voiceroomcore.view.VoiceWaveView
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
@@ -41,13 +42,15 @@ class CoHostView @JvmOverloads constructor(
     private lateinit var layoutRoot: FrameLayout
     private var lifecycleOwner: LifecycleOwner? = null
     private val jobs = mutableListOf<Job>()
+    private var voiceRoomManager: VoiceRoomManager? = null
 
     init {
         initView()
     }
 
-    fun init(seatInfo: SeatInfo) {
+    fun init(seatInfo: SeatInfo, voiceRoomManager: VoiceRoomManager?) {
         this.seatInfo = seatInfo
+        this.voiceRoomManager = voiceRoomManager
         this.liveSeatStore =
             LiveSeatStore.create(LiveListStore.shared().liveState.currentLive.value.liveID)
 
@@ -108,7 +111,7 @@ class CoHostView @JvmOverloads constructor(
     private fun initClickListener() {
         layoutRoot.setOnClickListener {
             val panel = CoHostViewManagerPanel(context)
-            panel.init(seatInfo)
+            panel.init(seatInfo, voiceRoomManager)
             val popupDialog = AtomicPopover(context)
             popupDialog.setContent(panel)
             panel.setOnInviteButtonClickListener { popupDialog.hide() }

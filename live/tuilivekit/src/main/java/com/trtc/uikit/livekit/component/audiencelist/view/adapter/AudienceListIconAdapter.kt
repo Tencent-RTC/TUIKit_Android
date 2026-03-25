@@ -1,7 +1,6 @@
 package com.trtc.uikit.livekit.component.audiencelist.view.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,6 @@ import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 
 class AudienceListIconAdapter(
-    private val context: Context,
     private val audienceState: LiveAudienceState
 ) : RecyclerView.Adapter<AudienceListIconAdapter.ViewHolder>() {
 

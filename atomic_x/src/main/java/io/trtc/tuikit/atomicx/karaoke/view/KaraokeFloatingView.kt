@@ -1,6 +1,5 @@
 package io.trtc.tuikit.atomicx.karaoke.view
 
-
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
@@ -14,9 +13,9 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.Observer
 import com.tencent.cloud.tuikit.engine.extension.TUISongListManager
 import com.tencent.trtc.TXChorusMusicPlayer
+import com.tencent.trtc.TXChorusMusicPlayer.TXChorusRole
 import io.trtc.tuikit.atomicx.R
 import io.trtc.tuikit.atomicx.karaoke.store.KaraokeStore
 import io.trtc.tuikit.atomicx.karaoke.store.utils.PlaybackState
@@ -57,17 +56,6 @@ class KaraokeFloatingView @JvmOverloads constructor(
     private var moveRangeTop = 0f
     private var moveRangeBottom = 0f
     private val rightMarginPx: Float = 10 * context.resources.displayMetrics.density
-    private val playQueueObserver = Observer(this::onPlayQueueChanged)
-    private val progressObserver = Observer(this::onProgressChanged)
-    private val isDisplayFloatViewObserver = Observer(this::onDisplayFloatViewChanged)
-    private val playbackStateObserver = Observer(this::onPlaybackStateChanged)
-    private val pitchListObserver = Observer(this::onPitchListChanged)
-    private val currentPitchObserver = Observer(this::onCurrentPitchChanged)
-    private val currentScoreObserver = Observer(this::onCurrentScoreChanged)
-    private val enableScoreObserver = Observer(this::onEnableScoreChanged)
-    private val remoteScoresObserver = Observer(this::onRemoteScoresChanged)
-    private val remotePitchesObserver = Observer(this::onRemotePitchesChanged)
-    private val currentTrackObserver = Observer(this::onCurrentTrackChanged)
 
     init {
         LayoutInflater.from(context).inflate(R.layout.karaoke_floating_view, this, true)
@@ -205,41 +193,50 @@ class KaraokeFloatingView @JvmOverloads constructor(
     }
 
     private fun addObservers() {
-        store.playbackProgressMs.observeForever(progressObserver)
-        store.songQueue.observeForever(playQueueObserver)
-        store.isDisplayFloatView.observeForever(isDisplayFloatViewObserver)
-        store.playbackState.observeForever(playbackStateObserver)
-        store.pitchList.observeForever(pitchListObserver)
-        store.currentPitch.observeForever(currentPitchObserver)
-        store.currentScore.observeForever(currentScoreObserver)
-        store.enableScore.observeForever(enableScoreObserver)
-        store.hostScore.observeForever(remoteScoresObserver)
-        store.hostPitch.observeForever(remotePitchesObserver)
-        store.currentTrack.observeForever(currentTrackObserver)
-        addConnectionObserver()
+        subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
+            launch {
+                store.playbackProgressMs.collect { onProgressChanged(it) }
+            }
+            launch {
+                store.songQueue.collect { onPlayQueueChanged(it) }
+            }
+            launch {
+                store.isDisplayFloatView.collect { onDisplayFloatViewChanged(it) }
+            }
+            launch {
+                store.playbackState.collect { onPlaybackStateChanged(it) }
+            }
+            launch {
+                store.pitchList.collect { onPitchListChanged(it) }
+            }
+            launch {
+                store.currentPitch.collect { onCurrentPitchChanged(it) }
+            }
+            launch {
+                store.currentScore.collect { onCurrentScoreChanged(it) }
+            }
+            launch {
+                store.enableScore.collect { onEnableScoreChanged(it) }
+            }
+            launch {
+                store.hostScore.collect { onRemoteScoresChanged(it) }
+            }
+            launch {
+                store.hostPitch.collect { onRemotePitchesChanged(it) }
+            }
+            launch {
+                store.currentTrack.collect { onCurrentTrackChanged(it) }
+            }
+            launch {
+                coHostStore?.coHostState?.connected?.collect {
+                    onConnectedListChanged(it)
+                }
+            }
+        }
     }
 
     private fun removeObservers() {
-        store.playbackProgressMs.removeObserver(progressObserver)
-        store.songQueue.removeObserver(playQueueObserver)
-        store.isDisplayFloatView.removeObserver(isDisplayFloatViewObserver)
-        store.playbackState.removeObserver(playbackStateObserver)
-        store.pitchList.removeObserver(pitchListObserver)
-        store.currentPitch.removeObserver(currentPitchObserver)
-        store.currentScore.removeObserver(currentScoreObserver)
-        store.enableScore.removeObserver(enableScoreObserver)
-        store.hostScore.removeObserver(remoteScoresObserver)
-        store.hostPitch.removeObserver(remotePitchesObserver)
-        store.currentTrack.removeObserver(currentTrackObserver)
         subscribeStateJob?.cancel()
-    }
-
-    fun addConnectionObserver() {
-        subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
-            coHostStore?.coHostState?.connected?.collect {
-                onConnectedListChanged(it)
-            }
-        }
     }
 
     fun onConnectedListChanged(connectedRoomList: List<SeatUserInfo>) {
@@ -273,6 +270,13 @@ class KaraokeFloatingView @JvmOverloads constructor(
         } else {
             imagePause.setImageResource(R.drawable.karaoke_music_pause)
         }
+        if (playbackState == PlaybackState.IDLE) {
+            lyricView.visibility = GONE
+            pitchView.visibility = GONE
+        } else if (playbackState == PlaybackState.START || playbackState == PlaybackState.RESUME) {
+            lyricView.visibility = VISIBLE
+            pitchView.visibility = VISIBLE
+        }
     }
 
     private fun onPitchListChanged(pitchList: List<TXChorusMusicPlayer.TXReferencePitch>) {
@@ -292,13 +296,13 @@ class KaraokeFloatingView @JvmOverloads constructor(
     }
 
     private fun onRemoteScoresChanged(score: Int) {
-        if (store.isRoomOwner.value == false) {
+        if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger) {
             pitchView.setScore(score)
         }
     }
 
     private fun onRemotePitchesChanged(pitch: Int) {
-        if (store.isRoomOwner.value == false) {
+        if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger) {
             pitchView.setUserPitch(pitch)
         }
     }
@@ -311,14 +315,17 @@ class KaraokeFloatingView @JvmOverloads constructor(
     }
 
     private fun onPlayQueueChanged(list: List<TUISongListManager.SongInfo>) {
-        val isOwner = store.isRoomOwner.value == true
+        val isOwner = store.currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger
         val isQueueEmpty = list.isEmpty()
 
         val showFunctionBar = isOwner && !isQueueEmpty
         frameFunction.visibility = if (showFunctionBar) VISIBLE else GONE
         imageRequestMusic.visibility = if (showFunctionBar) GONE else VISIBLE
 
-        val showLyricAndPitch = !isQueueEmpty
+        val isPlaying = store.playbackState.value == PlaybackState.START
+                || store.playbackState.value == PlaybackState.RESUME
+                || store.playbackState.value == PlaybackState.PAUSE
+        val showLyricAndPitch = !isQueueEmpty && isPlaying
         lyricView.visibility = if (showLyricAndPitch) VISIBLE else GONE
         pitchView.visibility = if (showLyricAndPitch) VISIBLE else GONE
     }

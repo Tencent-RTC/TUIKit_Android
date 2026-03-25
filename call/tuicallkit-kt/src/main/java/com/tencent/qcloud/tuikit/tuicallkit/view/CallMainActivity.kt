@@ -9,12 +9,12 @@ import android.util.Rational
 import android.view.View
 import android.widget.ImageView
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import android.Manifest
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import android.widget.TextView
 import com.tencent.cloud.tuikit.engine.common.TUICommonDefine
-import com.tencent.qcloud.tuicore.permission.PermissionCallback
-import com.tencent.qcloud.tuicore.permission.PermissionRequester
 import com.tencent.qcloud.tuicore.util.TUIBuild
 import com.tencent.qcloud.tuikit.tuicallkit.R
 import com.tencent.qcloud.tuikit.tuicallkit.common.data.Constants
@@ -34,20 +34,31 @@ import io.trtc.tuikit.atomicx.callview.CallView
 import kotlinx.coroutines.launch
 import com.trtc.tuikit.common.util.ToastUtil
 import io.trtc.tuikit.atomicx.callview.Feature
+import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import io.trtc.tuikit.atomicx.common.permission.PermissionRequester
+import io.trtc.tuikit.atomicxcore.api.call.CallEndReason
+import io.trtc.tuikit.atomicxcore.api.call.CallListener
 import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
 import io.trtc.tuikit.atomicxcore.api.call.CallStore
 import io.trtc.tuikit.atomicxcore.api.call.CallParticipantStatus
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.view.CallLayoutTemplate
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 class CallMainActivity : FullScreenActivity() {
     private var callView: CallView? = null
     private var imageFloatIcon: ImageView? = null
     private var inviteUserButton: FrameLayout? = null
-    private var subscribeStateJob: Job? = null
+    private var callEndHintView: TextView? = null
+    private var finishActivityJob: Job? = null
+    private val callStatusObserver = object : CallListener() {
+        override fun onCallEnded(callId: String, mediaType: CallMediaType, reason: CallEndReason, userId: String) {
+            runOnUiThread {
+                handleCallEnded(reason, userId)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,9 +73,8 @@ class CallMainActivity : FullScreenActivity() {
             Constants.Orientation.LandScape -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             else -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
-        subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
-            observeSelfInfo()
-        }
+        callEndHintView = findViewById(R.id.tv_call_end_hint)
+        CallStore.shared.addListener(callStatusObserver)
         val mediaType = CallStore.shared.observerState.activeCall.value.mediaType
         if (mediaType != null) {
             setAudioDeviceRoute(mediaType)
@@ -89,16 +99,10 @@ class CallMainActivity : FullScreenActivity() {
         CallManager.instance.viewState.router.set(ViewState.ViewRouter.FullView)
     }
 
-    private suspend fun observeSelfInfo() {
-        CallStore.shared.observerState.selfInfo.collect { selfInfo ->
-            if (selfInfo.status == CallParticipantStatus.None) {
-                finishCallMainActivity()
-                return@collect
-            }
-        }
-    }
-
     private fun finishCallMainActivity() {
+        if (isFinishing || isDestroyed) {
+            return
+        }
         callView?.removeAllViews()
         if (TUIBuild.getVersionInt() >= Build.VERSION_CODES.LOLLIPOP) {
             finishAndRemoveTask()
@@ -154,7 +158,7 @@ class CallMainActivity : FullScreenActivity() {
         val imageBackground = findViewById<ImageView>(R.id.img_view_background)
         val selfUser = CallStore.shared.observerState.selfInfo.value
         val option = ImageOptions.Builder().setPlaceImage(R.drawable.tuicallkit_ic_avatar).setBlurEffect(80f).build()
-        ImageLoader.load(this, imageBackground, selfUser.avatarUrl, option)
+        ImageLoader.load(this, imageBackground, selfUser.avatarURL, option)
         imageBackground?.setColorFilter(ContextCompat.getColor(this, R.color.callkit_color_blur_mask))
     }
 
@@ -179,7 +183,8 @@ class CallMainActivity : FullScreenActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        subscribeStateJob?.cancel()
+        finishActivityJob?.cancel()
+        CallStore.shared.removeListener(callStatusObserver)
         CallManager.instance.stopForegroundService()
         Logger.i(TAG, "onDestroy")
     }
@@ -211,8 +216,20 @@ class CallMainActivity : FullScreenActivity() {
     }
 
     private fun hangupOnPipWindowClose() {
-        if (lifecycle.currentState == Lifecycle.State.CREATED) {
-            Logger.i(TAG, "user close pip window")
+        if (lifecycle.currentState != Lifecycle.State.CREATED) {
+            return
+        }
+        val callerId = CallStore.shared.observerState.activeCall.value.inviterId
+        val selfId = CallStore.shared.observerState.selfInfo.value.id
+        val selfStatus = CallStore.shared.observerState.selfInfo.value.status
+        Logger.i(TAG, "user close pip window , callerId = $callerId , selfId = $selfId , selfStatus=$selfStatus")
+        if (selfId == callerId) {
+            CallManager.instance.hangup(null)
+            return
+        }
+        if (selfStatus == CallParticipantStatus.Waiting) {
+            CallManager.instance.reject(null)
+        } else {
             CallManager.instance.hangup(null)
         }
     }
@@ -258,6 +275,44 @@ class CallMainActivity : FullScreenActivity() {
         }
     }
 
+    private fun getEndCallHintText(reason: CallEndReason, userId: String): String? {
+        val activeCall = CallStore.shared.observerState.activeCall.value
+        val selfInfo = CallStore.shared.observerState.selfInfo.value
+        if (activeCall.inviteeIds.size > 1 || activeCall.chatGroupId.isNotEmpty() || selfInfo.id == userId) {
+            return null
+        }
+        return when (reason) {
+            CallEndReason.Hangup -> getString(R.string.callkit_toast_other_party_hung_up)
+            CallEndReason.Reject -> getString(R.string.callkit_toast_other_party_declined)
+            CallEndReason.NoResponse -> getString(R.string.callkit_toast_other_party_no_response)
+            CallEndReason.LineBusy -> getString(R.string.callkit_toast_other_party_busy)
+            CallEndReason.Canceled -> getString(R.string.callkit_toast_other_party_cancelled)
+            else -> null
+        }
+    }
+
+    private fun handleCallEnded(reason: CallEndReason, userId: String) {
+        val endHintText = getEndCallHintText(reason, userId)
+        if (endHintText.isNullOrEmpty()) {
+            finishCallMainActivity()
+            return
+        }
+        showEndCallHint(endHintText)
+    }
+
+    private fun showEndCallHint(text: String) {
+        finishActivityJob?.cancel()
+        callEndHintView?.apply {
+            alpha = 1f
+            visibility = View.VISIBLE
+            this.text = text
+        }
+        finishActivityJob = lifecycleScope.launch {
+            delay(CALL_END_HINT_DURATION_MS)
+            finishCallMainActivity()
+        }
+    }
+
     private fun setAudioDeviceRoute(mediaType: CallMediaType) {
         if (CallMediaType.Video == mediaType) {
             CallManager.instance.selectAudioPlaybackDevice(TUICommonDefine.AudioPlaybackDevice.Speakerphone)
@@ -273,5 +328,6 @@ class CallMainActivity : FullScreenActivity() {
 
     companion object {
         private const val TAG = "CallMainActivity"
+        private const val CALL_END_HINT_DURATION_MS = 1000L
     }
 }

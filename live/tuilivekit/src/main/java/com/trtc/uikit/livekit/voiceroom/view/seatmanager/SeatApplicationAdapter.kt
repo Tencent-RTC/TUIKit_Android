@@ -61,18 +61,12 @@ class SeatApplicationAdapter(
         )
 
         holder.buttonAccept.apply {
-            text = context.getString(R.string.common_receive)
-            size = ButtonSize.XS
-            variant = ButtonVariant.FILLED
-            colorType = ButtonColorType.PRIMARY
+            text = context.getString(R.string.common_accept)
             setOnClickListener { acceptApplication(request.userID) }
         }
 
         holder.buttonReject.apply {
             text = context.getString(R.string.common_reject)
-            size = ButtonSize.XS
-            variant = ButtonVariant.OUTLINED
-            colorType = ButtonColorType.SECONDARY
             setOnClickListener { rejectApplication(request.userID) }
         }
     }
@@ -140,8 +134,8 @@ class SeatApplicationAdapter(
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageHead: AtomicAvatar = itemView.findViewById(R.id.iv_head)
         val textName: TextView = itemView.findViewById(R.id.tv_name)
-        val buttonAccept: AtomicButton = itemView.findViewById(R.id.atomic_btn_accept)
-        val buttonReject: AtomicButton = itemView.findViewById(R.id.atomic_btn_reject)
+        val buttonAccept: TextView = itemView.findViewById(R.id.atomic_btn_accept)
+        val buttonReject: TextView = itemView.findViewById(R.id.atomic_btn_reject)
     }
 
     companion object {

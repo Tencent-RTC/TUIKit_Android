@@ -19,12 +19,10 @@ import com.trtc.uikit.livekit.features.anchorboardcast.store.AnchorStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.device.MirrorType
-import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
 
 class SettingsListAdapter(
     private val context: Context,
     private val liveStreamManager: AnchorStore,
-    private val liveCoreView: LiveCoreView,
     private val settingsDialog: SettingsPanelDialog
 ) : RecyclerView.Adapter<SettingsListAdapter.ViewHolder>() {
 
@@ -84,6 +82,14 @@ class SettingsListAdapter(
                 context.getString(R.string.common_dashboard_title),
                 R.drawable.livekit_settings_dashboard,
                 ITEM_TYPE_DASHBOARD
+            )
+        )
+
+        data.add(
+            SettingsItem(
+                context.getString(R.string.common_video_settings_item_pip),
+                R.drawable.livekit_pip_icon,
+                ITEM_TYPE_PIP
             )
         )
     }

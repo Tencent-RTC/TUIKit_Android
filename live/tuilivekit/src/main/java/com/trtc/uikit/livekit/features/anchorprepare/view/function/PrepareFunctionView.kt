@@ -128,7 +128,7 @@ class PrepareFunctionView @JvmOverloads constructor(
         findViewById<android.view.View>(R.id.iv_video_setting).setOnClickListener {
             if (videoSettingPanel == null) {
                 liveCoreView?.let {
-                    videoSettingPanel = PrepareVideoSettingPanel(context, it)
+                    videoSettingPanel = PrepareVideoSettingPanel(context)
                 }
             }
             videoSettingPanel?.show()

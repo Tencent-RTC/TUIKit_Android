@@ -1,83 +1,147 @@
 package com.trtc.uikit.livekit.component.gift.view.adapter
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.trtc.uikit.livekit.R
-import com.trtc.uikit.livekit.component.gift.view.ImageLoader.loadImage
+import com.trtc.uikit.livekit.component.gift.view.cell.GiftCellConfiguration
+import com.trtc.uikit.livekit.component.gift.view.cell.GiftBaseCell
+import com.trtc.uikit.livekit.component.gift.view.cell.GiftBatchCell
+import com.trtc.uikit.livekit.component.gift.view.cell.GiftCellListener
+import com.trtc.uikit.livekit.component.gift.view.cell.GiftComboCell
+import com.trtc.uikit.livekit.component.gift.view.cell.GiftSingleCell
 import io.trtc.tuikit.atomicxcore.api.gift.Gift
 
 class GiftPanelAdapter(
-    private val mPageIndex: Int,
-    private val mGiftModelList: MutableList<Gift>,
-    private val mContext: Context
-) : RecyclerView.Adapter<GiftPanelAdapter.ViewHolder?>() {
-    private var mOnItemClickListener: OnItemClickListener? = null
-    private var mSelectedPosition = 0
+    private val pageIndex: Int,
+    private val giftModelList: MutableList<Gift>,
+    private val context: Context
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), GiftCellListener {
+    private var onItemClickListener: OnItemClickListener? = null
+    private var selectedPosition = RecyclerView.NO_POSITION
+    private val configuration = GiftCellConfiguration()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.gift_layout_panel_recycle_item, parent, false)
-        return ViewHolder(view)
+    var cellFactory: ((ViewGroup, Gift) -> GiftBaseCell?)? = null
+    var onGiftSelectedListener: ((Gift) -> Unit)? = null
+
+    private val giftIdToViewType = mutableMapOf<String, Int>()
+    private val viewTypeToGift = mutableMapOf<Int, Gift>()
+    private var nextViewType = 0
+
+    private fun getViewTypeForGift(gift: Gift): Int {
+        return giftIdToViewType.getOrPut(gift.giftID) {
+            val type = nextViewType++
+            viewTypeToGift[type] = gift
+            type
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val gift = mGiftModelList[position]
-        loadImage(mContext, holder.mImageGift, gift.iconURL)
-        val nameText = if (mSelectedPosition == position)
-            mContext.getString(R.string.common_gift_give_gift)
-        else
-            gift.name
-        holder.mTextGiftName.text = nameText
-        holder.mLayoutRootView.background = null
-        holder.mTextGiftPrice.text = gift.coins.toString()
-        val giftIconBackResId = if (mSelectedPosition == position)
-            R.drawable.gift_selected_bg
-        else
-            R.drawable.gift_normal_bg
-        holder.mLayoutGiftView.setBackgroundResource(giftIconBackResId)
-        holder.itemView.setOnClickListener { view: View? ->
-            val preSelectedPosition = mSelectedPosition
-            mSelectedPosition = holder.getBindingAdapterPosition()
-            if (preSelectedPosition != RecyclerView.NO_POSITION) {
-                notifyItemChanged(preSelectedPosition)
-            }
-            if (mSelectedPosition != RecyclerView.NO_POSITION) {
-                notifyItemChanged(mSelectedPosition)
+    override fun getItemViewType(position: Int): Int {
+        return getViewTypeForGift(giftModelList[position])
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val gift = viewTypeToGift[viewType]
+        val cell = if (gift != null) {
+            createCell(parent, gift)
+        } else {
+            GiftSingleCell.create(parent)
+        }
+        cell.listener = this
+        cell.configuration = configuration
+        return GiftCellViewHolder(cell)
+    }
+
+    private fun createCell(parent: ViewGroup, gift: Gift): GiftBaseCell {
+        cellFactory?.invoke(parent, gift)?.let { return it }
+        return if (gift.resourceURL.isEmpty()) {
+            GiftComboCell.create(parent)
+        } else {
+            GiftSingleCell.create(parent)
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val gift = giftModelList[position]
+
+        when (holder) {
+            is GiftCellViewHolder -> {
+                val cell = holder.cell
+                cell.gift = gift
+                cell.setSelected(selectedPosition == position)
+
+                if (cell is GiftBatchCell) {
+                    cell.setupLongPressOnBind()
+                }
+
+                cell.itemView.setOnClickListener {
+                    val preSelectedPosition = selectedPosition
+
+                    if (selectedPosition == position) {
+                        if (cell is GiftComboCell) {
+                            cell.triggerComboAction()
+                        } else {
+                            cell.handleHitWhenSelected()
+                        }
+                    } else {
+                        selectedPosition = position
+                        if (preSelectedPosition != RecyclerView.NO_POSITION) {
+                            notifyItemChanged(preSelectedPosition)
+                        }
+                        notifyItemChanged(selectedPosition)
+                        onGiftSelectedListener?.invoke(gift)
+                    }
+                }
             }
         }
+    }
 
-        holder.mTextGiftName.setOnClickListener { view: View? ->
-            if (mSelectedPosition == position) {
-                mSelectedPosition = RecyclerView.NO_POSITION
-                mOnItemClickListener!!.onItemClick(view, gift, position, mPageIndex)
-                notifyItemChanged(position)
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+        when (holder) {
+            is GiftCellViewHolder -> {
+                val cell = holder.cell
+                if (cell is GiftComboCell) {
+                    cell.resetComboStateForReuse()
+                }
+            }
+        }
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        when (holder) {
+            is GiftCellViewHolder -> {
+                val cell = holder.cell
+                if (cell is GiftComboCell) {
+                    cell.setSelected(selectedPosition == holder.bindingAdapterPosition)
+                }
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return mGiftModelList.size
+        return giftModelList.size
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var mLayoutRootView: LinearLayout = view.findViewById(R.id.ll_gift_root)
-        var mLayoutGiftView: LinearLayout = view.findViewById(R.id.ll_gift)
-        var mImageGift: ImageView = view.findViewById(R.id.iv_gift_icon)
-        var mTextGiftName: TextView = view.findViewById(R.id.tv_gift_name)
-        var mTextGiftPrice: TextView = view.findViewById(R.id.tv_gift_price)
+    override fun onSendGift(cell: GiftBaseCell, gift: Gift, count: Int) {
+        val position = findPositionByGift(gift)
+        if (position != RecyclerView.NO_POSITION) {
+            onItemClickListener?.onItemClick(null, gift, position, pageIndex, count)
+        }
     }
 
+    private fun findPositionByGift(gift: Gift): Int {
+        return giftModelList.indexOfFirst { it.giftID == gift.giftID }
+    }
+
+    class GiftCellViewHolder(val cell: GiftBaseCell) : RecyclerView.ViewHolder(cell.itemView)
 
     interface OnItemClickListener {
-        fun onItemClick(view: View?, gift: Gift, position: Int, pageIndex: Int)
+        fun onItemClick(view: View?, gift: Gift, position: Int, pageIndex: Int, count: Int = 1)
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
-        mOnItemClickListener = listener
+        onItemClickListener = listener
     }
 }

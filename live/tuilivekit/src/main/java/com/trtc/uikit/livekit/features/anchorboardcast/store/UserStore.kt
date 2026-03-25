@@ -9,10 +9,10 @@ import com.tencent.imsdk.v2.V2TIMFollowTypeCheckResult.V2TIM_FOLLOW_TYPE_IN_MY_F
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMUserFullInfo
 import com.tencent.imsdk.v2.V2TIMValueCallback
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
@@ -73,8 +73,9 @@ class UserStore() {
 
                 override fun onError(code: Int, message: String) {
                     logger.error("${hashCode()} followUser:[onSuccess:[code:$code,message:$message]]")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$message", AtomicToast.Style.ERROR)
+                    ContextProvider.getApplicationContext()?.apply {
+                        AtomicToast.show(this, "$code,$message", AtomicToast.Style.ERROR)
+                    }
                 }
             })
     }
@@ -92,8 +93,9 @@ class UserStore() {
 
                 override fun onError(code: Int, message: String) {
                     logger.error("${hashCode()} unfollowUser:[onSuccess:[code:$code,message:$message]]")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$message", AtomicToast.Style.ERROR)
+                    ContextProvider.getApplicationContext()?.apply {
+                        AtomicToast.show(this, "$code,$message", AtomicToast.Style.ERROR)
+                    }
                 }
             })
     }
@@ -123,8 +125,9 @@ class UserStore() {
 
                 override fun onError(code: Int, message: String) {
                     logger.error("${hashCode()} checkFollowType:[onSuccess:[code:$code,message:$message]]")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$message", AtomicToast.Style.ERROR)
+                    ContextProvider.getApplicationContext()?.apply {
+                        AtomicToast.show(this, "$code,$message", AtomicToast.Style.ERROR)
+                    }
                 }
             })
     }
@@ -138,19 +141,20 @@ class UserStore() {
         if (userId != LoginStore.shared.loginState.loginUserInfo.value?.userID) {
             return
         }
-        val context = ContextProvider.getApplicationContext()
-        if (isDisable) {
-            AtomicToast.show(
-                context,
-                context.resources.getString(R.string.common_send_message_disabled),
-                AtomicToast.Style.INFO
-            )
-        } else {
-            AtomicToast.show(
-                context,
-                context.resources.getString(R.string.common_send_message_enable),
-                AtomicToast.Style.INFO
-            )
+        ContextProvider.getApplicationContext()?.apply {
+            if (isDisable) {
+                AtomicToast.show(
+                    this,
+                    this.resources.getString(R.string.common_send_message_disabled),
+                    AtomicToast.Style.INFO
+                )
+            } else {
+                AtomicToast.show(
+                    this,
+                    this.resources.getString(R.string.common_send_message_enable),
+                    AtomicToast.Style.INFO
+                )
+            }
         }
     }
 

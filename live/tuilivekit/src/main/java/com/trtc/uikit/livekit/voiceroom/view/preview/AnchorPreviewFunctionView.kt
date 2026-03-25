@@ -5,7 +5,7 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import com.trtc.uikit.livekit.R
-import com.trtc.uikit.livekit.common.BACKGROUND_THUMB_URL_LIST
+import com.trtc.uikit.livekit.common.BACKGROUND_URL_LIST
 import com.trtc.uikit.livekit.common.DEFAULT_BACKGROUND_URL
 import com.trtc.uikit.livekit.component.audioeffect.AudioEffectPanel
 import com.trtc.uikit.livekit.voiceroom.view.basic.BasicView
@@ -37,7 +37,7 @@ class AnchorPreviewFunctionView @JvmOverloads constructor(
                 val config = StreamPresetImagePicker.Config()
                 config.title = context.getString(R.string.common_settings_bg_image)
                 config.confirmButtonText = context.getString(R.string.common_set_as_background)
-                config.data = BACKGROUND_THUMB_URL_LIST
+                config.data = BACKGROUND_URL_LIST
                 config.currentImageUrl =
                     transferThumbUrlFromImage(voiceRoomManager?.prepareStore?.prepareState?.liveInfo?.value?.backgroundURL)
                 streamPresetImagePicker = StreamPresetImagePicker(context, config)

@@ -10,9 +10,8 @@ import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.device.MirrorType
 import io.trtc.tuikit.atomicxcore.api.device.VideoQuality
-import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
 
-class PrepareVideoSettingPanel(context: Context, private val liveCoreView: LiveCoreView) : AtomicPopover(context) {
+class PrepareVideoSettingPanel(context: Context) : AtomicPopover(context) {
 
     private lateinit var textMirror: TextView
     private lateinit var textVideoQuality: TextView
@@ -55,6 +54,7 @@ class PrepareVideoSettingPanel(context: Context, private val liveCoreView: LiveC
             })
             videoQualityPanel.show()
         }
+        textVideoQuality.text = videoQualityToString(DeviceStore.shared().deviceState.localVideoQuality.value)
     }
 
     private fun mirrorTypeToString(): String {

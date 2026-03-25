@@ -71,7 +71,7 @@ class AudienceListPopupDialog(
         recycleAudienceList.layoutManager = LinearLayoutManager(
             context, LinearLayoutManager.VERTICAL, false
         )
-        adapter = AudienceListPanelAdapter(context, audienceState)
+        adapter = AudienceListPanelAdapter(audienceState)
         recycleAudienceList.adapter = adapter
         adapter?.setOnItemClickListener(onUserItemClickListener)
     }

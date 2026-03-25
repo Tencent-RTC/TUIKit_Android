@@ -30,6 +30,9 @@ android {
         sourceCompatibility javaVersion
         targetCompatibility javaVersion
     }
+    kotlinOptions {
+        jvmTarget = javaVersion
+    }
 
     sourceSets {
         main {
@@ -69,9 +72,8 @@ dependencies {
     def projects = this.rootProject.getAllprojects().stream().map { project -> project.name }.collect()
     api projects.contains("tuicore") ? project(':tuicore') : "com.tencent.liteav.tuikit:tuicore:8.8.7357"
 
-    api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:3.6.1.76"
-    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.0.0.110"
+    api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:4.0.1.97"
+    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.0.1.90"
     api rootProject.getProperties().containsKey("liteavSdk") ? rootProject.ext.liteavSdk : "com.tencent.liteav:LiteAVSDK_Professional:13.0.0.19676"
     api rootProject.getProperties().containsKey("imSdk") ? rootProject.ext.imSdk : "com.tencent.imsdk:imsdk-plus:8.7.7201"
-    api rootProject.getProperties().containsKey("common") ? rootProject.ext.common : "io.trtc.uikit:common:3.3.0.1194"
 }

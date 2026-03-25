@@ -10,11 +10,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:background="@color/common_design_standard_g8" />
-
     <TextView
         android:id="@+id/text_cancel"
         android:layout_width="match_parent"
@@ -22,6 +17,7 @@
         android:paddingTop="20dp"
         android:gravity="center_horizontal"
         android:text="@string/cancel"
-        android:textColor="@color/common_design_standard_g2"
-        android:textSize="18sp" />
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_color_secondary"
+        android:textSize="16sp" />
 </LinearLayout>

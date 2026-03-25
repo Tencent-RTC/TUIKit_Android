@@ -1,6 +1,7 @@
 package com.trtc.uikit.livekit.common
 
-import com.trtc.tuikit.common.system.ContextProvider
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
+
 
 object PackageService {
 
@@ -8,7 +9,7 @@ object PackageService {
     private const val PACKAGE_TENCENT_RTC = "com.tencent.rtc.app"
 
     private val currentPackageName: String
-        get() = ContextProvider.getApplicationContext().packageName
+        get() = ContextProvider.getApplicationContext()?.packageName?:""
 
     val isRTCube: Boolean
         get() = PACKAGE_RT_CUBE == currentPackageName

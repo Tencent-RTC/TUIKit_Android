@@ -8,12 +8,16 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.tencent.cloud.tuikit.engine.extension.TUISongListManager
+import com.tencent.trtc.TXChorusMusicPlayer.TXChorusRole
 import io.trtc.tuikit.atomicx.R
 import io.trtc.tuikit.atomicx.karaoke.store.KaraokeStore
 import io.trtc.tuikit.atomicx.karaoke.store.utils.MusicInfo
@@ -31,9 +35,7 @@ class SongRequestPanel(
     private var orderedTabView: TextView? = null
     private val adapterSongList = KaraokeSongListAdapter(store)
     private val adapterOrderedList = KaraokeOrderedListAdapter(store)
-    private val songSelectedListObserver = Observer(this::songSelectedListChange)
-    private val roomDismissedObserver = Observer(this::roomDismissedChange)
-    private val songLibraryListObserver = Observer(this::songLibraryListChange)
+    private var subscribeStateJob: Job? = null
 
     init {
         initView()
@@ -53,15 +55,21 @@ class SongRequestPanel(
     }
 
     private fun addObserve() {
-        store.songCatalog.observeForever(songLibraryListObserver)
-        store.songQueue.observeForever(songSelectedListObserver)
-        store.isRoomDismissed.observeForever(roomDismissedObserver)
+        subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
+            launch {
+                store.songCatalog.collect { songLibraryListChange(it) }
+            }
+            launch {
+                store.songQueue.collect { songSelectedListChange(it) }
+            }
+            launch {
+                store.isRoomDismissed.collect { roomDismissedChange(it) }
+            }
+        }
     }
 
     private fun removeObserve() {
-        store.songCatalog.removeObserver(songLibraryListObserver)
-        store.songQueue.removeObserver(songSelectedListObserver)
-        store.isRoomDismissed.removeObserver(roomDismissedObserver)
+        subscribeStateJob?.cancel()
     }
 
     override fun onAttachedToWindow() {
@@ -113,7 +121,7 @@ class SongRequestPanel(
 
     private fun initExitView(view: View) {
         val exitView: FrameLayout = view.findViewById(R.id.fl_exit_request)
-        if (store.isRoomOwner.value == false || !isDisplayExitView) {
+        if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger || !isDisplayExitView) {
             exitView.visibility = GONE
         }
         exitView.setOnClickListener {

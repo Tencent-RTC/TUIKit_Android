@@ -59,6 +59,7 @@
     <string name="common_mute_audio">Mute</string>
     <string name="common_mute_audio_by_master">The anchor has muted you</string>
     <string name="common_mute_video_by_owner">The anchor disabled your video</string>
+    <string name="common_preview_video_live">Live Video</string>
     <string name="common_recommended_list">Suggested Hosts</string>
     <string name="common_seat_application_title">Link Application(%1$d)</string>
     <string name="common_seat_list_title">Current Mic (%1$d)</string>
@@ -82,6 +83,7 @@
     <string name="common_video_ultimate">Ultimate-Video</string>
     <string name="common_link_guest">Guest</string>
     <string name="common_link_host">Host</string>
+    <string name="live_application_list_xxx">Application List (%1$d)</string>
     <string name="live_barrage_anchor">Anchor</string>
     <string name="live_barrage_error_content_is_long">The content is too long, please reduce the content and try again</string>
     <string name="live_barrage_error_disable_message_by_admin">You have been muted in the current room</string>
@@ -93,6 +95,7 @@
     <string name="live_error_connection_notexit">The room you are invited to connect to does not exist</string>
     <string name="live_error_connection_retry">Internal error, it is recommended to try again.</string>
     <string name="live_error_room_mismatch">The room types do not match; connections can only be initiated in rooms of the same type.</string>
+    <string name="live_on_seat_list">Connected (%1$d/%2$d)</string>
     <string name="livelist_loading">Loading...</string>
     <string name="livelist_no_more_data">There is no more data</string>
     <string name="livelist_empty_data">Please start a live room</string>
@@ -200,6 +203,7 @@
     <string name="common_more_settings">More settings</string>
     <string name="common_music_volume">Music volume</string>
     <string name="common_people_volume">Voice volume</string>
+    <string name="common_accept">Accept</string>
     <string name="common_receive">Accept</string>
     <string name="common_reject">Reject</string>
     <string name="common_resolution_360p">360p</string>
@@ -372,6 +376,7 @@
     <string name="seat_unlocked">UnLock Seat</string>
     <string name="seat_no_guest">No guests</string>
     <string name="seat_in_battle">In Battle</string>
+    <string name="seat_in_connection">In Connection</string>
     <string name="seat_cancel_invite">Cancel invite</string>
     <string name="seat_request_battle">Request Battle</string>
     <string name="seat_request_host">Invite Host</string>
@@ -390,4 +395,7 @@
     <string name="common_host_kick_user_after_connect">The connection is successful. Users beyond the first 6 seats have been removed.</string>
     <string name="common_audience_kicked_re_apply">The connection only displays the first 6 seats. You have been removed.</string>
     <string name="common_back_seats_occupied">Cannot connect when back 4 seats occupied</string>
+    <string name="common_game_live">Game Live</string>
+    <string name="common_live_game">Live Game</string>
+    <string name="common_gift_combo">Combo</string>
 </resources>

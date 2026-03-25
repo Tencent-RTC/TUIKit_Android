@@ -17,6 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/common_battle_connecting"
+            android:fontFamily="sans-serif-medium"
             android:textColor="@color/text_color_primary"
             android:textSize="@dimen/text_size_16"
             android:textStyle="bold" />
@@ -54,8 +55,9 @@
         android:text="@string/seat_request_battle"
         app:buttonColorType="primary"
         app:buttonIconPosition="none"
+        android:fontFamily="sans-serif-medium"
         app:textStyle="true"
-        app:buttonTextSize="14sp"
+        app:buttonTextSize="16sp"
         app:buttonVariant="filled" />
 
 </LinearLayout>

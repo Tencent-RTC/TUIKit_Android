@@ -13,7 +13,6 @@ class BeautyPanelDialog(
 ) : AtomicPopover(context) {
 
     init {
-        setTransparentBackground(true)
         setShowMask(false)
     }
 

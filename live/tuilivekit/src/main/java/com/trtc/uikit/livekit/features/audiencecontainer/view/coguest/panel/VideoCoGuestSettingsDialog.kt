@@ -96,7 +96,6 @@ class VideoCoGuestSettingsDialog(
                                 this@apply,
                                 object : PermissionCallback() {
                                     override fun onGranted() {
-                                        PermissionRequest.sendRequestCompleteEvent()
                                         audienceStore.getViewStore()
                                             .updateTakeSeatState(true)
                                         audienceStore.getViewStore()
@@ -121,14 +120,12 @@ class VideoCoGuestSettingsDialog(
 
                                     override fun onDenied() {
                                         LOGGER.error("requestCameraPermissions:[onDenied]")
-                                        PermissionRequest.sendRequestCompleteEvent()
                                     }
                                 })
                         }
 
                         override fun onDenied() {
                             LOGGER.error("requestCameraPermissions:[onDenied]")
-                            PermissionRequest.sendRequestCompleteEvent()
                         }
                     })
             }

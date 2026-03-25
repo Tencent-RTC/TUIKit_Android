@@ -1,7 +1,7 @@
 package io.trtc.tuikit.atomicx.karaoke.service
 
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.karaoke.store.MusicCatalogService
-import com.trtc.tuikit.common.system.ContextProvider
 
 const val PACKAGE_RT_CUBE = "com.tencent.trtc"
 class SongServiceFactory {
@@ -27,7 +27,7 @@ class SongServiceFactory {
         }
 
         private fun isInternalDemo(): Boolean {
-            return PACKAGE_RT_CUBE == ContextProvider.getApplicationContext().packageName
+            return PACKAGE_RT_CUBE == ContextProvider.getApplicationContext()?.packageName
         }
 
     }

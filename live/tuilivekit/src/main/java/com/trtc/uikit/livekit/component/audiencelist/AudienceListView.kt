@@ -13,7 +13,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.tencent.qcloud.tuicore.util.ScreenUtil
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.reportEventData
@@ -24,6 +23,7 @@ import com.trtc.uikit.livekit.component.audiencelist.viewmodel.AudienceListConst
 import com.trtc.uikit.livekit.component.audiencelist.viewmodel.AudienceListConstants.LIVEKIT_AUDIENCE_LIST_ROOM_MAX_SHOW_USER_COUNT
 import com.trtc.uikit.livekit.component.audiencelist.viewmodel.AudienceListConstants.LIVEKIT_METRICS_PANEL_SHOW_LIVE_ROOM_AUDIENCE_LIST
 import com.trtc.uikit.livekit.component.audiencelist.viewmodel.AudienceListConstants.LIVEKIT_METRICS_PANEL_SHOW_VOICE_ROOM_AUDIENCE_LIST
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveEndedReason
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
@@ -129,7 +129,6 @@ class AudienceListView @JvmOverloads constructor(
             )
         adapter =
             AudienceListIconAdapter(
-                context,
                 audienceStore?.liveAudienceState
                 ?: LiveAudienceStore.create(liveID = roomId).liveAudienceState
             )

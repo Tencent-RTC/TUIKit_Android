@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.tencent.qcloud.tuicore.util.ScreenUtil
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
 import kotlin.math.max
 import kotlin.math.min

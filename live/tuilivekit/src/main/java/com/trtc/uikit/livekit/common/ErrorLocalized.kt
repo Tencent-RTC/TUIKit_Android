@@ -1,7 +1,6 @@
 package com.trtc.uikit.livekit.common
 
-import com.tencent.qcloud.tuicore.TUIConfig
-import com.trtc.tuikit.common.system.ContextProvider
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.trtc.uikit.livekit.R
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 
@@ -135,14 +134,15 @@ class ErrorLocalized {
             convertToErrorMessage(error).also { message ->
                 LOGGER.info("[error:$error,value:${error},message:$message]")
                 if (!INTERCEPT_TOAST_ONLY_PRINT_LOG.contains(error)) {
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, message, AtomicToast.Style.ERROR)
+                    ContextProvider.getApplicationContext()?.apply {
+                        AtomicToast.show(this, message, AtomicToast.Style.ERROR)
+                    }
                 }
             }
         }
 
         private fun convertToErrorMessage(error: Int): String {
-            val context = TUIConfig.getAppContext() ?: return ""
+            val context = ContextProvider.getApplicationContext() ?: return ""
             return when (error) {
                 LIVE_CLIENT_ERROR_SUCCESS ->
                     context.getString(R.string.common_client_error_success)
@@ -434,6 +434,7 @@ class ErrorLocalized {
 
                 LIVE_CONNECTION_ERROR_RETRY ->
                     context.getString(R.string.live_error_connection_retry)
+
                 LIVE_CONNECTION_ROOM_MISMATCH ->
                     context.getString(R.string.live_error_room_mismatch)
 

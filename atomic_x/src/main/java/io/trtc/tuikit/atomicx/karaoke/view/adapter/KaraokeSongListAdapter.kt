@@ -14,8 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tencent.cloud.tuikit.engine.extension.TUISongListManager
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
-import com.trtc.tuikit.common.imageloader.ImageLoader
+import com.tencent.trtc.TXChorusMusicPlayer.TXChorusRole
 import io.trtc.tuikit.atomicx.R
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicx.karaoke.store.KaraokeStore
 import io.trtc.tuikit.atomicx.karaoke.store.utils.MusicInfo
 
@@ -99,7 +100,7 @@ class KaraokeSongListAdapter(private val store: KaraokeStore) :
         }
 
         private fun initFunctionVisible() {
-            if (store.isRoomOwner.value == false) {
+            if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger) {
                 buttonRequestSong.visibility = GONE
             }
         }

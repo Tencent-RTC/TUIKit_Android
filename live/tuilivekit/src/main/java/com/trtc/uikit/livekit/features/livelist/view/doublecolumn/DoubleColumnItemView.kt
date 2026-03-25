@@ -10,11 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.livekit.R
+import com.trtc.uikit.livekit.common.DEFAULT_COVER_URL
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
 import com.trtc.uikit.livekit.features.livelist.LiveListViewAdapter
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
 
@@ -26,8 +27,7 @@ class DoubleColumnItemView @JvmOverloads constructor(
 
     companion object {
         private val LOGGER = LiveKitLogger.getComponentLogger("DoubleColumnItemView")
-        private const val DEFAULT_COVER_URL =
-            "https://liteav-test-1252463788.cos.ap-guangzhou.myqcloud.com/voice_room/voice_room_cover1.png"
+
         private const val START_PLAY_VIDEO_STREAM = 10001
         private const val START_PLAY_DELAY_MILLIS = 500L
     }

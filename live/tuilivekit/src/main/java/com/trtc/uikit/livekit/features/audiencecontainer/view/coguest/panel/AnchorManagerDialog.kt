@@ -7,7 +7,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
@@ -15,6 +14,7 @@ import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.features.audiencecontainer.store.AudienceStore
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton
@@ -356,23 +356,25 @@ class AnchorManagerDialog(
 
     private fun startCamera() {
         val isFrontCamera = audienceStore.getDeviceStore().deviceState.isFrontCamera.value
-        PermissionRequest.requestCameraPermissions(
-            ContextProvider.getApplicationContext(),
-            object : PermissionCallback() {
-                override fun onRequesting() {
-                    LOGGER.info("requestCameraPermissions:[onRequesting]")
-                }
+        ContextProvider.getApplicationContext()?.apply {
+            PermissionRequest.requestCameraPermissions(
+                this,
+                object : PermissionCallback() {
+                    override fun onRequesting() {
+                        LOGGER.info("requestCameraPermissions:[onRequesting]")
+                    }
 
-                override fun onGranted() {
-                    LOGGER.info("requestCameraPermissions:[onGranted]")
-                    this@AnchorManagerDialog.audienceStore.getDeviceStore()
-                        .openLocalCamera(isFrontCamera, completionHandler {
-                            onError { code, _ ->
-                                ErrorLocalized.onError(code)
-                            }
-                        })
-                }
-            })
+                    override fun onGranted() {
+                        LOGGER.info("requestCameraPermissions:[onGranted]")
+                        this@AnchorManagerDialog.audienceStore.getDeviceStore()
+                            .openLocalCamera(isFrontCamera, completionHandler {
+                                onError { code, _ ->
+                                    ErrorLocalized.onError(code)
+                                }
+                            })
+                    }
+                })
+        }
     }
 
     private fun updateMicrophoneButton(isAudioLocked: Boolean) {

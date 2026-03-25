@@ -37,11 +37,11 @@ class AnchorFunctionView @JvmOverloads constructor(
     private var settingsDialog: SettingsDialog? = null
     private var seatManagerDialog: SeatManagerDialog? = null
     private lateinit var liveListStore: LiveListStore
-    private var mCoHostStore: CoHostStore? = null
+    private var coHostStore: CoHostStore? = null
     private lateinit var coGuestStore: CoGuestStore
-    private lateinit var mImageBattle: ImageView
+    private lateinit var imageBattle: ImageView
     private var crossRoomInteractionDialog: InteractionInvitePanel? = null
-    private var mImageKTV: ImageView? = null
+    private var imageKTV: ImageView? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.livekit_voiceroom_anchor_function, this, true)
@@ -67,7 +67,7 @@ class AnchorFunctionView @JvmOverloads constructor(
 
     fun addConnectionObserver() {
         subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
-            mCoHostStore?.coHostState?.connected?.collect {
+            coHostStore?.coHostState?.connected?.collect {
                 onConnectedListChanged(it)
             }
         }
@@ -78,18 +78,18 @@ class AnchorFunctionView @JvmOverloads constructor(
         if (currentLiveId.isEmpty()) return
         val isConnected = connectedRoomList.any { it.liveID == currentLiveId }
         if (isConnected) {
-            mImageBattle.setImageResource(R.drawable.livekit_voiceroom_connected_icon)
-            mImageKTV?.visibility = GONE
+            imageBattle.setImageResource(R.drawable.livekit_voiceroom_connected_icon)
+            imageKTV?.visibility = GONE
         } else {
-            mImageBattle.setImageResource(R.drawable.livekit_function_voice_room_pk)
-            mImageKTV?.visibility = VISIBLE
+            imageBattle.setImageResource(R.drawable.livekit_function_voice_room_pk)
+            imageKTV?.visibility = VISIBLE
         }
 
     }
 
     private fun initKTVView() {
-        mImageKTV = findViewById(R.id.iv_song_request)
-        mImageKTV?.setOnClickListener { showSongRequestPanel() }
+        imageKTV = findViewById(R.id.iv_song_request)
+        imageKTV?.setOnClickListener { showSongRequestPanel() }
     }
 
 
@@ -100,12 +100,12 @@ class AnchorFunctionView @JvmOverloads constructor(
     override fun initStore() {
         liveListStore = LiveListStore.shared()
         coGuestStore = CoGuestStore.create(liveID)
-        mCoHostStore = create(liveID)
+        coHostStore = create(liveID)
     }
 
     private fun initBattleIcon() {
-        mImageBattle = findViewById(R.id.iv_pk)
-        mImageBattle.setOnClickListener { showPKPanel() }
+        imageBattle = findViewById(R.id.iv_pk)
+        imageBattle.setOnClickListener { showPKPanel() }
     }
 
     private fun showPKPanel() {

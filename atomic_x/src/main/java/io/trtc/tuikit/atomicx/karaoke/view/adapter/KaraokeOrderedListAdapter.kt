@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tencent.cloud.tuikit.engine.extension.TUISongListManager
+import com.tencent.trtc.TXChorusMusicPlayer.TXChorusRole
 import io.trtc.tuikit.atomicx.karaoke.store.KaraokeStore
 import io.trtc.tuikit.atomicx.karaoke.store.utils.PlaybackState
 import io.trtc.tuikit.atomicx.karaoke.view.adapter.KaraokeOrderedListAdapter.SongViewHolder
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicx.R
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 
 class KaraokeOrderedListAdapter(private val store: KaraokeStore) :
@@ -154,7 +155,7 @@ class KaraokeOrderedListAdapter(private val store: KaraokeStore) :
         }
 
         private fun initFunctionVisible() {
-            if (store.isRoomOwner.value == false) {
+            if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger) {
                 imagePause.visibility = GONE
                 imageNext.visibility = GONE
                 imagePin.visibility = GONE

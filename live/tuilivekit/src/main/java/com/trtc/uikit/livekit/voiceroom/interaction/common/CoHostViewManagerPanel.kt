@@ -11,18 +11,11 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
-import com.tencent.imsdk.v2.V2TIMFollowOperationResult
-import com.tencent.imsdk.v2.V2TIMFollowTypeCheckResult
-import com.tencent.imsdk.v2.V2TIMFollowTypeCheckResult.V2TIM_FOLLOW_TYPE_IN_BOTH_FOLLOWERS_LIST
-import com.tencent.imsdk.v2.V2TIMFollowTypeCheckResult.V2TIM_FOLLOW_TYPE_IN_MY_FOLLOWING_LIST
-import com.tencent.imsdk.v2.V2TIMManager
-import com.tencent.imsdk.v2.V2TIMValueCallback
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.voiceroom.interaction.battle.BattleInviteAdapter
+import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
@@ -30,8 +23,11 @@ import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.live.DeviceControlPolicy
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
-import io.trtc.tuikit.atomicxcore.api.live.Role
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class CoHostViewManagerPanel @JvmOverloads constructor(
     context: Context,
@@ -59,15 +55,16 @@ class CoHostViewManagerPanel @JvmOverloads constructor(
     private lateinit var layoutKickOutSeat: LinearLayout
     private lateinit var layoutEndLink: LinearLayout
     private var listener: BattleInviteAdapter.OnInviteButtonClickListener? = null
-    private val followingList = MutableLiveData<Set<String>>(LinkedHashSet())
-    private val followStatusObserver = Observer<Set<String>> { refreshFollowButtonUI(it) }
+    private var subscribeStateJob: Job? = null
+    private var voiceRoomManager: VoiceRoomManager? = null
 
     init {
         initView(context)
     }
 
-    fun init(seatInfo: SeatInfo) {
+    fun init(seatInfo: SeatInfo, voiceRoomManager: VoiceRoomManager?) {
         this.seatInfo = seatInfo
+        this.voiceRoomManager = voiceRoomManager
         liveSeatStore = LiveSeatStore.create(seatInfo.userInfo.liveID)
         liveListStore = LiveListStore.shared()
         initUserAvatar()
@@ -95,14 +92,18 @@ class CoHostViewManagerPanel @JvmOverloads constructor(
     }
 
     private fun addObserver() {
-        followingList.observeForever(followStatusObserver)
-        if (!TextUtils.isEmpty(seatInfo.userInfo.userID)) {
-            checkFollowUser(seatInfo.userInfo.userID)
+        subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
+            voiceRoomManager?.imStore?.imState?.followingUserList?.collect { followingList ->
+                refreshFollowButtonUI(followingList)
+            }
+        }
+        if (!TextUtils.isEmpty(seatInfo.userInfo.userID) && !checkIsSelf(seatInfo.userInfo.userID)) {
+            voiceRoomManager?.imStore?.checkFollowUser(seatInfo.userInfo.userID)
         }
     }
 
     private fun removeObserver() {
-        followingList.removeObserver(followStatusObserver)
+        subscribeStateJob?.cancel()
     }
 
     private fun initView(context: Context) {
@@ -199,12 +200,12 @@ class CoHostViewManagerPanel @JvmOverloads constructor(
             return
         }
         followContainer.visibility = View.VISIBLE
-        refreshFollowButtonUI(followingList.value)
+        refreshFollowButtonUI(voiceRoomManager?.imStore?.imState?.followingUserList?.value)
         followContainer.setOnClickListener {
-            if (followingList.value?.contains(seatUserId) == true) {
-                unfollowUser(seatUserId)
+            if (voiceRoomManager?.imStore?.imState?.followingUserList?.value?.contains(seatUserId) == true) {
+                voiceRoomManager?.imStore?.unfollow(seatUserId)
             } else {
-                followUser(seatUserId)
+                voiceRoomManager?.imStore?.follow(seatUserId)
             }
         }
     }
@@ -291,64 +292,5 @@ class CoHostViewManagerPanel @JvmOverloads constructor(
 
     private fun checkIsSelf(userId: String): Boolean {
         return TextUtils.equals(userId, TUIRoomEngine.getSelfInfo().userId)
-    }
-
-    private fun checkFollowUser(userId: String) {
-        if (checkIsSelf(userId)) return
-        val userIDList = listOf(userId)
-        V2TIMManager.getFriendshipManager().checkFollowType(userIDList,
-            object : V2TIMValueCallback<List<V2TIMFollowTypeCheckResult>> {
-                override fun onSuccess(results: List<V2TIMFollowTypeCheckResult>?) {
-                    results?.firstOrNull()?.let { result ->
-                        val isFollowing = result.followType == V2TIM_FOLLOW_TYPE_IN_MY_FOLLOWING_LIST
-                                || result.followType == V2TIM_FOLLOW_TYPE_IN_BOTH_FOLLOWERS_LIST
-                        updateFollowingList(result.userID, isFollowing)
-                    }
-                }
-
-                override fun onError(code: Int, desc: String) {
-                    ErrorLocalized.onError(code)
-                }
-            })
-    }
-
-    private fun followUser(userId: String) {
-        val userIDList = listOf(userId)
-        V2TIMManager.getFriendshipManager().followUser(userIDList,
-            object : V2TIMValueCallback<List<V2TIMFollowOperationResult>> {
-                override fun onSuccess(v2TIMFollowOperationResults: List<V2TIMFollowOperationResult>) {
-                    updateFollowingList(userId, true)
-                }
-
-                override fun onError(code: Int, desc: String) {
-                    ErrorLocalized.onError(code)
-                }
-            })
-    }
-
-    private fun unfollowUser(userId: String) {
-        val userIDList = listOf(userId)
-        V2TIMManager.getFriendshipManager().unfollowUser(userIDList,
-            object : V2TIMValueCallback<List<V2TIMFollowOperationResult>> {
-                override fun onSuccess(v2TIMFollowOperationResults: List<V2TIMFollowOperationResult>) {
-                    updateFollowingList(userId, false)
-                }
-
-                override fun onError(code: Int, desc: String) {
-                    ErrorLocalized.onError(code)
-                }
-            })
-    }
-
-    private fun updateFollowingList(userId: String, isAdd: Boolean) {
-        if (TextUtils.isEmpty(userId)) return
-        val currentList = followingList.value ?: emptySet()
-        val newList = currentList.toMutableSet()
-        if (isAdd) {
-            newList.add(userId)
-        } else {
-            newList.remove(userId)
-        }
-        followingList.value = newList
     }
 }

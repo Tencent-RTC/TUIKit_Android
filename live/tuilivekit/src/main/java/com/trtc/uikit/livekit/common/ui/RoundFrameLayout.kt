@@ -7,7 +7,7 @@ import android.graphics.RectF
 import android.graphics.Region
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.tencent.qcloud.tuicore.util.ScreenUtil
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 
 class RoundFrameLayout @JvmOverloads constructor(
     context: Context,

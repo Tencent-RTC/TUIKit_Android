@@ -10,7 +10,7 @@ import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.interfaces.ITUIService
 import com.tencent.qcloud.tuicore.interfaces.TUIServiceCallback
 import com.trtc.uikit.livekit.common.reportEventData
-import com.trtc.uikit.livekit.component.gift.service.GiftConstants
+import com.trtc.uikit.livekit.component.gift.viewmodel.GiftConstants
 
 class TCEffectAnimationView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     AnimationView(context, attrs) {

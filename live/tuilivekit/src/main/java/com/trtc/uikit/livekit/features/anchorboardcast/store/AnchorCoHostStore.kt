@@ -1,9 +1,9 @@
 package com.trtc.uikit.livekit.features.anchorboardcast.store
 
 import android.text.TextUtils
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.CoHostStore
@@ -70,11 +70,15 @@ class AnchorCoHostStore(val liveInfo: LiveInfo) {
             coHostStore.coHostState.candidatesCursor.value
         }
         coHostState.isLoadMore = true
+        if (isRefresh) {
+            coHostState.isLastPage = false
+        }
         CoHostStore.create(liveInfo.liveID).getCoHostCandidates(
             recommendedCursor,
             object : CompletionHandler {
                 override fun onSuccess() {
                     coHostState.isLoadMore = false
+                    coHostState.isLastPage = coHostStore.coHostState.candidatesCursor.value.isEmpty()
                 }
 
                 override fun onFailure(code: Int, desc: String) {
@@ -106,12 +110,13 @@ class AnchorCoHostStore(val liveInfo: LiveInfo) {
             val userName = invitee.userName.ifEmpty {
                 invitee.userID
             }
-            val context = ContextProvider.getApplicationContext()
-            AtomicToast.show(
-                context,
-                context.resources.getString(R.string.common_request_rejected, userName),
-                AtomicToast.Style.INFO
-            )
+            ContextProvider.getApplicationContext()?.apply {
+                AtomicToast.show(
+                    this,
+                    this.resources.getString(R.string.common_request_rejected, userName),
+                    AtomicToast.Style.INFO
+                )
+            }
         }
     }
 
@@ -122,12 +127,13 @@ class AnchorCoHostStore(val liveInfo: LiveInfo) {
 
         inviter?.let {
             if (it.userID == LoginStore.shared.loginState.loginUserInfo.value?.userID) {
-                val context = ContextProvider.getApplicationContext()
-                AtomicToast.show(
-                    context,
-                    context.resources.getString(R.string.common_connect_invitation_timeout),
-                    AtomicToast.Style.INFO
-                )
+                ContextProvider.getApplicationContext()?.apply {
+                    AtomicToast.show(
+                        this,
+                        this.resources.getString(R.string.common_connect_invitation_timeout),
+                        AtomicToast.Style.INFO
+                    )
+                }
             }
         }
     }

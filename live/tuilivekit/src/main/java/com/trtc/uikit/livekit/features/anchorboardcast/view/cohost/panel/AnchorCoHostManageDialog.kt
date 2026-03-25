@@ -34,7 +34,6 @@ import io.trtc.tuikit.atomicxcore.api.live.BattleStore
 import io.trtc.tuikit.atomicxcore.api.live.CoHostStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
-import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,8 +42,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("ViewConstructor")
 class AnchorCoHostManageDialog(
     context: Context,
-    private val anchorManager: AnchorStore,
-    private val liveStream: LiveCoreView
+    private val anchorManager: AnchorStore
 ) : AtomicPopover(context), ITUINotification {
 
     private val logger = LiveKitLogger.getFeaturesLogger("AnchorCoHostManageDialog")
@@ -58,6 +56,7 @@ class AnchorCoHostManageDialog(
     private lateinit var textDisconnect: TextView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var textRecommendTitle: TextView
+    private lateinit var textAllLoaded: TextView
     private var subscribeStateJob: Job? = null
     private val battleListener = object : BattleListener() {
         override fun onBattleStarted(
@@ -100,6 +99,7 @@ class AnchorCoHostManageDialog(
         recyclerRecommendList = view.findViewById(R.id.rv_recommendation_user_list)
         swipeRefreshLayout = view.findViewById(R.id.srl_recommendation_user_list)
         textDisconnect = view.findViewById(R.id.tv_disconnect)
+        textAllLoaded = view.findViewById(R.id.tv_all_loaded)
     }
 
     private fun addObserver() {
@@ -145,6 +145,7 @@ class AnchorCoHostManageDialog(
             }
             anchorRecommendedAdapter.updateData(recommendList)
             anchorRecommendedAdapter.notifyDataSetChanged()
+            textAllLoaded.visibility = if (anchorManager.getCoHostState().isLastPage) VISIBLE else GONE
         }
     }
 
@@ -192,7 +193,7 @@ class AnchorCoHostManageDialog(
         recyclerConnectedList.layoutManager = LinearLayoutManager(
             context, LinearLayoutManager.VERTICAL, false
         )
-        anchorConnectedAdapter = AnchorConnectingAdapter(context, anchorManager)
+        anchorConnectedAdapter = AnchorConnectingAdapter(context)
         recyclerConnectedList.adapter = anchorConnectedAdapter
     }
 
@@ -231,7 +232,6 @@ class AnchorCoHostManageDialog(
                 oldScrollY: Int
             ) {
                 if (scrollY >= (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
-                    Log.d("xander_test", "loadMoreData")
                     if (!anchorManager.getCoHostState().isLoadMore && !anchorManager.getCoHostState().isLastPage) {
                         loadMoreData()
                     }
