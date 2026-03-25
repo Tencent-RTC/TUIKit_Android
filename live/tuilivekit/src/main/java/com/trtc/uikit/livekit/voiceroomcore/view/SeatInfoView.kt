@@ -9,12 +9,12 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.trtc.uikit.livekit.R
-import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
-import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 import com.trtc.uikit.livekit.common.convertToSeatInfo
 import com.trtc.uikit.livekit.voiceroomcore.impl.SeatGridViewObserverManager
+import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
+import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
-import io.trtc.tuikit.atomicxcore.api.live.Role
+import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
 
 @SuppressLint("ViewConstructor")
@@ -38,6 +38,7 @@ class SeatInfoView @JvmOverloads constructor(
     private lateinit var ivRoomOwner: ImageView
     private lateinit var voiceWaveView: VoiceWaveView
     private var isShowTalkBorder = false
+    private val liveListStore = LiveListStore.shared()
 
     init {
         LayoutInflater.from(context).inflate(R.layout.livekit_seat_info_view, this, true)
@@ -116,7 +117,7 @@ class SeatInfoView @JvmOverloads constructor(
     }
 
     private fun updateUserRole(seatInfo: SeatInfo) {
-        val isOwner = seatInfo.userInfo.role == Role.OWNER
+        val isOwner = seatInfo.userInfo.userID == liveListStore.liveState.currentLive.value.liveOwner.userID
         ivRoomOwner.visibility = if (isOwner) VISIBLE else GONE
     }
 

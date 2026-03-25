@@ -11,14 +11,14 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.livekit.R
+import com.trtc.uikit.livekit.common.COVER_URL_LIST
 import com.trtc.uikit.livekit.features.anchorprepare.LiveStreamPrivacyStatus
-import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareStore
 import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareState
-import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareState.Companion.COVER_URL_LIST
 import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareState.Companion.MAX_INPUT_BYTE_LENGTH
+import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareStore
 import com.trtc.uikit.livekit.features.anchorprepare.view.liveinfoedit.livecoverpicker.LiveCoverPicker
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

@@ -18,12 +18,9 @@ import android.widget.ImageView
 import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUIThemeManager
-import com.trtc.tuikit.common.imageloader.ImageLoader
-import com.trtc.tuikit.common.imageloader.ImageOptions
-import com.trtc.tuikit.common.util.ScreenUtil
-import com.trtc.tuikit.common.util.ScreenUtil.dip2px
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.COMPONENT_LIVE_STREAM
+import com.trtc.uikit.livekit.common.DEFAULT_COVER_URL
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_PARAMS_IS_LINKING
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
@@ -68,6 +65,10 @@ import com.trtc.uikit.livekit.features.audiencecontainer.view.cohost.widgets.CoH
 import com.trtc.uikit.livekit.features.audiencecontainer.view.cohost.widgets.CoHostForegroundWidgetsView
 import com.trtc.uikit.livekit.features.audiencecontainer.view.settings.AudienceSettingsPanelDialog
 import com.trtc.uikit.livekit.features.audiencecontainer.view.userinfo.UserInfoDialog
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
+import io.trtc.tuikit.atomicx.common.imageloader.ImageOptions
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dip2px
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.items
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
@@ -164,7 +165,7 @@ class AudienceView @JvmOverloads constructor(
         layoutLiveCoreViewMask.addView(liveCoreViewMaskBackgroundView)
         createVideoMuteBitmap()
         setComponent(COMPONENT_LIVE_STREAM)
-        setLayoutBackground(liveInfo.coverURL, liveInfo.seatLayoutTemplateID)
+        setLayoutBackground(liveInfo.coverURL, liveInfo.seatTemplate)
     }
 
     fun getRoomId(): String {
@@ -272,7 +273,7 @@ class AudienceView @JvmOverloads constructor(
         liveListStore.joinLive(liveInfo.liveID, object : LiveInfoCompletionHandler {
             override fun onSuccess(liveInfo: LiveInfo) {
                 this@AudienceView.liveInfo = liveInfo
-                setCoreViewLayoutParamsWhenLandscape(liveInfo.seatLayoutTemplateID, true)
+                setCoreViewLayoutParamsWhenLandscape(liveInfo.seatTemplate, true)
                 val activity = context as Activity
                 if (activity.isFinishing || activity.isDestroyed) {
                     LOGGER.warn("activity is exit, leaveLiveStream")
@@ -342,7 +343,7 @@ class AudienceView @JvmOverloads constructor(
             if (isPortrait) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         updateViewByOrientation(isPortrait)
         liveCoreViewMaskBackgroundView.setPortrait(isPortrait)
-        setCoreViewLayoutParamsWhenLandscape(liveInfo.seatLayoutTemplateID, isPortrait)
+        setCoreViewLayoutParamsWhenLandscape(liveInfo.seatTemplate, isPortrait)
     }
 
     private fun updateViewByOrientation(isPortrait: Boolean) {
@@ -379,6 +380,28 @@ class AudienceView @JvmOverloads constructor(
         roomInfoView.setScreenOrientation(isPortrait)
 
         networkInfoView.setScreenOrientation(isPortrait)
+
+        val barrageParams = barrageStreamView.layoutParams as FrameLayout.LayoutParams
+        barrageParams.marginStart = dip2px(16f)
+        barrageParams.marginEnd = dip2px(126f)
+        if (isPortrait) {
+            barrageParams.height = dip2px(212f)
+            barrageParams.gravity = Gravity.BOTTOM
+            barrageParams.topMargin = 0
+            barrageParams.bottomMargin = dip2px(70f)
+            barrageStreamView.layoutParams = barrageParams
+        } else {
+            val screenHeight = minOf(ScreenUtil.getScreenHeight(context), ScreenUtil.getScreenWidth(context))
+            val topMargin = (screenHeight * 0.45).toInt()
+            barrageParams.height = screenHeight - topMargin - (screenHeight * 0.09).toInt()
+            barrageParams.gravity = Gravity.TOP
+            barrageParams.topMargin = topMargin
+            barrageParams.bottomMargin = 0
+            barrageStreamView.layoutParams = barrageParams
+        }
+        barrageStreamView.post {
+            barrageStreamView.scrollToLastPosition()
+        }
     }
 
     private fun getScreenPoint(): Point {
@@ -418,9 +441,9 @@ class AudienceView @JvmOverloads constructor(
         return params
     }
 
-    private fun setLayoutBackground(imageUrl: String?, seatLayoutTemplateId: Int) {
-        LOGGER.info("setLayoutBackground->imageUrl: $imageUrl, seatLayoutTemplateId:$seatLayoutTemplateId")
-        if (seatLayoutTemplateId != 200) {
+    private fun setLayoutBackground(imageUrl: String?, seatLayoutTemplate: SeatLayoutTemplate) {
+        LOGGER.info("setLayoutBackground->imageUrl: $imageUrl, seatLayoutTemplate:$seatLayoutTemplate")
+        if (seatLayoutTemplate != SeatLayoutTemplate.VideoLandscape4Seats) {
             val builder = ImageOptions.Builder()
             builder.setBlurEffect(80f)
             if (TextUtils.isEmpty(imageUrl)) {
@@ -678,10 +701,10 @@ class AudienceView @JvmOverloads constructor(
         linkMicDialog.show()
     }
 
-    private fun setCoreViewLayoutParamsWhenLandscape(templateId: Int, isPortrait: Boolean) {
-        LOGGER.info("setCoreViewLayoutParamsWhenLandscape:templateId:$templateId,isPortrait:$isPortrait")
+    private fun setCoreViewLayoutParamsWhenLandscape(template: SeatLayoutTemplate, isPortrait: Boolean) {
+        LOGGER.info("setCoreViewLayoutParamsWhenLandscape:template:$template,isPortrait:$isPortrait")
         val layoutParams: FrameLayout.LayoutParams = layoutLiveCoreView.layoutParams as FrameLayout.LayoutParams
-        if (templateId == 200 && isPortrait) {
+        if (template == SeatLayoutTemplate.VideoLandscape4Seats && isPortrait) {
             layoutParams.topMargin = dip2px(150f)
             layoutParams.height = ScreenUtil.getScreenWidth(context) * 720 / 1280
 
@@ -690,7 +713,7 @@ class AudienceView @JvmOverloads constructor(
             layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
         }
         layoutLiveCoreView.layoutParams = layoutParams
-        setLayoutBackground(liveInfo.backgroundURL, templateId)
+        setLayoutBackground(liveInfo.backgroundURL, template)
     }
 
     fun subscribeObserver() {
@@ -1155,17 +1178,15 @@ class AudienceView @JvmOverloads constructor(
 
     companion object {
         private val LOGGER = LiveKitLogger.getLiveStreamLogger("AudienceView")
-        private const val DEFAULT_COVER_URL =
-            "https://liteav-test-1252463788.cos.ap-guangzhou.myqcloud.com/voice_room/voice_room_cover1.png"
 
         fun showBattleToast(tips: String) {
-            val context = ContextProvider.getApplicationContext()
-            AtomicToast.show(
-                context,
-                tips,
-                customIcon = R.drawable.livekit_connection_toast_icon,
-                style = AtomicToast.Style.INFO
-            )
+            ContextProvider.getApplicationContext()?.apply {
+                AtomicToast.show(
+                    this,
+                    tips,
+                    style = AtomicToast.Style.INFO
+                )
+            }
         }
     }
 }

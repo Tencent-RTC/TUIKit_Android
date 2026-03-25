@@ -23,7 +23,9 @@ import com.trtc.tuikit.common.livedata.LiveListObserver
 import com.trtc.tuikit.common.ui.PopupDialog
 import com.trtc.tuikit.common.util.ToastUtil
 import io.trtc.tuikit.atomicxcore.api.call.CallDirection
+import io.trtc.tuikit.atomicxcore.api.call.CallEndReason
 import io.trtc.tuikit.atomicxcore.api.call.CallInfo
+import io.trtc.tuikit.atomicxcore.api.call.CallListener
 import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
 import io.trtc.tuikit.atomicxcore.api.call.CallStore
 
@@ -58,6 +60,12 @@ class RecentCallsFragment(style: String) : Fragment() {
         }
     }
 
+    private val callObserver: CallListener = object : CallListener() {
+        override fun onCallEnded(callId: String, mediaType: CallMediaType, reason: CallEndReason, userId: String) {
+            refreshData()
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView = inflater.inflate(R.layout.tuicallkit_record_fragment_main, container, false)
         initView(rootView)
@@ -79,11 +87,13 @@ class RecentCallsFragment(style: String) : Fragment() {
     private fun registerObserver() {
         recentCallsManager.callMissedList.observe(callMissObserver)
         recentCallsManager.callHistoryList.observe(callHistoryObserver)
+        CallStore.shared.addListener(callObserver)
     }
 
     private fun unregisterObserver() {
         recentCallsManager.callMissedList.removeObserver(callMissObserver)
         recentCallsManager.callHistoryList.removeObserver(callHistoryObserver)
+        CallStore.shared.removeListener(callObserver)
     }
 
     private fun initView(rootView: View) {

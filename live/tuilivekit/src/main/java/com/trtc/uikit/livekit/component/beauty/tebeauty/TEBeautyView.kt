@@ -2,6 +2,7 @@ package com.trtc.uikit.livekit.component.beauty.tebeauty
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 
 class TEBeautyView(context: Context) : FrameLayout(context) {
@@ -29,6 +30,7 @@ class TEBeautyView(context: Context) : FrameLayout(context) {
         override fun onCreateBeautyView(view: View) {
             view.let {
                 removeAllViews()
+                (it.parent as? ViewGroup)?.removeView(view)
                 addView(it)
             }
         }

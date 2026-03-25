@@ -214,7 +214,7 @@ class SeatInvitationDialog(
             if (reason != NoResponseReason.TIMEOUT) return
             AtomicToast.show(
                 context,
-                context.getString(R.string.common_voiceroom_invite_seat_canceled),
+                context.getString(R.string.common_connect_invitation_timeout),
                 AtomicToast.Style.INFO
             )
         }

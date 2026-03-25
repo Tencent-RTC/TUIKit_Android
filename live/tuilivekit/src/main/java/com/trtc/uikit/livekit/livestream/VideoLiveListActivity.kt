@@ -222,7 +222,7 @@ class VideoLiveListActivity : FullScreenActivity() {
             VideoLiveKit.createInstance(this).joinLive(info)
         }
     }
-
+    
     private fun requestPermission(callback: CompletionHandler?) {
         LOGGER.info("requestCameraPermissions:[]")
         ContextProvider.getApplicationContext()?.apply {

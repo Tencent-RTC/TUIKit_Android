@@ -59,6 +59,7 @@
     <string name="common_mute_audio">كتم الصوت</string>
     <string name="common_mute_audio_by_master">قام المذيع بكتم صوتك</string>
     <string name="common_mute_video_by_owner">قام المذيع بتعطيل الفيديو الخاص بك</string>
+    <string name="common_preview_video_live">فيديو مباشر</string>
     <string name="common_recommended_list">المذيعون المقترحون</string>
     <string name="common_seat_application_title">طلب الربط (%1$d)</string>
     <string name="common_seat_list_title">الميكروفون الحالي (%1$d)</string>
@@ -82,6 +83,7 @@
     <string name="common_video_ultimate">فيديو فائق الجودة</string>
     <string name="common_link_guest">ضيف</string>
     <string name="common_link_host">مضيف</string>
+    <string name="live_application_list_xxx">قائمة الطلبات (%1$d)</string>
     <string name="live_barrage_anchor">المذيع</string>
     <string name="live_barrage_error_content_is_long">المحتوى طويل جداً، يرجى تقليل المحتوى والمحاولة مرة أخرى</string>
     <string name="live_barrage_error_disable_message_by_admin">تم كتم صوتك في الغرفة الحالية</string>
@@ -93,6 +95,7 @@
     <string name="live_error_connection_notexit">الغرفة المدعو للاتصال بها غير موجودة</string>
     <string name="live_error_connection_retry">خطأ داخلي، يُنصح بالمحاولة مرة أخرى.</string>
     <string name="live_error_room_mismatch">أنواع الغرف غير متطابقة؛ يمكن بدء الاتصالات فقط في غرف من نفس النوع.</string>
+    <string name="live_on_seat_list">متصل (%1$d/%2$d)</string>
     <string name="livelist_loading">جاري التحميل...</string>
     <string name="livelist_no_more_data">لا توجد بيانات إضافية</string>
     <string name="livelist_empty_data">يرجى بدء غرفة بث</string>
@@ -200,6 +203,7 @@
     <string name="common_more_settings">المزيد من الإعدادات</string>
     <string name="common_music_volume">مستوى صوت الموسيقى</string>
     <string name="common_people_volume">مستوى صوت الصوت</string>
+    <string name="common_accept">قبول</string>
     <string name="common_receive">قبول</string>
     <string name="common_reject">رفض</string>
     <string name="common_resolution_360p">360p</string>
@@ -372,6 +376,7 @@
     <string name="seat_unlocked">فتح قفل المقعد</string>
     <string name="seat_no_guest">لا يوجد ضيوف</string>
     <string name="seat_in_battle">في المنافسة</string>
+    <string name="seat_in_connection">قيد الاتصال</string>
     <string name="seat_cancel_invite">إلغاء الدعوة</string>
     <string name="seat_request_battle">طلب المنافسة</string>
     <string name="seat_request_host">دعوة المضيف</string>
@@ -390,4 +395,7 @@
     <string name="common_host_kick_user_after_connect">تم الاتصال بنجاح. تمت إزالة المستخدمين خارج أول 6 مقاعد.</string>
     <string name="common_audience_kicked_re_apply">يعرض الاتصال أول 6 مقاعد فقط. تمت إزالتك.</string>
     <string name="common_back_seats_occupied">لا يمكن الاتصال عندما تكون المقاعد الأربعة الخلفية مشغولة</string>
+    <string name="common_game_live">بث مباشر للألعاب</string>
+    <string name="common_live_game">بث مباشر للعبة</string>
+    <string name="common_gift_combo">متتالي</string>
 </resources>

@@ -36,11 +36,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:singleLine="true"
             android:text="@string/common_main_item_video_live"
             android:textColor="@color/text_color_primary"
-            android:textSize="@dimen/text_size_20"
-            android:textStyle="bold" />
+            android:textSize="@dimen/text_size_20" />
 
         <ImageView
             android:id="@+id/btn_live_list_column_type"
@@ -59,11 +59,12 @@
         android:layout_height="48dp"
         android:layout_marginBottom="20dp"
         android:text="@string/common_go_live"
+        android:fontFamily="sans-serif-medium"
         app:buttonColorType="primary"
         app:buttonIcon="@drawable/livekit_ic_add"
         app:buttonIconPosition="start"
-        app:customButtonSize="l"
         app:buttonVariant="filled"
+        app:customButtonSize="l"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

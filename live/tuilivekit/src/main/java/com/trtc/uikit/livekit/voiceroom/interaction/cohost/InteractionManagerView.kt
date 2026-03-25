@@ -6,7 +6,6 @@ import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -195,7 +194,7 @@ class InteractionManagerView @JvmOverloads constructor(
             buttonStartPK.variant = ButtonVariant.OUTLINED
             buttonStartPK.colorType = ButtonColorType.SECONDARY
         } else {
-            buttonStartPK.text = context.getString(R.string.seat_invite_battle)
+            buttonStartPK.text = context.getString(R.string.seat_request_battle)
             buttonStartPK.variant = ButtonVariant.FILLED
             buttonStartPK.colorType = ButtonColorType.PRIMARY
         }
@@ -316,14 +315,14 @@ class InteractionManagerView @JvmOverloads constructor(
 
     private fun onBattleListUserChange(battleList: List<SeatUserInfo>) {
         if (battleList.isNotEmpty()) {
-            textTitle.setText(R.string.seat_in_pk)
+            textTitle.setText(R.string.seat_in_battle)
             exitView.text = context.getString(R.string.common_battle_end_pk)
             buttonStartPK.visibility = GONE
             participantAdapter.isInPK = true
             exitView.setOnClickListener(exitBattleListener)
             exitConnectionDialog?.dismiss()
         } else {
-            textTitle.setText(R.string.common_battle_connecting)
+            textTitle.setText(R.string.seat_in_connection)
             exitView.text = context.getString(R.string.common_exit_connect)
             buttonStartPK.visibility = VISIBLE
             participantAdapter.isInPK = false

@@ -22,27 +22,27 @@ class BattleCountdownBackView @JvmOverloads constructor(
         isAntiAlias = true
     }
     
-    private val mArcPaint = Paint().apply {
+    private val arcPaint = Paint().apply {
         color = Color.WHITE
         style = Paint.Style.STROKE
         strokeWidth = 6f
         isAntiAlias = true
     }
     
-    private val mRipplePaint = Paint().apply {
+    private val ripplePaint = Paint().apply {
         color = Color.WHITE
         style = Paint.Style.STROKE
         strokeWidth = 2f
         isAntiAlias = true
     }
 
-    private val mArcRect = RectF()
-    private val mArcPath = Path()
+    private val arcRect = RectF()
+    private val arcPath = Path()
 
-    private var mCircleRadius = 0f
-    private var mRotationAngle = 0
+    private var circleRadius = 0f
+    private var rotationAngle = 0
 
-    private val mRippleCircles = mutableListOf<RippleCircle>()
+    private val rippleCircles = mutableListOf<RippleCircle>()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -50,13 +50,13 @@ class BattleCountdownBackView @JvmOverloads constructor(
         val height = height
         val size = min(width, height)
         
-        if (mCircleRadius == 0f) {
-            mCircleRadius = (size - viewPadding * 2) / 2f
-            mArcRect.apply {
-                left = (width - mCircleRadius * 2 - mArcPaint.strokeWidth / 2f) / 2f
-                top = (height - mCircleRadius * 2 - mArcPaint.strokeWidth / 2f) / 2f
-                right = left + mCircleRadius * 2
-                bottom = top + mCircleRadius * 2
+        if (circleRadius == 0f) {
+            circleRadius = (size - viewPadding * 2) / 2f
+            arcRect.apply {
+                left = (width - circleRadius * 2 - arcPaint.strokeWidth / 2f) / 2f
+                top = (height - circleRadius * 2 - arcPaint.strokeWidth / 2f) / 2f
+                right = left + circleRadius * 2
+                bottom = top + circleRadius * 2
             }
         }
         
@@ -69,41 +69,41 @@ class BattleCountdownBackView @JvmOverloads constructor(
     private fun drawCircle(canvas: Canvas) {
         val width = width
         val height = height
-        canvas.drawCircle(width / 2f, height / 2f, mCircleRadius, circlePaint)
+        canvas.drawCircle(width / 2f, height / 2f, circleRadius, circlePaint)
     }
 
     private fun draw2Arc(canvas: Canvas) {
-        mRotationAngle++
-        mRotationAngle %= 360
-        mArcPath.apply {
+        rotationAngle++
+        rotationAngle %= 360
+        arcPath.apply {
             reset()
-            addArc(mArcRect, 120f + mRotationAngle, 60f)
-            addArc(mArcRect, -120f + mRotationAngle, 180f)
+            addArc(arcRect, 120f + rotationAngle, 60f)
+            addArc(arcRect, -120f + rotationAngle, 180f)
         }
-        canvas.drawPath(mArcPath, mArcPaint)
+        canvas.drawPath(arcPath, arcPaint)
     }
 
     private fun drawRipple(canvas: Canvas) {
         val width = width
         val height = height
         
-        if (mRippleCircles.isEmpty()) {
+        if (rippleCircles.isEmpty()) {
             // Init with two circles
-            var radius = mCircleRadius
+            var radius = circleRadius
             var alpha = genRippleCircleAlpha(radius)
-            mRippleCircles.add(RippleCircle(radius, alpha))
+            rippleCircles.add(RippleCircle(radius, alpha))
             
-            radius = mCircleRadius + viewPadding / 2f
+            radius = circleRadius + viewPadding / 2f
             alpha = genRippleCircleAlpha(radius)
-            mRippleCircles.add(RippleCircle(radius, alpha))
+            rippleCircles.add(RippleCircle(radius, alpha))
         }
         
-        for (circle in mRippleCircles) {
-            mRipplePaint.alpha = circle.alpha
-            canvas.drawCircle(width / 2f, height / 2f, circle.radius, mRipplePaint)
+        for (circle in rippleCircles) {
+            ripplePaint.alpha = circle.alpha
+            canvas.drawCircle(width / 2f, height / 2f, circle.radius, ripplePaint)
 
             if (circle.radius >= width / 2f) {
-                circle.radius = mCircleRadius
+                circle.radius = circleRadius
             } else {
                 circle.radius += 1
             }
@@ -112,7 +112,7 @@ class BattleCountdownBackView @JvmOverloads constructor(
     }
 
     private fun genRippleCircleAlpha(radius: Float): Int {
-        return ((1 - (radius - mCircleRadius) / viewPadding) * 0xFF).toInt()
+        return ((1 - (radius - circleRadius) / viewPadding) * 0xFF).toInt()
     }
 
     private data class RippleCircle(

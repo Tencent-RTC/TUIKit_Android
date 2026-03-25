@@ -10,7 +10,6 @@ import android.widget.TextView
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomObserver
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
@@ -19,6 +18,7 @@ import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.features.anchorboardcast.store.AnchorStore
 import com.trtc.uikit.livekit.features.anchorboardcast.store.MediaStore
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton
@@ -327,27 +327,29 @@ class AnchorManagerDialog(
 
     private fun startCamera() {
         val isFrontCamera = DeviceStore.shared().deviceState.isFrontCamera.value
-        PermissionRequest.requestCameraPermissions(ContextProvider.getApplicationContext(), object :
-            PermissionCallback() {
-            override fun onRequesting() {
-                LOGGER.info("requestCameraPermissions:[onRequesting]")
-            }
+        ContextProvider.getApplicationContext()?.apply {
+            PermissionRequest.requestCameraPermissions(this, object :
+                PermissionCallback() {
+                override fun onRequesting() {
+                    LOGGER.info("requestCameraPermissions:[onRequesting]")
+                }
 
-            override fun onGranted() {
-                LOGGER.info("requestCameraPermissions:[onGranted]")
-                DeviceStore.shared().openLocalCamera(isFrontCamera, object : CompletionHandler {
-                    override fun onSuccess() {
-                        TODO("Not yet implemented")
-                    }
+                override fun onGranted() {
+                    LOGGER.info("requestCameraPermissions:[onGranted]")
+                    DeviceStore.shared().openLocalCamera(isFrontCamera, object : CompletionHandler {
+                        override fun onSuccess() {
+                            TODO("Not yet implemented")
+                        }
 
-                    override fun onFailure(code: Int, desc: String) {
-                        LOGGER.error("startCamera failed:code:$code,desc:$desc")
-                        ErrorLocalized.onError(code)
-                    }
+                        override fun onFailure(code: Int, desc: String) {
+                            LOGGER.error("startCamera failed:code:$code,desc:$desc")
+                            ErrorLocalized.onError(code)
+                        }
 
-                })
-            }
-        })
+                    })
+                }
+            })
+        }
     }
 
     private suspend fun onMicrophoneStatusChanged() {

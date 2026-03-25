@@ -28,7 +28,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 
 class CallingBellFeature(context: Context) {
     private val scope = MainScope()

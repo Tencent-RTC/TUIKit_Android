@@ -18,7 +18,7 @@
     <string name="ai_transcriber_select_translation_language">选择翻译语言</string>
     <string name="ai_transcriber_user_name">%s%s：</string>
     <string name="ai_transcriber_me">(我)</string>
-    z
+
     <!-- 识别语言选项 -->
     <string name="ai_source_lang_zh_en">自动识别(中英)</string>
     <string name="ai_source_lang_zh">说中文</string>

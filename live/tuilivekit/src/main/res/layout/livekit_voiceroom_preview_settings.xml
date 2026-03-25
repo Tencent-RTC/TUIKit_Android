@@ -7,6 +7,32 @@
     android:orientation="vertical"
     android:paddingBottom="20dp">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/livekit_return_arrow"
+            tools:ignore="ContentDescription" />
+
+        <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/common_settings"
+            android:textColor="@color/text_color_primary"
+            android:textSize="@dimen/text_size_16" />
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="350dp"
@@ -29,17 +55,12 @@
                 android:textColor="@color/text_color_primary"
                 android:textSize="@dimen/text_size_16" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/need_request"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <com.trtc.uikit.livekit.voiceroom.view.basic.Switch
+                android:id="@+id/switch_need_request"
+                android:layout_width="42dp"
+                android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/need_request"
-                android:background="@null"
-                android:checked="false"
-                app:thumbTint="@color/audio_effect_switch_thumb_bg"
-                app:trackTint="@color/audio_effect_switch_track_bg" />
+                android:layout_centerVertical="true" />
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

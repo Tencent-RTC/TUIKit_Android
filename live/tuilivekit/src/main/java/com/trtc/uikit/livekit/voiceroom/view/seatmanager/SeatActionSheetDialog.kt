@@ -16,8 +16,6 @@ class SeatActionSheetDialog(private val context: Context) : AtomicPopover(contex
     init {
         val rootView =
             View.inflate(context, R.layout.livekit_voiceroom_seat_action_sheet_panel, null)
-        rootView.background =
-            ContextCompat.getDrawable(context, R.drawable.livekit_dialog_background_light)
         setContent(rootView)
         viewContainer = rootView.findViewById(R.id.view_container)
         rootView.findViewById<View>(R.id.text_cancel).setOnClickListener { dismiss() }

@@ -21,7 +21,6 @@ import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUILogin
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.COMPONENT_VOICE_ROOM
 import com.trtc.uikit.livekit.common.DEFAULT_BACKGROUND_URL
@@ -66,6 +65,7 @@ import com.trtc.uikit.livekit.voiceroom.view.topview.TopView
 import com.trtc.uikit.livekit.voiceroomcore.SeatGridView
 import com.trtc.uikit.livekit.voiceroomcore.SeatGridViewObserver
 import com.trtc.uikit.livekit.voiceroomcore.VoiceRoomDefine
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.addItem
@@ -94,7 +94,6 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
-import io.trtc.tuikit.atomicxcore.api.live.MetaDataCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
 import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
@@ -209,7 +208,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
         subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
             launch {
                 voiceRoomManager?.prepareStore?.prepareState?.layoutType?.collect {
-                    onVoiceRoomLayoutChanged(it)
+                    updateKaraokeViewByLayout(it)
                 }
             }
             launch {
@@ -338,7 +337,8 @@ class VoiceRoomRootView @JvmOverloads constructor(
 
     private fun startMicrophone() {
         PermissionRequest.requestMicrophonePermissions(
-            rootViewContext, object : PermissionCallback() {
+            rootViewContext,
+            object : PermissionCallback() {
                 override fun onRequesting() {
                     LOGGER.info("requestMicrophonePermissions")
                 }
@@ -507,7 +507,13 @@ class VoiceRoomRootView @JvmOverloads constructor(
         setComponent(COMPONENT_VOICE_ROOM)
         val prepareState = voiceRoomManager?.prepareStore?.prepareState
         val seatCount = prepareState?.liveInfo?.value?.maxSeatCount ?: 9
-        val liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.AudioSalon(seatCount))
+        val layoutType = prepareState?.layoutType?.value ?: LayoutType.VOICE_ROOM
+        val seatTemplate = if (layoutType == LayoutType.KTV_ROOM) {
+            SeatLayoutTemplate.Karaoke(seatCount)
+        } else {
+            SeatLayoutTemplate.AudioSalon(seatCount)
+        }
+        val liveInfo = LiveInfo(seatTemplate = seatTemplate)
         liveInfo.keepOwnerOnSeat = true
         liveInfo.liveID = prepareState?.liveInfo?.value?.liveID ?: ""
         liveInfo.liveName = prepareState?.liveInfo?.value?.liveName ?: ""
@@ -591,7 +597,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
         seatGridView?.setCoHostViewAdapter(object : VoiceRoomDefine.CoHostViewAdapter {
             override fun createOccupiedSeatView(seatInfo: SeatInfo, isMyRoom: Boolean): View {
                 val coHostView = CoHostView(context)
-                coHostView.init(seatInfo)
+                coHostView.init(seatInfo, voiceRoomManager)
                 return coHostView
             }
 
@@ -687,36 +693,23 @@ class VoiceRoomRootView @JvmOverloads constructor(
         initBarrageView()
         showMainView()
         removePreviewView()
+        updateVoiceRoomLayout()
+    }
 
-        voiceRoomManager?.prepareStore?.setLayoutMetaData(
-            voiceRoomManager?.prepareStore?.prepareState?.layoutType?.value
-                ?: LayoutType.VOICE_ROOM
-        )
-        liveListStore.queryMetaData(
-            listOf(KEY_LAYOUT_TYPE),
-            object : MetaDataCompletionHandler {
-                override fun onSuccess(metaData: HashMap<String, String>) {
-                    val layoutType: String? =
-                        if (true) metaData.get(KEY_LAYOUT_TYPE) else null
-                    if (layoutType.isNullOrEmpty() || TextUtils.equals(
-                            voiceRoomManager?.prepareStore?.prepareState?.layoutType?.value?.desc,
-                            layoutType
-                        )
-                    ) {
-                        onVoiceRoomLayoutChanged(voiceRoomManager?.prepareStore?.prepareState?.layoutType?.value!!)
-                        return
-                    }
-                    if (TextUtils.equals(LayoutType.KTV_ROOM.desc, layoutType)) {
-                        voiceRoomManager?.prepareStore?.updateLayoutType(LayoutType.KTV_ROOM)
-                    } else {
-                        voiceRoomManager?.prepareStore?.updateLayoutType(LayoutType.VOICE_ROOM)
-                    }
-                }
+    private fun updateVoiceRoomLayout() {
+        val live = liveListStore.liveState.currentLive.value
+        val seatTemplate = live.seatTemplate
+        val maxSeatCount = live.maxSeatCount
 
-                override fun onFailure(code: Int, desc: String) {
-
-                }
-            })
+        val newLayoutType = if (seatTemplate == SeatLayoutTemplate.Karaoke(maxSeatCount)) {
+            LayoutType.KTV_ROOM
+        } else {
+            LayoutType.VOICE_ROOM
+        }
+        if (voiceRoomManager?.prepareStore?.prepareState?.layoutType?.value != newLayoutType) {
+            voiceRoomManager?.prepareStore?.updateLayoutType(newLayoutType)
+        }
+        updateKaraokeViewByLayout(newLayoutType)
     }
 
     private fun showSeatGridView() {
@@ -740,7 +733,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
         }
     }
 
-    private fun onVoiceRoomLayoutChanged(layoutType: LayoutType) {
+    private fun updateKaraokeViewByLayout(layoutType: LayoutType) {
         val liveStatus = voiceRoomManager?.prepareStore?.prepareState?.liveStatus?.value
         if (liveStatus == LiveStatus.PUSHING || liveStatus == LiveStatus.PLAYING) {
             if (LayoutType.KTV_ROOM == layoutType) {
@@ -1104,6 +1097,5 @@ class VoiceRoomRootView @JvmOverloads constructor(
 
     companion object {
         private val LOGGER = LiveKitLogger.getVoiceRoomLogger("VoiceRoomRootView")
-        private const val KEY_LAYOUT_TYPE: String = "LayoutType"
     }
 }

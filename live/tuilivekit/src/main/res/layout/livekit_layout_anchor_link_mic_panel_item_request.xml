@@ -51,7 +51,7 @@
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/atomic_btn_reject"
         android:gravity="center"
-        android:text="@string/common_receive"
+        android:text="@string/common_accept"
         android:textSize="12sp"
         android:textColor="@color/common_design_standard_flowkit_white"
         android:background="@drawable/livekit_link_mic_accept_background"/>

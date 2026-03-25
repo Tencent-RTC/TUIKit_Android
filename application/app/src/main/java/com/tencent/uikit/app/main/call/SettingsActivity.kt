@@ -144,6 +144,7 @@ class SettingsActivity : BaseActivity() {
             SettingsConfig.isIncomingBanner = isChecked
             createInstance(application).enableIncomingBanner(isChecked)
         }
+
         switchAISubtitle?.setOnCheckedChangeListener{ buttonView: CompoundButton?, isChecked: Boolean ->
             createInstance(application).enableAITranscriber(isChecked)
         }

@@ -14,8 +14,6 @@ import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUILogin
 import com.tencent.qcloud.tuicore.util.SPUtils
-import com.trtc.tuikit.common.FullScreenActivity
-import com.trtc.tuikit.common.util.ActivityLauncher
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
@@ -28,6 +26,8 @@ import com.trtc.uikit.livekit.features.livelist.Style
 import com.trtc.uikit.livekit.livestream.VideoLiveKit
 import com.trtc.uikit.livekit.livestream.impl.LiveInfoUtils.asEngineLiveInfo
 import com.trtc.uikit.livekit.livestream.impl.LiveInfoUtils.asStoreLiveInfo
+import io.trtc.tuikit.atomicx.common.FullScreenActivity
+import io.trtc.tuikit.atomicx.common.util.ActivityLauncher
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 
 class VoiceRoomListActivity : FullScreenActivity() {

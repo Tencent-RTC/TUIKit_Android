@@ -1,4 +1,4 @@
-package com.trtc.uikit.livekit.component.gift.service
+package com.trtc.uikit.livekit.component.gift.viewmodel
 
 object GiftConstants {
     const val DATA_REPORT_LIVE_GIFT_SVGA_SEND_COUNT: Int = 190021

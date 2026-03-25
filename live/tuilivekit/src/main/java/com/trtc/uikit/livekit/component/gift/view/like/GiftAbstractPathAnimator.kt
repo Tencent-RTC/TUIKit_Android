@@ -4,8 +4,8 @@ import android.content.res.TypedArray
 import android.graphics.Path
 import android.view.View
 import android.view.ViewGroup
-import com.trtc.tuikit.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import java.security.SecureRandom
 import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger

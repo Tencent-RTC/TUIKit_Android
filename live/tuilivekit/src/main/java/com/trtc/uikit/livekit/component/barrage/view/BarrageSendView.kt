@@ -18,7 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageView
 import com.tencent.qcloud.tuicore.util.SPUtils
-import com.tencent.qcloud.tuicore.util.ScreenUtil
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized

@@ -3,7 +3,9 @@
     <string name="common_client_error_freq_limit">請求被限頻，請稍後重試</string>
     <string name="karaoke_audience_waiting_tips">等待點歌中…</string>
     <string name="karaoke_change_reverb">混響</string>
+    <string name="karaoke_exit_chorus">退出合唱</string>
     <string name="karaoke_exit_order">退出點歌</string>
+    <string name="karaoke_join_chorus">加入合唱</string>
     <string name="karaoke_no_song">暫無歌曲</string>
     <string name="karaoke_order_song">點歌</string>
     <string name="karaoke_ordered">已點</string>
@@ -16,12 +18,12 @@
     <string name="karaoke_reverb_none">無效果</string>
     <string name="karaoke_score">評分</string>
     <string name="karaoke_setting_audio">音頻設置</string>
-    <string name="karaoke_setting_capture_volume">採集音量</string>
+    <string name="karaoke_setting_capture_volume">音樂推流音量</string>
     <string name="karaoke_setting_done">完成</string>
     <string name="karaoke_setting_ear_return">耳返</string>
     <string name="karaoke_setting_music_pitch">音樂升降調</string>
     <string name="karaoke_setting_pitch_shift">升降調</string>
-    <string name="karaoke_setting_playback_volume">播放音量</string>
+    <string name="karaoke_setting_playback_volume">音樂播放音量</string>
     <string name="karaoke_setting_tune">調音</string>
     <string name="karaoke_singing_score">演唱得分</string>
     <string name="karaoke_point">分</string>

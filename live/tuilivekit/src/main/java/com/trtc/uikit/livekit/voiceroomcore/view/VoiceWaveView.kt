@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.RequiresApi
 import com.trtc.uikit.livekit.R
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 
 @RequiresApi(Build.VERSION_CODES.S)
 class VoiceWaveView @JvmOverloads constructor(

@@ -59,6 +59,7 @@
     <string name="common_mute_audio">靜音</string>
     <string name="common_mute_audio_by_master">您已被主播靜音</string>
     <string name="common_mute_video_by_owner">您已被主播關閉攝像頭</string>
+    <string name="common_preview_video_live">視頻直播</string>
     <string name="common_recommended_list">推薦列表</string>
     <string name="common_seat_application_title">申請連麥(%1$d)</string>
     <string name="common_seat_list_title">當前麥位 (%1$d)</string>
@@ -82,6 +83,7 @@
     <string name="common_video_ultimate">至臻畫質</string>
     <string name="common_link_guest">連觀眾</string>
     <string name="common_link_host">連主播</string>
+    <string name="live_application_list_xxx">申請列表 (%1$d)</string>
     <string name="live_barrage_anchor">主播</string>
     <string name="live_barrage_error_content_is_long">內容太長，請縮減內容後再試</string>
     <string name="live_barrage_error_disable_message_by_admin">當前房間內，您已被禁言</string>
@@ -93,6 +95,7 @@
     <string name="live_error_connection_notexit">邀請連線的房間不存在</string>
     <string name="live_error_connection_retry">內部錯誤，推薦重試一次。</string>
     <string name="live_error_room_mismatch">房間類型不匹配，只能在相同類型房間發起連線。</string>
+    <string name="live_on_seat_list">已連線（%1$d/%2$d）</string>
     <string name="livelist_loading">正在加載...</string>
     <string name="livelist_no_more_data">沒有更多數據了</string>
     <string name="livelist_empty_data">請先開啟一個直播間</string>
@@ -200,6 +203,7 @@
     <string name="common_more_settings">更多設置</string>
     <string name="common_music_volume">音樂音量</string>
     <string name="common_people_volume">人聲音量</string>
+    <string name="common_accept">同意</string>
     <string name="common_receive">接受</string>
     <string name="common_reject">拒絕</string>
     <string name="common_resolution_360p">360p</string>
@@ -372,6 +376,7 @@
     <string name="seat_unlocked">解鎖麦位</string>
     <string name="seat_no_guest">暫無嘉賓</string>
     <string name="seat_in_battle">正在PK</string>
+    <string name="seat_in_connection">正在連線</string>
     <string name="seat_cancel_invite">取消邀請</string>
     <string name="seat_request_battle">發起PK</string>
     <string name="seat_request_host">邀請連線</string>
@@ -390,4 +395,7 @@
     <string name="common_host_kick_user_after_connect">連線成功。前 6 個麥位以外的使用者已被移除。如需互動，請重新邀請。</string>
     <string name="common_audience_kicked_re_apply">連線僅顯示前 6 個麥位。您已被移除，如有需要請重新申請上麥。</string>
     <string name="common_back_seats_occupied">後四個麥位有人，無法連線</string>
+    <string name="common_game_live">手遊直播</string>
+    <string name="common_live_game">遊戲直播中</string>
+    <string name="common_gift_combo">連擊</string>
 </resources>

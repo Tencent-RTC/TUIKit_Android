@@ -3,7 +3,9 @@
     <string name="common_client_error_freq_limit">تم تحديد معدل الطلبات، يرجى المحاولة لاحقاً</string>
     <string name="karaoke_audience_waiting_tips">في انتظار اختيار الأغنية...</string>
     <string name="karaoke_change_reverb">صدى</string>
+    <string name="karaoke_exit_chorus">اترك الجوقة</string>
     <string name="karaoke_exit_order">الخروج من الطلب</string>
+    <string name="karaoke_join_chorus">انضم إلى الكورال</string>
     <string name="karaoke_no_song">لا توجد أغاني</string>
     <string name="karaoke_order_song">أغنية</string>
     <string name="karaoke_ordered">تم الطلب</string>
@@ -16,12 +18,12 @@
     <string name="karaoke_reverb_none">بدون تأثير</string>
     <string name="karaoke_score">نقاط الغناء</string>
     <string name="karaoke_setting_audio">إعدادات الصوت</string>
-    <string name="karaoke_setting_capture_volume">مستوى صوت الالتقاط</string>
+    <string name="karaoke_setting_capture_volume">مستوى صوت بث الموسيقى</string>
     <string name="karaoke_setting_done">تم</string>
     <string name="karaoke_setting_ear_return">سماعة الأذن</string>
     <string name="karaoke_setting_music_pitch">نغمة الموسيقى</string>
     <string name="karaoke_setting_pitch_shift">تغيير النغمة</string>
-    <string name="karaoke_setting_playback_volume">مستوى صوت التشغيل</string>
+    <string name="karaoke_setting_playback_volume">مستوى صوت تشغيل الموسيقى</string>
     <string name="karaoke_setting_tune">ضبط</string>
     <string name="karaoke_singing_score">نقاط الغناء</string>
     <string name="karaoke_point">نقاط</string>

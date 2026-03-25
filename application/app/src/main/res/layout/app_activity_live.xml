@@ -19,8 +19,8 @@
             android:singleLine="true"
             android:text="@string/app_main_item_live"
             android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="@dimen/text_size_20"
+            android:fontFamily="sans-serif-medium" />
     </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout

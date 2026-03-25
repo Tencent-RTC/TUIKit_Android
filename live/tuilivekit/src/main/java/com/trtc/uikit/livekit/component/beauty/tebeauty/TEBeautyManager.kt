@@ -10,8 +10,8 @@ import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.interfaces.TUIServiceCallback
 import com.tencent.trtc.TRTCCloudDef
 import com.tencent.trtc.TRTCCloudListener.TRTCVideoFrameListener
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import java.lang.ref.WeakReference
 
 object TEBeautyManager {
@@ -27,7 +27,9 @@ object TEBeautyManager {
     private val trtcVideoFrameListener = object : TRTCVideoFrameListener {
         override fun onGLContextCreated() {
             if (hasLoaded) {
-                mainHandler.post { initBeautyKit(ContextProvider.getApplicationContext(), false) }
+                mainHandler.post {
+                    ContextProvider.getApplicationContext()?.apply { initBeautyKit(this, false) }
+                }
             }
         }
 

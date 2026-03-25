@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.View.VISIBLE
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
@@ -16,9 +14,11 @@ import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.common.seatModeFromEngineSeatMode
+import com.trtc.uikit.livekit.voiceroom.view.basic.Switch
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.live.CoGuestStore
+import io.trtc.tuikit.atomicxcore.api.live.CoHostStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
@@ -39,6 +39,7 @@ class SeatManagerDialog(
     private val liveSeatStore =
         LiveSeatStore.create(liveListStore.liveState.currentLive.value.liveID)
     private val coGuestStore = CoGuestStore.create(liveListStore.liveState.currentLive.value.liveID)
+    private val coHostStore = CoHostStore.create(liveListStore.liveState.currentLive.value.liveID)
     private lateinit var imageBack: ImageView
     private lateinit var tvTitle: TextView
     private lateinit var seatListTitle: TextView
@@ -51,7 +52,7 @@ class SeatManagerDialog(
     private lateinit var emptyView: View
     private lateinit var seatApplicationAdapter: SeatApplicationAdapter
     private lateinit var seatListPanelAdapter: SeatListPanelAdapter
-    private lateinit var switchNeedRequest: SwitchCompat
+    private lateinit var switch: Switch
     private var seatInvitationDialog: SeatInvitationDialog? = null
     private var subscribeStateJob: Job? = null
 
@@ -133,7 +134,7 @@ class SeatManagerDialog(
         endButton = rootView.findViewById(R.id.end_button)
         endButtonContainer = rootView.findViewById(R.id.end_button_container)
         seatApplicationListView = rootView.findViewById(R.id.rv_seat_application)
-        switchNeedRequest = rootView.findViewById(R.id.need_request)
+        switch = rootView.findViewById(R.id.switch_need_request)
     }
 
     private fun initSeatListView() {
@@ -157,7 +158,7 @@ class SeatManagerDialog(
             seatApplicationTitle.visibility = View.GONE
         }
         seatApplicationTitle.text = context.getString(
-            R.string.common_seat_application_title,
+            R.string.live_application_list_xxx,
             coGuestStore.coGuestState.applicants.value.size
         )
     }
@@ -165,8 +166,8 @@ class SeatManagerDialog(
     private fun initNeedRequest() {
         val needRequest =
             liveListStore.liveState.currentLive.value.seatMode == TakeSeatMode.APPLY
-        switchNeedRequest.isChecked = needRequest
-        switchNeedRequest.setOnCheckedChangeListener { _, enable -> onSeatModeClicked(enable) }
+        switch.isChecked = needRequest
+        switch.onCheckedChangeListener = { enable -> onSeatModeClicked(enable) }
     }
 
     @SuppressLint("StringFormatMatches")
@@ -176,7 +177,14 @@ class SeatManagerDialog(
             seatListTitle.visibility = View.GONE
         } else {
             seatListTitle.visibility = VISIBLE
-            seatListTitle.text = context.getString(R.string.common_seat_list_title, seatList.size)
+            val isInConnection = coHostStore.coHostState.connected.value.isNotEmpty()
+            val maxSeatCount = if (isInConnection) CONNECTION_MAX_SEAT_COUNT else liveListStore.liveState.currentLive.value.maxSeatCount
+            seatListTitle.text =
+                context.getString(
+                    R.string.live_on_seat_list,
+                    seatList.size,
+                    maxSeatCount - 1
+                )
         }
     }
 
@@ -193,7 +201,7 @@ class SeatManagerDialog(
     }
 
     private fun onSeatModeChanged(seatMode: TakeSeatMode) {
-        switchNeedRequest.isChecked = seatMode == TakeSeatMode.APPLY
+        switch.isChecked = seatMode == TakeSeatMode.APPLY
     }
 
     private fun showSeatInvitationPanel() {
@@ -235,5 +243,6 @@ class SeatManagerDialog(
 
     companion object {
         private val LOGGER = LiveKitLogger.getVoiceRoomLogger("SeatManagerDialog")
+        private const val CONNECTION_MAX_SEAT_COUNT = 6
     }
 }

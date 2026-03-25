@@ -10,12 +10,12 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.COVER_URL_LIST
 import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import com.trtc.uikit.livekit.voiceroom.store.LiveStreamPrivacyStatus
 import com.trtc.uikit.livekit.voiceroom.view.basic.BasicView
+import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged

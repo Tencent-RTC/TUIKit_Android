@@ -5,22 +5,20 @@ import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import com.tencent.imsdk.v2.V2TIMFollowInfo
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMValueCallback
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
-import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import com.trtc.uikit.livekit.features.audiencecontainer.store.AudienceStore
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import com.trtc.uikit.livekit.common.ui.setDebounceClickListener
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.ButtonColorType
-import io.trtc.tuikit.atomicx.widget.basicwidget.button.ButtonIconPosition
-import io.trtc.tuikit.atomicx.widget.basicwidget.button.ButtonVariant
+import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import kotlinx.coroutines.CoroutineScope
@@ -103,7 +101,7 @@ class UserInfoDialog(
         imageAvatar.setContent(AvatarContent.URL(avatarUrl, R.drawable.livekit_ic_avatar))
 
         refreshFollowButton()
-        buttonFollow.setOnClickListener { onFollowButtonClick() }
+        buttonFollow.setDebounceClickListener { onFollowButtonClick() }
     }
 
     private fun getFansNumber() {
@@ -124,8 +122,9 @@ class UserInfoDialog(
 
                 override fun onError(code: Int, desc: String) {
                     LOGGER.error("UserInfoDialog getUserFollowInfo failed:errorCode:message:$desc")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$desc", AtomicToast.Style.ERROR)
+                    ContextProvider.getApplicationContext()?.apply {
+                        AtomicToast.show(context, "$code,$desc", AtomicToast.Style.ERROR)
+                    }
                 }
             })
     }

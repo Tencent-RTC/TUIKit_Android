@@ -24,7 +24,7 @@ object PermissionRequest {
         }
     }
 
-    fun requestMicrophonePermissions(context: Context, callback: PermissionCallback) {
+    fun requestMicrophonePermissions(context: Context, callback: PermissionCallback?) {
         val title = context.getString(R.string.common_permission_microphone)
         val reason = context.getString(R.string.common_permission_mic_reason)
 
@@ -50,7 +50,7 @@ object PermissionRequest {
             .request()
     }
 
-    fun requestCameraPermissions(context: Context, callback: PermissionCallback) {
+    fun requestCameraPermissions(context: Context, callback: PermissionCallback?) {
         val title = context.getString(R.string.common_permission_camera)
         val reason = context.getString(R.string.common_permission_camera_reason)
 

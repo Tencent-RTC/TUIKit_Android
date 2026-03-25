@@ -63,9 +63,7 @@ class GiftButton @JvmOverloads constructor(
 
     private fun initImageButton() {
         imageButton.setOnClickListener {
-            if (giftSendDialog == null) {
-                giftSendDialog = GiftSendDialog(context, roomId!!, ownerId!!, ownerName!!, ownerAvatarUrl!!)
-            }
+            giftSendDialog = GiftSendDialog(context, roomId!!, ownerId!!, ownerName!!, ownerAvatarUrl!!)
             giftSendDialog?.show()
         }
     }

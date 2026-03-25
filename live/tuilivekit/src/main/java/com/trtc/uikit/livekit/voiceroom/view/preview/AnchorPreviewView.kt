@@ -14,7 +14,6 @@ import com.trtc.uikit.livekit.common.DEFAULT_BACKGROUND_URL
 import com.trtc.uikit.livekit.common.DEFAULT_COVER_URL
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
-import com.trtc.uikit.livekit.common.TEMPLATE_ID_VOICE_ROOM
 import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import com.trtc.uikit.livekit.voiceroom.store.LayoutType
@@ -118,13 +117,16 @@ class AnchorPreviewView @JvmOverloads constructor(
         view.isEnabled = false
         val prepareState = voiceRoomManager?.prepareStore?.prepareState
         val maxSeatCount = prepareState?.liveInfo?.value?.maxSeatCount ?: 9
-        val liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.AudioSalon(maxSeatCount))
-        liveInfo.isSeatEnabled = true
+        val layoutType = prepareState?.layoutType?.value ?: LayoutType.VOICE_ROOM
+        val seatTemplate = if (layoutType == LayoutType.KTV_ROOM) {
+            SeatLayoutTemplate.Karaoke(maxSeatCount)
+        } else {
+            SeatLayoutTemplate.AudioSalon(maxSeatCount)
+        }
+        val liveInfo = LiveInfo(seatTemplate = seatTemplate)
         liveInfo.keepOwnerOnSeat = true
-        liveInfo.seatLayoutTemplateID = TEMPLATE_ID_VOICE_ROOM
         liveInfo.liveID = prepareState?.liveInfo?.value?.liveID ?: ""
         liveInfo.liveName = prepareState?.liveInfo?.value?.liveName ?: ""
-        liveInfo.maxSeatCount = maxSeatCount
         liveInfo.seatMode = prepareState?.liveInfo?.value?.seatMode ?: TakeSeatMode.FREE
         liveInfo.backgroundURL = prepareState?.liveInfo?.value?.backgroundURL ?: DEFAULT_BACKGROUND_URL
         liveInfo.coverURL = prepareState?.liveInfo?.value?.coverURL ?: DEFAULT_COVER_URL

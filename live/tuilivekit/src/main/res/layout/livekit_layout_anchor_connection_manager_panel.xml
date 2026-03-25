@@ -39,7 +39,7 @@
             android:drawablePadding="5dp"
             android:gravity="center_vertical"
             android:text="@string/common_exit_connect"
-            android:textColor="@color/common_not_standard_red"
+            android:textColor="@color/button_color_hangup_default"
             android:textSize="14sp"
             android:visibility="gone" />
     </RelativeLayout>
@@ -93,6 +93,19 @@
                     android:layout_height="wrap_content"
                     android:padding="0dp"
                     tools:ignore="InefficientWeight" />
+
+                <TextView
+                    android:id="@+id/tv_all_loaded"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:text="@string/livelist_no_more_data"
+                    android:textColor="#909090"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

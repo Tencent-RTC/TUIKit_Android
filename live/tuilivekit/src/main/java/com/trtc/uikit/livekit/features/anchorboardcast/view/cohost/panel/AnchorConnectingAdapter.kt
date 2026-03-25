@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.trtc.uikit.livekit.R
-import com.trtc.uikit.livekit.features.anchorboardcast.store.AnchorStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
@@ -18,7 +17,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class AnchorConnectingAdapter(
     private val context: Context,
-    private val anchorStore: AnchorStore,
 ) : RecyclerView.Adapter<AnchorConnectingAdapter.LinkMicViewHolder>() {
 
     private val data = CopyOnWriteArrayList<SeatUserInfo>()

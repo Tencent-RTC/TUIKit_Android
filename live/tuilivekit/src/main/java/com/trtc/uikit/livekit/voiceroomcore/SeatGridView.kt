@@ -20,6 +20,7 @@ import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LIVEKIT_METRICS_METHOD_CALL_SEAT_GRID_VIEW_SET_LAYOUT_MODE
+import com.trtc.uikit.livekit.common.LIVEKIT_METRICS_METHOD_CALL_SEAT_GRID_VIEW_SET_SEAT_VIEW_ADAPTER
 import com.trtc.uikit.livekit.common.LIVEKIT_METRICS_PANEL_HIDE_SEAT_GRID_VIEW
 import com.trtc.uikit.livekit.common.LIVEKIT_METRICS_PANEL_SHOW_SEAT_GRID_VIEW
 import com.trtc.uikit.livekit.common.LiveKitLogger
@@ -54,9 +55,12 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.NoResponseReason
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @SuppressLint("ViewConstructor")
@@ -118,6 +122,13 @@ class SeatGridView @JvmOverloads constructor(
         coHostViewAdapter = adapter
     }
 
+    fun setSeatViewAdapter(adapter: VoiceRoomDefine.SeatViewAdapter?) {
+        LOGGER.info("API setSeatViewAdapter adapter:$adapter")
+        reportEventData(LIVEKIT_METRICS_METHOD_CALL_SEAT_GRID_VIEW_SET_SEAT_VIEW_ADAPTER)
+        seatViewAdapter = adapter
+        initSeatGridLayout(seatLayoutConfigManager.seatList.size)
+    }
+
     fun addObserver(observer: SeatGridViewObserver) {
         observerManager.addObserver(observer)
     }
@@ -155,6 +166,7 @@ class SeatGridView @JvmOverloads constructor(
         battleStore?.addBattleListener(mBattleListener)
         coGuestStore?.addHostListener(mHostListener)
         observeSeatList()
+        observeMaxSeatCount()
         observeCoHostConnection()
         observeFinalCoHostState()
         observeSpeakingUsers()
@@ -181,6 +193,19 @@ class SeatGridView @JvmOverloads constructor(
                 if (isCoHostingState.value) {
                     createCoHostView(seatList)
                 }
+            }
+        }
+        collectJobs.add(job)
+    }
+
+    private fun observeMaxSeatCount() {
+        val job = lifecycleScope.launch {
+            liveListStore.liveState.currentLive.map {
+                it.maxSeatCount
+            }.distinctUntilChanged().collect { seatCount ->
+                if (seatCount <= 0)return@collect
+                seatLayoutConfigManager.initSeatList(seatCount)
+                initSeatGridLayout(seatCount)
             }
         }
         collectJobs.add(job)
@@ -431,7 +456,7 @@ class SeatGridView @JvmOverloads constructor(
         seatInfoWrapper?.let { seat ->
             seatGridLayout.getSeatView(seat.rowIndex, seat.columnIndex)?.let { seatView ->
                 seatViewAdapter?.updateUserVolume(seatGridView, volume, seatView)
-                    ?: (seatView as? SeatInfoView)?.updateUserVolume(seat.seatInfo, volume)
+                ?: (seatView as? SeatInfoView)?.updateUserVolume(seat.seatInfo, volume)
             }
         }
     }
@@ -445,7 +470,7 @@ class SeatGridView @JvmOverloads constructor(
                 TUIRoomDefine.SeatInfo()
             }
             return seatViewAdapter?.createSeatView(this@SeatGridView, convertSeatInfo)
-                ?: SeatInfoView(context, observerManager, seatInfo)
+                   ?: SeatInfoView(context, observerManager, seatInfo)
         }
     }
 
@@ -456,7 +481,7 @@ class SeatGridView @JvmOverloads constructor(
                 val tuiSeatInfo = convertToSeatInfo(it)
                 seatGridLayout.getSeatView(seat.rowIndex, seat.columnIndex)?.let { seatView ->
                     seatViewAdapter?.updateSeatView(seatGridView, tuiSeatInfo, seatView)
-                        ?: (seatView as? SeatInfoView)?.updateSeatView(seat.seatInfo)
+                    ?: (seatView as? SeatInfoView)?.updateSeatView(seat.seatInfo)
                 }
             }
         }
@@ -674,7 +699,11 @@ class SeatGridView @JvmOverloads constructor(
                 isBold = true
             ) {
                 if (isBackSeatsOccupied()) {
-                    AtomicToast.show(context, context.getString(R.string.common_back_seats_occupied), AtomicToast.Style.WARNING)
+                    AtomicToast.show(
+                        context,
+                        context.getString(R.string.common_back_seats_occupied),
+                        AtomicToast.Style.WARNING
+                    )
                     coHostStore?.rejectHostConnection(inviter.liveID, object : CompletionHandler {
                         override fun onSuccess() {}
                         override fun onFailure(code: Int, desc: String) {
@@ -767,7 +796,11 @@ class SeatGridView @JvmOverloads constructor(
                 isBold = true
             ) {
                 if (isBackSeatsOccupied()) {
-                    AtomicToast.show(context, context.getString(R.string.common_back_seats_occupied), AtomicToast.Style.WARNING)
+                    AtomicToast.show(
+                        context,
+                        context.getString(R.string.common_back_seats_occupied),
+                        AtomicToast.Style.WARNING
+                    )
                     coHostStore?.rejectHostConnection(inviter.liveID, object : CompletionHandler {
                         override fun onSuccess() {}
                         override fun onFailure(code: Int, desc: String) {

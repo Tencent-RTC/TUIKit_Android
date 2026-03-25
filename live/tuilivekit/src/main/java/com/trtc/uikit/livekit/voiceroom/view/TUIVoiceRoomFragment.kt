@@ -10,8 +10,6 @@ import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
-import com.trtc.tuikit.common.foregroundservice.AudioForegroundService
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.DEFAULT_MAX_SEAT_COUNT
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
@@ -22,6 +20,8 @@ import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_LINK_STATUS_CHANGE
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import com.trtc.uikit.livekit.voiceroom.store.LiveStatus
+import io.trtc.tuikit.atomicx.common.foregroundservice.AudioForegroundService
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicxcore.api.device.AudioEffectStore
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
@@ -154,19 +154,21 @@ class TUIVoiceRoomFragment(
 
     private fun startForegroundService() {
         LOGGER.info("startForegroundService")
-        val context = ContextProvider.getApplicationContext()
-        AudioForegroundService.start(
-            context,
-            context.getString(context.applicationInfo.labelRes),
-            context.getString(R.string.common_app_running),
-            0
-        )
+        ContextProvider.getApplicationContext()?.apply {
+            AudioForegroundService.start(
+                this,
+                this.getString(this.applicationInfo.labelRes),
+                this.getString(R.string.common_app_running),
+                0
+            )
+        }
     }
 
     private fun stopForegroundService() {
         LOGGER.info("stopForegroundService")
-        val context = ContextProvider.getApplicationContext()
-        AudioForegroundService.stop(context)
+        ContextProvider.getApplicationContext()?.apply {
+            AudioForegroundService.stop(this)
+        }
     }
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {

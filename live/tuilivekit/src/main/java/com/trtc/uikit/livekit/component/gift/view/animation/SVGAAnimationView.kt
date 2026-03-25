@@ -11,7 +11,7 @@ import com.opensource.svgaplayer.SVGAParser.Companion.shareParser
 import com.opensource.svgaplayer.SVGAParser.ParseCompletion
 import com.opensource.svgaplayer.SVGAVideoEntity
 import com.trtc.uikit.livekit.common.reportEventData
-import com.trtc.uikit.livekit.component.gift.service.GiftConstants
+import com.trtc.uikit.livekit.component.gift.viewmodel.GiftConstants
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException

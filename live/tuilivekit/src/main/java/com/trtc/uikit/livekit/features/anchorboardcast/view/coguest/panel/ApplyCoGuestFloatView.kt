@@ -63,7 +63,7 @@ class ApplyCoGuestFloatView @JvmOverloads constructor(
                 return@setOnClickListener
             }
             view.isEnabled = false
-            val dialog = AnchorCoGuestManageDialog(baseContext, anchorStore, liveStream)
+            val dialog = AnchorCoGuestManageDialog(baseContext)
             dialog.setOnDismissListener { view.isEnabled = true }
             dialog.show()
         }

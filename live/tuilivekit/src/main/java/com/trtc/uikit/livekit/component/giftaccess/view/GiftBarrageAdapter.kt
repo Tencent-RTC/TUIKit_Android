@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.tencent.qcloud.tuicore.util.ScreenUtil
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.component.barrage.view.adapter.BarrageItemAdapter
 import com.trtc.uikit.livekit.component.giftaccess.service.GiftConstants

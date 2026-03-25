@@ -1,7 +1,6 @@
 package com.trtc.uikit.livekit.component.audiencelist.view.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.component.audiencelist.AudienceListView
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceState
@@ -21,7 +19,6 @@ import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import java.util.concurrent.CopyOnWriteArrayList
 
 class AudienceListPanelAdapter(
-    private val context: Context,
     private val audienceState: LiveAudienceState
 ) : RecyclerView.Adapter<AudienceListPanelAdapter.ViewHolder>() {
 

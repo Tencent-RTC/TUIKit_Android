@@ -6,8 +6,8 @@ import android.os.Looper
 import android.text.TextUtils
 import com.tencent.cloud.tuikit.engine.extension.TUILiveBattleManager
 import com.tencent.rtmp.TXLiveBase
-import com.trtc.tuikit.common.system.ContextProvider
 import com.trtc.uikit.livekit.R
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.live.BattleConfig
 import io.trtc.tuikit.atomicxcore.api.live.BattleInfo
@@ -250,12 +250,13 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
 
     fun onBattleRequestCancelled(inviter: SeatUserInfo?) {
         removeBattleRequestReceived()
-        val context = ContextProvider.getApplicationContext()
-        val content = context.getString(
-            R.string.common_battle_inviter_cancel,
-            inviter?.userName
-        )
-        showToast(content)
+        ContextProvider.getApplicationContext()?.apply {
+            val content = this.getString(
+                R.string.common_battle_inviter_cancel,
+                inviter?.userName
+            )
+            showToast(content)
+        }
     }
 
     fun onBattleRequestAccept(invitee: SeatUserInfo?) {
@@ -267,12 +268,13 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
     fun onBattleRequestReject(invitee: SeatUserInfo?) {
         invitee?.let {
             removeSentBattleRequest(it.userID)
-            val context = ContextProvider.getApplicationContext()
-            val content = context.getString(
-                R.string.common_battle_invitee_reject,
-                it.userName
-            )
-            showToast(content)
+            ContextProvider.getApplicationContext()?.apply {
+                val content = this.getString(
+                    R.string.common_battle_invitee_reject,
+                    it.userName
+                )
+                showToast(content)
+            }
         }
     }
 
@@ -287,8 +289,9 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
                 removeSentBattleRequest(it.userID)
             }
         }
-        val context = ContextProvider.getApplicationContext()
-        showToast(context.getString(R.string.common_battle_invitation_timeout))
+        ContextProvider.getApplicationContext()?.apply {
+            showToast(this.getString(R.string.common_battle_invitation_timeout))
+        }
     }
 
     fun destroy() {
@@ -354,13 +357,13 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
         const val BATTLE_END_INFO_DURATION = 5
 
         private fun showToast(tips: String) {
-            val context = ContextProvider.getApplicationContext()
-            AtomicToast.show(
-                context,
-                tips,
-                customIcon = R.drawable.livekit_connection_toast_icon,
-                style = AtomicToast.Style.INFO
-            )
+            ContextProvider.getApplicationContext()?.apply {
+                AtomicToast.show(
+                    this,
+                    tips,
+                    style = AtomicToast.Style.INFO
+                )
+            }
         }
     }
 }

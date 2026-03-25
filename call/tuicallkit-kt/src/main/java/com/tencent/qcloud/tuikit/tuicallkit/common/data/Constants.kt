@@ -26,12 +26,6 @@ object Constants {
     var component: Int = CALL_COMPONENT
     var language: Int = CALL_LANGUAGE_KOTLIN
 
-    enum class NetworkQualityHint {
-        None,
-        Local,
-        Remote
-    }
-
     enum class Orientation {
         Portrait,
         LandScape,

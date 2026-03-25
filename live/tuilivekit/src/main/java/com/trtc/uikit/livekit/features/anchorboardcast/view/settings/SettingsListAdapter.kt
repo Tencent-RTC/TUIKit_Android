@@ -19,12 +19,10 @@ import com.trtc.uikit.livekit.features.anchorboardcast.store.AnchorStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.device.MirrorType
-import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
 
 class SettingsListAdapter(
     private val context: Context,
     private val liveStreamManager: AnchorStore,
-    private val liveCoreView: LiveCoreView,
     private val settingsDialog: SettingsPanelDialog
 ) : RecyclerView.Adapter<SettingsListAdapter.ViewHolder>() {
 

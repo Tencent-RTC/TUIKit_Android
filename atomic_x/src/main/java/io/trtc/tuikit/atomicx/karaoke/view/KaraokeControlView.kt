@@ -14,21 +14,26 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.Observer
 import com.tencent.cloud.tuikit.engine.extension.TUISongListManager
+import com.tencent.trtc.TXChorusMusicPlayer
+import com.tencent.trtc.TXChorusMusicPlayer.TXChorusRole
+import io.trtc.tuikit.atomicx.R
 import io.trtc.tuikit.atomicx.karaoke.store.KaraokeStore
 import io.trtc.tuikit.atomicx.karaoke.store.utils.LyricAlign
 import io.trtc.tuikit.atomicx.karaoke.store.utils.PlaybackState
-import com.tencent.trtc.TXChorusMusicPlayer
-import io.trtc.tuikit.atomicx.R
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
-
+import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class KaraokeControlView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     var isAudienceFirstEnterRoom = true
+    private lateinit var roomId: String
     private lateinit var store: KaraokeStore
     private lateinit var lyricView: LyricView
     private lateinit var pitchView: PitchView
@@ -37,6 +42,7 @@ class KaraokeControlView @JvmOverloads constructor(
     private lateinit var imageNext: ImageView
     private lateinit var imagePause: ImageView
     private lateinit var imageSetting: ImageView
+    private lateinit var buttonJoinChorus: TextView
     private lateinit var textMusicName: TextView
     private lateinit var layoutRoot: FrameLayout
     private lateinit var layoutTime: LinearLayout
@@ -53,19 +59,7 @@ class KaraokeControlView @JvmOverloads constructor(
     private lateinit var imageRequesterAvatar: AtomicAvatar
     private lateinit var songRequestPanel: SongRequestPanel
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val isOwnerObserver = Observer<Boolean> { updateOwnerSpecificViews() }
-    private val currentTrackObserver = Observer(this::onCurrentTrackChanged)
-    private val currentMusicObserver = Observer(this::onCurrentMusicChanged)
-    private val playQueueObserver = Observer(this::onPlayQueueChanged)
-    private val durationObserver = Observer(this::onDurationChanged)
-    private val playbackStateObserver = Observer(this::onPlaybackStateChanged)
-    private val progressObserver = Observer(this::onProgressChanged)
-    private val pitchListObserver = Observer(this::onPitchListChanged)
-    private val currentPitchObserver = Observer(this::onCurrentPitchChanged)
-    private val currentScoreObserver = Observer(this::onCurrentScoreChanged)
-    private val enableScoreObserver = Observer(this::onEnableScoreChanged)
-    private val remoteScoresObserver = Observer(this::onRemoteScoresChanged)
-    private val remotePitchesObserver = Observer(this::onRemotePitchesChanged)
+    private var subscribeStateJob: Job? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.karaoke_control_view, this, true)
@@ -73,6 +67,7 @@ class KaraokeControlView @JvmOverloads constructor(
     }
 
     fun init(roomId: String, isOwner: Boolean) {
+        this.roomId = roomId
         store = KaraokeStore.getInstance(context)
         store.init(roomId, isOwner)
         songRequestPanel = SongRequestPanel(context, store, false)
@@ -110,6 +105,7 @@ class KaraokeControlView @JvmOverloads constructor(
         textAudienceWaitingTips = findViewById(R.id.tv_waiting_tips)
         textAudiencePauseTips = findViewById(R.id.tv_pause_tips)
         layoutRequestMusic = findViewById(R.id.ll_order_music)
+        buttonJoinChorus = findViewById(R.id.btn_join_chorus)
     }
 
     private fun initViews() {
@@ -148,6 +144,13 @@ class KaraokeControlView @JvmOverloads constructor(
                 songRequestPanel.show()
             }
         }
+        buttonJoinChorus.setOnClickListener {
+            if (store.currentChorusRole.value == TXChorusRole.TXChorusRoleBackSinger) {
+                store.setChorusRole(roomId, TXChorusRole.TXChorusRoleAudience)
+            } else {
+                store.setChorusRole(roomId, TXChorusRole.TXChorusRoleBackSinger)
+            }
+        }
         imageNext.setOnClickListener {
             store.playNextSong()
             store.setIsDisplayScoreView(false)
@@ -162,35 +165,51 @@ class KaraokeControlView @JvmOverloads constructor(
     }
 
     private fun addObservers() {
-        store.playbackProgressMs.observeForever(progressObserver)
-        store.playbackState.observeForever(playbackStateObserver)
-        store.songDurationMs.observeForever(durationObserver)
-        store.isRoomOwner.observeForever(isOwnerObserver)
-        store.currentTrack.observeForever(currentTrackObserver)
-        store.currentPlayingSong.observeForever(currentMusicObserver)
-        store.songQueue.observeForever(playQueueObserver)
-        store.pitchList.observeForever(pitchListObserver)
-        store.currentPitch.observeForever(currentPitchObserver)
-        store.currentScore.observeForever(currentScoreObserver)
-        store.enableScore.observeForever(enableScoreObserver)
-        store.hostScore.observeForever(remoteScoresObserver)
-        store.hostPitch.observeForever(remotePitchesObserver)
+        subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
+            launch {
+                store.playbackProgressMs.collect { onProgressChanged(it) }
+            }
+            launch {
+                store.playbackState.collect { onPlaybackStateChanged(it) }
+            }
+            launch {
+                store.songDurationMs.collect { onDurationChanged(it) }
+            }
+            launch {
+                store.currentTrack.collect { onCurrentTrackChanged(it) }
+            }
+            launch {
+                store.currentPlayingSong.collect { onCurrentMusicChanged(it) }
+            }
+            launch {
+                store.songQueue.collect { onPlayQueueChanged(it) }
+            }
+            launch {
+                store.pitchList.collect { onPitchListChanged(it) }
+            }
+            launch {
+                store.currentPitch.collect { onCurrentPitchChanged(it) }
+            }
+            launch {
+                store.currentScore.collect { onCurrentScoreChanged(it) }
+            }
+            launch {
+                store.enableScore.collect { onEnableScoreChanged(it) }
+            }
+            launch {
+                store.hostScore.collect { onRemoteScoresChanged(it) }
+            }
+            launch {
+                store.hostPitch.collect { onRemotePitchesChanged(it) }
+            }
+            launch {
+                store.currentChorusRole.collect { updateChorusButton() }
+            }
+        }
     }
 
     private fun removeObservers() {
-        store.playbackProgressMs.removeObserver(progressObserver)
-        store.playbackState.removeObserver(playbackStateObserver)
-        store.songDurationMs.removeObserver(durationObserver)
-        store.isRoomOwner.removeObserver(isOwnerObserver)
-        store.currentTrack.removeObserver(currentTrackObserver)
-        store.currentPlayingSong.removeObserver(currentMusicObserver)
-        store.currentTrack.removeObserver(currentTrackObserver)
-        store.pitchList.removeObserver(pitchListObserver)
-        store.currentPitch.removeObserver(currentPitchObserver)
-        store.currentScore.removeObserver(currentScoreObserver)
-        store.enableScore.removeObserver(enableScoreObserver)
-        store.hostScore.removeObserver(remoteScoresObserver)
-        store.hostPitch.removeObserver(remotePitchesObserver)
+        subscribeStateJob?.cancel()
     }
 
     private fun onProgressChanged(progress: Long) {
@@ -257,13 +276,13 @@ class KaraokeControlView @JvmOverloads constructor(
     }
 
     private fun onRemoteScoresChanged(score: Int) {
-        if (store.isRoomOwner.value == false) {
+        if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger) {
             pitchView.setScore(score)
         }
     }
 
     private fun onRemotePitchesChanged(pitch: Int) {
-        if (store.isRoomOwner.value == false) {
+        if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger) {
             pitchView.setUserPitch(pitch)
         }
     }
@@ -273,11 +292,21 @@ class KaraokeControlView @JvmOverloads constructor(
         layoutScore.visibility = GONE
         lyricView.visibility = GONE
         pitchView.visibility = GONE
-        textMusicName.text = context.getString(R.string.karaoke_no_song)
-        textMusicAuthor.text = null
-        onProgressChanged(0)
-        onDurationChanged(0)
-        if (store.isRoomOwner.value == true) {
+        store.resetPlaybackInfo()
+        pitchView.resetState()
+
+        val currentSong = store.currentPlayingSong.value
+        val queueNotEmpty = store.songQueue.value.orEmpty().isNotEmpty()
+        val hasValidSong = !currentSong?.songId.isNullOrEmpty() && queueNotEmpty
+        if (hasValidSong) {
+            textMusicName.text = currentSong?.songName
+            textMusicAuthor.text = "- " + currentSong?.artistName
+        } else {
+            textMusicName.text = context.getString(R.string.karaoke_no_song)
+            textMusicAuthor.text = null
+        }
+
+        if (store.currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger) {
             layoutRequestMusic.visibility = VISIBLE
         } else {
             updateAudienceWaitingUI()
@@ -285,7 +314,7 @@ class KaraokeControlView @JvmOverloads constructor(
     }
 
     private fun updateUIForPlayingState() {
-        if (store.isRoomOwner.value == false) {
+        if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger) {
             isAudienceFirstEnterRoom = false
         }
         layoutScore.visibility = GONE
@@ -295,9 +324,8 @@ class KaraokeControlView @JvmOverloads constructor(
         layoutRequestMusic.visibility = GONE
         textAudienceWaitingTips.visibility = GONE
         textAudiencePauseTips.visibility = GONE
-        if (store.isRoomOwner.value == true) {
-            layoutFunction.visibility = VISIBLE
-        }
+        layoutFunction.visibility = VISIBLE
+        updateChorusButton()
         setSongProgressViewsVisible(true)
         imagePause.setImageResource(R.drawable.karaoke_music_resume)
         imageNext.setImageResource(R.drawable.karaoke_music_next)
@@ -313,9 +341,9 @@ class KaraokeControlView @JvmOverloads constructor(
     }
 
     private fun handlePausedState() {
-        if (store.isRoomOwner.value == true) {
-            layoutFunction.visibility = VISIBLE
-        } else {
+        layoutFunction.visibility = VISIBLE
+        updateChorusButton()
+        if (store.currentChorusRole.value != TXChorusRole.TXChorusRoleLeadSinger) {
             updateAudienceWaitingUI()
         }
         imagePause.setImageResource(R.drawable.karaoke_music_pause)
@@ -345,23 +373,62 @@ class KaraokeControlView @JvmOverloads constructor(
                     R.drawable.karaoke_song_cover
                 )
             )
-            textRequesterName.text = store.currentPlayingSong.value?.requester?.userName
+            if (store.currentChorusRole.value == TXChorusRole.TXChorusRoleBackSinger) {
+                textRequesterName.text = LoginStore.shared.loginState.loginUserInfo.value?.nickname
+            } else {
+                textRequesterName.text = store.currentPlayingSong.value?.requester?.userName
+            }
         } else {
             store.updatePlaybackStatus(PlaybackState.IDLE)
         }
     }
 
     private fun updateOwnerSpecificViews() {
-        val isOwner = store.isRoomOwner.value == true
+        val isOwner = store.currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger
         if (isOwner) {
             layoutRequestMusic.visibility = VISIBLE
         } else {
             updateAudienceWaitingUI()
         }
+        updateChorusButton()
+    }
+
+    private fun updateChorusButton() {
+        val isOwner = store.currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger
+        val currentRole = store.currentChorusRole.value
+        
+        if (isOwner) {
+            buttonJoinChorus.visibility = GONE
+            imagePause.visibility = VISIBLE
+            imageNext.visibility = VISIBLE
+            imageSetting.visibility = VISIBLE
+            imageEnableOriginal.visibility = VISIBLE
+        } else {
+            imagePause.visibility = GONE
+            imageNext.visibility = GONE
+
+            when (currentRole) {
+                TXChorusRole.TXChorusRoleBackSinger -> {
+                    buttonJoinChorus.visibility = VISIBLE
+                    buttonJoinChorus.text = context.getString(R.string.karaoke_exit_chorus)
+                    imageSetting.visibility = VISIBLE
+                    imageEnableOriginal.visibility = VISIBLE
+                }
+                TXChorusRole.TXChorusRoleAudience -> {
+                    buttonJoinChorus.visibility = VISIBLE
+                    buttonJoinChorus.text = context.getString(R.string.karaoke_join_chorus)
+                    imageSetting.visibility = GONE
+                    imageEnableOriginal.visibility = GONE
+                }
+                else -> {
+                    buttonJoinChorus.visibility = GONE
+                }
+            }
+        }
     }
 
     private fun updateAudienceWaitingUI() {
-        if (store.isRoomOwner.value == true) {
+        if (store.currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger) {
             textAudienceWaitingTips.visibility = GONE
             textAudiencePauseTips.visibility = GONE
             return
@@ -387,7 +454,7 @@ class KaraokeControlView @JvmOverloads constructor(
     }
 
     private fun onPlayQueueChanged(list: List<TUISongListManager.SongInfo>) {
-        if (store.isRoomOwner.value == true) {
+        if (store.currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger) {
             return
         }
         updateAudienceWaitingUI()

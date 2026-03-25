@@ -30,6 +30,9 @@ android {
         sourceCompatibility javaVersion
         targetCompatibility javaVersion
     }
+    kotlinOptions {
+        jvmTarget = javaVersion
+    }
 }
 
 dependencies {
@@ -52,8 +55,7 @@ dependencies {
     if (projects.contains("engine_source")) {
         api project(':engine_source')
     } else {
-        api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.0.0.110"
-        api rootProject.getProperties().containsKey("liteavSdk") ? rootProject.ext.liteavSdk : "com.tencent.liteav:LiteAVSDK_Professional:13.0.0.19676"
+        api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.0.1.90"
     }
     if (projects.contains("common")) {
         api project(':common')

@@ -7,17 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.tencent.qcloud.tuicore.util.ScreenUtil
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.features.anchorboardcast.store.AnchorStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
-import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
 
 @SuppressLint("ViewConstructor")
 class SettingsPanelDialog(
     context: Context,
-    private val liveManager: AnchorStore,
-    private val liveCoreView: LiveCoreView
+    private val liveManager: AnchorStore
 ) : AtomicPopover(context) {
     init {
         initView()
@@ -51,7 +49,7 @@ class SettingsPanelDialog(
             }
         })
         
-        val adapter = SettingsListAdapter(context, liveManager, liveCoreView, this)
+        val adapter = SettingsListAdapter(context, liveManager, this)
         recycleSettingsList.adapter = adapter
     }
 }

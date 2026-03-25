@@ -6,8 +6,8 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
-import com.trtc.tuikit.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 
 class CircleIndicator @JvmOverloads constructor(
     context: Context,

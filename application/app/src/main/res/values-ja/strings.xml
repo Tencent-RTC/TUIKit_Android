@@ -99,5 +99,6 @@
     <string name="app_main_item_video_live_sub">ライブAPIを介してインタラクティブなビデオライブストリーミングを構築して、明確でスムーズなライブストリーミングエクスペリエンスを提供します。</string>
     <string name="app_main_item_voice_room">言語チャットルーム</string>
     <string name="app_main_item_voice_room_sub">Live APIを使用してインタラクティブな音声チャットルームを構築して、低レイテンシと高品質のエクスペリエンスを提供します。</string>
+    <string name="app_toast_error_call_self">自分自身に電話をかけることはできません。ユーザーIDを変更してください</string>
 
 </resources>

@@ -9,11 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:gravity="center"
-        android:textColor="@color/common_design_standard_g2"
-        android:textSize="18sp" />
+        android:textColor="@color/text_color_primary"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="16sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/common_design_standard_g8" />
+        android:background="@color/stroke_color_primary" />
 </LinearLayout>

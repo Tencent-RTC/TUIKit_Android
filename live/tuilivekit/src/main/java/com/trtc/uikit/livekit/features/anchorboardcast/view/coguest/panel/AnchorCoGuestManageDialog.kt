@@ -11,11 +11,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.trtc.uikit.livekit.R
-import com.trtc.uikit.livekit.features.anchorboardcast.store.AnchorStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.live.CoGuestStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
-import io.trtc.tuikit.atomicxcore.api.view.LiveCoreView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -23,9 +21,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("ViewConstructor")
 class AnchorCoGuestManageDialog(
-    context: Context,
-    private val anchorManager: AnchorStore?,
-    private val liveStream: LiveCoreView
+    context: Context
 ) : AtomicPopover(context) {
 
     private lateinit var textMicUpTitle: TextView

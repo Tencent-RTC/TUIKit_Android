@@ -143,8 +143,6 @@ class PitchView(
         val viewHeight = height.toFloat()
 
         if (pitchList.isEmpty()) {
-            canvas.drawLine(viewCenterX, 0f, viewCenterX, viewHeight, scoreLinePaint)
-            drawUserPitchDot(canvas, viewCenterX)
             return
         }
 
@@ -176,7 +174,7 @@ class PitchView(
         drawButterflies(canvas)
     }
 
-    private fun resetState() {
+    fun resetState() {
         currentProgressMs = 0L
         userPitch = 0
         scrollOffset = 0f

@@ -73,12 +73,12 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
 
         layoutContainer = findViewById(R.id.fl_container)
         val liveInfo = LiveInfoUtils.convertBundleToLiveInfo(liveBundle)
-
+        
         audienceContainerView = AudienceContainerView(this).apply {
             init(this@VideoLiveAudienceActivity, liveInfo)
             addListener(this@VideoLiveAudienceActivity)
         }
-
+        
         layoutContainer.addView(audienceContainerView)
         VideoLiveKitImpl.createInstance(applicationContext).addCallingAPIListener(this)
         TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, this)
@@ -104,7 +104,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
             TextUtils.equals(key, KEY_EXTENSION_NAME) && TextUtils.equals(subKey, NOTIFY_START_ACTIVITY) -> {
                 val intent = param?.get("intent") as? Intent
                 val requestCode = param?.get("requestCode") as? Int
-
+                
                 if (requestCode != null && intent != null) {
                     startActivityForResult(intent, requestCode)
                 } else if (intent != null) {
@@ -178,7 +178,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
         PictureInPictureStore.shared.updateIsPictureInPictureMode(isInPictureInPictureMode)
         audienceContainerView?.enablePictureInPictureMode(isInPictureInPictureMode)
         audienceEndStatisticsView?.enablePipMode(isInPictureInPictureMode)
-
+        
         if (!isInPictureInPictureMode && lifecycle.currentState == Lifecycle.State.CREATED) {
             destroyAudienceView()
         }
@@ -221,7 +221,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
                 }
             })
         }
-
+        
         layoutContainer.removeAllViews()
         layoutContainer.addView(audienceEndStatisticsView)
     }
