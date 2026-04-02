@@ -61,7 +61,7 @@ class StandardRoomView @JvmOverloads constructor(
     private var cachedVisibleRange: PagedVideoLayoutManager.VisibleRange? = null
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.roomkit_view_room_view, this)
+        LayoutInflater.from(context).inflate(R.layout.roomkit_standard_room_view, this)
         calculateItemSize()
         initRecyclerView()
     }
@@ -77,6 +77,7 @@ class StandardRoomView @JvmOverloads constructor(
     override fun addObserver() {
         val store = participantStore ?: return
 
+        subscribeJob?.cancel()
         subscribeJob = CoroutineScope(Dispatchers.Main).launch {
             launch {
                 store.state.participantList.collect { participants ->

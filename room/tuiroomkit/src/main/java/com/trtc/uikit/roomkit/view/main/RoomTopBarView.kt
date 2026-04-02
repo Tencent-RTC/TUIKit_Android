@@ -75,7 +75,16 @@ class RoomTopBarView @JvmOverloads constructor(
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_view_top_bar, this)
         initView()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
         startDurationTimer()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        stopDurationTimer()
     }
 
     fun init(roomID: String, roomType: RoomType) {
@@ -90,6 +99,7 @@ class RoomTopBarView @JvmOverloads constructor(
     }
 
     override fun addObserver() {
+        subscribeJob?.cancel()
         subscribeJob = CoroutineScope(Dispatchers.Main).launch {
             launch {
                 roomStore.state.currentRoom.collect { roomInfo ->
@@ -110,7 +120,6 @@ class RoomTopBarView @JvmOverloads constructor(
     override fun removeObserver() {
         subscribeJob?.cancel()
         subscribeJob = null
-        stopDurationTimer()
         roomInfoDialog?.dismiss()
         roomInfoDialog = null
     }
@@ -151,10 +160,9 @@ class RoomTopBarView @JvmOverloads constructor(
 
     private fun handleMeetingInfoClick() {
         logger.info("handleMeetingInfoClick")
-        val currentRoomInfo = roomStore.state.currentRoom.value ?: return
         if (roomInfoDialog == null) {
             val view = RoomInfoView(context).apply {
-                init(currentRoomInfo.roomID)
+                init(roomID)
             }
             roomInfoDialog = RoomPopupDialog(context).apply {
                 setView(view)

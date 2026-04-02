@@ -2,8 +2,13 @@ package com.trtc.uikit.roomkit.base.operator
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import androidx.core.net.toUri
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
+import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.common.permission.PermissionRequester
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
@@ -24,8 +29,8 @@ class DeviceOperator(context: Context) {
         CAMERA,
     }
 
+    private val logger = RoomKitLogger.getLogger("DeviceOperator")
     private val contextRef = WeakReference(context)
-
     private val deviceStore = DeviceStore.shared()
 
     suspend fun unmuteMicrophone(participantStore: RoomParticipantStore?) {
@@ -57,6 +62,19 @@ class DeviceOperator(context: Context) {
         deviceStore.closeLocalCamera()
     }
 
+    fun startScreenShare() {
+        val context = contextRef.get() ?: return
+        if (!checkDrawOverlaysPermission(context)) {
+            requestDrawOverlaysPermission(context)
+            return
+        }
+        deviceStore.startScreenShare()
+    }
+
+    fun stopScreenShare() {
+        deviceStore.stopScreenShare()
+    }
+
     suspend fun requestPermission(type: DeviceOperatorType): Boolean {
         val context = contextRef.get() ?: return false
         val appName = context.packageManager.getApplicationLabel(context.applicationInfo).toString()
@@ -67,6 +85,7 @@ class DeviceOperator(context: Context) {
                 context.getString(R.string.roomkit_permission_microphone),
                 context.getString(R.string.roomkit_permission_mic_reason)
             )
+
             DeviceOperatorType.CAMERA -> Triple(
                 Manifest.permission.CAMERA,
                 context.getString(R.string.roomkit_permission_camera),
@@ -128,6 +147,29 @@ class DeviceOperator(context: Context) {
 
             continuation.invokeOnCancellation {
                 isCompleted = true
+            }
+        }
+    }
+
+    private fun checkDrawOverlaysPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.canDrawOverlays(context)
+        } else {
+            true
+        }
+    }
+
+    private fun requestDrawOverlaysPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                "package:${context.packageName}".toUri()
+            )
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+            } else {
+                logger.error("No activity found to handle overlay permission request")
             }
         }
     }

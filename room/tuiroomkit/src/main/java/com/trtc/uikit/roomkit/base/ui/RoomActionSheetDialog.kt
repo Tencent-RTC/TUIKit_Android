@@ -23,6 +23,8 @@ class RoomActionSheetDialog private constructor(
     private val builder: Builder
 ) : BottomSheetDialog(context, R.style.RoomKitBottomDialog) {
 
+    private lateinit var rootView: View
+    private lateinit var topDivideView: View
     private lateinit var tvTips: TextView
     private lateinit var llActions: LinearLayout
     private lateinit var dragIndicator: View
@@ -31,6 +33,8 @@ class RoomActionSheetDialog private constructor(
         super.onCreate(savedInstanceState)
         setContentView(R.layout.roomkit_dialog_action_sheet)
 
+        rootView = findViewById(R.id.cl_root)!!
+        topDivideView = findViewById(R.id.view_divider_top)!!
         tvTips = findViewById(R.id.tv_tips)!!
         llActions = findViewById(R.id.ll_actions)!!
         dragIndicator = findViewById(R.id.drag_indicator)!!
@@ -43,10 +47,12 @@ class RoomActionSheetDialog private constructor(
         if (builder.tipsText.isNotEmpty()) {
             tvTips.text = builder.tipsText
             tvTips.visibility = View.VISIBLE
+            topDivideView.visibility = View.VISIBLE
         } else {
             tvTips.visibility = View.GONE
+            topDivideView.visibility = View.GONE
         }
-
+        rootView.setBackgroundResource(builder.backgroundRes ?: R.drawable.roomkit_bg_bottom_sheet_dialog)
         builder.actions.forEachIndexed { index, action ->
             if (index > 0) {
                 addDivider()
@@ -64,7 +70,12 @@ class RoomActionSheetDialog private constructor(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 context.resources.getDimensionPixelSize(R.dimen.roomkit_divider_height)
             )
-            setBackgroundResource(R.color.roomkit_color_action_sheet_divider)
+            setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    builder.dividerColorRes ?: R.color.roomkit_color_action_sheet_divider
+                )
+            )
         }
         llActions.addView(divider)
     }
@@ -77,8 +88,11 @@ class RoomActionSheetDialog private constructor(
         button.setTextColor(
             ContextCompat.getColor(
                 context,
-                if (action.isWarning) R.color.roomkit_color_end_room
-                else R.color.roomkit_color_primary
+                when {
+                    action.isWarning -> R.color.roomkit_color_end_room
+                    builder.textColorRes != null -> builder.textColorRes!!
+                    else -> R.color.roomkit_color_primary
+                }
             )
         )
         button.setOnClickListener {
@@ -93,7 +107,6 @@ class RoomActionSheetDialog private constructor(
         window?.let { win ->
             val bottomSheet = win.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             bottomSheet?.setBackgroundResource(R.drawable.roomkit_bg_bottom_sheet_dialog)
-
             win.setBackgroundDrawableResource(android.R.color.transparent)
             win.setWindowAnimations(R.style.RoomKitBottomDialogAnimation)
 
@@ -125,6 +138,9 @@ class RoomActionSheetDialog private constructor(
     class Builder(private val context: Context) {
         internal var tipsText: String = ""
         internal val actions = mutableListOf<ActionItem>()
+        internal var backgroundRes: Int? = null
+        internal var textColorRes: Int? = null
+        internal var dividerColorRes: Int? = null
 
         fun setTips(@StringRes tipsResId: Int): Builder {
             this.tipsText = context.getString(tipsResId)
@@ -156,6 +172,21 @@ class RoomActionSheetDialog private constructor(
             onClick: (() -> Unit)? = null
         ): Builder {
             actions.add(ActionItem(text, isWarning, onClick))
+            return this
+        }
+
+        fun setBackgroundResource(@androidx.annotation.DrawableRes drawableRes: Int): Builder {
+            this.backgroundRes = drawableRes
+            return this
+        }
+
+        fun setTextColor(@androidx.annotation.ColorRes colorRes: Int): Builder {
+            this.textColorRes = colorRes
+            return this
+        }
+
+        fun setDividerColor(@androidx.annotation.ColorRes colorRes: Int): Builder {
+            this.dividerColorRes = colorRes
             return this
         }
 

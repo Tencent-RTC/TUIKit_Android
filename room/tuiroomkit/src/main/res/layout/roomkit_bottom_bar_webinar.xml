@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:paddingTop="10dp"
+    android:paddingBottom="26dp">
+
+    <LinearLayout
+        android:id="@+id/ll_participants"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roomkit_bg_bottom_button"
+        android:gravity="center"
+        android:minWidth="52dp"
+        android:minHeight="52dp"
+        android:orientation="vertical"
+        android:paddingStart="5dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ll_hands_up"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_participants"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/roomkit_ic_participants"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_participants"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:maxLines="1"
+            android:textColor="@color/roomkit_color_text_control"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_hands_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roomkit_bg_bottom_button"
+        android:gravity="center"
+        android:minWidth="52dp"
+        android:minHeight="52dp"
+        android:orientation="vertical"
+        android:paddingStart="5dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="7dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ll_hands_up_manage"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toEndOf="@id/ll_participants"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_hands_up"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/roomkit_ic_hands_up"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_hands_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/roomkit_hands_up"
+            android:textColor="@color/roomkit_color_text_control"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/ll_hands_up_manage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ll_microphone"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toEndOf="@id/ll_hands_up"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/roomkit_bg_bottom_button"
+            android:gravity="center"
+            android:minWidth="52dp"
+            android:minHeight="52dp"
+            android:orientation="vertical"
+            android:paddingStart="5dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="7dp">
+
+            <ImageView
+                android:id="@+id/iv_hands_up_manage"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/roomkit_ic_hands_up_manage"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_hands_up_manage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/roomkit_hands_up_list"
+                android:textColor="@color/roomkit_color_text_control"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_hands_up_manage_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/roomkit_bg_badge_red"
+            android:gravity="center"
+            android:minWidth="18dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_microphone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roomkit_bg_bottom_button"
+        android:gravity="center"
+        android:minWidth="52dp"
+        android:minHeight="52dp"
+        android:orientation="vertical"
+        android:paddingStart="5dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="7dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ll_camera"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toEndOf="@id/ll_hands_up_manage"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_microphone"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/roomkit_ic_microphone_off"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_microphone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/roomkit_mute"
+            android:textColor="@color/roomkit_color_text_control"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roomkit_bg_bottom_button"
+        android:gravity="center"
+        android:minWidth="52dp"
+        android:minHeight="52dp"
+        android:orientation="vertical"
+        android:paddingStart="5dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="7dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ll_screen_share"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toEndOf="@id/ll_microphone"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_camera"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/roomkit_ic_camera_off"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/roomkit_start_video"
+            android:textColor="@color/roomkit_color_text_control"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_screen_share"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roomkit_bg_bottom_button"
+        android:gravity="center"
+        android:minWidth="52dp"
+        android:minHeight="52dp"
+        android:orientation="vertical"
+        android:paddingStart="5dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="7dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toEndOf="@id/ll_camera"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_screen_share"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/roomkit_ic_share"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_screen_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/roomkit_start_screen_share"
+            android:textColor="@color/roomkit_color_text_control"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

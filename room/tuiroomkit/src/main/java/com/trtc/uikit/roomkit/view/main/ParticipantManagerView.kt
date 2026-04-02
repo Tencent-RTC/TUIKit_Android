@@ -58,7 +58,6 @@ class ParticipantManagerView @JvmOverloads constructor(
     private val llRemove: LinearLayout by lazy { findViewById(R.id.ll_remove) }
     private val llSetAudience: LinearLayout by lazy { findViewById(R.id.ll_set_audience) }
 
-
     private var roomType = RoomType.STANDARD
     private var participant: RoomParticipant? = null
     private var localParticipant: RoomParticipant? = null
@@ -88,6 +87,7 @@ class ParticipantManagerView @JvmOverloads constructor(
 
     override fun addObserver() {
         val store = participantStore ?: return
+        subscribeJob?.cancel()
         subscribeJob = CoroutineScope(Dispatchers.Main).launch {
             launch {
                 store.state.localParticipant.collect { local ->
@@ -195,16 +195,15 @@ class ParticipantManagerView @JvmOverloads constructor(
         llTransferMaster.visibility = GONE
         llSetManager.visibility = GONE
         llRemove.visibility = GONE
-        llSetAudience.visibility = GONE
-        llSetAudience.visibility = GONE
     }
 
     private fun showOwnerActions(target: RoomParticipant) {
         llMicrophone.visibility = VISIBLE
         llCamera.visibility = VISIBLE
-        llTransferMaster.visibility = VISIBLE
+        llTransferMaster.visibility = if (roomType == RoomType.WEBINAR) GONE else VISIBLE
         llSetManager.visibility = if (target.role != ParticipantRole.OWNER) VISIBLE else GONE
         llRemove.visibility = if (target.role != ParticipantRole.OWNER) VISIBLE else GONE
+        llSetAudience.visibility = VISIBLE
     }
 
     private fun showAdminActions(target: RoomParticipant) {
@@ -221,6 +220,7 @@ class ParticipantManagerView @JvmOverloads constructor(
         llTransferMaster.visibility = GONE
         llSetManager.visibility = GONE
         llRemove.visibility = if (canManage) VISIBLE else GONE
+        llSetAudience.visibility = VISIBLE
     }
 
     private fun setupListeners() {

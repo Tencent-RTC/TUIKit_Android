@@ -14,6 +14,7 @@ import com.trtc.uikit.roomkit.view.main.AudienceManagerView
 import com.trtc.uikit.roomkit.view.main.AudienceManagerView.OnAudienceActionListener
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView.OnParticipantActionListener
+import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
@@ -202,7 +203,9 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
         val localParticipant = participantStore?.state?.localParticipant?.value ?: return
         val adminList = participantStore?.state?.adminList?.value ?: return
         val adminIds = adminList.map { it.userID }.toSet()
-        val canOperate = adminIds.contains(localParticipant.userID) && !adminIds.contains(audience.userID)
+        val canOperate = localParticipant.role == ParticipantRole.OWNER
+                || (adminIds.contains(localParticipant.userID)
+                && !adminIds.contains(audience.userID))
         if (!canOperate) {
             return
         }

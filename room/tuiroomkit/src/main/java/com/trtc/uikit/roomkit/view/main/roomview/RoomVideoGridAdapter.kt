@@ -14,6 +14,7 @@ import com.trtc.uikit.roomkit.base.utils.dpToPx
 import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
+import io.trtc.tuikit.atomicxcore.api.view.FillMode
 import io.trtc.tuikit.atomicxcore.api.view.RoomParticipantView
 import io.trtc.tuikit.atomicxcore.api.view.VideoStreamType
 
@@ -182,6 +183,7 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
                 // Stream changed - reinitialize participant view
                 currentStreamId = streamItem.uniqueId
                 participantView.init(streamItem.streamType, streamItem.participant)
+                participantView.setFillMode(FillMode.FILL)
             } else {
                 // Same stream - just update participant info
                 participantView.updateParticipant(streamItem.participant)

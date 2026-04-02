@@ -65,6 +65,7 @@ class AudienceManagerView @JvmOverloads constructor(
 
     override fun addObserver() {
         val store = participantStore ?: return
+        subscribeJob?.cancel()
         subscribeJob = CoroutineScope(Dispatchers.Main).launch {
             launch {
                 store.state.localParticipant.collect { local ->
