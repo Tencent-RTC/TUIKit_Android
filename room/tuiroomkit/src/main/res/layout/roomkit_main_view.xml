@@ -22,15 +22,6 @@
         app:layout_constraintTop_toBottomOf="@id/room_top_bar"
         app:layout_constraintVertical_weight="1" />
 
-    <com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareOverlayView
-        android:id="@+id/screen_share_overlay_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/room_view"
-        app:layout_constraintEnd_toEndOf="@+id/room_view"
-        app:layout_constraintStart_toStartOf="@+id/room_view"
-        app:layout_constraintTop_toTopOf="@+id/room_view" />
-
     <com.trtc.uikit.roomkit.view.main.RoomBottomBarView
         android:id="@+id/room_bottom_bar"
         android:layout_width="match_parent"
@@ -62,4 +53,13 @@
         android:layout_marginBottom="15dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/barrage_input_view" />
+
+    <com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareOverlayView
+        android:id="@+id/screen_share_overlay_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/room_view"
+        app:layout_constraintEnd_toEndOf="@+id/room_view"
+        app:layout_constraintStart_toStartOf="@+id/room_view"
+        app:layout_constraintTop_toTopOf="@+id/room_view" />
 </androidx.constraintlayout.widget.ConstraintLayout>
