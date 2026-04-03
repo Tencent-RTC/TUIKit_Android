@@ -14,6 +14,7 @@ import com.trtc.uikit.roomkit.base.ui.BaseView
 import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
+import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomUser
@@ -122,7 +123,8 @@ class AudienceManagerView @JvmOverloads constructor(
     private fun updateActionVisibility() {
         val local = localParticipant ?: return
         val target = audience ?: return
-        val canManage = adminList.contains(local.userID) && !adminList.contains(target.userID)
+        val canManage = local.role == ParticipantRole.OWNER
+                || adminList.contains(local.userID) && !adminList.contains(target.userID)
         llRemove.visibility = if (canManage) VISIBLE else GONE
     }
 

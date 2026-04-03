@@ -151,6 +151,11 @@ class ParticipantManagerView @JvmOverloads constructor(
             else -> {
                 ivCameraIcon.setImageResource(R.drawable.roomkit_ic_camera_off)
                 tvCamera.text = context.getString(R.string.roomkit_request_start_video)
+                if (roomType == RoomType.WEBINAR) {
+                    llCamera.visibility = GONE
+                } else {
+                    llCamera.visibility = VISIBLE
+                }
             }
         }
 
@@ -174,7 +179,6 @@ class ParticipantManagerView @JvmOverloads constructor(
     private fun updateActionVisibility() {
         val local = localParticipant ?: return
         val target = participant ?: return
-
         logger.info("Update action visibility - LocalRole: ${local.role}, TargetRole: ${target.role}")
 
         if (local.userID == target.userID) {
@@ -199,19 +203,26 @@ class ParticipantManagerView @JvmOverloads constructor(
 
     private fun showOwnerActions(target: RoomParticipant) {
         llMicrophone.visibility = VISIBLE
-        llCamera.visibility = VISIBLE
         llTransferMaster.visibility = if (roomType == RoomType.WEBINAR) GONE else VISIBLE
         llSetManager.visibility = if (target.role != ParticipantRole.OWNER) VISIBLE else GONE
         llRemove.visibility = if (target.role != ParticipantRole.OWNER) VISIBLE else GONE
         llSetAudience.visibility = VISIBLE
+        if (roomType == RoomType.WEBINAR && target.cameraStatus == DeviceStatus.OFF) {
+            llCamera.visibility = GONE
+        } else {
+            llCamera.visibility = VISIBLE
+        }
     }
 
     private fun showAdminActions(target: RoomParticipant) {
         val canManage = target.role == ParticipantRole.GENERAL_USER
-
         if (roomType == RoomType.WEBINAR) {
-            llCamera.visibility = GONE
             llSetAudience.visibility = if (canManage) VISIBLE else GONE
+            if (canManage && target.cameraStatus == DeviceStatus.ON) {
+                llCamera.visibility = VISIBLE
+            } else {
+                llCamera.visibility = GONE
+            }
         } else {
             llCamera.visibility = if (canManage) VISIBLE else GONE
             llSetAudience.visibility = GONE

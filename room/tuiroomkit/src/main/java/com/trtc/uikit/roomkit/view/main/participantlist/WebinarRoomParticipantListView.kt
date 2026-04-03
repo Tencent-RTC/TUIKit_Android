@@ -201,11 +201,13 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
     private fun showAudienceActionDialog(audience: RoomUser) {
         logger.info("Show action dialog for audience: ${audience.userID}")
         val localParticipant = participantStore?.state?.localParticipant?.value ?: return
+        if (localParticipant.userID == audience.userID) {
+            return
+        }
         val adminList = participantStore?.state?.adminList?.value ?: return
         val adminIds = adminList.map { it.userID }.toSet()
         val canOperate = localParticipant.role == ParticipantRole.OWNER
-                || (adminIds.contains(localParticipant.userID)
-                && !adminIds.contains(audience.userID))
+                || (adminIds.contains(localParticipant.userID) && !adminIds.contains(audience.userID))
         if (!canOperate) {
             return
         }
