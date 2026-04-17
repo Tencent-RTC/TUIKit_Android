@@ -5,7 +5,8 @@ import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.trtc.uikit.roomkit.view.main.roomview.StandardRoomView
-import com.trtc.uikit.roomkit.view.main.roomview.WebinarRoomView
+import com.trtc.uikit.roomkit.view.main.roomview.webinar.WebinarRoomView
+import com.trtc.uikit.roomkit.view.main.roomview.webinar.WebinarVideoViewAdapterImpl
 import io.trtc.tuikit.atomicxcore.api.room.RoomType
 
 /**
@@ -17,16 +18,22 @@ class RoomView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
     fun init(roomID: String, roomType: RoomType) {
         removeAllViews()
-        val rootView = if (roomType == RoomType.WEBINAR) {
-            WebinarRoomView(context).apply {
+        val rootView = when (roomType) {
+            RoomType.WEBINAR -> WebinarRoomView(context).apply {
                 init(roomID)
+                val adapter = WebinarVideoViewAdapterImpl(context)
+                setVideoViewAdapter(adapter)
             }
-        } else {
-            StandardRoomView(context).apply {
+
+            RoomType.STANDARD -> StandardRoomView(context).apply {
                 init(roomID)
             }
         }
-        val params = LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        val params = LayoutParams(MATCH_PARENT, MATCH_PARENT).apply {
+            startToStart = LayoutParams.PARENT_ID
+            endToEnd = LayoutParams.PARENT_ID
+            topToTop = LayoutParams.PARENT_ID
+        }
         addView(rootView, params)
     }
 }

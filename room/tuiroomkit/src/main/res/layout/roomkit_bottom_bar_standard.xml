@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
+    android:paddingTop="10dp"
     android:paddingBottom="26dp">
 
     <LinearLayout
@@ -15,8 +14,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/roomkit_bg_bottom_button"
         android:gravity="center"
-        android:minHeight="52dp"
         android:minWidth="52dp"
+        android:minHeight="52dp"
         android:orientation="vertical"
         android:paddingStart="5dp"
         android:paddingTop="7dp"
@@ -51,8 +50,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/roomkit_bg_bottom_button"
         android:gravity="center"
-        android:minHeight="52dp"
         android:minWidth="52dp"
+        android:minHeight="52dp"
         android:orientation="vertical"
         android:paddingStart="5dp"
         android:paddingTop="7dp"
@@ -60,6 +59,7 @@
         android:paddingBottom="7dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ll_camera"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toEndOf="@id/ll_participants"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -86,8 +86,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/roomkit_bg_bottom_button"
         android:gravity="center"
-        android:minHeight="52dp"
         android:minWidth="52dp"
+        android:minHeight="52dp"
         android:orientation="vertical"
         android:paddingStart="5dp"
         android:paddingTop="7dp"
@@ -95,6 +95,7 @@
         android:paddingBottom="7dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toEndOf="@id/ll_microphone"
         app:layout_constraintTop_toTopOf="parent">
 

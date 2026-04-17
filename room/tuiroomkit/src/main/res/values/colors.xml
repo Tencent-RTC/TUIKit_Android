@@ -38,4 +38,5 @@
     <color name="roomkit_color_bg_button_grey">#4D6B758A</color>
     <color name="roomkit_color_text_action_button">#B2BBD1</color>
     <color name="roomkit_color_video_view_bg">#181A1E</color>
+    <color name="roomkit_color_screen_capture_float_bg">#7F000000</color>
 </resources>

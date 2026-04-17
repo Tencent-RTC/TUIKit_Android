@@ -6,8 +6,6 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.trtc.uikit.roomkit.view.main.participantlist.StandardRoomParticipantListView
 import com.trtc.uikit.roomkit.view.main.participantlist.WebinarRoomParticipantListView
-import com.trtc.uikit.roomkit.view.main.roomview.StandardRoomView
-import com.trtc.uikit.roomkit.view.main.roomview.WebinarRoomView
 import io.trtc.tuikit.atomicxcore.api.room.RoomType
 
 /**

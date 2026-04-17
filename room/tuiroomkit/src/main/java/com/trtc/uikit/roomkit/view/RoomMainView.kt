@@ -20,11 +20,13 @@ import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarView
 import com.trtc.uikit.roomkit.view.main.RoomTopBarView
 import com.trtc.uikit.roomkit.view.main.RoomView
+import com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareOverlayView
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.ListResultCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.AudioRoute
+import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.device.DeviceType
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
@@ -42,6 +44,8 @@ import io.trtc.tuikit.atomicxcore.api.room.RoomUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -53,6 +57,10 @@ class RoomMainView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : BaseView(context, attrs, defStyleAttr) {
+
+    init {
+        LayoutInflater.from(context).inflate(R.layout.roomkit_main_view, this)
+    }
 
     sealed class RoomBehavior {
         data class Create(val options: CreateRoomOptions) : RoomBehavior()
@@ -73,8 +81,9 @@ class RoomMainView @JvmOverloads constructor(
     private val topBarView: RoomTopBarView by lazy { findViewById(R.id.room_top_bar) }
     private val roomView: RoomView by lazy { findViewById(R.id.room_view) }
     private val bottomBarView: RoomBottomBarView by lazy { findViewById(R.id.room_bottom_bar) }
-    private val barrageInputView: BarrageInputView? by lazy { findViewById(R.id.barrage_input_view) }
-    private val barrageStreamView: BarrageStreamView? by lazy { findViewById(R.id.barrage_stream_view) }
+    private val barrageInputView: BarrageInputView by lazy { findViewById(R.id.barrage_input_view) }
+    private val barrageStreamView: BarrageStreamView by lazy { findViewById(R.id.barrage_stream_view) }
+    private val screenShareOverlayView: ScreenShareOverlayView by lazy { findViewById(R.id.screen_share_overlay_view) }
 
     private var roomType = RoomType.STANDARD
     private val roomStore = RoomStore.shared()
@@ -154,7 +163,9 @@ class RoomMainView @JvmOverloads constructor(
                     context, context.getString(R.string.roomkit_toast_muted_by_host), Style.WARNING
                 )
 
-                else -> Unit
+                DeviceType.SCREEN_SHARE -> AtomicToast.show(
+                    context, context.getString(R.string.roomkit_toast_screen_share_closed_by_host), Style.WARNING
+                )
             }
         }
 
@@ -231,21 +242,23 @@ class RoomMainView @JvmOverloads constructor(
         }
     }
 
-    fun init(roomID: String, roomType: RoomType, behavior: RoomBehavior, config: ConnectConfig) {
+    fun init(roomID: String, roomType: RoomType, behavior: RoomBehavior, config: ConnectConfig? = null) {
         logger.info("init roomID=$roomID, roomType=$roomType behavior:$behavior config=$config")
         this.roomType = roomType
         connectConfig = config
-        removeAllViews()
-        if (roomType == RoomType.WEBINAR) {
-            LayoutInflater.from(context).inflate(R.layout.roomkit_main_view_webinar, this)
-        } else {
-            LayoutInflater.from(context).inflate(R.layout.roomkit_main_view_standard, this)
-        }
         super.init(roomID)
         roomView.init(roomID, roomType)
         topBarView.init(roomID, roomType)
         bottomBarView.init(roomID, roomType)
-        initBarrageInputView(roomID)
+        if (roomType == RoomType.WEBINAR) {
+            barrageInputView.init(roomID)
+            barrageStreamView.init(roomID)
+            barrageInputView.visibility = VISIBLE
+            barrageStreamView.visibility = VISIBLE
+        } else {
+            barrageInputView.visibility = GONE
+            barrageStreamView.visibility = GONE
+        }
         RoomDataReporter.reportComponent()
         when (behavior) {
             is RoomBehavior.Create -> createRoom(roomID, behavior.options)
@@ -258,8 +271,15 @@ class RoomMainView @JvmOverloads constructor(
     }
 
     override fun addObserver() {
-        participantStore?.addRoomParticipantListener(participantListener)
+        val participantStore = participantStore ?: return
+        participantStore.addRoomParticipantListener(participantListener)
         roomStore.addRoomListener(roomListener)
+        scope.launch {
+            participantStore.state.localParticipant
+                .map { it?.screenShareStatus ?: DeviceStatus.OFF }
+                .distinctUntilChanged()
+                .collect { screenShareOverlayView.updateScreenStatus(it) }
+        }
     }
 
     override fun removeObserver() {
@@ -276,12 +296,13 @@ class RoomMainView @JvmOverloads constructor(
                 val roomInfo = roomStore.state.currentRoom.value
                 logger.info("createAndJoinRoom success $roomInfo")
                 getParticipantList()
+                if (roomType == RoomType.WEBINAR) {
+                    getAudienceList()
+                }
                 connectConfig?.let {
                     initConnectConfig(it)
                 }
-                roomInfo?.let {
-                    initBarrageStreamView(it)
-                }
+                bottomBarView.visibility = VISIBLE
             }
 
             override fun onFailure(code: Int, desc: String) {
@@ -298,12 +319,14 @@ class RoomMainView @JvmOverloads constructor(
                 val roomInfo = roomStore.state.currentRoom.value
                 logger.info("joinRoom success $roomInfo")
                 getParticipantList()
-                connectConfig?.let {
-                    initConnectConfig(it)
+                if (roomType == RoomType.WEBINAR) {
+                    getAudienceList()
+                } else {
+                    connectConfig?.let {
+                        initConnectConfig(it)
+                    }
                 }
-                roomInfo?.let {
-                    initBarrageStreamView(it)
-                }
+                bottomBarView.visibility = VISIBLE
             }
 
             override fun onFailure(code: Int, desc: String) {
@@ -315,7 +338,7 @@ class RoomMainView @JvmOverloads constructor(
     }
 
     private fun getParticipantList() {
-        logger.info("Store instance: ${participantStore.hashCode()}")
+        logger.info("Store instance: ${participantStore.hashCode()} getParticipantList")
 
         participantStore?.getParticipantList("", object : ListResultCompletionHandler<RoomParticipant> {
             override fun onSuccess(result: List<RoomParticipant>, cursor: String) {
@@ -329,23 +352,35 @@ class RoomMainView @JvmOverloads constructor(
         })
     }
 
+    private fun getAudienceList() {
+        logger.info("Store instance: ${participantStore.hashCode()} getAudienceList")
+        participantStore?.getAudienceList("", object : ListResultCompletionHandler<RoomUser> {
+            override fun onSuccess(result: List<RoomUser>, cursor: String) {
+                logger.info("getAudienceList success result size:${result.size} cursor:$cursor")
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("getAudienceList failed:error:$code,desc:$desc")
+                ErrorLocalized.showError(context, code)
+            }
+        })
+    }
+
     private fun initConnectConfig(config: ConnectConfig) {
         scope.launch {
-            if (roomType == RoomType.STANDARD) {
-                if (config.autoEnableMicrophone) {
-                    try {
-                        deviceOperator.unmuteMicrophone(participantStore)
-                    } catch (e: Exception) {
-                        logger.error("Failed to open microphone: ${e.message}")
-                    }
+            if (config.autoEnableMicrophone) {
+                try {
+                    deviceOperator.unmuteMicrophone(participantStore)
+                } catch (e: Exception) {
+                    logger.error("Failed to open microphone: ${e.message}")
                 }
+            }
 
-                if (config.autoEnableCamera) {
-                    try {
-                        deviceOperator.openCamera()
-                    } catch (e: Exception) {
-                        logger.error("Failed to open camera: ${e.message}")
-                    }
+            if (config.autoEnableCamera) {
+                try {
+                    deviceOperator.openCamera()
+                } catch (e: Exception) {
+                    logger.error("Failed to open camera: ${e.message}")
                 }
             }
         }
@@ -481,18 +516,5 @@ class RoomMainView @JvmOverloads constructor(
                 (context as? Activity)?.finish()
             }
             .show()
-    }
-
-    private fun initBarrageInputView(roomID: String) {
-        if (roomType == RoomType.WEBINAR) {
-            barrageInputView?.init(roomID)
-        }
-    }
-
-    private fun initBarrageStreamView(roomInfo: RoomInfo) {
-        if (roomType == RoomType.WEBINAR) {
-            val ownerUserId = roomInfo.roomOwner.userID
-            barrageStreamView?.init(roomID)
-        }
     }
 }

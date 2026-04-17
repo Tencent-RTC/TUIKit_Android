@@ -176,6 +176,7 @@ object ErrorLocalized {
         USER_ALREADY_ON_SEAT(100210),
         SEAT_NOT_SUPPORT_LINK_MIC(100211),
         EMPTY_SEAT_LIST(100251),
+        SPEAKER_SEAT_OCCUPIED(100253),
         METADATA_KEY_EXCEEDS_LIMIT(100500),
         METADATA_VALUE_SIZE_EXCEEDS_BYTE_LIMIT(100501),
         METADATA_TOTAL_VALUE_SIZE_EXCEEDS_BYTE_LIMIT(100502),
@@ -258,6 +259,7 @@ object ErrorLocalized {
                 USER_ALREADY_ON_SEAT -> context.getString(R.string.roomkit_err_100210_user_already_on_seat)
                 SEAT_NOT_SUPPORT_LINK_MIC -> context.getString(R.string.roomkit_err_100211_seat_not_supported)
                 EMPTY_SEAT_LIST -> context.getString(R.string.roomkit_err_100251_seat_list_is_empty)
+                SPEAKER_SEAT_OCCUPIED -> context.getString(R.string.roomkit_err_100253_speaker_seat_occupied)
                 METADATA_KEY_EXCEEDS_LIMIT -> context.getString(R.string.roomkit_err_100500_room_metadata_key_limit)
                 METADATA_VALUE_SIZE_EXCEEDS_BYTE_LIMIT -> context.getString(R.string.roomkit_err_100501_room_metadata_value_limit)
                 METADATA_TOTAL_VALUE_SIZE_EXCEEDS_BYTE_LIMIT -> context.getString(R.string.roomkit_err_100502_room_metadata_total_limit)

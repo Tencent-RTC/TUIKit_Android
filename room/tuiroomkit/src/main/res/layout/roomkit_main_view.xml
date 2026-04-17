@@ -16,45 +16,50 @@
     <com.trtc.uikit.roomkit.view.main.RoomView
         android:id="@+id/room_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/room_bottom_bar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/room_top_bar" />
+        app:layout_constraintTop_toBottomOf="@id/room_top_bar"
+        app:layout_constraintVertical_weight="1" />
 
     <com.trtc.uikit.roomkit.view.main.RoomBottomBarView
         android:id="@+id/room_bottom_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="29dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.trtc.uikit.roomkit.barrage.BarrageInputView
         android:id="@+id/barrage_input_view"
-        android:layout_width="0dp"
+        android:layout_width="130dp"
         android:layout_height="40dp"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="29dp"
+        android:layout_marginBottom="10dp"
+        android:alpha="0.5"
         android:background="@drawable/roomkit_barrage_button_bg"
         android:gravity="center_vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/room_bottom_bar"
-        app:layout_constraintHorizontal_weight="1"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/room_bottom_bar"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.trtc.uikit.roomkit.barrage.BarrageStreamView
         android:id="@+id/barrage_stream_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="206dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="45dp"
         android:layout_marginBottom="15dp"
-        app:layout_constraintBottom_toTopOf="@id/barrage_input_view"
-        app:layout_constraintTop_toBottomOf="@id/room_view"
-        app:layout_constraintVertical_weight="1" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/barrage_input_view" />
 
+    <com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareOverlayView
+        android:id="@+id/screen_share_overlay_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/room_view"
+        app:layout_constraintEnd_toEndOf="@+id/room_view"
+        app:layout_constraintStart_toStartOf="@+id/room_view"
+        app:layout_constraintTop_toTopOf="@+id/room_view" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -86,6 +86,7 @@ class BarrageStreamView @JvmOverloads constructor(
     }
 
     override fun addObserver() {
+        subscribeJob?.cancel()
         subscribeJob = scope.launch {
             launch {
                 barrageStore?.barrageState?.messageList?.collect {

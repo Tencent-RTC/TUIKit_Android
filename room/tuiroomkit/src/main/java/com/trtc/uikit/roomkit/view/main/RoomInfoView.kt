@@ -51,6 +51,7 @@ class RoomInfoView @JvmOverloads constructor(
     }
 
     override fun addObserver() {
+        subscribeJob?.cancel()
         subscribeJob = CoroutineScope(Dispatchers.Main).launch {
             roomStore.state.currentRoom.collect { roomInfo ->
                 roomInfo?.let {
