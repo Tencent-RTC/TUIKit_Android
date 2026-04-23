@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -150,16 +151,16 @@ class AudienceView @JvmOverloads constructor(
         this.liveInfo = liveInfo
         liveCoreView = LiveCoreView(context)
         liveCoreView.setLiveID(liveInfo.liveID)
+        if (liveCoreView.parent != layoutLiveCoreView) {
+            (liveCoreView.parent as? ViewGroup)?.removeView(liveCoreView)
+            layoutLiveCoreView.addView(liveCoreView)
+        }
     }
 
     fun initStore() {
         audienceStore = AudienceStore(liveInfo.liveID)
         init(audienceStore)
         this@AudienceView.audienceStore.getMediaStore().setCustomVideoProcess()
-        if (liveCoreView.parent != null && liveCoreView.parent == layoutLiveCoreView) {
-            layoutLiveCoreView.removeView(liveCoreView)
-        }
-        layoutLiveCoreView.addView(liveCoreView)
         liveCoreViewMaskBackgroundView = LiveCoreViewMaskBackgroundView(context)
         liveCoreViewMaskBackgroundView.init(audienceStore)
         layoutLiveCoreViewMask.addView(liveCoreViewMaskBackgroundView)

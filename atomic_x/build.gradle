@@ -54,8 +54,8 @@ dependencies {
     api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     api 'com.github.bumptech.glide:glide:4.12.0'
 
-    api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:4.0.1.97"
-    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.0.1.90"
+    api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:4.0.9.202"
+    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.0.9.203"
     api rootProject.getProperties().containsKey("liteavSdk") ? rootProject.ext.liteavSdk : "com.tencent.liteav:LiteAVSDK_Professional:13.0.0.19676"
     api rootProject.getChildProjects().containsKey("tuicore") ? project(':tuicore') : "com.tencent.liteav.tuikit:tuicore:8.8.7357"
 
