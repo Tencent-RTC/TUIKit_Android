@@ -166,7 +166,7 @@ class AudienceView @JvmOverloads constructor(
         layoutLiveCoreViewMask.addView(liveCoreViewMaskBackgroundView)
         createVideoMuteBitmap()
         setComponent(COMPONENT_LIVE_STREAM)
-        setLayoutBackground(liveInfo.coverURL, liveInfo.seatTemplate)
+        setLayoutBackground(if (TextUtils.isEmpty(liveInfo.backgroundURL)) liveInfo.coverURL else liveInfo.backgroundURL, liveInfo.seatTemplate)
     }
 
     fun getRoomId(): String {
@@ -286,7 +286,6 @@ class AudienceView @JvmOverloads constructor(
                 liveCoreViewMaskBackgroundView.setBackgroundUrl(
                     if (TextUtils.isEmpty(liveInfo.backgroundURL)) liveInfo.coverURL else liveInfo.backgroundURL
                 )
-                liveCoreView.setBackgroundColor(resources.getColor(android.R.color.black))
                 mediaStore.getMultiPlaybackQuality(liveInfo.liveID)
                 audienceStore.updateLiveInfo(liveInfo)
                 initComponentView(liveInfo)
@@ -714,7 +713,7 @@ class AudienceView @JvmOverloads constructor(
             layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
         }
         layoutLiveCoreView.layoutParams = layoutParams
-        setLayoutBackground(liveInfo.backgroundURL, template)
+        setLayoutBackground(if (TextUtils.isEmpty(liveInfo.backgroundURL)) liveInfo.coverURL else liveInfo.backgroundURL, template)
     }
 
     fun subscribeObserver() {
