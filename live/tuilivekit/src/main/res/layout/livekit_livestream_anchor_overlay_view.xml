@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.trtc.uikit.livekit.component.barrage.BarrageStreamView
+        android:id="@+id/barrage_stream_view"
+        android:layout_width="match_parent"
+        android:layout_height="206dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="126dp"
+        android:layout_marginBottom="126dp" />
+
+    <com.trtc.uikit.livekit.component.gift.GiftPlayView
+        android:id="@+id/gift_play_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.trtc.uikit.livekit.component.barrage.BarrageInputView
+        android:id="@+id/barrage_input_view"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="39dp"
+        android:background="@drawable/livekit_barrage_button_bg"
+        android:scaleType="centerCrop" />
+
+    <com.trtc.uikit.livekit.features.anchorview.view.menuview.AnchorBottomMenuView
+        android:id="@+id/anchor_bottom_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="36dp"
+        android:gravity="center_vertical|end" />
+
+    <com.trtc.uikit.livekit.features.anchorview.view.coguest.panel.ApplyCoGuestFloatView
+        android:id="@+id/rl_apply_link_audience"
+        android:layout_width="114dp"
+        android:layout_height="86dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="130dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/fl_header_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp">
+
+        <com.trtc.uikit.livekit.component.roominfo.LiveInfoView
+            android:id="@+id/room_info_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="16dp" />
+
+        <com.trtc.uikit.livekit.features.anchorview.view.menuview.AnchorTopRightView
+            android:id="@+id/anchor_top_right_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" />
+
+    </FrameLayout>
+
+    <com.trtc.uikit.livekit.component.networkInfo.NetworkInfoView
+        android:id="@+id/network_info_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="10dp" />
+
+</FrameLayout>

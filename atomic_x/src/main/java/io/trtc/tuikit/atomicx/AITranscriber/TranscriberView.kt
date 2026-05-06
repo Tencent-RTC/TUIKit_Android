@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.constraintlayout.utils.widget.ImageFilterView
 
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
@@ -62,6 +63,7 @@ class TranscriberView(context: Context, attrs: AttributeSet?) : FrameLayout(cont
 
     private fun initView() {
         inflate(context, R.layout.ai_view_transcriber, this)
+        findViewById<ImageFilterView>(R.id.ai_ifv_transcriber_setting_arrow).visibility = if (isCaller()) VISIBLE else GONE
         messageListView = findViewById(R.id.ai_recycler_message_list)
         messageListView.adapter = adapter
         val layoutManager = LinearLayoutManager(context)

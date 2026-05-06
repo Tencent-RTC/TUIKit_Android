@@ -21,6 +21,7 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.DEFAULT_BACKGROUND_URL
 import com.trtc.uikit.livekit.common.DEFAULT_COVER_URL
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
 import com.trtc.uikit.livekit.livestream.VideoLiveAnchorActivity
 import com.trtc.uikit.livekit.livestream.VideoLiveAudienceActivity
 import com.trtc.uikit.livekit.livestream.VideoLiveKit
@@ -125,20 +126,17 @@ class VideoLiveKitImpl private constructor(context: Context) : VideoLiveKit {
         if (TextUtils.isEmpty(liveInfo.liveID)) {
             return
         }
-
-        val intent = if (liveInfo.liveOwner.userID == LoginStore.shared.loginState.loginUserInfo.value?.userID) {
-            Intent(context, VideoLiveAnchorActivity::class.java).apply {
-                putExtra(VideoLiveAnchorActivity.INTENT_KEY_NEED_CREATE, false)
+        LiveListStore.shared().fetchLiveInfo(liveInfo.liveID, object : LiveInfoCompletionHandler {
+            override fun onSuccess(liveInfo: LiveInfo) {
+                logger.info("fetchLiveInfo, onSuccess, liveInfo:$liveInfo")
+                joinLiveInternal(liveInfo)
             }
-        } else {
-            Intent(context, VideoLiveAudienceActivity::class.java)
-        }
 
-        intent.apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtras(LiveInfoUtils.convertLiveInfoToBundle(liveInfo))
-        }
-        context.startActivity(intent)
+            override fun onFailure(code: Int, desc: String) {
+                logger.warn("fetchLiveInfo onError: code:$code, desc:$desc")
+                joinLiveInternal(liveInfo)
+            }
+        })
     }
 
     override fun leaveLive(callback: CompletionHandler?) {
@@ -160,7 +158,7 @@ class VideoLiveKitImpl private constructor(context: Context) : VideoLiveKit {
                     activity.packageName
                 )
             ) {
-                val aspectRatio = Rational(9, 16)
+                val aspectRatio = Rational(PIPPanelStore.sharedInstance().state.width, PIPPanelStore.sharedInstance().state.height)
                 val params = PictureInPictureParams.Builder()
                     .setAspectRatio(aspectRatio)
                     .build()
@@ -211,6 +209,22 @@ class VideoLiveKitImpl private constructor(context: Context) : VideoLiveKit {
     fun stopPushLocalVideoOnStop() {
         stopPushLocalVideo()
         stopListeningPhoneState()
+    }
+
+    private fun joinLiveInternal(liveInfo: LiveInfo) {
+        val intent = if (liveInfo.liveOwner.userID == LoginStore.shared.loginState.loginUserInfo.value?.userID) {
+            Intent(context, VideoLiveAnchorActivity::class.java).apply {
+                putExtra(VideoLiveAnchorActivity.INTENT_KEY_NEED_CREATE, false)
+            }
+        } else {
+            Intent(context, VideoLiveAudienceActivity::class.java)
+        }
+
+        intent.apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtras(LiveInfoUtils.convertLiveInfoToBundle(liveInfo))
+        }
+        context.startActivity(intent)
     }
 
     private fun startListeningPhoneState() {

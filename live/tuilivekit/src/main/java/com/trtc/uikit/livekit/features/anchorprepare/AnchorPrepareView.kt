@@ -13,11 +13,11 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.ui.RoundFrameLayout
-import com.trtc.uikit.livekit.component.beauty.BeautyUtils.resetBeauty
-import com.trtc.uikit.livekit.component.beauty.tebeauty.store.TEBeautyStore
+import com.trtc.uikit.livekit.component.beauty.BeautyIntegration.resetBeauty
 import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareStore
 import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareConfig
 import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareState
+import com.trtc.uikit.livekit.features.anchorprepare.view.VideoStreamSourceTabView
 import com.trtc.uikit.livekit.features.anchorprepare.view.function.PrepareFunctionView
 import com.trtc.uikit.livekit.features.anchorprepare.view.liveinfoedit.LiveInfoEditView
 import com.trtc.uikit.livekit.livestream.VideoLiveAnchorActivity
@@ -48,10 +48,12 @@ class AnchorPrepareView @JvmOverloads constructor(
     private var state: AnchorPrepareState? = null
     private var liveCoreView: LiveCoreView? = null
     private var functionView: PrepareFunctionView? = null
+    private var videoStreamSourceTabView: VideoStreamSourceTabView? = null
     private lateinit var layoutCoreViewContainer: RoundFrameLayout
     private var layoutComponentContainer: FrameLayout? = null
     private lateinit var imageBack: ImageView
     private var subscribeStateJob: Job? = null
+    private var subscribeVideoStreamSourceJob: Job? = null
 
     init {
         logger.info("AnchorPrepareView Constructor.")
@@ -102,10 +104,28 @@ class AnchorPrepareView @JvmOverloads constructor(
                 onFeatureMenuDisable()
             }
         }
+        subscribeVideoStreamSourceJob = CoroutineScope(Dispatchers.Main).launch {
+            state?.videoStreamSource?.collect { source ->
+                onVideoStreamSourceChanged(source)
+            }
+        }
     }
 
     private fun removeObserver() {
         subscribeStateJob?.cancel()
+        subscribeVideoStreamSourceJob?.cancel()
+    }
+
+    private fun onVideoStreamSourceChanged(source: VideoStreamSource) {
+        val isCameraMode = source == VideoStreamSource.CAMERA
+        layoutCoreViewContainer.visibility = if (isCameraMode) VISIBLE else INVISIBLE
+        functionView?.visibility = if (isCameraMode) VISIBLE else GONE
+        videoStreamSourceTabView?.setCurrentSource(source)
+        if (isCameraMode) {
+            layoutRoot.setBackgroundColor(resources.getColor(R.color.common_black))
+        } else {
+            layoutRoot.setBackgroundResource(R.drawable.livekit_voiceroom_bg)
+        }
     }
 
     private fun initPrepareStore(roomId: String) {
@@ -120,6 +140,7 @@ class AnchorPrepareView @JvmOverloads constructor(
         initBackView()
         initCoreView()
         initLiveInfoEditView()
+        initVideoStreamSourceTabView()
         initFunctionView()
         initStartLiveButton()
     }
@@ -128,9 +149,28 @@ class AnchorPrepareView @JvmOverloads constructor(
         imageBack.setOnClickListener {
             prepareStore?.stopPreview()
             resetBeauty()
-            TEBeautyStore.unInit()
             AudioEffectStore.shared().reset()
             DeviceStore.shared().reset()
+        }
+    }
+
+    private fun initVideoStreamSourceTabView() {
+        prepareStore?.let { store ->
+            videoStreamSourceTabView = VideoStreamSourceTabView(context).apply {
+                onVideoStreamSourceChanged = { source ->
+                    store.setVideoStreamSource(source)
+                }
+            }
+
+            val layoutParams = LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                ScreenUtil.dip2px(44.0f)
+            ).apply {
+                topMargin = ScreenUtil.dip2px(80.0f)
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+
+            layoutComponentContainer?.addView(videoStreamSourceTabView, layoutParams)
         }
     }
 
@@ -148,10 +188,18 @@ class AnchorPrepareView @JvmOverloads constructor(
                 LayoutParams.MATCH_PARENT
             )
             layoutCoreViewContainer.addView(coreView, layoutParams)
-            layoutRoot.setBackgroundColor(resources.getColor(R.color.common_black))
+            if (state?.videoStreamSource?.value == VideoStreamSource.CAMERA) {
+                layoutRoot.setBackgroundColor(resources.getColor(R.color.common_black))
+            } else {
+                layoutRoot.setBackgroundResource(R.drawable.livekit_voiceroom_bg)
+            }
         } else {
             layoutCoreViewContainer.visibility = GONE
-            layoutRoot.setBackgroundColor(resources.getColor(R.color.common_design_standard_transparent))
+            if (state?.videoStreamSource?.value == VideoStreamSource.CAMERA) {
+                layoutRoot.setBackgroundColor(resources.getColor(R.color.common_design_standard_transparent))
+            } else {
+                layoutRoot.setBackgroundResource(R.drawable.livekit_voiceroom_bg)
+            }
         }
 
         state?.useFrontCamera?.value = DeviceStore.shared().deviceState.isFrontCamera.value
@@ -184,7 +232,7 @@ class AnchorPrepareView @JvmOverloads constructor(
                 ScreenUtil.dip2px(343.0f),
                 ScreenUtil.dip2px(112.0f)
             ).apply {
-                topMargin = ScreenUtil.dip2px(96.0f)
+                topMargin = ScreenUtil.dip2px(132.0f)
                 gravity = Gravity.CENTER_HORIZONTAL
             }
 

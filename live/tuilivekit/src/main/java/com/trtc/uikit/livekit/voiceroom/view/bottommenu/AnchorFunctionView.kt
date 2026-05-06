@@ -8,8 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
-import io.trtc.tuikit.atomicx.karaoke.view.KaraokeControlView
-import io.trtc.tuikit.atomicx.karaoke.view.KaraokeFloatingView
+import com.trtc.uikit.livekit.component.karaoke.view.KaraokeControlView
+import com.trtc.uikit.livekit.component.karaoke.view.KaraokeFloatingView
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.voiceroom.interaction.common.InteractionInvitePanel
 import com.trtc.uikit.livekit.voiceroom.store.LayoutType
@@ -110,7 +110,7 @@ class AnchorFunctionView @JvmOverloads constructor(
 
     private fun showPKPanel() {
         if (crossRoomInteractionDialog == null) {
-            crossRoomInteractionDialog = InteractionInvitePanel(context)
+            crossRoomInteractionDialog = InteractionInvitePanel(context, voiceRoomManager?.viewStore)
         }
         crossRoomInteractionDialog?.show()
     }

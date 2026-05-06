@@ -1,11 +1,15 @@
 package com.trtc.uikit.livekit.livestream
 
 import android.Manifest
+import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.view.View
@@ -22,25 +26,27 @@ import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
-import com.trtc.uikit.livekit.features.anchorboardcast.AnchorBoardcastState
-import com.trtc.uikit.livekit.features.anchorboardcast.AnchorView
-import com.trtc.uikit.livekit.features.anchorboardcast.AnchorViewListener
-import com.trtc.uikit.livekit.features.anchorboardcast.RoomBehavior
+import com.trtc.uikit.livekit.component.pippanel.PictureInPictureStore
 import com.trtc.uikit.livekit.features.anchorprepare.AnchorPrepareView
 import com.trtc.uikit.livekit.features.anchorprepare.AnchorPrepareViewListener
 import com.trtc.uikit.livekit.features.anchorprepare.LiveStreamPrivacyStatus
+import com.trtc.uikit.livekit.features.anchorprepare.VideoStreamSource
+import com.trtc.uikit.livekit.features.anchorview.AnchorState
+import com.trtc.uikit.livekit.features.anchorview.AnchorView
+import com.trtc.uikit.livekit.features.anchorview.AnchorViewListener
+import com.trtc.uikit.livekit.features.anchorview.RoomBehavior
 import com.trtc.uikit.livekit.features.endstatistics.AnchorEndStatisticsView
 import com.trtc.uikit.livekit.features.endstatistics.EndStatisticsDefine
 import com.trtc.uikit.livekit.features.endstatistics.EndStatisticsDefine.AnchorEndStatisticsInfo
 import com.trtc.uikit.livekit.livestream.impl.LiveInfoUtils
 import com.trtc.uikit.livekit.livestream.impl.VideoLiveKitImpl
 import io.trtc.tuikit.atomicx.common.FullScreenActivity
-import io.trtc.tuikit.atomicx.pictureinpicture.PictureInPictureStore
+import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
+import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.login.LoginStatus
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
-import kotlinx.coroutines.launch
 
 class VideoLiveAnchorActivity : FullScreenActivity(),
     VideoLiveKitImpl.CallingAPIListener,
@@ -67,7 +73,10 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
     private var needCreateRoom = true
     private var roomId = ""
     private var liveInfo = LiveInfo(seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats)
+    private var videoStreamSource = VideoStreamSource.CAMERA
     private val anchorEndStatisticsInfo = AnchorEndStatisticsInfo()
+    private var cachedTaskId: Int = -1
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     override fun attachBaseContext(context: Context?) {
         super.attachBaseContext(context)
@@ -111,16 +120,29 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         TUICore.registerEvent(KEY_EXTENSION_NAME, NOTIFY_START_ACTIVITY, this)
         TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, this)
         VideoLiveKitImpl.createInstance(applicationContext).addCallingAPIListener(this)
+
+        BackgroundLaunchDetector.registerActivityLifecycleCallbacks(application, "VideoLiveAnchorActivity", object : BackgroundLaunchListener {
+            override fun onBackgroundLaunch(stackTopActivity: Activity) {
+                logger.info("onBackgroundLaunch: ${stackTopActivity::class.java.name}")
+                if (stackTopActivity is VideoLiveAnchorActivity) {
+                    return
+                }
+                bringTaskToFront()
+            }
+        })
     }
 
     override fun onResume() {
         super.onResume()
-        VideoLiveKitImpl.createInstance(applicationContext).startPushLocalVideoOnResume()
+        cachedTaskId = taskId
+        if (!isScreenShareLive()) {
+            VideoLiveKitImpl.createInstance(applicationContext).startPushLocalVideoOnResume()
+        }
     }
 
     override fun onStop() {
         super.onStop()
-        if (!isFinishing) {
+        if (!isFinishing && !isScreenShareLive()) {
             VideoLiveKitImpl.createInstance(applicationContext).stopPushLocalVideoOnStop()
         }
     }
@@ -128,7 +150,14 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         logger.info("onUserLeaveHint: $isFinishing")
+        if (videoStreamSource == VideoStreamSource.SCREEN_SHARE ||
+            (liveInfo.keepOwnerOnSeat && liveInfo.seatLayoutTemplateID == 200)) {
+            return
+        }
         if (PIPPanelStore.sharedInstance().state.anchorIsPictureInPictureMode) {
+            return
+        }
+        if (LiveListStore.shared().liveState.currentLive.value.liveID.isBlank()) {
             return
         }
         onClickFloatWindow()
@@ -136,6 +165,8 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
 
     override fun onDestroy() {
         super.onDestroy()
+        logger.info("onDestroy: bringTaskToFront-> $isFinishing")
+        BackgroundLaunchDetector.unregisterActivityLifecycleCallbacks(application, "VideoLiveAnchorActivity")
         PIPPanelStore.sharedInstance().reset()
         TUICore.unRegisterEvent(this)
 
@@ -152,12 +183,16 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         super.onPictureInPictureModeChanged(isInPictureInPictureMode)
         logger.info("onPictureInPictureModeChanged: $isInPictureInPictureMode")
         PictureInPictureStore.shared.updateIsPictureInPictureMode(isInPictureInPictureMode)
+        if (isInPictureInPictureMode) {
+            AtomicPopover.dismissAll()
+        }
         PIPPanelStore.sharedInstance().state.anchorIsPictureInPictureMode = isInPictureInPictureMode
         anchorPrepareView?.enablePipMode(isInPictureInPictureMode)
         anchorView?.enablePipMode(isInPictureInPictureMode)
         anchorEndStatisticsView?.enablePipMode(isInPictureInPictureMode)
 
-        if (!isInPictureInPictureMode && lifecycle.currentState == Lifecycle.State.CREATED) {
+        if (!isInPictureInPictureMode && lifecycle.currentState == Lifecycle.State.CREATED
+            && PictureInPictureStore.shared.hasPipPermission(this)) {
             finishAndRemoveTask()
             anchorView?.unInit()
         }
@@ -179,6 +214,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
     private fun addAnchorView() {
         anchorView = AnchorView(this).apply {
             val params = mutableMapOf<String, Any>()
+            params["videoStreamSource"] = videoStreamSource
             anchorPrepareView?.let { prepareView ->
                 params["coHostTemplateId"] = prepareView.getState()?.coHostTemplateId?.value ?: ""
                 init(
@@ -216,25 +252,32 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
             liveInfo.coverURL = it.coverURL.value
             liveInfo.backgroundURL = it.coverURL.value
             liveInfo.seatTemplate = LiveInfoUtils.getSeatLayoutTemplateByID(it.coGuestTemplateId.value, 0)
+            videoStreamSource = it.videoStreamSource.value
         }
     }
 
-    private fun initEndStatisticsInfo(state: AnchorBoardcastState?) {
+    private fun initEndStatisticsInfo(state: AnchorState?) {
         state?.let {
             anchorEndStatisticsInfo.apply {
                 roomId = liveInfo.liveID
-                liveDurationMS = it.duration
-                maxViewersCount = it.viewCount
-                messageCount = it.messageCount
-                giftIncome = it.giftIncome
-                giftSenderCount = it.giftSenderCount
-                likeCount = it.likeCount
+                liveDurationMS = it.totalDuration
+                maxViewersCount = it.totalViewers
+                messageCount = it.totalMessageSent
+                giftIncome = it.totalGiftCoins
+                giftSenderCount = it.totalGiftUniqueSenders
+                likeCount = it.totalLikesReceived
+                liveEndedReason = it.liveEndedReason
             }
         }
     }
 
     private fun removeAnchorView() {
         layoutContainer.removeAllViews()
+    }
+
+    private fun isScreenShareLive() : Boolean {
+        return (videoStreamSource == VideoStreamSource.SCREEN_SHARE ||
+                (liveInfo.seatLayoutTemplateID == 200 && liveInfo.keepOwnerOnSeat))
     }
 
     private fun addAnchorEndStatisticsView() {
@@ -262,18 +305,52 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         addAnchorView()
     }
 
+    fun bringTaskToFront() {
+        logger.info("bringTaskToFront, cachedTaskId=$cachedTaskId")
+        mainHandler.post {
+            try {
+                if (BackgroundLaunchDetector.isAbnormalModelForBringTaskToFront() && cachedTaskId != -1) {
+                    val activityManager = applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+                    activityManager?.moveTaskToFront(cachedTaskId, ActivityManager.MOVE_TASK_WITH_HOME)
+                    logger.info("bringTaskToFront by moveTaskToFront, cachedTaskId=$cachedTaskId")
+                } else {
+                    bringTaskToFrontByIntent()
+                }
+            } catch (e: Exception) {
+                logger.info("bringTaskToFront failed: $e, fallback to intent")
+                bringTaskToFrontByIntent()
+            }
+        }
+    }
+
+    private fun bringTaskToFrontByIntent() {
+        try {
+            val intent = Intent(this, VideoLiveAnchorActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            logger.info("bringTaskToFront by startActivity")
+        } catch (e: Exception) {
+            logger.info("bringTaskToFrontByIntent failed: $e")
+        }
+    }
+
     override fun onClickBackButton() {
         finish()
     }
 
-    override fun onEndLiving(state: AnchorBoardcastState) {
+    override fun onEndLiving(state: AnchorState) {
         anchorView?.removeAnchorViewListener(this)
+        AtomicPopover.dismissAll()
         initEndStatisticsInfo(state)
         removeAnchorView()
         addAnchorEndStatisticsView()
     }
 
     override fun onClickFloatWindow() {
+        if (isScreenShareLive()) {
+            return
+        }
         val success = VideoLiveKitImpl.createInstance(applicationContext).enterPictureInPictureMode(this)
         if (success) {
             PIPPanelStore.sharedInstance().setPictureInPictureModeRoomId(liveInfo.liveID)
@@ -319,6 +396,16 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         }
     }
 
+    override fun finish() {
+        launchAPP()
+        super.finish()
+    }
+
+    override fun finishAndRemoveTask() {
+        launchAPP()
+        super.finishAndRemoveTask()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val param = mapOf(
@@ -349,5 +436,15 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
             return
         }
         finishAndRemoveTask()
+    }
+
+    private fun launchAPP() {
+        val packageName = packageName
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+        launchIntent?.let {
+            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            it.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(it)
+        }
     }
 }

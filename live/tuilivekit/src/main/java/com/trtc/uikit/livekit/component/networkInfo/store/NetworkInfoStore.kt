@@ -22,6 +22,7 @@ import com.trtc.uikit.livekit.common.LiveKitLogger
 import io.trtc.tuikit.atomicxcore.api.device.NetworkInfo
 import io.trtc.tuikit.atomicxcore.api.device.NetworkQuality
 import io.trtc.tuikit.atomicxcore.api.live.AVStatistics
+import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +45,7 @@ class NetworkInfoState {
     val rtt = MutableStateFlow(0)
     val upLoss = MutableStateFlow(0)
     val downLoss = MutableStateFlow(0)
+    var liveInfo: LiveInfo? = null
 
     enum class Status {
         Mute,

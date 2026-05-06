@@ -205,7 +205,7 @@ class SeatInvitationDialog(
             if (isAccept) return
             AtomicToast.show(
                 context,
-                context.getString(R.string.common_voiceroom_invite_seat_canceled),
+                context.getString(R.string.common_voiceroom_invite_seat_rejected),
                 AtomicToast.Style.INFO
             )
         }

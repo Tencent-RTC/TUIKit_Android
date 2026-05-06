@@ -20,6 +20,7 @@ import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.voiceroom.interaction.battle.BattleInviteAdapter
 import com.trtc.uikit.livekit.voiceroom.interaction.cohost.CoHostInviteAdapter
 import com.trtc.uikit.livekit.voiceroom.interaction.cohost.InteractionManagerView
+import com.trtc.uikit.livekit.voiceroom.store.ViewStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.CoHostStatus
@@ -35,7 +36,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @SuppressLint("ViewConstructor")
-class InteractionInvitePanel(context: Context) : AtomicPopover(context) ,
+class InteractionInvitePanel(context: Context, private val viewStore: ViewStore? = null) : AtomicPopover(context) ,
     DefaultLifecycleObserver {
     private val liveID: String = LiveListStore.shared().liveState.currentLive.value.liveID
     private lateinit var tabLayout: TabLayout
@@ -97,6 +98,7 @@ class InteractionInvitePanel(context: Context) : AtomicPopover(context) ,
         coHostRecyclerRecommendView = view.findViewById(R.id.rv_connection_recommend_list)
         swipeRefreshLayout = view.findViewById(R.id.refresh_recommendation_list)
         inConnectionOrPKView = view.findViewById(R.id.in_connection_pk_view)
+        viewStore?.let { inConnectionOrPKView.setViewStore(it) }
         layoutRecommendRootView = view.findViewById(R.id.ll_recommend_root)
         nestedScrollView = view.findViewById(R.id.scroll_view)
     }

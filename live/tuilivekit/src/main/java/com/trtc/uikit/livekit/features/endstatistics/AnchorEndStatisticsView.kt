@@ -2,15 +2,19 @@ package com.trtc.uikit.livekit.features.endstatistics
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Size
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.endstatistics.store.EndStatisticsStore
+import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dip2px
 import io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+import io.trtc.tuikit.atomicxcore.api.live.LiveEndedReason
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,6 +39,7 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
     private lateinit var textGiftIncome: TextView
     private lateinit var textLikeCount: TextView
     private lateinit var textPIPTitle: AtomicLabel
+    private lateinit var textTitle: AtomicLabel
     private lateinit var layoutContent: RelativeLayout
     private var listener: EndStatisticsDefine.AnchorEndStatisticsViewListener? = null
 
@@ -44,6 +49,7 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
 
     private fun initView() {
         LayoutInflater.from(context).inflate(R.layout.livekit_anchor_dashboard_view, this, true)
+        textTitle = findViewById(R.id.tv_title)
         textPIPTitle = findViewById(R.id.tv_title_pip)
         layoutContent = findViewById(R.id.rl_statistics_data)
         textDuration = findViewById(R.id.tv_duration)
@@ -61,11 +67,12 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
         } else {
             store.setRoomId(info.roomId)
             store.setLiveDuration(info.liveDurationMS)
-            store.setMaxViewersCount(max(0, info.maxViewersCount - 1))
-            store.setMessageCount(max(0, info.messageCount - 1))
+            store.setMaxViewersCount(max(0, info.maxViewersCount))
+            store.setMessageCount(max(0, info.messageCount))
             store.setLikeCount(info.likeCount)
             store.setGiftIncome(info.giftIncome)
             store.setGiftSenderCount(info.giftSenderCount)
+            store.setLiveEndedReason(info.liveEndedReason)
             logger.info("init, ${state}")
         }
     }
@@ -131,6 +138,12 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
                     onGiftSenderCountChange(it)
                 }
             }
+
+            launch {
+                state.liveEndedReason.collect {
+                    onLiveEndedReasonChange(it)
+                }
+            }
         }
     }
 
@@ -171,5 +184,28 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
     private fun onGiftSenderCountChange(count: Long) {
         val info = String.format(Locale.getDefault(), "%d", count)
         textGiftSenderCount.text = info
+    }
+
+    private fun onLiveEndedReasonChange(reason: LiveEndedReason) {
+        val layoutParams = textTitle.layoutParams as RelativeLayout.LayoutParams
+        if (reason == LiveEndedReason.ENDED_BY_SERVER) {
+            textTitle.text = context.getString(R.string.common_end_live_by_server)
+            layoutParams.removeRule(RelativeLayout.CENTER_HORIZONTAL)
+        } else {
+            textTitle.text = context.getString(R.string.common_live_has_stop)
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
+        }
+        textTitle.layoutParams = layoutParams
+
+        if (reason == LiveEndedReason.ENDED_BY_SERVER) {
+            textTitle.iconConfiguration = AtomicLabel.IconConfiguration(
+                drawable = ContextCompat.getDrawable(context, R.drawable.livekit_end_live_by_server),
+                position = AtomicLabel.IconConfiguration.Position.LEFT,
+                spacing = dip2px(8.0f).toFloat(),
+                size = Size(dip2px(20f), dip2px(20f))
+            )
+        } else {
+            textTitle.iconConfiguration = null
+        }
     }
 }

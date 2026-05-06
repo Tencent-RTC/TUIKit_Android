@@ -1,6 +1,5 @@
 package com.trtc.uikit.livekit.features.livelist.view.liveListviewpager
 
-import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -93,12 +92,19 @@ abstract class LiveListViewPagerAdapter(
         return LiveListFragment(liveInfoList[position], this)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun updateLiveList(liveInfoList: List<LiveInfo>) {
-        liveInfoList.forEachIndexed { index, liveInfo ->
-            (getFragment(index) as? LiveListFragment)?.updateLiveInfo(liveInfo)
+    private fun updateLiveList(newLiveInfoList: List<LiveInfo>) {
+        val oldSize = itemCount
+        newLiveInfoList.forEachIndexed { index, liveInfo ->
+            if (index < oldSize) {
+                (getFragment(index) as? LiveListFragment)?.updateLiveInfo(liveInfo)
+            }
         }
-        notifyDataSetChanged()
+        val newSize = newLiveInfoList.size
+        if (newSize > oldSize) {
+            notifyItemRangeInserted(oldSize, newSize - oldSize)
+        } else if (newSize < oldSize) {
+            notifyItemRangeRemoved(newSize, oldSize - newSize)
+        }
         onDataChangedListener?.onChanged()
     }
 

@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.component.audioeffect.AudioEffectPanel
-import com.trtc.uikit.livekit.component.beauty.BeautyUtils
+import com.trtc.uikit.livekit.component.beauty.BeautyIntegration
 import com.trtc.uikit.livekit.component.beauty.tebeauty.TEBeautyManager
 import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareStore
 import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareConfig
@@ -85,7 +85,7 @@ class PrepareFunctionView @JvmOverloads constructor(
 
     private fun initBeautyButton() {
         findViewById<android.view.View>(R.id.iv_beauty).setOnClickListener {
-            BeautyUtils.showBeautyDialog(context)
+            BeautyIntegration.showBeautyDialog(context)
         }
     }
 

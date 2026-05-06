@@ -8,6 +8,7 @@ import com.tencent.imsdk.v2.V2TIMFriendshipListener
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMUserFullInfo
 import com.tencent.imsdk.v2.V2TIMValueCallback
+import com.trtc.uikit.livekit.common.ErrorLocalized
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.LiveKitLogger.Companion.getVoiceRoomLogger
@@ -59,8 +60,7 @@ open class IMStore() {
 
                 override fun onError(code: Int, desc: String?) {
                     logger.error("followUser failed:errorCode:message:$desc")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$desc", AtomicToast.Style.ERROR)
+                    ErrorLocalized.onError(code)
                 }
             })
     }
@@ -77,8 +77,7 @@ open class IMStore() {
 
                 override fun onError(code: Int, desc: String?) {
                     logger.error("unfollowUser failed:errorCode:message:$desc")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$desc", AtomicToast.Style.ERROR)
+                    ErrorLocalized.onError(code)
                 }
             })
     }
@@ -113,8 +112,7 @@ open class IMStore() {
 
                 override fun onError(code: Int, desc: String?) {
                     logger.error("checkFollowType failed:errorCode:message:$desc")
-                    val context = ContextProvider.getApplicationContext()
-                    AtomicToast.show(context, "$code,$desc", AtomicToast.Style.ERROR)
+                    ErrorLocalized.onError(code)
                 }
             })
     }

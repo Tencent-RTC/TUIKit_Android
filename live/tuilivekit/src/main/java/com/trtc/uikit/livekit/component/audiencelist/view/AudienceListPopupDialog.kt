@@ -31,6 +31,8 @@ class AudienceListPopupDialog(
 
     init {
         val view = LayoutInflater.from(context).inflate(R.layout.audience_list_layout_panel, null)
+        val density = context.resources.displayMetrics.density
+        view.minimumHeight = (718 * density).toInt()
         bindViewId(view)
         initImageBackView()
         initAudienceListView()

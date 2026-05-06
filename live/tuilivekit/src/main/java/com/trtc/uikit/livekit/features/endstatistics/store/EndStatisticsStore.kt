@@ -1,5 +1,6 @@
 package com.trtc.uikit.livekit.features.endstatistics.store
 
+import io.trtc.tuikit.atomicxcore.api.live.LiveEndedReason
 import java.util.Locale
 
 class EndStatisticsStore {
@@ -41,6 +42,10 @@ class EndStatisticsStore {
 
     fun setGiftSenderCount(count: Long) {
         internalState.giftSenderCount.value = count
+    }
+
+    fun setLiveEndedReason(reason: LiveEndedReason) {
+        internalState.liveEndedReason.value = reason
     }
 
     fun formatSeconds(timeSeconds: Int): String {

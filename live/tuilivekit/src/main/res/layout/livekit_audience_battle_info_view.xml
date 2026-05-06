@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.trtc.uikit.livekit.features.audiencecontainer.view.battle.widgets.Battle1V1ScoreView
+    <com.trtc.uikit.livekit.features.audienceview.view.battle.widgets.Battle1V1ScoreView
         android:id="@+id/single_battle_score_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

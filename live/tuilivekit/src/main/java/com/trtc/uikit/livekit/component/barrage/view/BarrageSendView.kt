@@ -69,6 +69,7 @@ class BarrageSendView(
         super.show()
         Log.i(TAG, "show showEmoji:$showEmoji")
         bottomPlaceholder.layoutParams.height = if (keyboardHeight > 0) keyboardHeight else KEY_KEYBOARD_HEIGHT_DEFAULT
+        bottomPlaceholder.requestLayout()
         bottomPlaceholder.visibility = View.VISIBLE
         bottomPlaceholder.getChildAt(0).visibility = View.VISIBLE
         setEmojiSwitchImageResId(R.drawable.live_barrage_softkeyboard)
@@ -234,6 +235,7 @@ class BarrageSendView(
         }
         bottomPlaceholder.layoutParams.height = keyboardHeight
         bottomPlaceholder.visibility = if (keyboardHeight > 0) View.VISIBLE else View.GONE
+        bottomPlaceholder.requestLayout()
     }
 
     override fun onAttachedToWindow() {

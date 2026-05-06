@@ -1,5 +1,6 @@
 package com.trtc.uikit.livekit.features.endstatistics.store
 
+import io.trtc.tuikit.atomicxcore.api.live.LiveEndedReason
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class EndStatisticsState {
@@ -12,6 +13,7 @@ class EndStatisticsState {
     val likeCount = MutableStateFlow(0L)
     val giftIncome = MutableStateFlow(0L)
     val giftSenderCount = MutableStateFlow(0L)
+    var liveEndedReason = MutableStateFlow(LiveEndedReason.ENDED_BY_HOST)
 
     override fun toString(): String {
         return "EndStatisticsState{" +
@@ -24,6 +26,7 @@ class EndStatisticsState {
                 "likeCount=${likeCount.value}, " +
                 "giftIncome=${giftIncome.value}, " +
                 "giftSenderCount=${giftSenderCount.value}" +
+                "liveEndedReason=${liveEndedReason.value}" +
                 "}"
     }
 }

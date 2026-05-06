@@ -9,7 +9,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
-import io.trtc.tuikit.atomicx.karaoke.view.KaraokeControlView
+import com.trtc.uikit.livekit.component.karaoke.view.KaraokeControlView
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
@@ -18,7 +18,9 @@ import com.trtc.uikit.livekit.component.gift.LikeButton
 import com.trtc.uikit.livekit.component.giftaccess.GiftButton
 import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import com.trtc.uikit.livekit.voiceroom.view.basic.BasicView
+import io.trtc.tuikit.atomicxcore.api.live.BattleStore
 import io.trtc.tuikit.atomicxcore.api.live.CoGuestStore
+import io.trtc.tuikit.atomicxcore.api.live.CoHostStatus
 import io.trtc.tuikit.atomicxcore.api.live.CoHostStore
 import io.trtc.tuikit.atomicxcore.api.live.GuestListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
@@ -40,9 +42,14 @@ class AudienceFunctionView @JvmOverloads constructor(
     private var takeSeatButton: ImageView
     private lateinit var imageKTV: ImageView
     private var mCoHostStore: CoHostStore? = null
+    private var mBattleStore: BattleStore? = null
     private lateinit var liveListStore: LiveListStore
     private lateinit var coGuestStore: CoGuestStore
     private lateinit var liveSeatStore: LiveSeatStore
+
+    companion object {
+        private const val CONNECTION_MAX_SEAT_COUNT = 6
+    }
 
     private val guestListener = object : GuestListener() {
         override fun onGuestApplicationResponded(isAccept: Boolean, hostUser: LiveUserInfo) {
@@ -114,6 +121,7 @@ class AudienceFunctionView @JvmOverloads constructor(
         coGuestStore = CoGuestStore.create(liveID)
         liveSeatStore = LiveSeatStore.create(liveID)
         mCoHostStore = CoHostStore.create(liveID)
+        mBattleStore = BattleStore.create(liveID)
     }
 
     private fun initGiftButton() {
@@ -177,7 +185,7 @@ class AudienceFunctionView @JvmOverloads constructor(
             seat.userInfo.liveID == currentLiveId
         }
 
-        return currentRoomSeats.take(6).any { seat ->
+        return currentRoomSeats.take(CONNECTION_MAX_SEAT_COUNT).any { seat ->
             val userId = seat.userInfo.userID
             val isLocked = seat.isLocked
             userId.isEmpty() && !isLocked
@@ -186,20 +194,22 @@ class AudienceFunctionView @JvmOverloads constructor(
 
     private fun isBackSeatsOccupied(): Boolean {
         val seatList = liveSeatStore.liveSeatState.seatList.value
-        return seatList.any { it.index >= 6 && it.userInfo.userID.isNotEmpty() }
+        return seatList.any { it.index >= CONNECTION_MAX_SEAT_COUNT && it.userInfo.userID.isNotEmpty() }
     }
 
     private fun takeSeat() {
         if (voiceRoomManager?.viewStore?.viewState?.isApplyingToTakeSeat?.value == true) return
         val currentLiveId = liveListStore.liveState.currentLive.value.liveID
         if (currentLiveId.isEmpty()) return
-        if (isBackSeatsOccupied()) {
-            AtomicToast.show(context, context.getString(R.string.common_back_seats_occupied), AtomicToast.Style.ERROR)
-            return
-        }
-        val isConnected =
-            mCoHostStore?.coHostState?.connected?.value?.any { it.liveID == currentLiveId }
-        if (isConnected == true) {
+
+        val isInConnection = mCoHostStore?.coHostState?.coHostStatus?.value == CoHostStatus.CONNECTED
+        val isInBattle = mBattleStore?.battleState?.battleUsers?.value?.isEmpty() == false
+
+        if (isInConnection || isInBattle) {
+            if (isBackSeatsOccupied()) {
+                AtomicToast.show(context, context.getString(R.string.common_back_seats_occupied), AtomicToast.Style.ERROR)
+                return
+            }
             if (!hasAvailableSeat()) {
                 AtomicToast.show(context, context.getString(R.string.common_server_error_the_seats_are_all_taken), AtomicToast.Style.ERROR)
                 return

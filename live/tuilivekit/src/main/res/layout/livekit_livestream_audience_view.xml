@@ -29,6 +29,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <ImageView
+            android:id="@+id/iv_host_absent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
         <FrameLayout
             android:id="@+id/video_view_foreground"
             android:layout_width="match_parent"
@@ -36,7 +44,7 @@
             android:background="@drawable/livekit_video_view_mask" />
     </FrameLayout>
 
-    <com.trtc.uikit.livekit.features.audiencecontainer.view.AudiencePlayingRootView
+    <com.trtc.uikit.livekit.features.audienceview.view.scaffold.AudiencePlayingRootView
         android:id="@+id/fl_playing_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -74,20 +82,6 @@
             android:layout_height="match_parent"
             android:visibility="gone">
 
-            <com.trtc.uikit.livekit.component.barrage.BarrageStreamView
-                android:id="@+id/barrage_stream_view"
-                android:layout_width="match_parent"
-                android:layout_height="212dp"
-                android:layout_gravity="bottom"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="126dp"
-                android:layout_marginBottom="70dp" />
-
-            <com.trtc.uikit.livekit.component.gift.GiftPlayView
-                android:id="@+id/gift_play_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
             <FrameLayout
                 android:id="@+id/fl_switch_orientation_button"
                 android:layout_width="wrap_content"
@@ -99,133 +93,27 @@
                     android:layout_height="32dp"/>
             </FrameLayout>
 
-            <RelativeLayout
+            <!-- 麦位列表视图 - 用于 VideoLandscape4Seats 模板 -->
+            <com.trtc.uikit.livekit.features.audienceview.view.game.AudienceSeatListView
+                android:id="@+id/co_guest_seat_list_view"
                 android:layout_width="match_parent"
-                android:layout_height="142dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="top"
-                android:background="@drawable/livekit_live_room_living_top_mask" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_gravity="bottom"
-                android:background="@drawable/livekit_live_room_living_bottom_mask" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_function"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="25dp">
-
-                <com.trtc.uikit.livekit.component.barrage.BarrageInputView
-                    android:id="@+id/barrage_input_view"
-                    android:layout_width="130dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/livekit_barrage_button_bg"
-                    android:scaleType="centerCrop"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.trtc.uikit.livekit.component.giftaccess.GiftButton
-                    android:id="@+id/btn_gift"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_co_guest"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/iv_co_guest"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="8dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/livekit_function_link_default"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_like"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="ContentDescription" />
-
-                <com.trtc.uikit.livekit.component.gift.LikeButton
-                    android:id="@+id/btn_like"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_more"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/iv_more"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="8dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/livekit_function_more"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="ContentDescription" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <com.trtc.uikit.livekit.features.audiencecontainer.view.coguest.panel.CoGuestRequestFloatView
-                android:id="@+id/btn_waiting_pass"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
-                android:layout_gravity="end"
-                android:layout_marginTop="125dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginTop="400dp"
                 android:visibility="gone" />
 
-            <com.trtc.uikit.livekit.component.roominfo.LiveInfoView
-                android:id="@+id/room_info_view"
+            <com.trtc.uikit.livekit.features.audienceview.AudienceOverlayView
+                android:id="@+id/audience_overlay_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.trtc.uikit.livekit.component.networkInfo.NetworkInfoView
+                android:id="@+id/network_info_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="52dp" />
-
-            <com.trtc.uikit.livekit.component.audiencelist.AudienceListView
-                android:id="@+id/audience_list_view"
-                android:layout_width="80dp"
-                android:layout_height="24dp"
                 android:layout_gravity="end"
-                android:layout_marginTop="60dp"
-                android:layout_marginEnd="68dp" />
-
-            <ImageView
-                android:id="@+id/iv_float_window"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="end"
-                android:layout_marginTop="60dp"
-                android:layout_marginEnd="38dp"
-                android:padding="2dp"
-                android:src="@drawable/livekit_float_window"
-                tools:ignore="ContentDescription" />
-
-            <ImageView
-                android:id="@+id/iv_standard_exit_room"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="end"
-                android:layout_marginTop="60dp"
-                android:layout_marginEnd="10dp"
-                android:padding="2dp"
-                android:src="@drawable/livekit_ic_audience_exit" />
+                android:layout_marginTop="100dp"
+                android:layout_marginEnd="10dp" />
         </FrameLayout>
-
-        <com.trtc.uikit.livekit.component.networkInfo.NetworkInfoView
-            android:id="@+id/network_info_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="100dp"
-            android:layout_marginEnd="10dp" />
-
-    </com.trtc.uikit.livekit.features.audiencecontainer.view.AudiencePlayingRootView>
+    </com.trtc.uikit.livekit.features.audienceview.view.scaffold.AudiencePlayingRootView>
 </FrameLayout>

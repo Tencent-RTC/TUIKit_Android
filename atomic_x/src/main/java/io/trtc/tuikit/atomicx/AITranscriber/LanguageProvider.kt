@@ -11,6 +11,7 @@ object LanguageProvider {
             SourceLanguage.CHINESE_ENGLISH -> R.string.ai_source_lang_zh_en
             SourceLanguage.CHINESE -> R.string.ai_source_lang_zh
             SourceLanguage.ENGLISH -> R.string.ai_source_lang_en
+            else -> R.string.ai_source_lang_zh_en
         }
     }
 

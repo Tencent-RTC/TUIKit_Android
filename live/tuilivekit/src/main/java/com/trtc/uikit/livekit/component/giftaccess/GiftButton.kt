@@ -63,8 +63,13 @@ class GiftButton @JvmOverloads constructor(
 
     private fun initImageButton() {
         imageButton.setOnClickListener {
-            giftSendDialog = GiftSendDialog(context, roomId!!, ownerId!!, ownerName!!, ownerAvatarUrl!!)
-            giftSendDialog?.show()
+            showGiftPanel()
         }
+    }
+
+    fun showGiftPanel() {
+        if (roomId == null || ownerId == null || ownerName == null || ownerAvatarUrl == null) return
+        giftSendDialog = GiftSendDialog(context, roomId!!, ownerId!!, ownerName!!, ownerAvatarUrl!!)
+        giftSendDialog?.show()
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SVGAPlayerView">
+        <attr name="svga_scaleType" format="enum">
+            <enum name="fitCenter" value="0" />
+            <enum name="centerCrop" value="1" />
+            <enum name="fitXY" value="2" />
+        </attr>
+        <attr name="svga_loopCount" format="integer" />
+        <attr name="svga_autoPlay" format="boolean" />
+    </declare-styleable>
+</resources>

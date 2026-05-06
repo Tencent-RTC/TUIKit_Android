@@ -124,6 +124,14 @@ class SingleColumnListView @JvmOverloads constructor(
         onItemClickListener = listener
     }
 
+    fun stopPreview() {
+        stopAllPreviewLiveStream()
+    }
+
+    fun resumePreview() {
+        resumePreviewLiveStream()
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         fragmentActivity.lifecycle.addObserver(lifecycleObserver)
@@ -161,6 +169,15 @@ class SingleColumnListView @JvmOverloads constructor(
             if (willEnterRoomView != itemView) {
                 itemView.stopPreviewLiveStream()
             }
+        }
+    }
+
+    private fun resumePreviewLiveStream() {
+        stopAllPreviewLiveStream()
+        val currentPosition = liveListViewPager.currentItem
+        val currentView = liveListViewPager.findViewByPosition(currentPosition)
+        (currentView as? SingleColumnItemView)?.let {
+            startPreviewLiveStream(it, false)
         }
     }
 
@@ -208,8 +225,8 @@ class SingleColumnListView @JvmOverloads constructor(
             Lifecycle.Event.ON_RESUME -> {
                 isResumed = true
                 willEnterRoomView = null
-                if (isInit) {
-                    refreshData()
+                if (isInit && visibility == VISIBLE) {
+                    resumePreviewLiveStream()
                 } else {
                     isInit = true
                 }
@@ -217,7 +234,9 @@ class SingleColumnListView @JvmOverloads constructor(
 
             Lifecycle.Event.ON_PAUSE -> {
                 isResumed = false
-                pauseAllLiveStream()
+                if (visibility == VISIBLE) {
+                    pauseAllLiveStream()
+                }
             }
 
             else -> {}

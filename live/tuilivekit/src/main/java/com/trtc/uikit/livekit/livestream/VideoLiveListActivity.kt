@@ -21,7 +21,6 @@ import com.tencent.qcloud.tuicore.util.SPUtils
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
-import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveIdentityGenerator
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
@@ -35,6 +34,7 @@ import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
+import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 
 class VideoLiveListActivity : FullScreenActivity() {
@@ -148,23 +148,13 @@ class VideoLiveListActivity : FullScreenActivity() {
 
     private fun initStartLiveView() {
         startLiveView.setOnClickListener {
-            requestPermission(object : CompletionHandler {
-                override fun onSuccess() {
-                    if (packageName == "com.tencent.trtc" &&
-                        LoginStore.shared.loginState.loginUserInfo.value?.userID?.startsWith("moa")
-                        == false) {
-                        realNameVerifyAndStartLive()
-                        return
-                    }
-                    startVideoLive()
-                }
-
-                override fun onFailure(code: Int, desc: String) {
-                    LOGGER.info("requestPermission onFailure. code:$code,desc:$desc")
-                    ErrorLocalized.onError(code)
-                }
-            })
-
+            if (packageName == "com.tencent.trtc" &&
+                LoginStore.shared.loginState.loginUserInfo.value?.userID?.startsWith("moa")
+                == false) {
+                realNameVerifyAndStartLive()
+            } else {
+                startVideoLive()
+            }
         }
     }
 
@@ -212,7 +202,11 @@ class VideoLiveListActivity : FullScreenActivity() {
 
     private fun enterRoom(info: LiveInfo) {
         if (PIPPanelStore.sharedInstance().state.isAnchorStreaming) {
-            AtomicToast.show(this, getString(R.string.common_exit_float_window_tip), AtomicToast.Style.WARNING)
+            if (info.liveID == LiveListStore.shared().liveState.currentLive.value.liveID) {
+                VideoLiveKit.createInstance(this).joinLive(info)
+            } else {
+                AtomicToast.show(this, getString(R.string.common_exit_float_window_tip), AtomicToast.Style.WARNING)
+            }
             return
         }
         TUICore.notifyEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, null)

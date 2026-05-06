@@ -68,13 +68,15 @@ class DoubleColumnListView @JvmOverloads constructor(
             Lifecycle.Event.ON_RESUME -> {
                 isResumed = true
                 willEnterRoomView = null
-                if (isInit) refreshData() else isInit = true
+                if (isInit && visibility == VISIBLE) refreshData() else isInit = true
             }
 
             Lifecycle.Event.ON_PAUSE -> {
                 isResumed = false
-                playStreamViews.filter { it != willEnterRoomView }
-                    .forEach { it.stopPreviewLiveStream() }
+                if (visibility == VISIBLE) {
+                    playStreamViews.filter { it != willEnterRoomView }
+                        .forEach { it.stopPreviewLiveStream() }
+                }
             }
 
             else -> {}
@@ -106,6 +108,15 @@ class DoubleColumnListView @JvmOverloads constructor(
     fun setOnItemClickListener(listener: OnItemClickListener) {
         onItemClickListener = listener
         adapter.setOnItemClickListener(this::onLiveInfoViewClick)
+    }
+
+    fun stopPreview() {
+        stopAllPreviewLiveStream()
+    }
+
+    fun resumePreview() {
+        stopAllPreviewLiveStream()
+        post(::autoPlayVideoStream)
     }
 
     private fun onLiveInfoViewClick(view: View, liveInfo: LiveInfo) {

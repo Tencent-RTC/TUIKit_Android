@@ -56,6 +56,7 @@ class NetworkInfoView @JvmOverloads constructor(
 
     fun init(liveInfo: LiveInfo) {
         this.liveInfo = liveInfo
+        networkInfoStore.networkInfoState.liveInfo = liveInfo
         init(liveInfo.liveID)
         val now = System.currentTimeMillis()
         this@NetworkInfoView.createTime = min(liveInfo.createTime, now)

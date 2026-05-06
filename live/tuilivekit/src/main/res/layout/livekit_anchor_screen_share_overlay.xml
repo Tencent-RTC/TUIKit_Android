@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fl_screen_share_overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone">
+
+    <!-- 全屏背景图 -->
+    <ImageView
+        android:id="@+id/iv_screen_share_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/livekit_voiceroom_bg" />
+
+    <!-- "正在游戏直播中" 文字 - 居中偏上 -->
+    <TextView
+        android:id="@+id/tv_screen_share_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="200dp"
+        android:text="@string/common_live_game"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <!-- 麦位列表容器 - 居中 -->
+    <FrameLayout
+        android:id="@+id/fl_seat_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+</FrameLayout>

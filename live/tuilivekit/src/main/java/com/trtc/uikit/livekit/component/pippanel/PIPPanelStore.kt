@@ -7,6 +7,8 @@ class PIPPanelStore private constructor() {
     companion object {
         @Volatile
         private var instance: PIPPanelStore? = null
+        const val DEFAULT_VIDEO_WIDTH = 720
+        const val DEFAULT_VIDEO_HEIGHT = 1280
 
         @JvmStatic
         fun sharedInstance(): PIPPanelStore {
@@ -25,5 +27,7 @@ class PIPPanelStore private constructor() {
         state.anchorIsPictureInPictureMode = false
         state.audienceIsPictureInPictureMode = false
         state.isAnchorStreaming = false
+        state.width = DEFAULT_VIDEO_WIDTH
+        state.height = DEFAULT_VIDEO_HEIGHT
     }
 }

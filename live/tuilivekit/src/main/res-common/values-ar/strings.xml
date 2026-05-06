@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <resources>
+    <string name="common_disconnect_guest_tips">هل أنت متأكد أنك تريد قطع الاتصال بـ %s؟</string>
     <string name="common_anchor_battle">المنافسة</string>
     <string name="common_anchor_end_link_tips">أنت حالياً في بث مشترك مع مذيعين آخرين. هل تريد [إنهاء البث]؟</string>
     <string name="common_battle_connecting">جاري الاتصال</string>
@@ -118,7 +119,7 @@
     <string name="common_client_error_camera_start_fail">مشكلة في النظام، فشل فتح الكاميرا. تحقق مما إذا كان جهاز الكاميرا طبيعياً</string>
     <string name="common_client_error_connection_connecting">الغرفة المدعو للاتصال بها موجودة بالفعل في قائمة الدعوات أو متصلة بالفعل.</string>
     <string name="common_client_error_exit_not_supported_for_room_owner">صاحب الغرفة لا يدعم مغادرة الغرفة، يمكنه فقط إغلاق الغرفة</string>
-    <string name="common_client_error_failed">خطأ عام غير مصنف مؤقتاً</string>
+    <string name="common_client_error_failed">الخادم يواجه مشكلة مؤقتة، يرجى المحاولة لاحقاً</string>
     <string name="common_client_error_freq_limit">تم تحديد معدل الطلبات، يرجى المحاولة لاحقاً</string>
     <string name="common_client_error_get_screen_sharing_target_failed">فشل الحصول على مصدر مشاركة الشاشة، تحقق من أذونات تسجيل الشاشة</string>
     <string name="common_client_error_invalid_parameter">تمرير معلمات غير قانونية عند استدعاء API، تحقق من صحة المعلمات</string>
@@ -314,6 +315,7 @@
     <string name="common_waiting_pass">في الانتظار</string>
     <string name="live_barrage_agree">موافق</string>
     <string name="live_barrage_btn_send">إرسال</string>
+    <string name="live_cohost_application_expired">انتهت صلاحية التطبيق</string>
     <string name="common_video_status">حالة الفيديو</string>
     <string name="common_audio_status">حالة الصوت</string>
     <string name="common_device_temp">درجة حرارة الجهاز</string>
@@ -398,4 +400,5 @@
     <string name="common_game_live">بث مباشر للألعاب</string>
     <string name="common_live_game">بث مباشر للعبة</string>
     <string name="common_gift_combo">متتالي</string>
+    <string name="common_end_live_by_server">تم إيقاف البث المباشر بسبب انتهاكات للوائح.</string>
 </resources>

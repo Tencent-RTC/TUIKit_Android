@@ -29,6 +29,8 @@ object LiveInfoUtils {
             putBoolean("isMessageDisableForAllUser", liveInfo.isMessageDisable)
             putInt("seatMode", liveInfo.seatMode.ordinal)
             putLong("createTime", liveInfo.createTime)
+            putBoolean("keepOwnerOnSeat", liveInfo.keepOwnerOnSeat)
+            putInt("seatLayoutTemplateID", liveInfo.seatLayoutTemplateID)
         }
     }
 
@@ -40,7 +42,8 @@ object LiveInfoUtils {
                 avatarURL = liveBundle.getString("ownerAvatarUrl", "")
             },
             createTime = liveBundle.getLong("createTime", 0),
-            seatTemplate = SeatLayoutTemplate.VideoDynamicGrid9Seats
+            seatLayoutTemplateID = liveBundle.getInt("seatLayoutTemplateID", 600),
+            keepOwnerOnSeat = liveBundle.getBoolean("keepOwnerOnSeat", true)
         ).apply {
             liveID = liveBundle.getString("roomId", "")
 

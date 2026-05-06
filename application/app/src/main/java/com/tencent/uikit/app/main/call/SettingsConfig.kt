@@ -14,7 +14,7 @@ object SettingsConfig {
     var isIncomingBanner: Boolean = true
     var intRoomId: Int = 0
     var strRoomId: String = ""
-    var callTimeOut: Int = 30
+    var callTimeOut: Int = 60
     var userData: String = ""
     var offlineParams: String = ""
     var resolution: Int = TUICommonDefine.VideoEncoderParams.Resolution.Resolution_640_360.ordinal

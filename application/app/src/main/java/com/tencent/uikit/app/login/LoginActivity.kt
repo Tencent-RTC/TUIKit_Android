@@ -6,20 +6,19 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.lifecycle.lifecycleScope
-import com.tencent.imsdk.v2.V2TIMManager
-import com.tencent.imsdk.v2.V2TIMValueCallback
 import com.tencent.qcloud.tuicore.TUILogin
 import com.tencent.qcloud.tuicore.util.SPUtils
 import com.tencent.qcloud.tuikit.debug.GenerateTestUserSig
 import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit.Companion.createInstance
 import com.tencent.uikit.app.R
+import com.tencent.uikit.app.common.utils.DEMO_LOGIN_SUCCESS
+import com.tencent.uikit.app.common.utils.KeyMetrics
 import com.tencent.uikit.app.main.BaseActivity
 import com.tencent.uikit.app.main.MainActivity
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class LoginActivity : BaseActivity() {
     companion object {
@@ -34,8 +33,8 @@ class LoginActivity : BaseActivity() {
             && intent.action != null
             && intent.action.equals(Intent.ACTION_MAIN)
         ) {
-            finish();
-            return;
+            finish()
+            return
         }
         setContentView(R.layout.app_activity_login)
         initView()
@@ -64,13 +63,14 @@ class LoginActivity : BaseActivity() {
         LoginStore.shared.login(this, GenerateTestUserSig.SDKAPPID, userId, userSig, object : CompletionHandler {
             override fun onSuccess() {
                 Log.i(TAG, "login onSuccess")
-                observerRunDemo()
                 val instance = createInstance(application)
                 instance.enableFloatWindow(true)
                 instance.enableVirtualBackground(true)
                 instance.enableIncomingBanner(true)
                 instance.enableAITranscriber(true)
                 getUserInfo()
+
+                KeyMetrics.reportAtomicMetrics(DEMO_LOGIN_SUCCESS)
             }
 
             override fun onFailure(code: Int, desc: String) {
@@ -83,20 +83,6 @@ class LoginActivity : BaseActivity() {
             }
         })
         TUILogin.login(this, GenerateTestUserSig.SDKAPPID, userId, userSig, null)
-    }
-
-    private fun observerRunDemo() {
-        val param = JSONObject().apply {
-            put("UIComponentType", 1302)
-        }.toString()
-        V2TIMManager.getInstance()
-            .callExperimentalAPI("reportTUIFeatureUsage", param, object : V2TIMValueCallback<Any> {
-                override fun onSuccess(t: Any?) {
-                }
-                override fun onError(code: Int, desc: String?) {
-                    Log.e(TAG, "reportFeatureUsage failed: $code $desc")
-                }
-            })
     }
 
     private fun getUserInfo() {

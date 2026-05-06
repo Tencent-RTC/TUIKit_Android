@@ -36,6 +36,7 @@ import io.trtc.tuikit.atomicxcore.api.live.CoHostStatus
 import io.trtc.tuikit.atomicxcore.api.live.CoHostStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
+import com.trtc.uikit.livekit.voiceroom.store.ViewStore
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -61,6 +62,7 @@ class InteractionManagerView @JvmOverloads constructor(
     private var exitBattleDialog: AtomicAlertDialog? = null
     private var exitConnectionDialog: AtomicAlertDialog? = null
     private var invitedUserList: List<String> = emptyList()
+    private var viewStore: ViewStore? = null
     private lateinit var exitBattleListener: OnClickListener
     private lateinit var exitConnectionListener: OnClickListener
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -75,6 +77,7 @@ class InteractionManagerView @JvmOverloads constructor(
             isRequestingBattle = false
             currentBattleID = null
             invitedUserList = emptyList()
+            viewStore?.onBattleRequestCleared()
             post { updatePKButtonUI() }
         }
 
@@ -103,6 +106,10 @@ class InteractionManagerView @JvmOverloads constructor(
         initView(context)
     }
 
+    fun setViewStore(viewStore: ViewStore) {
+        this.viewStore = viewStore
+    }
+
     private fun initView(context: Context) {
         LayoutInflater.from(context)
             .inflate(R.layout.livekit_voiceroom_interaction_manager_view, this, true)
@@ -128,23 +135,7 @@ class InteractionManagerView @JvmOverloads constructor(
             }
             lastClickTime = currentTime
             if (isRequestingBattle) {
-                currentBattleID?.let { battleId ->
-                    battleStore.cancelBattleRequest(
-                        battleId,
-                        invitedUserList,
-                        object : CompletionHandler {
-                            override fun onSuccess() {
-                                isRequestingBattle = false
-                                currentBattleID = null
-                                invitedUserList = emptyList()
-                                post { updatePKButtonUI() }
-                            }
-
-                            override fun onFailure(code: Int, desc: String) {
-                                ErrorLocalized.onError(code)
-                            }
-                        })
-                }
+                cancelBattleRequest()
             } else {
                 val selfId = TUIRoomEngine.getSelfInfo().userId
                 val connectedList = coHostStore.coHostState.connected.value
@@ -166,6 +157,7 @@ class InteractionManagerView @JvmOverloads constructor(
                             isRequestingBattle = true
                             currentBattleID = battleInfo.battleID
                             invitedUserList = connectedList
+                            viewStore?.onBattleRequestSent(battleInfo.battleID, connectedList)
                             post { updatePKButtonUI() }
                         }
 
@@ -182,10 +174,33 @@ class InteractionManagerView @JvmOverloads constructor(
             isRequestingBattle = false
             currentBattleID = null
             invitedUserList = emptyList()
+            viewStore?.onBattleRequestCleared()
             post {
                 updatePKButtonUI()
             }
         }
+    }
+
+    private fun cancelBattleRequest() {
+        if (invitedUserList.isEmpty()) return
+        val battleId = currentBattleID ?: return
+        battleStore.cancelBattleRequest(
+            battleId,
+            invitedUserList,
+            object : CompletionHandler {
+                override fun onSuccess() {
+                    isRequestingBattle = false
+                    currentBattleID = null
+                    invitedUserList = emptyList()
+                    viewStore?.onBattleRequestCleared()
+                    post { updatePKButtonUI() }
+                }
+
+                override fun onFailure(code: Int, desc: String) {
+                    ErrorLocalized.onError(code)
+                }
+            })
+        invitedUserList = emptyList()
     }
 
     private fun updatePKButtonUI() {
@@ -304,6 +319,7 @@ class InteractionManagerView @JvmOverloads constructor(
             isRequestingBattle = false
             currentBattleID = null
             invitedUserList = emptyList()
+            viewStore?.onBattleRequestCleared()
         }
         updatePKButtonUI()
     }
@@ -311,6 +327,9 @@ class InteractionManagerView @JvmOverloads constructor(
     @SuppressLint("NotifyDataSetChanged")
     private fun onConnectedListUserChange(connectedList: List<SeatUserInfo>) {
         participantAdapter.submitList(ArrayList(connectedList))
+        if (connectedList.isEmpty() && isRequestingBattle && currentBattleID != null) {
+            cancelBattleRequest()
+        }
     }
 
     private fun onBattleListUserChange(battleList: List<SeatUserInfo>) {

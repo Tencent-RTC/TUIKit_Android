@@ -8,4 +8,6 @@ class PIPPanelState {
     var audienceIsPictureInPictureMode = false
     var isAnchorStreaming = false
     var enablePictureInPictureToggle = false
+    var width = 720
+    var height = 1280
 }

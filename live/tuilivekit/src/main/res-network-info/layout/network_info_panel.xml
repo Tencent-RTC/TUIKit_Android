@@ -21,6 +21,7 @@
         android:visibility="visible">
 
         <LinearLayout
+            android:id="@+id/ll_video_status"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="20dp">

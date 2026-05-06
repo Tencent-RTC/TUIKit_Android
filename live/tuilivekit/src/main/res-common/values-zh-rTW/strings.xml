@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <resources>
+    <string name="common_disconnect_guest_tips">確定要斷開%s的連麥嗎？</string>
     <string name="common_anchor_battle">主播PK</string>
     <string name="common_anchor_end_link_tips">當前處於連麥狀態，是否需要「關閉直播間」</string>
     <string name="common_battle_connecting">連線中</string>
@@ -118,7 +119,7 @@
     <string name="common_client_error_camera_start_fail">系統問題，打開攝像頭失敗。檢查攝像頭設備是否正常</string>
     <string name="common_client_error_connection_connecting">被邀請連線的房間已在邀請列表或者已連線。</string>
     <string name="common_client_error_exit_not_supported_for_room_owner">房主不支持退房操作，房主只能解散房間</string>
-    <string name="common_client_error_failed">暫未歸類的通用錯誤</string>
+    <string name="common_client_error_failed">伺服器開小差啦，請稍後重試</string>
     <string name="common_client_error_freq_limit">請求被限頻，請稍後重試</string>
     <string name="common_client_error_get_screen_sharing_target_failed">獲取屏幕分享源（屏幕和窗口）失敗，檢查屏幕錄製權限</string>
     <string name="common_client_error_invalid_parameter">調用 API 時，傳入的參數不合法，檢查入參是否合法</string>
@@ -314,6 +315,7 @@
     <string name="common_waiting_pass">待通過</string>
     <string name="live_barrage_agree">同意</string>
     <string name="live_barrage_btn_send">發送</string>
+    <string name="live_cohost_application_expired">該申請已失效</string>
     <string name="common_video_status">視頻狀態</string>
     <string name="common_audio_status">音頻狀態</string>
     <string name="common_device_temp">設備溫度</string>
@@ -398,4 +400,5 @@
     <string name="common_game_live">手遊直播</string>
     <string name="common_live_game">遊戲直播中</string>
     <string name="common_gift_combo">連擊</string>
+    <string name="common_end_live_by_server">直播內容違規已強制關播</string>
 </resources>

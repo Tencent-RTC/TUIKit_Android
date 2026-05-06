@@ -7,6 +7,7 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.DEFAULT_BACKGROUND_URL
 import com.trtc.uikit.livekit.common.DEFAULT_COVER_URL
 import com.trtc.uikit.livekit.common.seatModeFromEngineSeatMode
+import io.trtc.tuikit.atomicxcore.api.live.LiveEndedReason
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
@@ -37,6 +38,7 @@ data class LiveExtraInfo(
     var giftIncome: Int = 0,
     var giftSenderCount: Int = 0,
     var likeCount: Int = 0,
+    var liveEndedReason: LiveEndedReason = LiveEndedReason.ENDED_BY_HOST
 )
 
 data class PrepareState(
@@ -87,12 +89,6 @@ class PrepareStore {
         }
     }
 
-    fun updateMessageCount(messageCount: Int) {
-        _liveExtraInfo.value = _liveExtraInfo.value.copy().apply {
-            this.messageCount = messageCount
-        }
-    }
-
     fun updateStatistics(
         audienceCount: Int,
         messageCount: Int,
@@ -106,6 +102,12 @@ class PrepareStore {
             this.giftIncome = giftIncome
             this.giftSenderCount = giftSenderCount
             this.likeCount = likeCount
+        }
+    }
+
+    fun updateLiveEndedReason(liveEndedReason: LiveEndedReason) {
+        _liveExtraInfo.value = _liveExtraInfo.value.copy().apply {
+            this.liveEndedReason = liveEndedReason
         }
     }
 

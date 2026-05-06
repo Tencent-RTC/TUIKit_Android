@@ -6,6 +6,7 @@ import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.features.anchorprepare.AnchorPrepareViewListener
 import com.trtc.uikit.livekit.features.anchorprepare.LiveStreamPrivacyStatus
 import com.trtc.uikit.livekit.features.anchorprepare.PrepareState
+import com.trtc.uikit.livekit.features.anchorprepare.VideoStreamSource
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
@@ -55,7 +56,8 @@ class AnchorPrepareStore() {
         liveMode = internalState.liveMode,
         roomName = internalState.roomName,
         coGuestTemplateId = internalState.coGuestTemplateId,
-        coHostTemplateId = internalState.coHostTemplateId
+        coHostTemplateId = internalState.coHostTemplateId,
+        videoStreamSource = internalState.videoStreamSource
     )
     private val listenerManager: AnchorPrepareListenerDispatch = AnchorPrepareListenerDispatch()
 
@@ -79,6 +81,24 @@ class AnchorPrepareStore() {
 
     fun setCoHostTemplate(template: Int) {
         internalState.coHostTemplateId.value = template
+    }
+
+    fun setVideoStreamSource(source: VideoStreamSource) {
+        if (internalState.videoStreamSource.value == source) {
+            return
+        }
+        LOGGER.info("setVideoStreamSource: $source")
+        internalState.videoStreamSource.value = source
+        when (source) {
+            VideoStreamSource.CAMERA -> {
+                internalState.coGuestTemplateId.value = 600
+                DeviceStore.shared().openLocalCamera(internalState.useFrontCamera.value == true, null)
+            }
+            VideoStreamSource.SCREEN_SHARE -> {
+                internalState.coGuestTemplateId.value = 200
+                DeviceStore.shared().closeLocalCamera()
+            }
+        }
     }
 
     fun startLive() {

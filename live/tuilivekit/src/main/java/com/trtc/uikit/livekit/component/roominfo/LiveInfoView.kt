@@ -81,6 +81,13 @@ class LiveInfoView @JvmOverloads constructor(
         layoutRoot.isEnabled = isPortrait
     }
 
+    fun showLiveInfoPanel() {
+        if (roomInfoPopupDialog == null) {
+            roomInfoPopupDialog = RoomInfoPanel(context, roomInfoService)
+        }
+        roomInfoPopupDialog?.show()
+    }
+
     private fun initView() {
         initHostNameView()
         initHostAvatarView()
@@ -173,13 +180,13 @@ class LiveInfoView @JvmOverloads constructor(
         if (!roomInfoState.enableFollow) {
             return
         }
-
         if (!TextUtils.isEmpty(ownerId) && !TextUtils.equals(roomInfoState.selfUserId, ownerId)) {
             followButton.visibility = VISIBLE
             ownerId?.let { roomInfoService.checkFollowUser(it) }
             refreshFollowButton()
             followButton.setDebounceClickListener { onFollowButtonClick() }
         }
+        initHostNameView()
     }
 
     private fun onHostNickNameChange(name: String?) {

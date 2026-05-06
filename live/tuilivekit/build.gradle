@@ -9,6 +9,11 @@ android {
         minSdkVersion 21
         versionName "1.0"
         versionCode 1
+        def devMode = false
+        buildConfigField "boolean", "LIVE_DEV_MODE", "${devMode}"
+    }
+    buildFeatures {
+        buildConfig true
     }
     lintOptions {
         disable 'StringFormatInvalid'
@@ -49,6 +54,7 @@ android {
                     'src/main/res-room-info',
                     'src/main/res-livelist',
                     'src/main/res-network-info',
+                    'src/main/res-karaoke',
             ]
         }
     }
@@ -72,8 +78,8 @@ dependencies {
     def projects = this.rootProject.getAllprojects().stream().map { project -> project.name }.collect()
     api projects.contains("tuicore") ? project(':tuicore') : "com.tencent.liteav.tuikit:tuicore:8.8.7357"
 
-    api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:4.0.9.202"
-    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.0.9.203"
-    api rootProject.getProperties().containsKey("liteavSdk") ? rootProject.ext.liteavSdk : "com.tencent.liteav:LiteAVSDK_Professional:13.3.0.20247"
+    api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:4.1.0.63"
+    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.1.0.63"
+    api rootProject.getProperties().containsKey("liteavSdk") ? rootProject.ext.liteavSdk : "com.tencent.liteav:LiteAVSDK_Professional:13.2.0.20058"
     api rootProject.getProperties().containsKey("imSdk") ? rootProject.ext.imSdk : "com.tencent.imsdk:imsdk-plus:8.7.7201"
 }

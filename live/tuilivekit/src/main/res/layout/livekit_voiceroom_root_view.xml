@@ -41,7 +41,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <io.trtc.tuikit.atomicx.karaoke.view.KaraokeControlView
+    <com.trtc.uikit.livekit.component.karaoke.view.KaraokeControlView
         android:id="@+id/ktv_view"
         android:layout_width="match_parent"
         android:layout_height="170dp"

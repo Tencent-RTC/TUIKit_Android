@@ -19,6 +19,7 @@ import com.tencent.qcloud.tuicore.TUILogin
 import com.tencent.qcloud.tuicore.TUIThemeManager
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.tencent.uikit.app.R
+import com.tencent.uikit.app.common.utils.KeyMetrics
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 
@@ -30,7 +31,7 @@ class MainFragment : Fragment() {
         override fun onNotifyEvent(key: String?, subKey: String?, param: MutableMap<String?, Any?>) {
             Log.i(TAG, "key=$key,subKey=$subKey,param=$param")
             if (TextUtils.equals(param[TUIConstants.TUILogin.SELF_ID] as String?, TUILogin.getLoginUser())) {
-                userCenter?.setContent(AvatarContent.URL(TUILogin.getFaceUrl(),  R.drawable.app_ic_avatar))
+                userCenter?.setContent(AvatarContent.URL(TUILogin.getFaceUrl(), R.drawable.app_ic_avatar))
             }
         }
     }
@@ -55,7 +56,7 @@ class MainFragment : Fragment() {
             mainTitle?.setBackgroundResource(R.drawable.app_title_en)
         }
         userCenter = rootView.findViewById<AtomicAvatar>(R.id.img_user_center)
-        userCenter?.setContent(AvatarContent.URL(TUILogin.getFaceUrl(),  R.drawable.app_ic_avatar))
+        userCenter?.setContent(AvatarContent.URL(TUILogin.getFaceUrl(), R.drawable.app_ic_avatar))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,6 +69,9 @@ class MainFragment : Fragment() {
             trtcMainData.itemDataList as MutableList<MainItemData>, object : TRTCMainAdapter.OnItemClickListener {
                 override fun onItemClick(mainItemData: MainItemData?) {
                     mainItemData?.let { item ->
+                        item.itemType?.let { data ->
+                            KeyMetrics.reportAtomicMetrics(data.reportEvent)
+                        }
                         val type: Int = item.itemType?.type ?: 0
                         val intent = Intent(context, item.itemTargetClass)
                         intent.putExtra("TITLE", getString(item.itemTitle))
@@ -84,7 +88,7 @@ class MainFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        userCenter?.setContent(AvatarContent.URL(TUILogin.getFaceUrl(),  R.drawable.app_ic_avatar))
+        userCenter?.setContent(AvatarContent.URL(TUILogin.getFaceUrl(), R.drawable.app_ic_avatar))
     }
 
     private fun registerEvent() {

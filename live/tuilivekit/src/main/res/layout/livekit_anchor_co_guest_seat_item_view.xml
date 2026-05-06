@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_seat_item_root"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
+    <!-- 头像容器 -->
+    <FrameLayout
+        android:id="@+id/fl_avatar_container"
+        android:layout_width="50dp"
+        android:layout_height="50dp">
+
+        <!-- 空麦位显示的加号图标 -->
+        <FrameLayout
+            android:id="@+id/fl_empty_seat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/livekit_seat_item_empty_bg"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/iv_empty_icon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/livekit_empty_add" />
+        </FrameLayout>
+
+        <!-- 用户头像 -->
+        <io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
+            android:id="@+id/iv_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:avatarSize="l" />
+    </FrameLayout>
+
+    <!-- 用户名和麦克风状态 -->
+    <LinearLayout
+        android:id="@+id/ll_user_info"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/livekit_seat_item_name_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" >
+
+        <ImageView
+            android:id="@+id/iv_mic_mute"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/livekit_ic_mute_microphone"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_marginStart="2dp"
+            android:ellipsize="end"
+            android:maxWidth="50dp"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            android:visibility="gone"
+            android:textSize="10sp" />
+    </LinearLayout>
+</LinearLayout>

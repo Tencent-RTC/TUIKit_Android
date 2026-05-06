@@ -13,8 +13,10 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.DEFAULT_BACKGROUND_URL
 import com.trtc.uikit.livekit.common.DEFAULT_COVER_URL
 import com.trtc.uikit.livekit.common.ErrorLocalized
+import com.trtc.uikit.livekit.common.LIVE_INTEGRATION_SUCCESSFUL
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.completionHandler
+import com.trtc.uikit.livekit.common.reportAtomicMetrics
 import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import com.trtc.uikit.livekit.voiceroom.store.LayoutType
 import com.trtc.uikit.livekit.voiceroom.store.LiveStatus
@@ -131,7 +133,8 @@ class AnchorPreviewView @JvmOverloads constructor(
         liveInfo.backgroundURL = prepareState?.liveInfo?.value?.backgroundURL ?: DEFAULT_BACKGROUND_URL
         liveInfo.coverURL = prepareState?.liveInfo?.value?.coverURL ?: DEFAULT_COVER_URL
         liveInfo.isPublicVisible = prepareState?.liveExtraInfo?.value?.liveMode == LiveStreamPrivacyStatus.PUBLIC
-        liveListStore.createLive(
+        reportAtomicMetrics(LIVE_INTEGRATION_SUCCESSFUL)
+        liveListStore.startLive(
             liveInfo,
             object : LiveInfoCompletionHandler {
                 override fun onSuccess(liveInfo: LiveInfo) {

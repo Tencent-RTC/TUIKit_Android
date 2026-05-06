@@ -125,7 +125,7 @@ class ErrorLocalized {
         const val LIVE_IM_ERROR_NET_WAIT_ACK_TIMEOUT_NO_NETWORK = 9524
         const val LIVE_IM_ERROR_NET_SEND_REMAINING_TIMEOUT_NO_NETWORK = 9525
 
-        private val INTERCEPT_TOAST_ONLY_PRINT_LOG = setOf(LIVE_CLIENT_ERROR_ROOM_MISMATCH)
+        private val INTERCEPT_TOAST_ONLY_PRINT_LOG = setOf(LIVE_CLIENT_ERROR_ROOM_MISMATCH, LIVE_IM_ERROR_FREQ_LIMIT, LIVE_CLIENT_ERROR_FREQ_LIMIT)
         private val LOGGER = LiveKitLogger.getCommonLogger("ErrorLocalized")
 
         @JvmStatic

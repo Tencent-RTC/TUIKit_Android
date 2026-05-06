@@ -50,6 +50,7 @@ class TopView @JvmOverloads constructor(
                 liveListStore.liveState.currentLive.value.liveOwner.userID
             )
         ) {
+            if (TUICore.getService("ReportViolatingService") == null) return
             val imageReport = findViewById<ImageView>(R.id.iv_report)
             imageReport.visibility = if (isRTCubeOrTencentRTC) VISIBLE else GONE
             imageReport.setOnClickListener {

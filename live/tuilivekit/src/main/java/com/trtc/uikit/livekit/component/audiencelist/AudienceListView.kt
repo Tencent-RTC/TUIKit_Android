@@ -161,7 +161,7 @@ class AudienceListView @JvmOverloads constructor(
         })
     }
 
-    private fun showAudienceListPanelView() {
+    fun showAudienceListPanelView() {
         audienceStore?.fetchAudienceList(null)
         if (audienceListPopupDialog == null) {
             audienceListPopupDialog = AudienceListPopupDialog(

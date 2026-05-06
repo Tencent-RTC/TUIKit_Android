@@ -19,8 +19,8 @@ class LiveListView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private lateinit var style: Style
-    private lateinit var singleColumnListView: SingleColumnListView
-    private lateinit var doubleColumnListView: DoubleColumnListView
+    private var singleColumnListView: SingleColumnListView? = null
+    private var doubleColumnListView: DoubleColumnListView? = null
 
     private lateinit var liveInfoListStore: LiveInfoListStore
     private lateinit var fragmentActivity: FragmentActivity
@@ -39,29 +39,29 @@ class LiveListView @JvmOverloads constructor(
         liveListViewAdapter = adapter
         val liveDataSource = dataSource ?: TUILiveListDataSource()
         liveInfoListStore = LiveInfoListStore(liveDataSource)
-        initLiveColumnListView(fragmentActivity, style, liveInfoListStore)
+        getOrCreateColumnView(style)
+        switchColumnVisibility(style)
         isInit = true
     }
 
     fun updateColumnStyle(style: Style) {
         if (isInit && style != this.style) {
-            initLiveColumnListView(fragmentActivity, style, liveInfoListStore)
+            this.style = style
+            getOrCreateColumnView(style)
+            switchColumnVisibility(style)
         }
-        this.style = style
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         onItemClickListener = listener
-        when (style) {
-            Style.DOUBLE_COLUMN -> setDoubleColumnListViewClickLister(listener)
-            else -> setSingleColumnListViewClickLister(listener)
-        }
+        doubleColumnListView?.let { it.setOnItemClickListener(listener) }
+        singleColumnListView?.let { it.setOnItemClickListener(listener) }
     }
 
     fun refreshData() {
         when (style) {
-            Style.DOUBLE_COLUMN -> doubleColumnListView.refreshData()
-            else -> singleColumnListView.refreshData()
+            Style.DOUBLE_COLUMN -> doubleColumnListView?.refreshData()
+            else -> singleColumnListView?.refreshData()
         }
     }
 
@@ -75,38 +75,51 @@ class LiveListView @JvmOverloads constructor(
         enableSwitchPlaybackQuality(false)
     }
 
-    private fun initLiveColumnListView(
-        fragmentActivity: FragmentActivity,
-        style: Style,
-        liveInfoListStore: LiveInfoListStore
-    ) {
-        val adapter = liveListViewAdapter ?: when (style) {
-            Style.DOUBLE_COLUMN -> DoubleColumnListViewAdapter(fragmentActivity)
-            else -> SingleColumnListViewAdapter(fragmentActivity)
+    private fun getOrCreateColumnView(style: Style) {
+        when (style) {
+            Style.DOUBLE_COLUMN -> {
+                if (doubleColumnListView == null) {
+                    val adapter = liveListViewAdapter ?: DoubleColumnListViewAdapter(fragmentActivity)
+                    doubleColumnListView = DoubleColumnListView(fragmentActivity).apply {
+                        init(fragmentActivity, adapter, liveInfoListStore)
+                    }
+                    addView(doubleColumnListView)
+                    onItemClickListener?.let { doubleColumnListView!!.setOnItemClickListener(it) }
+                }
+            }
+            else -> {
+                if (singleColumnListView == null) {
+                    val adapter = liveListViewAdapter ?: SingleColumnListViewAdapter(fragmentActivity)
+                    singleColumnListView = SingleColumnListView(fragmentActivity).apply {
+                        init(fragmentActivity, adapter, liveInfoListStore)
+                    }
+                    addView(singleColumnListView)
+                    onItemClickListener?.let { singleColumnListView!!.setOnItemClickListener(it) }
+                }
+            }
         }
+    }
 
-        removeAllViews()
+    private fun switchColumnVisibility(style: Style) {
         if (style == Style.DOUBLE_COLUMN) {
-            doubleColumnListView = DoubleColumnListView(fragmentActivity).apply {
-                init(fragmentActivity, adapter, liveInfoListStore)
+            singleColumnListView?.let {
+                it.visibility = GONE
+                it.stopPreview()
             }
-            addView(doubleColumnListView)
-            setDoubleColumnListViewClickLister(onItemClickListener)
+            doubleColumnListView?.let {
+                it.visibility = VISIBLE
+                it.resumePreview()
+            }
         } else {
-            singleColumnListView = SingleColumnListView(fragmentActivity).apply {
-                init(fragmentActivity, adapter, liveInfoListStore)
+            doubleColumnListView?.let {
+                it.visibility = GONE
+                it.stopPreview()
             }
-            addView(singleColumnListView)
-            setSingleColumnListViewClickLister(onItemClickListener)
+            singleColumnListView?.let {
+                it.visibility = VISIBLE
+                it.resumePreview()
+            }
         }
-    }
-
-    private fun setDoubleColumnListViewClickLister(listener: OnItemClickListener?) {
-        listener?.let { doubleColumnListView.setOnItemClickListener(it) }
-    }
-
-    private fun setSingleColumnListViewClickLister(listener: OnItemClickListener?) {
-        listener?.let { singleColumnListView.setOnItemClickListener(it) }
     }
 
     private fun enableSwitchPlaybackQuality(enable: Boolean) {

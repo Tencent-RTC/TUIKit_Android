@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import com.tencent.liteav.base.ContextUtils
 import com.trtc.uikit.livekit.common.LiveKitLogger
@@ -14,8 +15,7 @@ class BackgroundLaunchDetector private constructor() : Application.ActivityLifec
     @Volatile
     private var isBackground: Boolean? = null
 
-    @Volatile
-    private var backgroundLaunchListener: BackgroundLaunchListener? = null
+    private val backgroundLaunchListeners = LinkedHashMap<String, BackgroundLaunchListener>()
 
     private val startedActivitySet = HashSet<Int>()
     private val pausedActivitySet = HashSet<Int>()
@@ -32,8 +32,13 @@ class BackgroundLaunchDetector private constructor() : Application.ActivityLifec
     }
 
     @Synchronized
-    fun setBackgroundLaunchListener(listener: BackgroundLaunchListener?) {
-        backgroundLaunchListener = listener
+    fun addBackgroundLaunchListener(key: String, listener: BackgroundLaunchListener) {
+        backgroundLaunchListeners[key] = listener
+    }
+
+    @Synchronized
+    fun removeBackgroundLaunchListener(key: String) {
+        backgroundLaunchListeners.remove(key)
     }
 
     @Synchronized
@@ -97,8 +102,10 @@ class BackgroundLaunchDetector private constructor() : Application.ActivityLifec
 
     private fun startActivityWhenBackgroundLaunch(activity: Activity) {
         if (isBackground == true) {
-            logger.info("startActivityWhenBackgroundLaunch, activity=$activity")
-            backgroundLaunchListener?.onBackgroundLaunch(activity)
+            logger.info("startActivityWhenBackgroundLaunch, activity=$activity, listeners=${backgroundLaunchListeners.keys}")
+            backgroundLaunchListeners.values.toList().forEach { listener ->
+                listener.onBackgroundLaunch(activity)
+            }
         }
     }
 
@@ -116,15 +123,23 @@ class BackgroundLaunchDetector private constructor() : Application.ActivityLifec
         }
 
         @JvmStatic
-        fun registerActivityLifecycleCallbacks(application: Application, listener: BackgroundLaunchListener) {
-            getInstance().setBackgroundLaunchListener(listener)
-            application.registerActivityLifecycleCallbacks(getInstance())
+        fun registerActivityLifecycleCallbacks(application: Application, key: String, listener: BackgroundLaunchListener) {
+            getInstance().addBackgroundLaunchListener(key, listener)
         }
 
         @JvmStatic
-        fun unregisterActivityLifecycleCallbacks(application: Application) {
-            getInstance().setBackgroundLaunchListener(null)
-            application.unregisterActivityLifecycleCallbacks(getInstance())
+        fun unregisterActivityLifecycleCallbacks(application: Application, key: String) {
+            getInstance().removeBackgroundLaunchListener(key)
+        }
+
+        @JvmStatic
+        fun isAbnormalModelForBringTaskToFront(): Boolean {
+            val isXiaomi13 = Build.MANUFACTURER.equals("Xiaomi", ignoreCase = true)
+                    && (Build.MODEL.equals("2211133C", ignoreCase = true)
+                    || Build.MODEL.equals("2211133G", ignoreCase = true)
+                    || Build.MODEL.contains("Xiaomi 13", ignoreCase = true))
+            val isAndroid15 = Build.VERSION.SDK_INT == 35
+            return isXiaomi13 && isAndroid15
         }
 
         private fun checkBackground(context: Context): Boolean {

@@ -15,8 +15,8 @@ import com.tencent.cloud.tuikit.engine.extension.TUILiveListManager
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomObserver
-import io.trtc.tuikit.atomicx.karaoke.view.KaraokeControlView
-import io.trtc.tuikit.atomicx.karaoke.view.KaraokeFloatingView
+import com.trtc.uikit.livekit.component.karaoke.view.KaraokeControlView
+import com.trtc.uikit.livekit.component.karaoke.view.KaraokeFloatingView
 import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUILogin
@@ -29,9 +29,11 @@ import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_CLOSE_VOICE_ROOM
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_FINISH_ACTIVITY
 import com.trtc.uikit.livekit.common.ErrorLocalized
+import com.trtc.uikit.livekit.common.LIVE_INTEGRATION_SUCCESSFUL
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
+import com.trtc.uikit.livekit.common.reportAtomicMetrics
 import com.trtc.uikit.livekit.common.setComponent
 import com.trtc.uikit.livekit.component.barrage.BarrageStreamView
 import com.trtc.uikit.livekit.component.gift.GiftPlayView
@@ -76,6 +78,7 @@ import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.barrage.Barrage
+import io.trtc.tuikit.atomicxcore.api.barrage.BarrageStore
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.gift.Gift
 import io.trtc.tuikit.atomicxcore.api.live.BattleStore
@@ -84,6 +87,7 @@ import io.trtc.tuikit.atomicxcore.api.live.CoHostStatus
 import io.trtc.tuikit.atomicxcore.api.live.CoHostStore
 import io.trtc.tuikit.atomicxcore.api.live.DeviceControlPolicy
 import io.trtc.tuikit.atomicxcore.api.live.GuestListener
+import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveEndedReason
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
@@ -265,6 +269,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
         seatGridView?.addObserver(seatGridViewObserver)
         liveListStore.addLiveListListener(liveListListener)
         liveSeatStore.addLiveSeatEventListener(liveSeatListener)
+        liveAudienceStore.addLiveAudienceListener(liveAudienceListener)
         TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_CLOSE_VOICE_ROOM, this)
     }
 
@@ -275,6 +280,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
         seatGridView?.removeObserver(seatGridViewObserver)
         liveListStore.removeLiveListListener(liveListListener)
         liveSeatStore.removeLiveSeatEventListener(liveSeatListener)
+        liveAudienceStore.removeLiveAudienceListener(liveAudienceListener)
         TUICore.unRegisterEvent(this)
     }
 
@@ -317,6 +323,26 @@ class VoiceRoomRootView @JvmOverloads constructor(
         if (isConnected && isOwner()) {
             anchorExitConfirmDialog?.dismiss()
         }
+        if (connectedRoomList.isEmpty()) {
+            cancelPendingBattleIfNeeded()
+        }
+    }
+
+    private fun cancelPendingBattleIfNeeded() {
+        val viewStore = voiceRoomManager?.viewStore ?: return
+        val battleID = viewStore.viewState.pendingBattleID.value ?: return
+        val userIDs = viewStore.viewState.pendingBattleUserIDs.value
+        if (userIDs.isEmpty()) return
+        battleStore?.cancelBattleRequest(battleID, userIDs, object : CompletionHandler {
+            override fun onSuccess() {
+                viewStore.onBattleRequestCleared()
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                // Best effort: clear local state regardless
+            }
+        })
+        viewStore.onBattleRequestCleared()
     }
 
     private fun onBattleListChanged(battleRoomList: List<SeatUserInfo>) {
@@ -523,7 +549,8 @@ class VoiceRoomRootView @JvmOverloads constructor(
         liveInfo.coverURL = prepareState?.liveInfo?.value?.coverURL ?: DEFAULT_COVER_URL
         liveInfo.isPublicVisible =
             voiceRoomManager?.prepareStore?.prepareState?.liveExtraInfo?.value?.liveMode == LiveStreamPrivacyStatus.PUBLIC
-        liveListStore.createLive(
+        reportAtomicMetrics(LIVE_INTEGRATION_SUCCESSFUL)
+        liveListStore.startLive(
             liveInfo,
             object : LiveInfoCompletionHandler {
                 override fun onSuccess(liveInfo: LiveInfo) {
@@ -542,6 +569,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
 
     fun enter() {
         setComponent(COMPONENT_VOICE_ROOM)
+        reportAtomicMetrics(LIVE_INTEGRATION_SUCCESSFUL)
         liveListStore.joinLive(liveID, object : LiveInfoCompletionHandler {
             override fun onSuccess(liveInfo: LiveInfo) {
                 voiceRoomManager?.prepareStore?.updateLiveInfo(liveInfo)
@@ -583,9 +611,6 @@ class VoiceRoomRootView @JvmOverloads constructor(
                 dialog.dismiss()
             }
         }
-
-        voiceRoomManager?.prepareStore
-            ?.updateMessageCount(barrageStreamView.getBarrageCount())
         if (isOwner()) {
             initAnchorEndView()
         } else {
@@ -621,8 +646,6 @@ class VoiceRoomRootView @JvmOverloads constructor(
     }
 
     private fun exit() {
-        voiceRoomManager?.prepareStore
-            ?.updateMessageCount(barrageStreamView.getBarrageCount())
         TUICore.notifyEvent(
             TUIConstants.Privacy.EVENT_ROOM_STATE_CHANGED,
             TUIConstants.Privacy.EVENT_SUB_KEY_ROOM_STATE_STOP,
@@ -1050,6 +1073,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
                 context.getString(R.string.common_room_destroy),
                 AtomicToast.Style.INFO
             )
+            voiceRoomManager?.prepareStore?.updateLiveEndedReason(reason)
             voiceRoomManager?.prepareStore?.updateLiveStatus(LiveStatus.DASHBOARD)
             seatActionSheetGenerator?.destroy()
             if (seatActionSheetDialog != null) {
@@ -1083,6 +1107,20 @@ class VoiceRoomRootView @JvmOverloads constructor(
 
         override fun onLocalMicrophoneOpenedByAdmin(policy: DeviceControlPolicy) {
             AtomicToast.show(context,context.getString(R.string.common_un_mute_audio_by_master), AtomicToast.Style.INFO)
+        }
+    }
+
+    private val liveAudienceListener = object : LiveAudienceListener() {
+        override fun onAudienceJoined(audience: LiveUserInfo) {
+            val barrage = Barrage().apply {
+                textContent = context.getString(R.string.common_entered_room)
+                sender.apply {
+                    userID = audience.userID
+                    userName = audience.userName
+                    avatarURL = audience.avatarURL
+                }
+            }
+            BarrageStore.create(liveID).appendLocalTip(barrage)
         }
     }
 

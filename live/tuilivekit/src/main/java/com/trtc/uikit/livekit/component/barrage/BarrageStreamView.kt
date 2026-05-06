@@ -19,8 +19,6 @@ import com.trtc.uikit.livekit.component.barrage.view.adapter.BarrageMsgListAdapt
 import com.trtc.uikit.livekit.component.barrage.viewmodel.BarrageConstants
 import io.trtc.tuikit.atomicxcore.api.barrage.Barrage
 import io.trtc.tuikit.atomicxcore.api.barrage.BarrageStore
-import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceListener
-import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +45,6 @@ class BarrageStreamView @JvmOverloads constructor(
     private val msgList = mutableListOf<Barrage>()
     private val adapter = BarrageMsgListAdapter(msgList)
     private var barrageStore: BarrageStore? = null
-    private var liveAudienceStore: LiveAudienceStore? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.livekit_barrage_view_display, this)
@@ -76,7 +73,6 @@ class BarrageStreamView @JvmOverloads constructor(
 
     override fun initStore() {
         barrageStore = BarrageStore.create(roomId)
-        liveAudienceStore = LiveAudienceStore.create(roomId)
     }
 
     override fun addObserver() {
@@ -85,12 +81,10 @@ class BarrageStreamView @JvmOverloads constructor(
                 onBarrageListChanged(it)
             }
         }
-        liveAudienceStore?.addLiveAudienceListener(liveAudienceListener)
     }
 
     override fun removeObserver() {
         subscribeStateJob?.cancel()
-        liveAudienceStore?.removeLiveAudienceListener(liveAudienceListener)
     }
 
     override fun insertBarrages(vararg barrages: Barrage) {
@@ -145,19 +139,5 @@ class BarrageStreamView @JvmOverloads constructor(
 
     interface OnMessageClickListener {
         fun onMessageClick(userInfo: LiveUserInfo)
-    }
-
-    private val liveAudienceListener = object : LiveAudienceListener() {
-        override fun onAudienceJoined(audience: LiveUserInfo) {
-            val barrage = Barrage().apply {
-                textContent = this@BarrageStreamView.context.getString(R.string.common_entered_room)
-                sender.apply {
-                    userID = audience.userID
-                    userName = audience.userName
-                    avatarURL = audience.avatarURL
-                }
-            }
-            insertBarrages(barrage)
-        }
     }
 }

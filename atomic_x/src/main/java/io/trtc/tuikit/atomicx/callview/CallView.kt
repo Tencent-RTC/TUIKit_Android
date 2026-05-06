@@ -21,10 +21,10 @@ import io.trtc.tuikit.atomicx.callview.public.transcriber.CallTranscriberView
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dip2px
 import io.trtc.tuikit.atomicx.callview.public.smartcellularswitchrecommendation.SmartCellularRecommendationDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicxcore.api.call.CallListener
 import io.trtc.tuikit.atomicxcore.api.call.CallParticipantInfo
 import io.trtc.tuikit.atomicxcore.api.call.CallParticipantStatus
 import io.trtc.tuikit.atomicxcore.api.call.CallStore
-import io.trtc.tuikit.atomicxcore.api.device.DeviceListener
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.device.NetworkQuality
 import io.trtc.tuikit.atomicxcore.api.device.NetworkType
@@ -64,10 +64,10 @@ class CallView @JvmOverloads constructor(
     private var multiCallWaitingViewContainer: LinearLayout? = null
     private var disableFeatures: List<Feature>? = null
 
-    private var deviceListener: DeviceListener = object : DeviceListener {
-        override fun onSmartCellularSwitchRecommended() {
-            super.onSmartCellularSwitchRecommended()
-            showSmartCellularRecommendation()
+    private var callListener: CallListener = object : CallListener() {
+        override fun onSuggestSwitchToCellular() {
+            super.onSuggestSwitchToCellular()
+            this@CallView.onSuggestSwitchToCellular()
         }
     }
 
@@ -85,7 +85,7 @@ class CallView @JvmOverloads constructor(
         addFunctionLayout()
         addTranscriberLayout()
         updateWaitingView()
-        DeviceStore.shared().addListener(deviceListener)
+        CallStore.shared.addListener(callListener)
         subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
             supervisorScope {
                 launch { observeSelfInfo() }
@@ -98,7 +98,7 @@ class CallView @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         callMainView?.removeAllViews()
-        deviceListener.let { DeviceStore.shared().removeListener(it) }
+        callListener.let { CallStore.shared.removeListener(it) }
         subscribeStateJob?.cancel()
     }
 
@@ -258,12 +258,12 @@ class CallView @JvmOverloads constructor(
             .mapValues { it.value.cachedPath!! }
     }
 
-    private fun showSmartCellularRecommendation() {
+    private fun onSuggestSwitchToCellular() {
         this.post {
             try {
                 val dialog = SmartCellularRecommendationDialog(context)
                 dialog.onEnableSmartCellular = {
-                    DeviceStore.shared().enableSmartCellularSwitchMode(true)
+                    CallStore.shared.enableCellularFallback(true)
                 }
                 dialog.show()
             } catch (e: Exception) {

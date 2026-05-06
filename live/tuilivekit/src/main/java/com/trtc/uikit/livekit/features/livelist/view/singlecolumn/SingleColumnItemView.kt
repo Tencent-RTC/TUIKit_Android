@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.trtc.uikit.livekit.R
+import com.trtc.uikit.livekit.common.COMPONENT_LIVE_STREAM
 import com.trtc.uikit.livekit.common.DEFAULT_COVER_URL
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.trtc.uikit.livekit.common.setComponent
 import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
 import com.trtc.uikit.livekit.features.livelist.LiveListViewAdapter
 import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
@@ -98,6 +100,7 @@ class SingleColumnItemView @JvmOverloads constructor(
 
         liveCoreView.visibility = VISIBLE
         LOGGER.info("startPreviewLiveStream, roomId:${currentLiveInfo.liveID}")
+        setComponent(COMPONENT_LIVE_STREAM)
         liveCoreView.startPreviewLiveStream(currentLiveInfo.liveID, isMuteAudio, null)
         isPlaying = true
     }

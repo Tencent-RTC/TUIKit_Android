@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
-import com.trtc.uikit.livekit.component.beauty.BeautyUtils.resetBeauty
+import com.trtc.uikit.livekit.component.beauty.BeautyIntegration.resetBeauty
 import com.trtc.uikit.livekit.component.beauty.basicbeauty.view.BeautyListAdapter
 import com.trtc.uikit.livekit.component.beauty.basicbeauty.view.BeautyListAdapter.BeautyType
 import io.trtc.tuikit.atomicxcore.api.device.BaseBeautyStore

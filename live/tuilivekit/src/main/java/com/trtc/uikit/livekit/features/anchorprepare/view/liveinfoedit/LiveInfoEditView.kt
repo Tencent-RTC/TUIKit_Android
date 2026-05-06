@@ -2,11 +2,13 @@ package com.trtc.uikit.livekit.features.anchorprepare.view.liveinfoedit
 
 import android.content.Context
 import android.text.Editable
+import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -131,27 +133,46 @@ class LiveInfoEditView @JvmOverloads constructor(
         editRoomName.setText(roomName)
         store?.setRoomName(roomName)
 
+        editRoomName.keyListener = editRoomName.keyListener
+        editRoomName.ellipsize = TextUtils.TruncateAt.END
+        editRoomName.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                editRoomName.ellipsize = null
+                editRoomName.inputType = InputType.TYPE_CLASS_TEXT
+                editRoomName.setSelection(editRoomName.text.length)
+                editRoomName.post {
+                    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                    imm?.showSoftInput(editRoomName, InputMethodManager.SHOW_IMPLICIT)
+                }
+            } else {
+                editRoomName.inputType = InputType.TYPE_NULL
+                editRoomName.ellipsize = TextUtils.TruncateAt.END
+            }
+        }
+
         editRoomName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(editable: Editable?) {
-                if (TextUtils.isEmpty(editable)) {
+                if (editable.isNullOrBlank()) {
                     return
                 }
-
                 var newString = editable.toString()
-                if (!checkLength(editable.toString())) {
-                    for (i in editable!!.length downTo 1) {
+                if (!checkLength(newString)) {
+                    for (i in editable.length downTo 0) {
+                        if (i > 0 && Character.isHighSurrogate(editable[i - 1])) {
+                            continue
+                        }
                         val s = editable.subSequence(0, i).toString()
                         if (checkLength(s)) {
                             newString = s
-                            editRoomName.setText(s)
-                            editRoomName.setSelection(s.length)
                             break
                         }
                     }
+                    editRoomName.setText(newString)
+                    editRoomName.setSelection(newString.length)
                 }
                 store?.setRoomName(newString)
             }

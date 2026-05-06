@@ -1,9 +1,9 @@
 package com.tencent.uikit.app.login
 
-import io.trtc.tuikit.atomicx.karaoke.store.ActionCallback
-import io.trtc.tuikit.atomicx.karaoke.store.GetSongListCallBack
-import io.trtc.tuikit.atomicx.karaoke.store.MusicCatalogService
-import io.trtc.tuikit.atomicx.karaoke.store.utils.MusicInfo
+import com.trtc.uikit.livekit.component.karaoke.store.ActionCallback
+import com.trtc.uikit.livekit.component.karaoke.store.GetSongListCallBack
+import com.trtc.uikit.livekit.component.karaoke.store.MusicCatalogService
+import com.trtc.uikit.livekit.component.karaoke.store.utils.MusicInfo
 import com.tencent.qcloud.tuikit.debug.GenerateTestUserSig
 
 class LocalMusicService : MusicCatalogService() {

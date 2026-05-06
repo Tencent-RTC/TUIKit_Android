@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <resources>
+    <string name="common_disconnect_guest_tips">Are you sure you want to disconnect %s?</string>
     <string name="common_anchor_battle">Battle</string>
     <string name="common_anchor_end_link_tips">You are currently co-guesting with other streamers. Would you like to [End Live] ?</string>
     <string name="common_battle_connecting">Connecting</string>
@@ -118,7 +119,7 @@
     <string name="common_client_error_camera_start_fail">System Issue, Failed to Open Camera. Check if Camera Device is Normal</string>
     <string name="common_client_error_connection_connecting">The room you are invited to connect to is already in the invitation list or is already connected.</string>
     <string name="common_client_error_exit_not_supported_for_room_owner">Room Owner Does Not Support Leaving the Room, Room Owner Can Only Close the Room</string>
-    <string name="common_client_error_failed">Temporarily Unclassified General Error</string>
+    <string name="common_client_error_failed">Server is having a hiccup, please try again later</string>
     <string name="common_client_error_freq_limit">Request Rate Limited, Please Try Again Later</string>
     <string name="common_client_error_get_screen_sharing_target_failed">Failed to get screen sharing source (screen and window), check screen recording permissions</string>
     <string name="common_client_error_invalid_parameter">Passing illegal parameters when calling API, check if the parameters are legal</string>
@@ -314,6 +315,7 @@
     <string name="common_waiting_pass">Waiting</string>
     <string name="live_barrage_agree">Agree</string>
     <string name="live_barrage_btn_send">Send</string>
+    <string name="live_cohost_application_expired">The application has expired.</string>
     <string name="common_video_status">Video Status</string>
     <string name="common_audio_status">Audio Status</string>
     <string name="common_device_temp">Device Temperature</string>
@@ -398,4 +400,5 @@
     <string name="common_game_live">Game Live</string>
     <string name="common_live_game">Live Game</string>
     <string name="common_gift_combo">Combo</string>
+    <string name="common_end_live_by_server">The live stream was shut down due to violations of regulations.</string>
 </resources>

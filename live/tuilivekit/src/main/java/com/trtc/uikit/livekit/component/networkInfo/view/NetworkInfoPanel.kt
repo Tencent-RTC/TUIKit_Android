@@ -15,6 +15,7 @@ import com.trtc.uikit.livekit.component.networkInfo.store.NetworkInfoState
 import com.trtc.uikit.livekit.component.networkInfo.store.NetworkInfoStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.device.NetworkQuality
+import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,6 +44,7 @@ class NetworkInfoPanel(
     private lateinit var textAudioMode: TextView
     private lateinit var textVideoDescription: TextView
     private lateinit var layoutStreamStatus: LinearLayout
+    private lateinit var layoutVideoStatus: LinearLayout
     private lateinit var textRTT: TextView
     private lateinit var textDownLoss: TextView
     private lateinit var textUpLoss: TextView
@@ -64,6 +66,7 @@ class NetworkInfoPanel(
 
     private fun bindViewId(view: View) {
         layoutStreamStatus = view.findViewById(R.id.ll_host_stream_status)
+        layoutVideoStatus = view.findViewById(R.id.ll_video_status)
         imageVideoStatus = view.findViewById(R.id.iv_video_status)
         imageAudioStatus = view.findViewById(R.id.iv_audio_status)
         imageDeviceTemp = view.findViewById(R.id.iv_device_temp)
@@ -87,7 +90,7 @@ class NetworkInfoPanel(
         super.onAttachedToWindow()
         service.initAudioCaptureVolume()
         addObserver()
-        initStreamStatusVisible()
+        initChildViewVisible()
         initDeviceTempView()
         initAudioModeView()
     }
@@ -183,8 +186,11 @@ class NetworkInfoPanel(
         })
     }
 
-    private fun initStreamStatusVisible() {
+    private fun initChildViewVisible() {
         layoutStreamStatus.visibility = if (isTakeSeat) View.VISIBLE else View.GONE
+        layoutVideoStatus.visibility = if (state.liveInfo?.seatTemplate == SeatLayoutTemplate.VideoLandscape4Seats
+            && state.liveInfo?.keepOwnerOnSeat == true
+        ) View.GONE else View.VISIBLE
     }
 
     private fun initAudioModeView() {

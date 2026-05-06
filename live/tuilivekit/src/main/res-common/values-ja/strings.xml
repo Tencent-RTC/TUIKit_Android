@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <resources>
+    <string name="common_disconnect_guest_tips">%sの接続を切断したいですか？</string>
     <string name="common_anchor_battle">アンカーPK</string>
     <string name="common_anchor_end_link_tips">現在、接続されている州では、「ライブブロードキャストルームを閉じる」必要がありますか？</string>
     <string name="common_battle_connecting">接続</string>
@@ -118,7 +119,7 @@
     <string name="common_client_error_camera_start_fail">システムの問題は、カメラをオンにすることができませんでした。カメラデバイスが正常かどうかを確認してください</string>
     <string name="common_client_error_connection_connecting">接続するために招待されている部屋は、すでに招待リストに載っているか、接続されています。</string>
     <string name="common_client_error_exit_not_supported_for_room_owner">住宅所有者はチェックアウト操作をサポートしていません、住宅所有者は部屋を解散することしかできません</string>
-    <string name="common_client_error_failed">まだ分​​類されていない一般的なエラー</string>
+    <string name="common_client_error_failed">サーバーが一時的に不調です。しばらくしてから再試行してください</string>
     <string name="common_client_error_freq_limit">リクエストは制限されています。後でもう一度やり直してください</string>
     <string name="common_client_error_get_screen_sharing_target_failed">画面共有ソース（画面とウィンドウ）を取得し、画面録音の許可を確認できませんでした</string>
     <string name="common_client_error_invalid_parameter">APIを呼び出すと、合格したパラメーターは違法です。パラメーターが合法かどうかを確認してください。</string>
@@ -314,6 +315,7 @@
     <string name="common_waiting_pass">通過を待っています</string>
     <string name="live_barrage_agree">同意する</string>
     <string name="live_barrage_btn_send">送信</string>
+    <string name="live_cohost_application_expired">この申請は無効です</string>
     <string name="common_video_status">ビデオステータス</string>
     <string name="common_audio_status">オーディオステータス</string>
     <string name="common_device_temp">機器の温度</string>
@@ -398,4 +400,5 @@
     <string name="common_game_live">スマホゲーム実況</string>
     <string name="common_live_game">ゲームライブ配信中</string>
     <string name="common_gift_combo">コンボ</string>
+    <string name="common_end_live_by_server">規則違反のため、ライブ配信は停止されました。</string>
 </resources>
