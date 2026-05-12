@@ -2,6 +2,8 @@ package com.tencent.qcloud.tuikit.tuicallkit
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import com.tencent.cloud.tuikit.engine.call.TUICallDefine
 import com.tencent.cloud.tuikit.engine.common.TUICommonDefine
 import com.tencent.cloud.tuikit.engine.common.TUICommonDefine.Callback
@@ -43,6 +45,7 @@ import kotlinx.coroutines.supervisorScope
 
 class TUICallKitImpl private constructor(context: Context) : TUICallKit() {
     private val context = context.applicationContext ?: context
+    private val mainHandler = Handler(Looper.getMainLooper())
     private var subscribeSelfStateJob: Job? = null
     private val callStatusObserver = object : CallListener() {
         override fun onCallStarted(callId: String, mediaType: CallMediaType) {
@@ -58,7 +61,9 @@ class TUICallKitImpl private constructor(context: Context) : TUICallKit() {
             }
 
             if (reason == CallEndReason.LineBusy) {
-                AtomicToast.show(context, context.getString(R.string.callkit_toast_other_party_busy), Style.INFO)
+                mainHandler.post {
+                    AtomicToast.show(context, context.getString(R.string.callkit_toast_other_party_busy), Style.INFO)
+                }
             }
         }
 

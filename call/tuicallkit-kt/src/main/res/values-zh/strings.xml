@@ -59,4 +59,5 @@
     <string name="callkit_toast_error_call_failed">加入通话失败</string>
     <string name="callkit_toast_error_call_self">无法向自己发起呼叫</string>
     <string name="callkit_toast_error_already_in_call">您正在通话中，无法再次发起通话</string>
+    <string name="callkit_toast_error_group_call_has_active_call">该群组已有通话正在进行中</string>
 </resources>

@@ -59,4 +59,6 @@
     <string name="callkit_toast_error_call_failed">فشل الانضمام إلى المكالمة</string>
     <string name="callkit_toast_error_call_self">لا يمكنك إجراء مكالمة مع نفسك</string>
     <string name="callkit_toast_error_already_in_call">أنت في مكالمة بالفعل ولا يمكنك بدء مكالمة أخرى.</string>
+    <string name="callkit_toast_error_group_call_has_active_call">هذه المجموعة لديها بالفعل مكالمة نشطة</string>
+
 </resources>

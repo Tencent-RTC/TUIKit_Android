@@ -59,4 +59,5 @@
     <string name="callkit_toast_error_call_failed">Failed to join the call</string>
     <string name="callkit_toast_error_call_self">You cannot call yourself</string>
     <string name="callkit_toast_error_already_in_call">You are already in a call and cannot start another</string>
+    <string name="callkit_toast_error_group_call_has_active_call">This group already has an active call</string>
 </resources>

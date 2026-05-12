@@ -22,6 +22,7 @@ import com.tencent.qcloud.tuikit.tuicallkit.view.component.recents.interfaces.IC
 import com.trtc.tuikit.common.livedata.LiveListObserver
 import com.trtc.tuikit.common.ui.PopupDialog
 import com.trtc.tuikit.common.util.ToastUtil
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.call.CallDirection
 import io.trtc.tuikit.atomicxcore.api.call.CallEndReason
 import io.trtc.tuikit.atomicxcore.api.call.CallInfo
@@ -181,9 +182,10 @@ class RecentCallsFragment(style: String) : Fragment() {
                 if (listAdapter.isMultiSelectMode) {
                     return
                 }
-                if (callInfo.chatGroupId.isNotEmpty()) {
-                    startGroupInfoActivity(callInfo)
-                    ToastUtil.toastLongMessage(getString(R.string.callkit_group_recall_unsupport))
+                if (callInfo.chatGroupId.isNotEmpty() || callInfo.inviteeIds.size > 1) {
+                    context?.let {
+                        AtomicToast.show(it, it.getString(R.string.callkit_group_recall_unsupport) , AtomicToast.Style.ERROR)
+                    }
                     return
                 }
                 var mediaType = CallMediaType.Audio

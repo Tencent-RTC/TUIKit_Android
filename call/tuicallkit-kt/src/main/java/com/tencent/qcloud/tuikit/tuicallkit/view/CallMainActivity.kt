@@ -11,12 +11,15 @@ import android.widget.ImageView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import android.Manifest
+import android.app.Activity
+import android.util.Log
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import android.widget.TextView
 import com.tencent.cloud.tuikit.engine.common.TUICommonDefine
 import com.tencent.qcloud.tuicore.util.TUIBuild
 import com.tencent.qcloud.tuikit.tuicallkit.R
+import com.tencent.qcloud.tuikit.tuicallkit.beauty.BeautyIntegration
 import com.tencent.qcloud.tuikit.tuicallkit.common.data.Constants
 import com.tencent.qcloud.tuikit.tuicallkit.common.data.Logger
 import com.tencent.qcloud.tuikit.tuicallkit.common.metrics.KeyMetrics
@@ -45,10 +48,12 @@ import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.view.CallLayoutTemplate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 
 class CallMainActivity : FullScreenActivity() {
     private var callView: CallView? = null
     private var imageFloatIcon: ImageView? = null
+    private var imageBeautyIcon: ImageView? = null
     private var inviteUserButton: FrameLayout? = null
     private var callEndHintView: TextView? = null
     private var finishActivityJob: Job? = null
@@ -75,6 +80,21 @@ class CallMainActivity : FullScreenActivity() {
         }
         callEndHintView = findViewById(R.id.tv_call_end_hint)
         CallStore.shared.addListener(callStatusObserver)
+        lifecycleScope.launchWhenStarted {
+            CallStore.shared.observerState.selfInfo.first {
+                if (it.status == CallParticipantStatus.Accept) {
+                    Log.i(TAG, "CallStore.shared.observerState.selfInfo accept")
+                    val groupId = CallStore.shared.observerState.activeCall.value.chatGroupId
+                    val inviteeSize = CallStore.shared.observerState.activeCall.value.inviteeIds.size
+                    val mediaType = CallStore.shared.observerState.activeCall.value.mediaType
+                    if (mediaType == CallMediaType.Video && groupId.isEmpty() && inviteeSize == 1) {
+                        addBeautyView()
+                    }
+                    true
+                }
+                false
+            }
+        }
         val mediaType = CallStore.shared.observerState.activeCall.value.mediaType
         if (mediaType != null) {
             setAudioDeviceRoute(mediaType)
@@ -97,6 +117,7 @@ class CallMainActivity : FullScreenActivity() {
         addInviteButton()
         FloatWindowManager.sharedInstance().dismiss()
         CallManager.instance.viewState.router.set(ViewState.ViewRouter.FullView)
+        handleCallAcceptAction()
     }
 
     private fun finishCallMainActivity() {
@@ -104,7 +125,7 @@ class CallMainActivity : FullScreenActivity() {
             return
         }
         callView?.removeAllViews()
-        if (TUIBuild.getVersionInt() >= Build.VERSION_CODES.LOLLIPOP) {
+        if (TUIBuild.getVersionInt() >= Build.VERSION_CODES.LOLLIPOP && isTaskRoot) {
             finishAndRemoveTask()
         } else {
             finish()
@@ -128,6 +149,15 @@ class CallMainActivity : FullScreenActivity() {
         }
         val view = GlobalState.instance.callAdapter?.onCreateMainView(callView!!) ?: callView
         callViewContainer?.addView(view)
+    }
+
+    private fun addBeautyView() {
+        imageBeautyIcon = findViewById(R.id.iv_beauty)
+        imageBeautyIcon?.visibility =
+            if (BeautyIntegration.isSupportTEBeauty() && !isInPipModeSafe()) View.VISIBLE else View.GONE
+        imageBeautyIcon?.setOnClickListener {
+            BeautyIntegration.showBeautyDialog(this)
+        }
     }
 
     private fun addFloatButton() {
@@ -162,6 +192,17 @@ class CallMainActivity : FullScreenActivity() {
         imageBackground?.setColorFilter(ContextCompat.getColor(this, R.color.callkit_color_blur_mask))
     }
 
+    private fun handleCallAcceptAction() {
+        val selfStatus = CallStore.shared.observerState.selfInfo.value.status
+        if (selfStatus == CallParticipantStatus.Accept) {
+            return
+        }
+        if (intent.action == Constants.ACCEPT_CALL_ACTION) {
+            Logger.i(TAG, "IncomingView -> handleCallAcceptAction")
+            CallStore.shared.accept(null)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         val mediaType = CallStore.shared.observerState.activeCall.value.mediaType
@@ -186,6 +227,7 @@ class CallMainActivity : FullScreenActivity() {
         finishActivityJob?.cancel()
         CallStore.shared.removeListener(callStatusObserver)
         CallManager.instance.stopForegroundService()
+        BeautyIntegration.resetBeauty()
         Logger.i(TAG, "onDestroy")
     }
 
@@ -205,6 +247,7 @@ class CallMainActivity : FullScreenActivity() {
     override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode)
         imageFloatIcon?.visibility = if (isInPictureInPictureMode) View.GONE else View.VISIBLE
+        imageBeautyIcon?.visibility = if (isInPictureInPictureMode) View.GONE else View.VISIBLE
         if (shouldShowInviteButton()) {
             inviteUserButton?.visibility = if (isInPictureInPictureMode) View.GONE else View.VISIBLE
         }
@@ -271,6 +314,7 @@ class CallMainActivity : FullScreenActivity() {
     private fun openDeviceMediaForMediaType(mediaType: CallMediaType) {
         DeviceStore.shared().openLocalMicrophone(null)
         if (mediaType == CallMediaType.Video) {
+            BeautyIntegration.setupVideoProcessor()
             DeviceStore.shared().openLocalCamera(true, null)
         }
     }
@@ -324,6 +368,19 @@ class CallMainActivity : FullScreenActivity() {
     private fun isCaller(userId: String): Boolean {
         val callerId = CallStore.shared.observerState.activeCall.value.inviterId
         return callerId == userId
+    }
+
+    private fun Activity.isInPipModeSafe(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            try {
+                isInPictureInPictureMode
+            } catch (e: Exception) {
+                Logger.e(TAG, "isInPictureInPictureMode failed. {Device:${Build.MODEL},Exception:$e}")
+                false
+            }
+        } else {
+            false
+        }
     }
 
     companion object {

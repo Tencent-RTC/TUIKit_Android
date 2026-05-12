@@ -23,6 +23,17 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
+        android:id="@+id/iv_beauty"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:visibility="gone"
+        android:src="@drawable/tuicallkit_ic_beauty"
+        android:layout_marginBottom="38dp"
+        android:layout_marginStart="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
         android:id="@+id/image_float_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
