@@ -36,6 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import org.json.JSONObject
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -263,7 +264,7 @@ class CallView @JvmOverloads constructor(
             try {
                 val dialog = SmartCellularRecommendationDialog(context)
                 dialog.onEnableSmartCellular = {
-                    CallStore.shared.enableCellularFallback(true)
+                    enableCellularFallback()
                 }
                 dialog.show()
             } catch (e: Exception) {
@@ -320,6 +321,13 @@ class CallView @JvmOverloads constructor(
         val inviteeIdListSize = CallStore.shared.observerState.activeCall.value.inviteeIds.size
         val chatGroupId = CallStore.shared.observerState.activeCall.value.chatGroupId
         return chatGroupId.isNotEmpty() || inviteeIdListSize > 1
+    }
+
+    private fun enableCellularFallback() {
+        val json = JSONObject()
+        json.put("api", "enableCellularFallback")
+        json.put("params", JSONObject().put("enable", true))
+        CallStore.shared.callExperimentalAPI(json.toString())
     }
 
     companion object {
