@@ -49,6 +49,21 @@ class PresetImageGridAdapter(
         return dataList.size
     }
 
+    fun updateSelected(imageURL: String?) {
+        val newPosition = dataList.indexOf(imageURL)
+        if (newPosition == selectedPosition) {
+            return
+        }
+        val previousPosition = selectedPosition
+        selectedPosition = newPosition
+        if (previousPosition in dataList.indices) {
+            notifyItemChanged(previousPosition)
+        }
+        if (newPosition in dataList.indices) {
+            notifyItemChanged(newPosition)
+        }
+    }
+
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image: ImageFilterView = itemView.findViewById(R.id.image)
         val imageSelectedContainer: View = itemView.findViewById(R.id.image_selected_container)

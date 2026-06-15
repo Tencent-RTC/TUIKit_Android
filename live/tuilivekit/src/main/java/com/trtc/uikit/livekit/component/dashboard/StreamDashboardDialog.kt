@@ -119,10 +119,12 @@ class StreamDashboardDialog(context: Context, val roomId: String) : AtomicPopove
         circleIndicator.visibility = if (count > 1) View.VISIBLE else View.GONE
         circleIndicator.setCircleCount(count)
         val snapView = pagerSnapHelper.findSnapView(recyclerMediaInfo.layoutManager)
-        if (snapView != null) {
-            val position = recyclerMediaInfo.layoutManager?.getPosition(snapView) ?: 0
-            circleIndicator.setSelected(position)
+        val position = if (snapView != null) {
+            recyclerMediaInfo.layoutManager?.getPosition(snapView) ?: 0
+        } else {
+            0
         }
+        circleIndicator.setSelected(position)
     }
 
     @SuppressLint("DefaultLocale")
@@ -147,6 +149,7 @@ class StreamDashboardDialog(context: Context, val roomId: String) : AtomicPopove
                 val liveSeatStore = LiveSeatStore.create(roomId)
                 liveSeatStore.liveSeatState.avStatistics.collect {
                     adapter.updateRemoteVideoStatus(it)
+                    recyclerMediaInfo.post { updateCircleIndicator() }
                 }
             }
         }

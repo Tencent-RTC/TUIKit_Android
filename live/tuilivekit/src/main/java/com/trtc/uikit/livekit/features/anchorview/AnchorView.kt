@@ -25,6 +25,7 @@ import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LIVE_INTEGRATION_SUCCESSFUL
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
+import com.trtc.uikit.livekit.common.displayName
 import com.trtc.uikit.livekit.common.reportAtomicMetrics
 import com.trtc.uikit.livekit.common.setComponent
 import com.trtc.uikit.livekit.common.ui.RoundFrameLayout
@@ -323,7 +324,10 @@ class AnchorView @JvmOverloads constructor(
             return
         }
 
-        val content = context.getString(R.string.common_connect_inviting_append, inviter.userName)
+        val content = context.getString(
+            R.string.common_connect_inviting_append,
+            inviter.displayName
+        )
         showConnectionRequestDialog(content, inviter.avatarURL, inviter.liveID)
     }
 
@@ -674,7 +678,8 @@ class AnchorView @JvmOverloads constructor(
         }
 
         val content = context.getString(
-            R.string.common_connect_inviting_append, receivedConnectionRequest.userName
+            R.string.common_connect_inviting_append,
+            receivedConnectionRequest.displayName
         )
         showConnectionRequestDialog(content, receivedConnectionRequest.avatarURL, receivedConnectionRequest.liveID)
     }
@@ -719,7 +724,10 @@ class AnchorView @JvmOverloads constructor(
     private fun createBattleRequestDialog(user: BattleUser): AtomicAlertDialog {
         return AtomicAlertDialog(context).apply {
             init {
-                title = context.getString(R.string.common_battle_inviting, user.userName)
+                title = context.getString(
+                    R.string.common_battle_inviting,
+                    user.displayName
+                )
                 countdownDuration = 0
 
                 confirmButton(

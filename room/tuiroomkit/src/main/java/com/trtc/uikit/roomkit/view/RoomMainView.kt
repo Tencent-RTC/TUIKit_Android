@@ -22,6 +22,7 @@ import com.trtc.uikit.roomkit.base.operator.DeviceOperator
 import com.trtc.uikit.roomkit.base.operator.DeviceOperator.DeviceOperatorType
 import com.trtc.uikit.roomkit.base.report.RoomDataReporter
 import com.trtc.uikit.roomkit.base.ui.BaseView
+import com.trtc.uikit.roomkit.base.ui.EnterRoomPasswordDialog
 import com.trtc.uikit.roomkit.base.ui.RoomActionSheetDialog
 import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
@@ -83,6 +84,11 @@ class RoomMainView @JvmOverloads constructor(
         val autoEnableSpeaker: Boolean = false
     )
 
+    companion object {
+        private const val ERR_ROOM_REQUIRES_PASSWORD = 100018
+        private const val ERR_ROOM_PASSWORD_INCORRECT = 100019
+    }
+
     private val logger = RoomKitLogger.getLogger("RoomMainView")
 
     private val scope = CoroutineScope(Dispatchers.Main)
@@ -102,6 +108,7 @@ class RoomMainView @JvmOverloads constructor(
     private var participantStore: RoomParticipantStore? = null
     private var cameraInvitationDialog: Dialog? = null
     private var microphoneInvitationDialog: Dialog? = null
+    private var passwordDialog: EnterRoomPasswordDialog? = null
     private var localUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID
     private var connectConfig: ConnectConfig? = null
 
@@ -144,9 +151,9 @@ class RoomMainView @JvmOverloads constructor(
             logger.info("onOwnerChanged: newOwner=${newOwner.userID} oldOwner=${oldOwner.userID}")
             if (localUserID == newOwner.userID) {
                 AtomicToast.show(context, context.getString(R.string.roomkit_toast_you_are_owner), Style.INFO)
-                if (isAISubtitleVisible()) {
-                    hideAISubtitleView()
-                }
+            }
+            if (isAISubtitleVisible()) {
+                hideAISubtitleView()
             }
         }
 
@@ -226,7 +233,21 @@ class RoomMainView @JvmOverloads constructor(
                     }
                 }
 
-                else -> Unit
+                DeviceType.SCREEN_SHARE -> {
+                    if (disable) {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_all_screen_share_disabled),
+                            Style.WARNING
+                        )
+                    } else {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_all_screen_share_enabled),
+                            Style.INFO
+                        )
+                    }
+                }
             }
         }
 
@@ -305,7 +326,6 @@ class RoomMainView @JvmOverloads constructor(
         val participantStore = participantStore ?: return
         participantStore.addRoomParticipantListener(participantListener)
         subscribeSourceLanguageChange()
-        subscribeTranscriptionStartChange()
         roomStore.addRoomListener(roomListener)
         scope.launch {
             participantStore.state.localParticipant
@@ -322,29 +342,20 @@ class RoomMainView @JvmOverloads constructor(
         repository.destroy()
         dismissCameraInvitationDialog()
         dismissMicrophoneInvitationDialog()
+        dismissPasswordDialog()
         scope.cancel()
     }
 
     private fun subscribeSourceLanguageChange() {
         scope.launch {
             repository.selectedSourceLanguage.collect {
-                val localParticipant = participantStore?.state?.localParticipant?.value
-                if (!localParticipant?.userID.isNullOrEmpty() && localParticipant?.role != ParticipantRole.OWNER) {
+                val localParticipant = participantStore?.state?.localParticipant?.value ?: return@collect
+                if (localParticipant.userID.isNotEmpty() && localParticipant.role != ParticipantRole.OWNER) {
                     AtomicToast.show(
                         context,
                         context.getString(R.string.roomkit_transcription_owner_changed_source_language),
                         Style.INFO
                     )
-                }
-            }
-        }
-    }
-
-    private fun subscribeTranscriptionStartChange() {
-        scope.launch {
-            repository.isTranscriptionStart.collect { isTranscriptionStart ->
-                if (!isTranscriptionStart && isAISubtitleVisible()) {
-                    hideAISubtitleView()
                 }
             }
         }
@@ -373,11 +384,12 @@ class RoomMainView @JvmOverloads constructor(
         })
     }
 
-    private fun joinRoom(roomID: String) {
-        roomStore.joinRoom(roomID = roomID, roomType, completion = object : CompletionHandler {
+    private fun joinRoom(roomID: String, password: String? = "") {
+        roomStore.joinRoom(roomID = roomID, roomType, password, completion = object : CompletionHandler {
             override fun onSuccess() {
                 val roomInfo = roomStore.state.currentRoom.value
                 logger.info("joinRoom success $roomInfo")
+                dismissPasswordDialog()
                 getParticipantList()
                 if (roomType == RoomType.WEBINAR) {
                     getAudienceList()
@@ -391,10 +403,50 @@ class RoomMainView @JvmOverloads constructor(
 
             override fun onFailure(code: Int, desc: String) {
                 logger.error("joinRoom failed:error:$code,desc:$desc")
-                ErrorLocalized.showError(context, code)
-                (context as? Activity)?.finish()
+                when (code) {
+                    ERR_ROOM_REQUIRES_PASSWORD -> showRoomPasswordDialog(roomID)
+                    ERR_ROOM_PASSWORD_INCORRECT -> showPasswordError()
+                    else -> {
+                        dismissPasswordDialog()
+                        ErrorLocalized.showError(context, code)
+                        (context as? Activity)?.finish()
+                    }
+                }
             }
         })
+    }
+
+    private fun showRoomPasswordDialog(roomID: String) {
+        if (passwordDialog == null) {
+            passwordDialog = EnterRoomPasswordDialog(
+                context = context,
+                onCancel = {
+                    passwordDialog = null
+                    (context as? Activity)?.finish()
+                },
+                onConfirm = { password ->
+                    if (password.isEmpty()) {
+                        showEmptyPasswordError()
+                        return@EnterRoomPasswordDialog
+                    }
+                    joinRoom(roomID, password)
+                }
+            )
+        }
+        passwordDialog?.show()
+    }
+
+    private fun showPasswordError() {
+        AtomicToast.show(context, context.getString(R.string.roomkit_password_error), Style.ERROR)
+    }
+
+    private fun showEmptyPasswordError() {
+        AtomicToast.show(context, context.getString(R.string.roomkit_please_input_room_password), Style.ERROR)
+    }
+
+    private fun dismissPasswordDialog() {
+        passwordDialog?.takeIf { it.isShowing }?.dismiss()
+        passwordDialog = null
     }
 
     private fun getParticipantList() {
@@ -427,8 +479,12 @@ class RoomMainView @JvmOverloads constructor(
     }
 
     private fun initConnectConfig(config: ConnectConfig) {
+        val roomInfo = roomStore.state.currentRoom.value
+        val isAllMicrophoneDisabled = roomInfo?.isAllMicrophoneDisabled == true
+        val isAllCameraDisabled = roomInfo?.isAllCameraDisabled == true
+
         scope.launch {
-            if (config.autoEnableMicrophone) {
+            if (config.autoEnableMicrophone && !isAllMicrophoneDisabled) {
                 try {
                     deviceOperator.unmuteMicrophone(participantStore)
                 } catch (e: Exception) {
@@ -436,7 +492,7 @@ class RoomMainView @JvmOverloads constructor(
                 }
             }
 
-            if (config.autoEnableCamera) {
+            if (config.autoEnableCamera && !isAllCameraDisabled) {
                 try {
                     deviceOperator.openCamera()
                 } catch (e: Exception) {
@@ -561,21 +617,27 @@ class RoomMainView @JvmOverloads constructor(
     }
 
     private fun showRoomDismissedDialog() {
-        RoomAlertDialog.Builder(context)
+        RoomAlertDialog.Builder(topmostContext())
             .setTitle(R.string.roomkit_toast_room_closed)
             .setPositiveButton(android.R.string.ok) {
+                AIMinutesActivity.finishIfExists()
                 (context as? Activity)?.finish()
             }
             .show()
     }
 
     private fun showKickoutDialog() {
-        RoomAlertDialog.Builder(context)
+        RoomAlertDialog.Builder(topmostContext())
             .setTitle(R.string.roomkit_toast_you_were_removed)
             .setPositiveButton(android.R.string.ok) {
+                AIMinutesActivity.finishIfExists()
                 (context as? Activity)?.finish()
             }
             .show()
+    }
+
+    private fun topmostContext(): Context {
+        return AIMinutesActivity.getForegroundInstance() ?: context
     }
 
     fun isAISubtitleVisible(): Boolean {

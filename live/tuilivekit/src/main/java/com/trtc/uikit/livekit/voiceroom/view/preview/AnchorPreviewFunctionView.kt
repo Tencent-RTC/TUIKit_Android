@@ -33,13 +33,14 @@ class AnchorPreviewFunctionView @JvmOverloads constructor(
 
     private fun initBackgroundImageButton() {
         findViewById<android.view.View>(R.id.iv_bg_image).setOnClickListener {
+            val currentBackgroundURL =
+                voiceRoomManager?.prepareStore?.prepareState?.liveInfo?.value?.backgroundURL
             if (streamPresetImagePicker == null) {
                 val config = StreamPresetImagePicker.Config()
                 config.title = context.getString(R.string.common_settings_bg_image)
                 config.confirmButtonText = context.getString(R.string.common_set_as_background)
                 config.data = BACKGROUND_URL_LIST
-                config.currentImageUrl =
-                    transferThumbUrlFromImage(voiceRoomManager?.prepareStore?.prepareState?.liveInfo?.value?.backgroundURL)
+                config.currentImageUrl = currentBackgroundURL
                 streamPresetImagePicker = StreamPresetImagePicker(context, config)
                 streamPresetImagePicker?.setOnConfirmListener(object :
                     StreamPresetImagePicker.OnConfirmListener {
@@ -50,6 +51,8 @@ class AnchorPreviewFunctionView @JvmOverloads constructor(
 
                     }
                 })
+            } else {
+                streamPresetImagePicker?.updateCurrentImageUrl(currentBackgroundURL)
             }
             streamPresetImagePicker?.show()
         }
@@ -93,18 +96,6 @@ class AnchorPreviewFunctionView @JvmOverloads constructor(
             }
             layoutSettingPanel?.show()
         }
-    }
-
-    private fun transferThumbUrlFromImage(imageUrl: String?): String? {
-        if (TextUtils.isEmpty(imageUrl)) {
-            return imageUrl
-        }
-
-        val index = imageUrl!!.indexOf(".png")
-        if (index == -1) {
-            return imageUrl
-        }
-        return imageUrl.substring(0, index) + "_thumb.png"
     }
 
     private fun transferImageUrlFromThumb(thumbUrl: String?): String? {

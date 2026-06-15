@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.component.networkInfo.store.NetworkInfoState
 import com.trtc.uikit.livekit.component.networkInfo.store.NetworkInfoStore
@@ -41,7 +40,6 @@ class NetworkInfoPanel(
     private lateinit var textDeviceTemp: TextView
     private lateinit var textNetworkStatus: TextView
     private lateinit var textResolution: TextView
-    private lateinit var textAudioMode: TextView
     private lateinit var textVideoDescription: TextView
     private lateinit var layoutStreamStatus: LinearLayout
     private lateinit var layoutVideoStatus: LinearLayout
@@ -50,7 +48,6 @@ class NetworkInfoPanel(
     private lateinit var textUpLoss: TextView
     private lateinit var seekVolume: SeekBar
     private lateinit var textVolume: TextView
-    private lateinit var layoutAudioMode: LinearLayout
     private var subscribeStateJob: Job? = null
 
     init {
@@ -76,14 +73,12 @@ class NetworkInfoPanel(
         textDeviceTemp = view.findViewById(R.id.tv_device_status)
         textNetworkStatus = view.findViewById(R.id.tv_network_status)
         textResolution = view.findViewById(R.id.tv_resolution)
-        textAudioMode = view.findViewById(R.id.tv_audio_mode)
         textVideoDescription = view.findViewById(R.id.tv_video_quality)
         textRTT = view.findViewById(R.id.tv_rtt)
         textDownLoss = view.findViewById(R.id.tv_down_loss)
         textUpLoss = view.findViewById(R.id.tv_up_loss)
         seekVolume = view.findViewById(R.id.sb_audio_volume)
         textVolume = view.findViewById(R.id.tv_audio_volume)
-        layoutAudioMode = view.findViewById(R.id.ll_audio_mode)
     }
 
     override fun onAttachedToWindow() {
@@ -92,7 +87,6 @@ class NetworkInfoPanel(
         addObserver()
         initChildViewVisible()
         initDeviceTempView()
-        initAudioModeView()
     }
 
     override fun onDetachedFromWindow() {
@@ -117,12 +111,6 @@ class NetworkInfoPanel(
             launch {
                 state.audioStatus.collect {
                     onAudioStatusChange(it)
-                }
-            }
-
-            launch {
-                state.audioMode.collect {
-                    onAudioQualityChange(it)
                 }
             }
 
@@ -193,27 +181,6 @@ class NetworkInfoPanel(
         ) View.GONE else View.VISIBLE
     }
 
-    private fun initAudioModeView() {
-        val audioMode = state.audioMode.value
-        val textResId = when (audioMode) {
-            TUIRoomDefine.AudioQuality.SPEECH -> R.string.common_audio_mode_speech
-            TUIRoomDefine.AudioQuality.MUSIC -> R.string.common_audio_mode_music
-            else -> R.string.common_audio_mode_default
-        }
-        textAudioMode.setText(textResId)
-
-        layoutAudioMode.setOnClickListener {
-            hide()
-            val audioModePanel = AudioModePanel(context)
-            audioModePanel.setAudioModeListener(object : OnAudioModeListener {
-                override fun onAudioModeChecked(audioQuality: TUIRoomDefine.AudioQuality) {
-                    service.updateAudioMode(audioQuality)
-                }
-            })
-            audioModePanel.show()
-        }
-    }
-
     private fun initDeviceTempView() {
         service.checkDeviceTemperature(context)
         val imageRes = if (state.isDeviceThermal) {
@@ -276,15 +243,6 @@ class NetworkInfoPanel(
         }
     }
 
-    private fun onAudioQualityChange(audioQuality: TUIRoomDefine.AudioQuality?) {
-        val resId = when (audioQuality) {
-            TUIRoomDefine.AudioQuality.SPEECH -> R.string.common_audio_mode_speech
-            TUIRoomDefine.AudioQuality.DEFAULT -> R.string.common_audio_mode_default
-            else -> R.string.common_audio_mode_music
-        }
-        textAudioMode.setText(resId)
-    }
-
     private fun onVolumeChange(volume: Int?) {
         volume?.let {
             seekVolume.progress = it
@@ -327,23 +285,19 @@ class NetworkInfoPanel(
 
     private fun onUpLossChange(upLoss: Int?) {
         upLoss?.let {
-            textUpLoss.text = if (isRtl) "$it%" else "%$it"
+            textUpLoss.text = if (isRtl) "%$it" else "$it%"
             textUpLoss.setTextColor(if (it > 10) colorAbnormal else colorNormal)
         }
     }
 
     private fun onDownLossChange(downLoss: Int?) {
         downLoss?.let {
-            textDownLoss.text = if (isRtl) "$it%" else "%$it"
+            textDownLoss.text = if (isRtl) "%$it" else "$it%"
             textDownLoss.setTextColor(if (it > 10) colorAbnormal else colorNormal)
         }
     }
 
     private fun onTakeSeatStatusChange(isTakeSeat: Boolean?) {
         layoutStreamStatus.visibility = if (isTakeSeat == true) View.VISIBLE else View.GONE
-    }
-
-    interface OnAudioModeListener {
-        fun onAudioModeChecked(audioQuality: TUIRoomDefine.AudioQuality)
     }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.trtc.uikit.livekit.common.displayName
 import com.trtc.uikit.livekit.common.ui.setDebounceClickListener
 import com.trtc.uikit.livekit.features.anchorview.store.AnchorStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
@@ -118,7 +119,7 @@ class AnchorCoHostOperateDialog(
                 R.drawable.livekit_ic_avatar
             )
         )
-        userNameText.text = currentUserInfo.userInfo.userName
+        userNameText.text = currentUserInfo.userInfo.displayName
         userIdText.text = context.getString(R.string.common_user_id, currentUserInfo.userInfo.userID)
     }
 

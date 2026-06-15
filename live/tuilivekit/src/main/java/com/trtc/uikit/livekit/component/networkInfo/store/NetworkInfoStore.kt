@@ -38,7 +38,6 @@ class NetworkInfoState {
     val isNetworkConnected = MutableStateFlow(true)
     val networkStatus = MutableStateFlow(NetworkQuality.UNKNOWN)
     val resolution = MutableStateFlow("")
-    val audioMode = MutableStateFlow(TUIRoomDefine.AudioQuality.DEFAULT)
     val audioCaptureVolume = MutableStateFlow(0)
     var isDeviceThermal: Boolean = false
     val isDisplayNetworkWeakTips = MutableStateFlow(false)
@@ -120,12 +119,6 @@ class NetworkInfoStore(context: Context) {
                 NetworkInfoState.Status.Normal
             }
         }
-    }
-
-    fun updateAudioMode(audioQuality: TUIRoomDefine.AudioQuality) {
-        logger.info("updateAudioMode:[audioQuality:$audioQuality]")
-        networkInfoState.audioMode.value = audioQuality
-        tuiRoomEngine.updateAudioQuality(audioQuality)
     }
 
     fun checkDeviceTemperature(context: Context) {

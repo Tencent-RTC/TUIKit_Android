@@ -17,6 +17,7 @@ class StreamPresetImagePicker(
 
     private var selectedImageURL: String? = null
     private var onConfirmListener: OnConfirmListener? = null
+    private var imageGridAdapter: PresetImageGridAdapter? = null
 
     init {
         initView(context)
@@ -24,6 +25,12 @@ class StreamPresetImagePicker(
 
     fun setOnConfirmListener(listener: OnConfirmListener) {
         onConfirmListener = listener
+    }
+
+    fun updateCurrentImageUrl(imageUrl: String?) {
+        config.currentImageUrl = imageUrl
+        selectedImageURL = imageUrl
+        imageGridAdapter?.updateSelected(imageUrl)
     }
 
     private fun initView(context: Context) {
@@ -45,16 +52,17 @@ class StreamPresetImagePicker(
         recyclerView.addItemDecoration(PresetImageGridAdapter.GridDividerItemDecoration(context))
         val selectedPosition = config.data.indexOf(config.currentImageUrl)
         selectedImageURL = config.currentImageUrl
-        recyclerView.adapter =
-            PresetImageGridAdapter(
-                context,
-                config.data,
-                selectedPosition,
-                object : PresetImageGridAdapter.OnItemClickListener {
-                    override fun onClick(coverURL: String) {
-                        selectedImageURL = coverURL
-                    }
-                })
+        val adapter = PresetImageGridAdapter(
+            context,
+            config.data,
+            selectedPosition,
+            object : PresetImageGridAdapter.OnItemClickListener {
+                override fun onClick(coverURL: String) {
+                    selectedImageURL = coverURL
+                }
+            })
+        imageGridAdapter = adapter
+        recyclerView.adapter = adapter
     }
 
     private fun initBackButton(view: View) {

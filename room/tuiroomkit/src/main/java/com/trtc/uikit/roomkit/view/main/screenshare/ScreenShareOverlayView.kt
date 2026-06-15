@@ -109,8 +109,9 @@ class ScreenShareOverlayView @JvmOverloads constructor(
         logger.info("showStopScreenShareConfirmDialog")
         RoomAlertDialog.Builder(context)
             .setTitle(R.string.roomkit_stop_screen_share)
+            .setMessage(R.string.roomkit_stop_screen_share_confirm)
             .setNegativeButton(R.string.roomkit_cancel)
-            .setPositiveButton(R.string.roomkit_btn_stop) {
+            .setPositiveButton(R.string.roomkit_ok) {
                 deviceOperator.stopScreenShare()
             }
             .show()

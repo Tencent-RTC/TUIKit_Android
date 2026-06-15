@@ -207,11 +207,11 @@ class AudienceFunctionView @JvmOverloads constructor(
 
         if (isInConnection || isInBattle) {
             if (isBackSeatsOccupied()) {
-                AtomicToast.show(context, context.getString(R.string.common_back_seats_occupied), AtomicToast.Style.ERROR)
+                AtomicToast.show(context, context.getString(R.string.common_back_seats_occupied), AtomicToast.Style.WARNING)
                 return
             }
             if (!hasAvailableSeat()) {
-                AtomicToast.show(context, context.getString(R.string.common_server_error_the_seats_are_all_taken), AtomicToast.Style.ERROR)
+                AtomicToast.show(context, context.getString(R.string.common_server_error_the_seats_are_all_taken), AtomicToast.Style.WARNING)
                 return
             }
         }

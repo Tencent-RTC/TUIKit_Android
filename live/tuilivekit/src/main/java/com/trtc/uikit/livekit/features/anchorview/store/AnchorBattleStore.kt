@@ -9,6 +9,7 @@ import com.tencent.rtmp.TXLiveBase
 import com.trtc.uikit.livekit.BuildConfig
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.trtc.uikit.livekit.common.displayName
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.live.BattleConfig
 import io.trtc.tuikit.atomicxcore.api.live.BattleEndedReason
@@ -311,7 +312,7 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
         ContextProvider.getApplicationContext()?.apply {
             val content = this.getString(
                 R.string.common_battle_inviter_cancel,
-                inviter?.userName
+                inviter?.displayName.orEmpty()
             )
             showToast(content)
         }
@@ -329,7 +330,7 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
             ContextProvider.getApplicationContext()?.apply {
                 val content = this.getString(
                     R.string.common_battle_invitee_reject,
-                    it.userName
+                    it.displayName
                 )
                 showToast(content)
             }

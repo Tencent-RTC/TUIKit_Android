@@ -49,9 +49,9 @@
     <string name="callkit_audio_call">مكالمة صوتية</string>
     <string name="callkit_user_exceed_limit">تدعم هذه المكالمة بحد أقصى 9 مشاركين في نفس الوقت</string>
     <string name="callkit_toast_other_party_hung_up">لقد قطع الطرف الآخر الاتصال. انتهت المكالمة</string>
-    <string name="callkit_toast_other_party_declined">رفض الطرف الآخر طلب المكالمة الخاص بك</string>
-    <string name="callkit_toast_other_party_no_response">لم يرد الطرف الآخر، يرجى المحاولة مرة أخرى لاحقاً</string>
-    <string name="callkit_toast_other_party_busy">الطرف الآخر في مكالمة أخرى حالياً. يرجى المحاولة مرة أخرى لاحقاً</string>
+    <string name="callkit_toast_other_party_declined">الطرف الآخر رفض طلب المكالمة الخاص بك</string>
+    <string name="callkit_toast_other_party_no_response">لم يجب الطرف الآخر، يرجى المحاولة مرة أخرى لاحقًا</string>
+    <string name="callkit_toast_other_party_busy">الطرف الآخر في مكالمة، يرجى المحاولة مرة أخرى لاحقًا</string>
     <string name="callkit_toast_other_party_cancelled">الطرف الآخر ألغى المكالمة</string>
     <string name="callkit_toast_error_call_user_not_exist">المستخدم غير موجود. يرجى التحقق مما إذا كان المستخدم مسجلاً أو إذا تم إدخال أحرف غير صالحة</string>
     <string name="callkit_toast_error_camera_occupied">الكاميرا مشغولة حالياً بمكالمة نظام</string>

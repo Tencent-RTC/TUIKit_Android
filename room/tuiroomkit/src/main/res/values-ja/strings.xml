@@ -159,17 +159,22 @@
     <string name="roomkit_transcription_language_german">Deutsch（ドイツ語）</string>
     <string name="roomkit_transcription_language_italian">Italiano（イタリア語）</string>
     <string name="roomkit_transcription_language_russian">Русский（ロシア語）</string>
-    <string name="roomkit_screen_sharing_tip">画面を共有しています</string>
+    <string name="roomkit_screen_sharing_tip">画面を共有中です...</string>
     <string name="roomkit_room_type_meeting">会議ルーム</string>
     <string name="roomkit_room_type_webinar">ウェビナールーム</string>
     <string name="roomkit_start_screen_share">画面共有</string>
-    <string name="roomkit_stop_screen_share">共有を停止</string>
+    <string name="roomkit_stop_screen_share">共有を終了</string>
+    <string name="roomkit_stop_screen_share_confirm">共有を終了すると、他のユーザーはあなたの画面を視聴できなくなります。共有を終了してもよろしいですか？</string>
+    <string name="roomkit_another_is_sharing_the_screen">他のユーザーが画面を共有しています。</string>
     <string name="roomkit_btn_stop">停止</string>
     <string name="roomkit_video_share_occupied">メインスピーカー席は既に占有されています。カメラを有効にできません。</string>
     <string name="roomkit_screen_share_occupied">メインスピーカー席は既に占有されています。画面共有を開始できません。</string>
     <string name="roomkit_camera_blocked_by_screen_share">現在画面共有中のため、ビデオをオンにできません。先に画面共有を停止してください</string>
     <string name="roomkit_screen_share_blocked_by_camera">現在ビデオ配信中のため、画面共有を開始できません。先にビデオをオフにしてください</string>
     <string name="roomkit_screen_share_start_message">現在誰かがプレゼンテーションを行っています。画面共有を開始するとプレゼンテーションが中断されます。続行しますか？</string>
+    <string name="roomkit_all_screen_share_disabled">参加者の画面共有が無効になりました。</string>
+    <string name="roomkit_all_screen_share_enabled">参加者の画面共有が有効になりました。</string>
+    <string name="roomkit_not_allowed_to_screen_share">現在はホスト/管理者のみ画面共有が可能です。</string>
     <string name="roomkit_video_start_message">現在誰かがプレゼンテーションを行っています。ビデオをオンにするとプレゼンテーションが中断されます。続行しますか？</string>
     <string name="roomkit_toast_screen_share_closed_by_host">%sによって画面共有が停止されました</string>
     <string name="roomkit_screen_sharing_status">画面共有中</string>
@@ -178,6 +183,9 @@
     <string name="roomkit_hands_up_list">挙手リスト</string>
     <string name="roomkit_hands_up_empty">挙手リクエストはありません</string>
     <string name="roomkit_toast_raise_hand_rejected">挙手リクエストが拒否されました</string>
+    <string name="roomkit_enter_room_password_title">入室パスワード</string>
+    <string name="roomkit_please_input_room_password">入室パスワードを入力してください</string>
+    <string name="roomkit_password_error">パスワードが間違っています</string>
     <string name="roomkit_err_0_success">操作が成功しました</string>
     <string name="roomkit_err_general">未分類の一般エラー</string>
     <string name="roomkit_err_n2_request_rate_limited">リクエストが制限されています。後でもう一度お試しください</string>
@@ -271,4 +279,10 @@
     <string name="roomkit_permission_microphone">マイク</string>
     <string name="roomkit_permission_mic_reason">マイクへのアクセスが必要です。複数人でのオーディオビデオルーム機能に使用され、有効にすると録画されたビデオに音声が含まれます。</string>
     <string name="roomkit_permission_camera_reason">カメラへのアクセスが必要です。複数人でのオーディオビデオルーム機能に使用されます。美顔フィルターを使用する際、カメラでキャプチャした顔情報をリアルタイムで収集し、顔の特徴を検出します。</string>
+    <string name="roomkit_privacy_screen_share_tip_title">セキュリティリマインダー</string>
+    <string name="roomkit_privacy_screen_share_tip_content">画面共有によりSMS認証コードやパスワードなどの個人情報が漏洩し、財産損失を引き起こす可能性があります。様々な詐欺行為にご注意ください。</string>
+    <string name="roomkit_privacy_screen_share_tip_continue">共有を続行</string>
+    <string name="roomkit_unable_to_shared_screen">この機能を使用するにはお問い合わせください</string>
+    <string name="roomkit_tips">ご案内</string>
+    <string name="roomkit_contact_us">お問い合わせ</string>
 </resources>

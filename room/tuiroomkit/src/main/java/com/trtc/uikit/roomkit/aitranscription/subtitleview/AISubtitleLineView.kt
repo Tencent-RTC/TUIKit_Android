@@ -3,6 +3,9 @@ package com.trtc.uikit.roomkit.aitranscription.subtitleview
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -11,13 +14,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.aitranscription.config.TextStyle
-import kotlin.math.ceil
 
-/**
- * Single subtitle line view with streaming text animation and clip-from-top overflow.
- * When text exceeds maxLines, the oldest (top) content is clipped and the newest (bottom)
- * content remains visible via a fixed-height clipContainer with the TextView gravity set to BOTTOM.
- */
 class AISubtitleLineView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -33,18 +30,10 @@ class AISubtitleLineView @JvmOverloads constructor(
     private var streamAnimationIntervalMs: Long = 30L
 
     private var maxLinesValue: Int = 0
-    private var lineHeightPx: Float = 0f
-
-    /** Maximum clip height in pixels, computed from maxLines × lineHeight. */
-    private var maxClipHeightPx: Int = 0
-    /** Minimum height (single line) in pixels. */
-    private var minLineHeightPx: Int = 0
 
     var onTextUpdateCompleted: (() -> Unit)? = null
 
     init {
-        clipChildren = true
-        clipToPadding = true
         LayoutInflater.from(context).inflate(R.layout.roomkit_view_ai_subtitle_line, this, true)
         textView = findViewById(R.id.tv_subtitle_line)
     }
@@ -53,7 +42,8 @@ class AISubtitleLineView @JvmOverloads constructor(
 
     fun updateMaxLines(maxLines: Int) {
         this.maxLinesValue = maxLines
-        updateClipConstraints()
+        textView.maxLines = if (maxLines > 0) maxLines else Int.MAX_VALUE
+        applyTextToView(textView.text?.toString().orEmpty())
     }
 
     fun configure(style: TextStyle, animationIntervalMs: Long = 30L) {
@@ -63,74 +53,49 @@ class AISubtitleLineView @JvmOverloads constructor(
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.fontSize)
         textView.typeface = style.typeface
         textView.setShadowLayer(style.shadowRadius, style.shadowDx, style.shadowDy, style.shadowColor)
-
-        lineHeightPx = textView.paint.fontMetrics.let { it.descent - it.ascent + it.leading }
-        updateClipConstraints()
+        applyTextToView(textView.text?.toString().orEmpty())
     }
 
-    private fun updateClipConstraints() {
-        if (maxLinesValue <= 0 || lineHeightPx <= 0f) {
-            maxClipHeightPx = 0
-            minLineHeightPx = 0
-            layoutParams?.let {
-                it.height = LayoutParams.WRAP_CONTENT
-                layoutParams = it
-            }
-            minimumHeight = 0
-            return
-        }
-        minLineHeightPx = ceil(lineHeightPx).toInt()
-        maxClipHeightPx = ceil(lineHeightPx * maxLinesValue).toInt()
-
-        // Use WRAP_CONTENT so onMeasure can determine the actual needed height,
-        // then clamp it between minLineHeightPx and maxClipHeightPx.
-        layoutParams?.let {
-            it.height = LayoutParams.WRAP_CONTENT
-            layoutParams = it
-        }
-        minimumHeight = minLineHeightPx
-        requestLayout()
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        if (maxClipHeightPx <= 0) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    private fun applyTextToView(text: String) {
+        val maxLines = maxLinesValue
+        if (maxLines <= 0 || text.isEmpty()) {
+            textView.text = text
             return
         }
 
-        // Measure children with UNSPECIFIED height so the TextView reports its
-        // full natural height (all lines), regardless of any parent constraints.
-        // This matches iOS (textLabel with numberOfLines=0 + lessThanOrEqualTo
-        // constraint) and Flutter (unconstrained child layout in
-        // _RenderBottomAlignedOverflow).
-        val unconstrainedHeight = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        super.onMeasure(widthMeasureSpec, unconstrainedHeight)
-        val naturalHeight = measuredHeight
-
-        // Clamp: at least 1 line, at most maxLines lines.
-        val clampedHeight = naturalHeight.coerceIn(minLineHeightPx, maxClipHeightPx)
-        setMeasuredDimension(measuredWidth, clampedHeight)
-    }
-
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        // When the child (TextView) is taller than this container, position it
-        // so its bottom edge aligns with the container's bottom edge. The top
-        // portion extends above the container and is clipped by clipChildren=true.
-        // This matches iOS (textLabel pinned to bottom with low-priority top) and
-        // Flutter (_BottomAlignedOverflow offset = containerH - childH).
-        val child = getChildAt(0) ?: run {
-            super.onLayout(changed, left, top, right, bottom)
+        val innerWidth = textView.width - textView.paddingLeft - textView.paddingRight
+        if (innerWidth <= 0) {
+            textView.text = text
+            textView.post { if (textView.width > 0) applyTextToView(fullText.ifEmpty { text }) }
             return
         }
 
-        val containerHeight = bottom - top
-        val childWidth = child.measuredWidth
-        val childHeight = child.measuredHeight
+        val layout = buildStaticLayout(text, TextPaint(textView.paint), innerWidth)
+        if (layout.lineCount <= maxLines) {
+            textView.text = text
+            return
+        }
 
-        // Bottom-align: when childHeight > containerHeight, childTop is negative → clipped from top.
-        val childTop = containerHeight - childHeight
-        val childLeft = paddingLeft
-        child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight)
+        val firstKeptLine = layout.lineCount - maxLines
+        val startChar = layout.getLineStart(firstKeptLine)
+        textView.text = text.substring(startChar)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun buildStaticLayout(text: CharSequence, paint: TextPaint, width: Int): StaticLayout {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            StaticLayout.Builder.obtain(text, 0, text.length, paint, width)
+                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setLineSpacing(textView.lineSpacingExtra, textView.lineSpacingMultiplier)
+                .setIncludePad(textView.includeFontPadding)
+                .build()
+        } else {
+            StaticLayout(
+                text, paint, width, Layout.Alignment.ALIGN_NORMAL,
+                textView.lineSpacingMultiplier, textView.lineSpacingExtra,
+                textView.includeFontPadding
+            )
+        }
     }
 
     // MARK: - Text Update
@@ -147,11 +112,11 @@ class AISubtitleLineView @JvmOverloads constructor(
                 startStreamAnimation()
             } else {
                 currentCharIndex = 0
-                textView.text = ""
+                applyTextToView("")
                 startStreamAnimation()
             }
         } else {
-            textView.text = text
+            applyTextToView(text)
             onTextUpdateCompleted?.invoke()
         }
     }
@@ -164,11 +129,11 @@ class AISubtitleLineView @JvmOverloads constructor(
 
         if (animated) {
             textView.animate().alpha(0.95f).setDuration(50).withEndAction {
-                textView.text = fullText
+                applyTextToView(fullText)
                 textView.alpha = 1f
             }.start()
         } else {
-            textView.text = fullText
+            applyTextToView(fullText)
         }
     }
 
@@ -189,7 +154,7 @@ class AISubtitleLineView @JvmOverloads constructor(
                 if (currentCharIndex < fullText.length) {
                     currentCharIndex++
                     val displayText = fullText.substring(0, currentCharIndex)
-                    textView.text = displayText
+                    applyTextToView(displayText)
                     handler.postDelayed(this, streamAnimationIntervalMs)
                 } else {
                     streamRunnable = null
@@ -223,5 +188,17 @@ class AISubtitleLineView @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         cancelStreamAnimation()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if (w != oldw && fullText.isNotEmpty()) {
+            val shown = if (streamRunnable != null) {
+                fullText.substring(0, currentCharIndex.coerceAtMost(fullText.length))
+            } else {
+                fullText
+            }
+            applyTextToView(shown)
+        }
     }
 }

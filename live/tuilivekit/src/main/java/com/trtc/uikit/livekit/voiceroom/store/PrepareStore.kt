@@ -12,6 +12,7 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import io.trtc.tuikit.atomicxcore.api.live.TakeSeatMode
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 enum class LiveStatus {
     NONE,
@@ -33,6 +34,7 @@ enum class LiveStreamPrivacyStatus(val resId: Int) {
 
 data class LiveExtraInfo(
     var liveMode: LiveStreamPrivacyStatus = LiveStreamPrivacyStatus.PUBLIC,
+    var liveDurationMS: Long = 0,
     var maxAudienceCount: Int = 0,
     var messageCount: Int = 0,
     var giftIncome: Int = 0,
@@ -90,18 +92,22 @@ class PrepareStore {
     }
 
     fun updateStatistics(
+        liveDuration: Long,
         audienceCount: Int,
         messageCount: Int,
         giftIncome: Int,
         giftSenderCount: Int,
         likeCount: Int
     ) {
-        _liveExtraInfo.value = _liveExtraInfo.value.copy().apply {
-            this.maxAudienceCount = audienceCount
-            this.messageCount = messageCount
-            this.giftIncome = giftIncome
-            this.giftSenderCount = giftSenderCount
-            this.likeCount = likeCount
+        _liveExtraInfo.update {
+            LiveExtraInfo().apply {
+                this.liveDurationMS = liveDuration
+                this.maxAudienceCount = audienceCount
+                this.messageCount = messageCount
+                this.giftIncome = giftIncome
+                this.giftSenderCount = giftSenderCount
+                this.likeCount = likeCount
+            }
         }
     }
 

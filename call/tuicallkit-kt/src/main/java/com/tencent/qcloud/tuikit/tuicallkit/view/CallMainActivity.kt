@@ -1,22 +1,33 @@
 package com.tencent.qcloud.tuikit.tuicallkit.view
 
-import android.app.AppOpsManager
-import android.app.PictureInPictureParams
-import android.content.pm.ActivityInfo
-import android.os.Build
-import android.os.Bundle
-import android.util.Rational
-import android.view.View
-import android.widget.ImageView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import android.Manifest
 import android.app.Activity
+import android.app.AppOpsManager
+import android.app.PictureInPictureParams
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.provider.MediaStore
+import android.text.TextUtils
 import android.util.Log
+import android.util.Rational
+import android.view.View
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import com.tencent.cloud.tuikit.engine.common.TUICommonDefine
+import com.tencent.qcloud.tuicore.TUICore
+import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.tencent.qcloud.tuicore.util.TUIBuild
 import com.tencent.qcloud.tuikit.tuicallkit.R
 import com.tencent.qcloud.tuikit.tuicallkit.beauty.BeautyIntegration
@@ -28,29 +39,29 @@ import com.tencent.qcloud.tuikit.tuicallkit.common.utils.PermissionRequest
 import com.tencent.qcloud.tuikit.tuicallkit.manager.CallManager
 import com.tencent.qcloud.tuikit.tuicallkit.state.GlobalState
 import com.tencent.qcloud.tuikit.tuicallkit.state.ViewState
+import com.tencent.qcloud.tuikit.tuicallkit.view.callview.CallView
+import com.tencent.qcloud.tuikit.tuicallkit.view.callview.Feature
 import com.tencent.qcloud.tuikit.tuicallkit.view.component.inviteuser.InviteUserButton
 import com.trtc.tuikit.common.FullScreenActivity
 import com.trtc.tuikit.common.imageloader.ImageLoader
 import com.trtc.tuikit.common.imageloader.ImageOptions
 import com.trtc.tuikit.common.ui.floatwindow.FloatWindowManager
-import io.trtc.tuikit.atomicx.callview.CallView
-import kotlinx.coroutines.launch
 import com.trtc.tuikit.common.util.ToastUtil
-import io.trtc.tuikit.atomicx.callview.Feature
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.common.permission.PermissionRequester
 import io.trtc.tuikit.atomicxcore.api.call.CallEndReason
 import io.trtc.tuikit.atomicxcore.api.call.CallListener
 import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
-import io.trtc.tuikit.atomicxcore.api.call.CallStore
 import io.trtc.tuikit.atomicxcore.api.call.CallParticipantStatus
+import io.trtc.tuikit.atomicxcore.api.call.CallStore
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.view.CallLayoutTemplate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
-class CallMainActivity : FullScreenActivity() {
+class CallMainActivity : FullScreenActivity(), ITUINotification {
     private var callView: CallView? = null
     private var imageFloatIcon: ImageView? = null
     private var imageBeautyIcon: ImageView? = null
@@ -66,6 +77,7 @@ class CallMainActivity : FullScreenActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         DeviceUtils.setScreenLockParams(window)
         if (TUIBuild.getVersionInt() >= Build.VERSION_CODES.O_MR1) {
@@ -73,6 +85,7 @@ class CallMainActivity : FullScreenActivity() {
             setTurnScreenOn(true)
         }
         setContentView(R.layout.tuicallkit_activity_call_kit)
+        applyWindowInsets()
         requestedOrientation = when (GlobalState.instance.orientation) {
             Constants.Orientation.Portrait -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             Constants.Orientation.LandScape -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
@@ -100,7 +113,17 @@ class CallMainActivity : FullScreenActivity() {
             setAudioDeviceRoute(mediaType)
             openDeviceMediaForMediaType(mediaType)
         }
+        TUICore.registerEvent(KEY_EXTENSION_NAME, NOTIFY_START_ACTIVITY, this)
         CallManager.instance.startForegroundService()
+    }
+
+    private fun applyWindowInsets() {
+        val rootView = findViewById<View>(R.id.root_container)
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(bottom = insets.bottom)
+            windowInsets
+        }
     }
 
     private fun initView() {
@@ -144,8 +167,15 @@ class CallMainActivity : FullScreenActivity() {
         } else {
             callView?.setLayoutTemplate(CallLayoutTemplate.Grid)
         }
+        val featuresToDisable = mutableListOf<Feature>()
         if (!GlobalState.instance.enableAITranscriber) {
-            callView?.disableFeatures(listOf(Feature.AI_TRANSCRIBER))
+            featuresToDisable.add(Feature.AI_TRANSCRIBER)
+        }
+        if (!GlobalState.instance.enableVirtualBackground) {
+            featuresToDisable.add(Feature.VIRTUAL_BACKGROUND)
+        }
+        if (featuresToDisable.isNotEmpty()) {
+            callView?.disableFeatures(featuresToDisable)
         }
         val view = GlobalState.instance.callAdapter?.onCreateMainView(callView!!) ?: callView
         callViewContainer?.addView(view)
@@ -206,7 +236,8 @@ class CallMainActivity : FullScreenActivity() {
     override fun onResume() {
         super.onResume()
         val mediaType = CallStore.shared.observerState.activeCall.value.mediaType
-        PermissionRequest.requestPermissions(application, mediaType,
+        PermissionRequest.requestPermissions(
+            application, mediaType,
             object : PermissionCallback() {
                 override fun onGranted() {
                     initView()
@@ -224,6 +255,7 @@ class CallMainActivity : FullScreenActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        TUICore.unRegisterEvent(this)
         finishActivityJob?.cancel()
         CallStore.shared.removeListener(callStatusObserver)
         CallManager.instance.stopForegroundService()
@@ -383,8 +415,59 @@ class CallMainActivity : FullScreenActivity() {
         }
     }
 
+    override fun onNotifyEvent(key: String?, subKey: String?, param: MutableMap<String?, Any?>) {
+        if (TextUtils.equals(key, KEY_EXTENSION_NAME) && TextUtils.equals(subKey, NOTIFY_START_ACTIVITY)) {
+            if (param.containsKey("requestCode")) {
+                mStartActivityRequestCode = param["requestCode"] as? Int ?: 0
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    val intentToPickPic = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+                    intentToPickPic.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, PICK_CONTENT_ALL)
+                    startActivityForResult(intentToPickPic, mStartActivityRequestCode)
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        ActivityCompat.requestPermissions(
+                            this,
+                            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                            REQUEST_CODE_PERMISSIONS
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val param: MutableMap<String?, Any?> = HashMap<String?, Any?>()
+        param.put("requestCode", requestCode)
+        param.put("resultCode", resultCode)
+        param.put("data", data)
+        TUICore.callService(KEY_EXTENSION_NAME, METHOD_ACTIVITY_RESULT, param)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            val intentToPickPic = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+            intentToPickPic.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, PICK_CONTENT_ALL)
+            startActivityForResult(intentToPickPic, mStartActivityRequestCode)
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
     companion object {
         private const val TAG = "CallMainActivity"
         private const val CALL_END_HINT_DURATION_MS = 1000L
+        private const val KEY_EXTENSION_NAME: String = "TEBeautyExtension"
+        private const val NOTIFY_START_ACTIVITY: String = "onStartActivityNotifyEvent"
+        private const val METHOD_ACTIVITY_RESULT: String = "onActivityResult"
+        private const val PICK_CONTENT_ALL: String = "image/*|video/*"
+        private const val REQUEST_CODE_PERMISSIONS: Int = 1001
+
+        private var mStartActivityRequestCode = 0
     }
 }

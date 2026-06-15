@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -82,14 +83,28 @@ class AITranscriptionPickerView(
         recyclerView.adapter = PickerAdapter()
         recyclerView.setHasFixedSize(true)
 
+        // Add bottom padding for navigation bar safe area
+        val navBarHeight = getNavigationBarHeight(context)
+        recyclerView.setPadding(0, 0, 0, navBarHeight)
+        recyclerView.clipToPadding = false
+
         // Start off-screen
         contentPanel.translationY = panelHeightPx.toFloat()
+    }
+
+    private fun getNavigationBarHeight(context: Context): Int {
+        val resourceId = context.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            return context.resources.getDimensionPixelSize(resourceId)
+        }
+        return 0
     }
 
     private fun calculatePanelHeight(): Int {
         val totalItemsHeight = dpToPx(ITEM_HEIGHT_DP) * items.size
         val separatorsHeight = dpToPx(0.5f) * items.size
-        val naturalHeight = dpToPx(TITLE_HEIGHT_DP) + totalItemsHeight + separatorsHeight
+        val navBarHeight = getNavigationBarHeight(context)
+        val naturalHeight = dpToPx(TITLE_HEIGHT_DP) + totalItemsHeight + separatorsHeight + navBarHeight
         val maxHeight = (getScreenHeight(context) * MAX_HEIGHT_RATIO).toInt()
         return naturalHeight.coerceAtMost(maxHeight)
     }

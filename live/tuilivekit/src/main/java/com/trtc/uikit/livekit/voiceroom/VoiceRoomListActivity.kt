@@ -33,7 +33,7 @@ import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 class VoiceRoomListActivity : FullScreenActivity() {
 
     companion object {
-        private const val TRTC_VOICE_ROOM_DOCUMENT_URL = "https://cloud.tencent.com/document/product/647/107969"
+        private const val TRTC_VOICE_ROOM_DOCUMENT_URL = "https://cloud.tencent.com/document/product/647/122992"
         private const val EVENT_SUB_KEY_REAL_NAME_VERIFY = "eventRealNameVerify"
         private val LOGGER = LiveKitLogger.getComponentLogger("VoiceRoomListActivity")
     }

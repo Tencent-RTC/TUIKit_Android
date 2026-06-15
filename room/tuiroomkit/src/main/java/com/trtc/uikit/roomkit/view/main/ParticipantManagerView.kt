@@ -218,10 +218,16 @@ class ParticipantManagerView @JvmOverloads constructor(
         llSetManager.visibility = if (target.role != ParticipantRole.OWNER) VISIBLE else GONE
         llRemove.visibility = if (target.role != ParticipantRole.OWNER) VISIBLE else GONE
         llSetAudience.visibility = VISIBLE
-        if (roomType == RoomType.WEBINAR && target.cameraStatus == DeviceStatus.OFF) {
-            llCamera.visibility = GONE
+        if (roomType == RoomType.WEBINAR) {
+            if (target.cameraStatus == DeviceStatus.ON) {
+                llCamera.visibility = VISIBLE
+            } else {
+                llCamera.visibility = GONE
+            }
+            llSetAudience.visibility = VISIBLE
         } else {
             llCamera.visibility = VISIBLE
+            llSetAudience.visibility = GONE
         }
     }
 
@@ -242,7 +248,6 @@ class ParticipantManagerView @JvmOverloads constructor(
         llTransferMaster.visibility = GONE
         llSetManager.visibility = GONE
         llRemove.visibility = if (canManage) VISIBLE else GONE
-        llSetAudience.visibility = VISIBLE
     }
 
     private fun setupListeners() {
@@ -438,7 +443,7 @@ class ParticipantManagerView @JvmOverloads constructor(
 
     private fun showTransferOwnerConfirmDialog(participant: RoomParticipant) {
         logger.info("Show transfer owner confirm dialog for ${participant.userID}")
-        val isTranscriptionStart = sharedRepository?.isTranscriptionStart?.value == true
+        val isTranscriptionStart = sharedRepository?.isTranscriptionStart ?: false
         val messageResId = if (isTranscriptionStart) {
             R.string.roomkit_transfer_host_with_asr_warning
         } else {

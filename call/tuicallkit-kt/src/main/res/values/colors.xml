@@ -9,4 +9,5 @@
     <color name="callkit_button_bg_red">#E6594C</color>
     <color name="callkit_record_text_green">#12B969</color>
     <color name="callkit_color_bg_float_view">#FFBBBBBB</color>
+    <color name="callkit_color_owe_white">#FFC5CCDB</color>
 </resources>

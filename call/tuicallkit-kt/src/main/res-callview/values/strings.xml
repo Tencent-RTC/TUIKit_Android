@@ -1,0 +1,55 @@
+<resources>
+    <string name="callview_toast_enable_mute">Muted</string>
+    <string name="callview_toast_disable_mute">Unmuted</string>
+    <string name="callview_text_speaker">Speaker</string>
+    <string name="callview_text_use_earpiece">Earpiece</string>
+    <string name="callview_toast_callee_hangup">The other party hung up, call ended</string>
+    <string name="callview_toast_callee_reject">The other party declined your call request</string>
+    <string name="callview_toast_callee_no_response">The other party did not answer. Please try again later</string>
+    <string name="callview_other_party_network_low_quality">The other party\'s network is poor</string>
+    <string name="callview_self_network_low_quality">Your network is poor</string>
+    <string name="callview_toast_switch_camera">Switch</string>
+    <string name="callview_toast_enable_camera">Camera On</string>
+    <string name="callview_toast_disable_camera">Camera Off</string>
+    <string name="callview_waiting_accept">Awaiting response</string>
+    <string name="callview_invite_audio_call">invites you to a voice call</string>
+    <string name="callview_invite_video_call">invites you to a video call</string>
+    <string name="callview_text_hangup">Hang Up</string>
+    <string name="callview_text_line_busy">The other party is busy. Please try again later</string>
+    <string name="callview_text_decline">Decline</string>
+    <string name="callview_text_dialing">Answer</string>
+    <string name="callview_btn_cancel">Cancel</string>
+    <string name="callview_wait_response">Waiting</string>
+    <string name="callview_wait_accept_group">invites you to a group call</string>
+    <string name="callview_accept_single">Connected</string>
+    <string name="callview_invitee_user_list">Also on the call:</string>
+
+    <string name="callview_group_hint_you">(you)</string>
+    <string name="callview_group_btn_ok">Confirm</string>
+
+    <string name="callview_blur_background">Blur Background</string>
+
+    <string name="callview_audio_route_bluetooth_headset">BluetoothHead</string>
+    <string name="callview_audio_route_wired_headset">WiredHead</string>
+    <string name="callview_audio_route_unknown_device">UnknownDevice</string>
+
+    <string name="callview_speaker_on">Speaker</string>
+    <string name="callview_speaker_off">Earpiece</string>
+
+    <string name="callview_permission_camera">Camera</string>
+    <string name="callview_permission_tips">Please turn on the %s permission first</string>
+    <string name="callview_permission_title">%s applies for access to the %s</string>
+    <string name="callview_permission_camera_reason">Needs access to your camera, and it can be used for functions such as Video Call, Group Video Call etc. For beauty filters to work, we will collect the facial information captured by your camera in real time to detect your facial features.</string>
+
+    <string name="callview_ai_transcriber_empty_hint">AI Real-time Subtitles</string>
+
+    <string name="smart_cellular_title">Improve call quality?</string>
+    <string name="smart_cellular_wifi_poor">WiFi signal poor</string>
+    <string name="smart_cellular_cellular_good">Cellular signal good</string>
+    <string name="smart_cellular_description">Your WiFi connection is unstable. Switch to cellular data to improve call quality?\n(Data charges may apply based on your plan)</string>
+    <string name="smart_cellular_improve">Improve Call Quality</string>
+    <string name="smart_cellular_keep_wifi">Continue with WiFi</string>
+    <string name="smart_cellular_switched_to_wifi">Network switched to WiFi</string>
+    <string name="smart_cellular_switched_to_cellular">Network switched to cellular data</string>
+    <string name="smart_cellular_network_switched">Network automatically switched</string>
+</resources>

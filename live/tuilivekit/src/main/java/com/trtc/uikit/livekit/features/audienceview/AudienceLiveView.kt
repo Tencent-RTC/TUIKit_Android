@@ -31,6 +31,7 @@ import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_LINK_STATUS_CHANGE
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LIVE_INTEGRATION_SUCCESSFUL
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.trtc.uikit.livekit.common.displayName
 import com.trtc.uikit.livekit.common.reportAtomicMetrics
 import com.trtc.uikit.livekit.common.setComponent
 import com.trtc.uikit.livekit.component.barrage.BarrageStreamView
@@ -239,6 +240,7 @@ class AudienceLiveView @JvmOverloads constructor(
     fun enablePictureInPictureMode(enable: Boolean) {
         if (enable) {
             audiencePlayingRootView.visibility = GONE
+            ivVideoViewBackground.visibility = GONE
         } else {
             audiencePlayingRootView.visibility = VISIBLE
         }
@@ -800,8 +802,8 @@ class AudienceLiveView @JvmOverloads constructor(
             inviter: SeatUserInfo,
             invitee: SeatUserInfo,
         ) {
-            val toast =
-                inviter.userName + " " + context.getString(R.string.common_battle_inviter_cancel)
+            val toast = inviter.displayName +
+                " " + context.getString(R.string.common_battle_inviter_cancel)
             showBattleToast(toast)
         }
 
@@ -810,8 +812,8 @@ class AudienceLiveView @JvmOverloads constructor(
             inviter: SeatUserInfo,
             invitee: SeatUserInfo,
         ) {
-            val toast =
-                invitee.userName + " " + context.getString(R.string.common_battle_invitee_reject)
+            val toast = invitee.displayName +
+                " " + context.getString(R.string.common_battle_invitee_reject)
             showBattleToast(toast)
         }
 

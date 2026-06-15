@@ -32,7 +32,7 @@ sealed class AISubtitleDataEvent {
 
 // MARK: - AITranscriberRepository
 
-class AITranscriberRepository(roomID: String) {
+class AITranscriberRepository(private val roomID: String) {
 
     // MARK: - Event Stream
 
@@ -95,8 +95,8 @@ class AITranscriberRepository(roomID: String) {
     private val _selectedTranslationLanguage = MutableStateFlow<TranslationLanguage?>(TranslationLanguage.ENGLISH)
     val selectedTranslationLanguage: StateFlow<TranslationLanguage?> = _selectedTranslationLanguage.asStateFlow()
 
-    private val _isTranscriptionStart = MutableStateFlow(false)
-    val isTranscriptionStart: StateFlow<Boolean> = _isTranscriptionStart.asStateFlow()
+    var isTranscriptionStart: Boolean = false
+        private set
 
     private val _isBilingualEnabled = MutableStateFlow(true)
     val isBilingualEnabled: StateFlow<Boolean> = _isBilingualEnabled.asStateFlow()
@@ -107,20 +107,19 @@ class AITranscriberRepository(roomID: String) {
 
     // MARK: - Internal
 
-    private val transcriberStore: AITranscriberStore = AITranscriberStore.shared
-    private val roomID: String = roomID
+    private val transcriberStore: AITranscriberStore = AITranscriberStore.create(roomID)
     private var currentConfig: TranscriberConfig? = null
     private var subscribeJob: Job? = null
     private val transcriberListener = object : AITranscriberStoreListener() {
         override fun onRealtimeTranscriberStarted(roomID: String, transcriberRobotID: String) {
             if (this@AITranscriberRepository.roomID == roomID) {
-                _isTranscriptionStart.value = true
+                isTranscriptionStart = true
             }
         }
 
         override fun onRealtimeTranscriberStopped(roomID: String, transcriberRobotID: String, reason: Int) {
             if (this@AITranscriberRepository.roomID == roomID) {
-                _isTranscriptionStart.value = false
+                isTranscriptionStart = false
             }
         }
     }

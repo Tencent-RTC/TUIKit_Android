@@ -275,12 +275,12 @@ class CallManager private constructor(context: Context) {
         }
     }
 
-    fun startRealtimeTranscriber() {
+    fun startRealtimeTranscriber(callId: String) {
         val transcriberConfig = TranscriberConfig(
             sourceLanguage = SourceLanguage.CHINESE_ENGLISH,
             translationLanguages = mutableListOf(TranslationLanguage.ENGLISH)
         )
-        AITranscriberStore.shared.startRealtimeTranscriber(transcriberConfig, object : CompletionHandler {
+        AITranscriberStore.create(callId).startRealtimeTranscriber(transcriberConfig, object : CompletionHandler {
             override fun onSuccess() {
                 observerTranscriber()
             }
@@ -289,10 +289,6 @@ class CallManager private constructor(context: Context) {
             }
         })
         closeVAD()
-    }
-
-    fun stopRealtimeTranscriber() {
-        AITranscriberStore.shared.stopRealtimeTranscriber(null)
     }
 
     private fun closeVAD() {

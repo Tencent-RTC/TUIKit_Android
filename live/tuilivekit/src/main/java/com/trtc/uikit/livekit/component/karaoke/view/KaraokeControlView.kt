@@ -374,9 +374,13 @@ class KaraokeControlView @JvmOverloads constructor(
                 )
             )
             if (store.currentChorusRole.value == TXChorusRole.TXChorusRoleBackSinger) {
-                textRequesterName.text = LoginStore.shared.loginState.loginUserInfo.value?.nickname
+                val loginUserInfo = LoginStore.shared.loginState.loginUserInfo.value
+                textRequesterName.text = loginUserInfo?.nickname?.takeIf { it.isNotEmpty() }
+                    ?: loginUserInfo?.userID.orEmpty()
             } else {
-                textRequesterName.text = store.currentPlayingSong.value?.requester?.userName
+                val requester = store.currentPlayingSong.value?.requester
+                textRequesterName.text = requester?.userName?.takeIf { it.isNotEmpty() }
+                    ?: requester?.userId.orEmpty()
             }
         } else {
             store.updatePlaybackStatus(PlaybackState.IDLE)

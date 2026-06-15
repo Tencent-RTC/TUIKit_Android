@@ -202,6 +202,7 @@ class VideoLiveAnchorActivity : FullScreenActivity(),
         anchorPrepareView = AnchorPrepareView(this).apply {
             init(liveInfo.liveID, null)
             addAnchorPrepareViewListener(this@VideoLiveAnchorActivity)
+            onStartPreviewSuccess = { bringTaskToFront() }
         }
 
         val layoutParams = FrameLayout.LayoutParams(

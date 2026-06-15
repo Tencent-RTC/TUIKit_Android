@@ -2,7 +2,6 @@ package com.trtc.uikit.livekit.features.anchorprepare
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -20,7 +19,6 @@ import com.trtc.uikit.livekit.features.anchorprepare.store.AnchorPrepareState
 import com.trtc.uikit.livekit.features.anchorprepare.view.VideoStreamSourceTabView
 import com.trtc.uikit.livekit.features.anchorprepare.view.function.PrepareFunctionView
 import com.trtc.uikit.livekit.features.anchorprepare.view.liveinfoedit.LiveInfoEditView
-import com.trtc.uikit.livekit.livestream.VideoLiveAnchorActivity
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.ButtonColorType
@@ -54,6 +52,8 @@ class AnchorPrepareView @JvmOverloads constructor(
     private lateinit var imageBack: ImageView
     private var subscribeStateJob: Job? = null
     private var subscribeVideoStreamSourceJob: Job? = null
+
+    internal var onStartPreviewSuccess: (() -> Unit)? = null
 
     init {
         logger.info("AnchorPrepareView Constructor.")
@@ -205,11 +205,8 @@ class AnchorPrepareView @JvmOverloads constructor(
         state?.useFrontCamera?.value = DeviceStore.shared().deviceState.isFrontCamera.value
         prepareStore?.startPreview(object : CompletionHandler {
             override fun onSuccess() {
-                val intent = Intent(context, VideoLiveAnchorActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                context.startActivity(intent)
+                logger.info("startPreview onSuccess")
+                onStartPreviewSuccess?.invoke()
             }
 
             override fun onFailure(code: Int, desc: String) {

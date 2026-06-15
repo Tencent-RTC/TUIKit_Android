@@ -145,9 +145,8 @@ class KaraokeStore private constructor(private val context: Context) {
         addObserver()
         if (isOwner) {
             setScoringEnabled(enableScore.value == true)
-            applyDefaultAudioEffects()
         }
-        enableMusicQuality()
+        setMediaVolumeType()
     }
 
     fun destroy() {
@@ -336,7 +335,6 @@ class KaraokeStore private constructor(private val context: Context) {
         if (chorusRole == TXChorusRole.TXChorusRoleLeadSinger ||
             chorusRole == TXChorusRole.TXChorusRoleBackSinger) {
             setScoringEnabled(enableScore.value == true)
-            applyDefaultAudioEffects()
         }
     }
 
@@ -394,7 +392,10 @@ class KaraokeStore private constructor(private val context: Context) {
             val isTargetAvailable = if (trackType == TXChorusMusicPlayer.TXChorusMusicTrack.TXChorusOriginalSong) hasOrigin else hasAccompany
 
             if (!isTargetAvailable) {
-                AtomicToast.show(context, context.getString(R.string.karaoke_cant_switch_tracks), AtomicToast.Style.ERROR)
+                val isLeadSinger = _currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger
+                if (isLeadSinger) {
+                    AtomicToast.show(context, context.getString(R.string.karaoke_cant_switch_tracks), AtomicToast.Style.ERROR)
+                }
                 return
             }
             trackType
@@ -1018,7 +1019,7 @@ class KaraokeStore private constructor(private val context: Context) {
                 Log.e(TAG, "onChorusError: error=$error, errMsg=$errMsg, role=${_currentChorusRole.value}, currentPlayingSong=${_currentPlayingSong.value?.songName}")
                 if (error == TXChorusMusicPlayer.TXChorusError.TXChorusErrorMusicLoadFailed) {
                     val content = context.getString(R.string.karaoke_music_loading_error)
-                    AtomicToast.show(context,"$content (${error.ordinal})", AtomicToast.Style.ERROR)
+                    AtomicToast.show(context, content, AtomicToast.Style.ERROR)
                     playNextSong()
                 }
             }
@@ -1038,6 +1039,7 @@ class KaraokeStore private constructor(private val context: Context) {
                 Log.d(TAG, "onChorusStarted: role=${_currentChorusRole.value}, currentPlayingSong=${_currentPlayingSong.value?.songName}")
                 _playbackState.value = PlaybackState.START
                 isAwaitingScoreDisplay = true
+                applyDefaultAudioEffects()
                 if (_currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger) {
                     enableReverb(true)
                 } else {
@@ -1062,6 +1064,7 @@ class KaraokeStore private constructor(private val context: Context) {
             override fun onChorusStopped() {
                 val isLeadSinger = _currentChorusRole.value == TXChorusRole.TXChorusRoleLeadSinger
                 Log.d(TAG, "onChorusStopped: isManualStop=$_isManualStop, isSwitchingToNext=$_isSwitchingToNext, isCurrentSongRemoved=$_isCurrentSongRemoved, isLeadSinger=$isLeadSinger, queueSize=${_songQueue.value?.size}, currentPlaying=${_currentPlayingSong.value?.songName}")
+                resetAudioEffect()
 
                 if (_isManualStop) {
                     _isManualStop = false
@@ -1133,7 +1136,7 @@ class KaraokeStore private constructor(private val context: Context) {
 
     private fun applyDefaultAudioEffects() {
         Log.d(TAG, "applyDefaultAudioEffects")
-        enableMusicQuality()
+        trtcCloud.setAudioQuality(TRTCCloudDef.TRTC_AUDIO_QUALITY_MUSIC)
         enableDsp()
         enableHIFI()
         enableAIECModel2()
@@ -1141,14 +1144,43 @@ class KaraokeStore private constructor(private val context: Context) {
         enableAI()
     }
 
+    private fun resetAudioEffect() {
+        disableDsp()
+        disableHIFI()
+        trtcCloud.setAudioQuality(TRTCCloudDef.TRTC_AUDIO_QUALITY_DEFAULT)
+    }
+
+    private fun disableDsp() {
+        val params = mapOf(
+            "configs" to listOf(
+                mapOf(
+                    "key" to "Liteav.Audio.common.dsp.version", "value" to "1", "default" to "1"
+                )
+            )
+        )
+        callTRTCExperimentalApi("setPrivateConfig", params)
+    }
+
+    private fun disableHIFI() {
+        val params = mapOf(
+            "configs" to listOf(
+                mapOf(
+                    "key" to "Liteav.Audio.common.smart.3a.strategy.flag",
+                    "value" to "1",
+                    "default" to "1"
+                )
+            )
+        )
+        callTRTCExperimentalApi("setPrivateConfig", params)
+    }
+
     private fun callTRTCExperimentalApi(api: String, params: Map<String, Any>) {
         val json = gson.toJson(mapOf("api" to api, "params" to params))
         trtcCloud.callExperimentalAPI(json)
     }
 
-    private fun enableMusicQuality() {
+    private fun setMediaVolumeType() {
         trtcCloud.setSystemVolumeType(TRTCCloudDef.TRTCSystemVolumeTypeMedia)
-        trtcCloud.setAudioQuality(TRTCCloudDef.TRTC_AUDIO_QUALITY_MUSIC)
     }
 
     private fun enableDsp() {
@@ -1260,15 +1292,5 @@ class KaraokeStore private constructor(private val context: Context) {
         val errorCode = code ?: -1
         val errorMessage = desc ?: "Unknown error"
         Log.e(TAG, "errorCode: $errorCode, errorMessage: $errorMessage")
-
-        mainHandler.post {
-            val frequencyLimit = -2
-            if (errorCode == frequencyLimit) {
-                val content = context.getString(R.string.common_client_error_freq_limit)
-                AtomicToast.show(context,"$content (${errorCode})", AtomicToast.Style.ERROR)
-            } else {
-                AtomicToast.show(context,"$errorMessage ($errorCode)", AtomicToast.Style.ERROR)
-            }
-        }
     }
 }

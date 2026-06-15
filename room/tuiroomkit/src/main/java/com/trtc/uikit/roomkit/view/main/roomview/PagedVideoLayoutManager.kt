@@ -39,6 +39,23 @@ class PagedVideoLayoutManager(
 ) : RecyclerView.LayoutManager(), RecyclerView.SmoothScroller.ScrollVectorProvider {
 
     /**
+     * Virtual grid-page size for speaker mode grid pages (page 1+).
+     * When > 0, items are centered within this rectangle so speaker-mode grid
+     * pages match the compact layout of normal PAGING mode; otherwise items
+     * are centered in the full usable area.
+     */
+    private var gridPageWidth: Int = 0
+    private var gridPageHeight: Int = 0
+
+    /** Set virtual grid-page size; pass 0 to disable. */
+    fun setGridPageSize(widthPx: Int, heightPx: Int) {
+        if (gridPageWidth == widthPx && gridPageHeight == heightPx) return
+        gridPageWidth = widthPx
+        gridPageHeight = heightPx
+        requestLayout()
+    }
+
+    /**
      * Data class to hold visible range information
      */
     data class VisibleRange(
@@ -205,15 +222,21 @@ class PagedVideoLayoutManager(
 
         val pageStartX = page * getUsableWidth()
 
-        // Center items horizontally
-        val totalItemsWidth = columns * itemWidth + (columns + 1) * margin
-        val centerHorizontalMargin = (getUsableWidth() - totalItemsWidth) / 2
-        val x = pageStartX + centerHorizontalMargin + margin + col * (itemWidth + margin)
+        // Use virtual grid-page area if provided, otherwise full usable area
+        val gridAreaWidth = if (gridPageWidth > 0) gridPageWidth else getUsableWidth()
+        val gridAreaHeight = if (gridPageHeight > 0) gridPageHeight else getUsableHeight()
+        val gridAreaOffsetX = (getUsableWidth() - gridAreaWidth) / 2
+        val gridAreaOffsetY = (getUsableHeight() - gridAreaHeight) / 2
 
-        // Center items vertically
+        // Center items horizontally within grid area
+        val totalItemsWidth = columns * itemWidth + (columns + 1) * margin
+        val centerHorizontalMargin = (gridAreaWidth - totalItemsWidth) / 2
+        val x = pageStartX + gridAreaOffsetX + centerHorizontalMargin + margin + col * (itemWidth + margin)
+
+        // Center items vertically within grid area
         val totalItemsHeight = rows * itemHeight + (rows + 1) * margin
-        val centerVerticalMargin = (getUsableHeight() - totalItemsHeight) / 2
-        val y = centerVerticalMargin + margin + row * (itemHeight + margin)
+        val centerVerticalMargin = (gridAreaHeight - totalItemsHeight) / 2
+        val y = gridAreaOffsetY + centerVerticalMargin + margin + row * (itemHeight + margin)
 
         val view = recycler.getViewForPosition(position)
 

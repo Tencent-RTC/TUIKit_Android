@@ -124,6 +124,7 @@ class ErrorLocalized {
         const val LIVE_IM_ERROR_NET_WAIT_SEND_TIMEOUT_NO_NETWORK = 9523
         const val LIVE_IM_ERROR_NET_WAIT_ACK_TIMEOUT_NO_NETWORK = 9524
         const val LIVE_IM_ERROR_NET_SEND_REMAINING_TIMEOUT_NO_NETWORK = 9525
+        const val LIVE_IM_ERROR_SENSITIVE_WORDS_BAN = 80001
 
         private val INTERCEPT_TOAST_ONLY_PRINT_LOG = setOf(LIVE_CLIENT_ERROR_ROOM_MISMATCH, LIVE_IM_ERROR_FREQ_LIMIT, LIVE_CLIENT_ERROR_FREQ_LIMIT)
         private val LOGGER = LiveKitLogger.getCommonLogger("ErrorLocalized")
@@ -449,6 +450,9 @@ class ErrorLocalized {
 
                 LIVE_IM_ERROR_PKG_SIZE_LIMIT ->
                     context.getString(R.string.live_barrage_error_content_is_long)
+
+                LIVE_IM_ERROR_SENSITIVE_WORDS_BAN ->
+                    context.getString(R.string.common_server_error_im_sensitive_words_ban)
 
                 LIVE_IM_ERROR_NET_DISCONNECT,
                 LIVE_IM_ERROR_NET_WAIT_ACK_TIMEOUT,

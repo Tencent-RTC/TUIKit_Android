@@ -177,6 +177,7 @@ class UserManagerDialog(
             ivDisableMessage.setImageResource(R.drawable.livekit_ic_enable_message)
             tvDisableMessage.setText(R.string.common_disable_message)
         }
+        dismiss()
     }
 
     private fun onKickUserButtonClicked() {

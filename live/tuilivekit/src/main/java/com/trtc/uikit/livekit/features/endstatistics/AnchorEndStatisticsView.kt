@@ -162,7 +162,7 @@ class AnchorEndStatisticsView @JvmOverloads constructor(
     }
 
     private fun onMaxViewersCountChange(count: Long) {
-        val info = String.format(Locale.getDefault(), "%d", count)
+        val info = String.format(Locale.getDefault(), "%d", max(count - 1, 0))
         textViewersCount.text = info
     }
 

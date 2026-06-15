@@ -11,6 +11,11 @@ android {
         versionName "1.0"
         versionCode 1
     }
+    sourceSets {
+        main {
+            res.srcDirs += 'src/main/res-callview'
+        }
+    }
     lintOptions {
         disable 'StringFormatInvalid'
     }
@@ -55,7 +60,8 @@ dependencies {
     if (projects.contains("engine_source")) {
         api project(':engine_source')
     } else {
-        api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.1.1.77"
+        api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.2.0.28"
+        api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:4.2.0.28"
     }
     if (projects.contains("common")) {
         api project(':common')

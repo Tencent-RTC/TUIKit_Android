@@ -12,6 +12,7 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.component.audioeffect.AudioEffectPanel
 import com.trtc.uikit.livekit.component.beauty.BeautyIntegration
 import com.trtc.uikit.livekit.component.dashboard.StreamDashboardDialog
+import com.trtc.uikit.livekit.component.bgm.BGMPanelView
 import com.trtc.uikit.livekit.component.pippanel.PIPTogglePanel
 import com.trtc.uikit.livekit.component.videoquality.LocalMirrorSelectPanel
 import com.trtc.uikit.livekit.features.anchorview.store.AnchorStore
@@ -32,10 +33,12 @@ class SettingsListAdapter(
         private const val ITEM_TYPE_MIRROR = 3
         private const val ITEM_TYPE_DASHBOARD = 4
         private const val ITEM_TYPE_PIP = 5
+        private const val ITEM_TYPE_MUSIC = 6
     }
 
     private val data = mutableListOf<SettingsItem>()
     private var audioEffectDialog: AtomicPopover? = null
+    private var bgmDialog: AtomicPopover? = null
 
     init {
         initData()
@@ -55,6 +58,14 @@ class SettingsListAdapter(
                 context.getString(R.string.common_audio_effect),
                 R.drawable.livekit_settings_audio_effect,
                 ITEM_TYPE_AUDIO_EFFECT
+            )
+        )
+
+        data.add(
+            SettingsItem(
+                context.getString(R.string.common_music),
+                R.drawable.livekit_music_list,
+                ITEM_TYPE_MUSIC
             )
         )
 
@@ -104,8 +115,20 @@ class SettingsListAdapter(
                 ITEM_TYPE_MIRROR -> switchMirror()
                 ITEM_TYPE_DASHBOARD -> showMediaDashboardDialog()
                 ITEM_TYPE_PIP -> showPipPanel()
+                ITEM_TYPE_MUSIC -> showMusicPanel()
             }
         }
+    }
+
+    private fun showMusicPanel() {
+        settingsDialog.dismiss()
+        if (bgmDialog == null) {
+            bgmDialog = AtomicPopover(context)
+            val MusicPanelView = BGMPanelView(context)
+            MusicPanelView.init(liveStreamManager.getState().roomId)
+            bgmDialog?.setContent(MusicPanelView)
+        }
+        bgmDialog?.show()
     }
 
     private fun handleCameraFlip() {

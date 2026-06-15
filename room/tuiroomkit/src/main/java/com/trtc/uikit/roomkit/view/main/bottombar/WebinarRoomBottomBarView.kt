@@ -1,12 +1,14 @@
 package com.trtc.uikit.roomkit.view.main.bottombar
 
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.net.toUri
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.event.RoomEventNotifier
@@ -81,7 +83,6 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
 
     private val llScreenShare: LinearLayout by lazy { findViewById(R.id.ll_screen_share) }
     private val ivScreenShare: ImageView by lazy { findViewById(R.id.iv_screen_share) }
-    private val tvScreenShare: TextView by lazy { findViewById(R.id.tv_screen_share) }
 
     private var localUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID
     private var participantStore: RoomParticipantStore? = null
@@ -176,20 +177,18 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
             launch {
                 combine(
                     isLocalInParticipantList,
-                    localCameraStatus,
-                    localRole
-                ) { isLocalInList, camStatus, role ->
-                    updateCameraStatus(isLocalInList, camStatus, role)
+                    localCameraStatus
+                ) { isLocalInList, camStatus ->
+                    updateCameraStatus(isLocalInList, camStatus)
                 }.collect {}
             }
 
             launch {
                 combine(
                     isLocalInParticipantList,
-                    localScreenShareStatus,
-                    localRole
-                ) { isLocalInList, screenStatus, role ->
-                    updateScreenShareStatus(isLocalInList, screenStatus, role)
+                    localScreenShareStatus
+                ) { isLocalInList, screenStatus ->
+                    updateScreenShareStatus(isLocalInList, screenStatus)
                 }.collect {}
             }
 
@@ -307,11 +306,10 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
 
     private fun updateCameraStatus(
         isLocalInParticipantList: Boolean,
-        cameraStatus: DeviceStatus?,
-        role: ParticipantRole?
+        cameraStatus: DeviceStatus?
     ) {
-        logger.info("updateCameraStatus isLocalInParticipantList:$isLocalInParticipantList cameraStatus:$cameraStatus role:$role")
-        if (!isLocalInParticipantList || role != ParticipantRole.OWNER) {
+        logger.info("updateCameraStatus isLocalInParticipantList:$isLocalInParticipantList cameraStatus:$cameraStatus")
+        if (!isLocalInParticipantList) {
             llCamera.visibility = GONE
             return
         }
@@ -332,11 +330,10 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
 
     private fun updateScreenShareStatus(
         isLocalInParticipantList: Boolean,
-        screenStatus: DeviceStatus,
-        role: ParticipantRole?
+        screenStatus: DeviceStatus
     ) {
-        logger.info("updateScreenShareStatus isLocalInParticipantList:$isLocalInParticipantList screenStatus:$screenStatus role:$role")
-        if (!isLocalInParticipantList || role != ParticipantRole.OWNER) {
+        logger.info("updateScreenShareStatus isLocalInParticipantList:$isLocalInParticipantList screenStatus:$screenStatus")
+        if (!isLocalInParticipantList) {
             llScreenShare.visibility = GONE
             return
         }
@@ -344,12 +341,10 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
         when (screenStatus) {
             DeviceStatus.ON -> {
                 ivScreenShare.setImageResource(R.drawable.roomkit_ic_sharing)
-                tvScreenShare.text = context.getString(R.string.roomkit_stop_screen_share)
             }
 
             else -> {
                 ivScreenShare.setImageResource(R.drawable.roomkit_ic_share)
-                tvScreenShare.text = context.getString(R.string.roomkit_start_screen_share)
             }
         }
         llScreenShare.alpha = 1.0f
@@ -476,7 +471,7 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
         }
         if (participantStore?.state?.participantListWithVideo?.value?.none { it.userID != localUserID } != false) {
             logger.info("handleScreenShareClick: no other sharing, start screen share directly")
-            deviceOperator.startScreenShare()
+            requestScreenShareTip { deviceOperator.startScreenShare() }
             return
         }
         if (isSharingUserHigherRank()) {
@@ -487,8 +482,50 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
         showStartVideoConfirmDialog(
             titleRes = R.string.roomkit_start_screen_share,
             messageRes = R.string.roomkit_screen_share_start_message,
-            onStart = { deviceOperator.startScreenShare() }
+            onStart = { requestScreenShareTip { deviceOperator.startScreenShare() } }
         )
+    }
+
+    /**
+     * Check if screen share is banned and show appropriate dialog.
+     * If banned, show forbidden dialog; otherwise, show share tip dialog.
+     */
+    private fun requestScreenShareTip(onApproved: () -> Unit) {
+        val sharedPreferences = context.getSharedPreferences("rtcube_module_permission", Context.MODE_PRIVATE)
+        val bannedFeatureIds = sharedPreferences.getStringSet("bannedFeatureIds", emptySet()) ?: emptySet()
+
+        if ("screen_share" in bannedFeatureIds) {
+            showScreenShareForbiddenDialog()
+        } else {
+            showScreenShareTipDialog(onApproved)
+        }
+    }
+
+    private fun showScreenShareForbiddenDialog() {
+        RoomAlertDialog.Builder(context)
+            .setTitle(R.string.roomkit_tips)
+            .setMessage(R.string.roomkit_unable_to_shared_screen)
+            .setNegativeButton(R.string.roomkit_cancel)
+            .setPositiveButton(R.string.roomkit_contact_us) {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, "https://im.cloud.tencent.com/s/cWSPGIIM62CC/cFUPGIIM62CF".toUri())
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            .show()
+    }
+
+    private fun showScreenShareTipDialog(onApproved: () -> Unit) {
+        RoomAlertDialog.Builder(context)
+            .setTitle(R.string.roomkit_privacy_screen_share_tip_title)
+            .setMessage(R.string.roomkit_privacy_screen_share_tip_content)
+            .setNegativeButton(R.string.roomkit_cancel)
+            .setPositiveButton(R.string.roomkit_privacy_screen_share_tip_continue) {
+                onApproved()
+            }
+            .show()
     }
 
     /**
@@ -528,8 +565,9 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
         logger.info("showStopScreenShareConfirmDialog")
         RoomAlertDialog.Builder(context)
             .setTitle(R.string.roomkit_stop_screen_share)
+            .setMessage(R.string.roomkit_stop_screen_share_confirm)
             .setNegativeButton(R.string.roomkit_cancel)
-            .setPositiveButton(R.string.roomkit_btn_stop) {
+            .setPositiveButton(R.string.roomkit_ok) {
                 deviceOperator.stopScreenShare()
             }
             .show()

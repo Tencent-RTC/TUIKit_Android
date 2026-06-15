@@ -76,11 +76,8 @@ class KaraokeOrderedListAdapter(private val store: KaraokeStore) :
         }
 
         private fun initOrderName(song: TUISongListManager.SongInfo) {
-            if (song.songName.isEmpty()) {
-                textRequesterName.text = song.requester.userId
-            } else {
-                textRequesterName.text = song.requester.userName
-            }
+            val requester = song.requester
+            textRequesterName.text = requester.userName?.takeIf { it.isNotEmpty() } ?: requester.userId.orEmpty()
         }
 
         private fun initAvatarView(song: TUISongListManager.SongInfo) {

@@ -12,6 +12,7 @@ import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
+import com.trtc.uikit.livekit.common.displayName
 import com.trtc.uikit.livekit.features.audienceview.store.AudienceStore
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import com.tencent.cloud.tuikit.engine.common.ContextProvider
@@ -118,7 +119,7 @@ class AnchorManagerDialog(
         }
         val avatarUrl = seatUserInfo!!.avatarURL
         imageHeadView.setContent(AvatarContent.URL(avatarUrl, R.drawable.livekit_ic_avatar))
-        userNameText.text = seatUserInfo!!.userName
+        userNameText.text = seatUserInfo!!.displayName
         userIdText.text = context.getString(R.string.common_user_id, seatUserInfo!!.userID)
         updateMediaDeviceButton()
     }

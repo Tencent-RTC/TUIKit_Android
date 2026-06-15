@@ -56,10 +56,10 @@
     <string name="callkit_toast_other_party_busy">對方正在通話中，請稍後再試</string>
     <string name="callkit_toast_other_party_cancelled">對方已取消通話</string>
     <string name="callkit_toast_error_call_user_not_exist">用戶不存在，請確認該用戶是否已註冊或是否輸入非法字符</string>
-    <string name="callkit_toast_error_camera_occupied">當前攝像頭被系統電話佔用</string>
-    <string name="callkit_toast_error_microphone_occupied">當前麥克風被系統電話佔用</string>
+    <string name="callkit_toast_error_camera_occupied">攝像頭被系統通話佔用</string>
+    <string name="callkit_toast_error_microphone_occupied">麥克風被系統通話佔用</string>
     <string name="callkit_toast_error_call_failed">加入通話失敗</string>
-    <string name="callkit_toast_error_call_self">無法向自己發起通話</string>
-    <string name="callkit_toast_error_already_in_call">您正在通話中，無法再次發起通話</string>
+    <string name="callkit_toast_error_call_self">不能呼叫自己</string>
+    <string name="callkit_toast_error_already_in_call">您當前正在通話中，請結束通話後再撥打</string>
     <string name="callkit_toast_error_group_call_has_active_call">該群組已有通話正在進行中</string>
 </resources>

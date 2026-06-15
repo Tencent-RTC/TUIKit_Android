@@ -17,12 +17,10 @@ import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.live.CoGuestStore
 import io.trtc.tuikit.atomicxcore.api.live.CoHostStore
-import io.trtc.tuikit.atomicxcore.api.live.HostListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
-import io.trtc.tuikit.atomicxcore.api.live.NoResponseReason
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -91,12 +89,10 @@ class SeatInvitationDialog(
                 }
             }
         }
-        coGuestStore.addHostListener(hostListener)
     }
 
     private fun removeObserver() {
         subscribeStateJob?.cancel()
-        coGuestStore.removeHostListener(hostListener)
     }
 
     private fun bindViewId(rootView: View) {
@@ -197,26 +193,6 @@ class SeatInvitationDialog(
             val userId = seat.userInfo.userID
             val isLocked = seat.isLocked
             userId.isEmpty() && !isLocked
-        }
-    }
-
-    private val hostListener = object : HostListener() {
-        override fun onHostInvitationResponded(isAccept: Boolean, guestUser: LiveUserInfo) {
-            if (isAccept) return
-            AtomicToast.show(
-                context,
-                context.getString(R.string.common_voiceroom_invite_seat_rejected),
-                AtomicToast.Style.INFO
-            )
-        }
-
-        override fun onHostInvitationNoResponse(guestUser: LiveUserInfo, reason: NoResponseReason) {
-            if (reason != NoResponseReason.TIMEOUT) return
-            AtomicToast.show(
-                context,
-                context.getString(R.string.common_connect_invitation_timeout),
-                AtomicToast.Style.INFO
-            )
         }
     }
 

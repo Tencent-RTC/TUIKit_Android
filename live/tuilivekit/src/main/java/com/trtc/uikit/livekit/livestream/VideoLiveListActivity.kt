@@ -209,12 +209,29 @@ class VideoLiveListActivity : FullScreenActivity() {
             }
             return
         }
+        if (PIPPanelStore.sharedInstance().state.audienceIsPictureInPictureMode) {
+            if (info.liveID == PIPPanelStore.sharedInstance().state.roomId.value) {
+                bringAudienceActivityToFront()
+            } else {
+                TUICore.notifyEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, null)
+                VideoLiveKit.createInstance(this).joinLive(info)
+            }
+            return
+        }
         TUICore.notifyEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, null)
         if (info.liveID.startsWith("voice_")) {
             VoiceRoomKit.createInstance(this).enterRoom(info.asEngineLiveInfo())
         } else {
             VideoLiveKit.createInstance(this).joinLive(info)
         }
+    }
+
+    private fun bringAudienceActivityToFront() {
+        val intent = Intent(this, VideoLiveAudienceActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        startActivity(intent)
     }
     
     private fun requestPermission(callback: CompletionHandler?) {

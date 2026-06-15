@@ -47,9 +47,9 @@
     <string name="callkit_audio_call">音声通話</string>
     <string name="callkit_user_exceed_limit">現在の通話は最大 9 名まで同時に参加できます</string>
     <string name="callkit_toast_other_party_hung_up">相手が電話を切りました。通話終了</string>
-    <string name="callkit_toast_other_party_declined">相手が通話のリクエストを拒否しました</string>
-    <string name="callkit_toast_other_party_no_response">相手が応答しません。しばらくしてからもう一度お試しください</string>
-    <string name="callkit_toast_other_party_busy">相手は現在他の通話中です。しばらくしてからもう一度お試しください</string>
+    <string name="callkit_toast_other_party_declined">相手があなたの通話リクエストを拒否しました</string>
+    <string name="callkit_toast_other_party_no_response">相手が応答しませんでした。しばらくしてからもう一度お試しください</string>
+    <string name="callkit_toast_other_party_busy">相手は通話中です。しばらくしてからもう一度お試しください</string>
     <string name="callkit_toast_other_party_cancelled">相手が通話をキャンセルしました</string>
     <string name="callkit_toast_error_call_user_not_exist">ユーザーが存在しません。登録済みか、または不正な文字が入力されていないかご確認ください</string>
     <string name="callkit_toast_error_camera_occupied">現在、カメラはシステム通話で使用されています</string>

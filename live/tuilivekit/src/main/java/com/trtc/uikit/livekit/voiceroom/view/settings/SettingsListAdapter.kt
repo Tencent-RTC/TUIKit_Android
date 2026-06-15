@@ -96,13 +96,13 @@ class SettingsListAdapter(
     }
 
     private fun showBGMImagePanel() {
+        val currentBackgroundURL = liveListStore.liveState.currentLive.value.backgroundURL
         if (streamPresetImagePicker == null) {
             val config = StreamPresetImagePicker.Config().apply {
                 title = context.getString(R.string.common_settings_bg_image)
                 confirmButtonText = context.getString(R.string.common_set_as_background)
                 data = BACKGROUND_URL_LIST
-                currentImageUrl =
-                    transferThumbUrlFromImage(liveListStore.liveState.currentLive.value.backgroundURL)
+                currentImageUrl = currentBackgroundURL
             }
             streamPresetImagePicker = StreamPresetImagePicker(context, config)
             streamPresetImagePicker?.setOnConfirmListener(object :
@@ -127,6 +127,8 @@ class SettingsListAdapter(
                         })
                 }
             })
+        } else {
+            streamPresetImagePicker?.updateCurrentImageUrl(currentBackgroundURL)
         }
         streamPresetImagePicker?.show()
     }
@@ -160,18 +162,6 @@ class SettingsListAdapter(
             outRect.left = mSpace
             outRect.right = mSpace
         }
-    }
-
-    private fun transferThumbUrlFromImage(imageUrl: String?): String? {
-        if (TextUtils.isEmpty(imageUrl)) {
-            return imageUrl
-        }
-
-        val index = imageUrl!!.indexOf(".png")
-        if (index == -1) {
-            return imageUrl
-        }
-        return imageUrl.substring(0, index) + "_thumb.png"
     }
 
     private fun transferImageUrlFromThumb(thumbUrl: String): String {

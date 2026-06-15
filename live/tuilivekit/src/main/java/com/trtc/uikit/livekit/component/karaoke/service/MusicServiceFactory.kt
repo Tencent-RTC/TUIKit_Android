@@ -6,7 +6,7 @@ import com.trtc.uikit.livekit.component.karaoke.store.MusicCatalogService
 const val PACKAGE_RT_CUBE = "com.tencent.trtc"
 class SongServiceFactory {
     companion object {
-        private const val ONLINE_MUSIC_SERVICE_CLASS = "com.tencent.liteav.karaoke.service.OnlineMusicService"
+        private const val ONLINE_MUSIC_SERVICE_CLASS = "com.tencent.rtcube.modules.voiceroom.karaoke.OnlineMusicService"
         private const val LOCAL_MUSIC_SERVICE_CLASS = "com.tencent.uikit.app.login.LocalMusicService"
 
         fun getInstance(): MusicCatalogService? {

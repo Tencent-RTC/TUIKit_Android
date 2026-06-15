@@ -6,7 +6,7 @@
     <string name="callkit_group_id_is_empty">群ID为空</string>
     <string name="callkit_group_title_add_user">添加成员</string>
     <string name="callkit_group_hint_you">(你)</string>
-    <string name="callkit_group_btn_ok">确认</string>
+    <string name="callkit_group_btn_ok">确定</string>
     <string name="callkit_record_call_title">最近通话</string>
     <string name="callkit_record_call_delete">删除</string>
     <string name="callkit_record_dialog_message">清除所有记录</string>
@@ -49,15 +49,15 @@
     <string name="callkit_audio_call">语音通话</string>
     <string name="callkit_user_exceed_limit">当前通话最多支持 9 人同时在线</string>
     <string name="callkit_toast_other_party_hung_up">对方已挂断，通话结束</string>
-    <string name="callkit_toast_other_party_declined">对方拒绝了你的通话请求</string>
+    <string name="callkit_toast_other_party_declined">对方拒绝了您的通话请求</string>
     <string name="callkit_toast_other_party_no_response">对方未接听，请稍后再试</string>
-    <string name="callkit_toast_other_party_busy">对方正在通话中，请稍后再试</string>
+    <string name="callkit_toast_other_party_busy">对方正在忙，请稍后再试</string>
     <string name="callkit_toast_other_party_cancelled">对方已取消通话</string>
     <string name="callkit_toast_error_call_user_not_exist">用户不存在，请确认该用户是否已注册或是否输入非法字符</string>
-    <string name="callkit_toast_error_camera_occupied">当前摄像头被系统电话占用</string>
-    <string name="callkit_toast_error_microphone_occupied">当前麦克风被系统电话占用</string>
+    <string name="callkit_toast_error_camera_occupied">摄像头被系统通话占用</string>
+    <string name="callkit_toast_error_microphone_occupied">麦克风被系统通话占用</string>
     <string name="callkit_toast_error_call_failed">加入通话失败</string>
-    <string name="callkit_toast_error_call_self">无法向自己发起呼叫</string>
-    <string name="callkit_toast_error_already_in_call">您正在通话中，无法再次发起通话</string>
+    <string name="callkit_toast_error_call_self">不能呼叫自己</string>
+    <string name="callkit_toast_error_already_in_call">您当前正在通话中，请结束通话后再拨打</string>
     <string name="callkit_toast_error_group_call_has_active_call">该群组已有通话正在进行中</string>
 </resources>

@@ -25,6 +25,7 @@ import com.trtc.uikit.livekit.common.LIVEKIT_METRICS_PANEL_HIDE_SEAT_GRID_VIEW
 import com.trtc.uikit.livekit.common.LIVEKIT_METRICS_PANEL_SHOW_SEAT_GRID_VIEW
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.convertToSeatInfo
+import com.trtc.uikit.livekit.common.displayName
 import com.trtc.uikit.livekit.common.reportEventData
 import com.trtc.uikit.livekit.voiceroom.interaction.battle.BattleInfoView
 import com.trtc.uikit.livekit.voiceroomcore.impl.SeatGridLayout
@@ -492,13 +493,13 @@ class SeatGridView @JvmOverloads constructor(
             if (TextUtils.equals(extensionInfo, this@SeatGridView.extensionInfo)) {
                 val content = getContext().getString(
                     R.string.common_battle_inviting,
-                    inviter.userName
+                    inviter.displayName
                 )
                 showBattleInviteDialog(content, inviter, extensionInfo)
             } else {
                 val content = getContext().getString(
                     R.string.common_connect_inviting_append,
-                    inviter.userName
+                    inviter.displayName
                 )
                 showConnectionInviteDialog(content, inviter, extensionInfo)
             }
@@ -512,7 +513,7 @@ class SeatGridView @JvmOverloads constructor(
             battleInvitationDialog?.dismiss()
             val content = getContext().getString(
                 R.string.live_cancel_request,
-                inviter.userName
+                inviter.displayName
             )
             AtomicToast.show(context, content, AtomicToast.Style.INFO)
         }
@@ -524,7 +525,7 @@ class SeatGridView @JvmOverloads constructor(
         override fun onCoHostRequestRejected(invitee: SeatUserInfo) {
             var content = getContext().getString(
                 R.string.common_request_rejected,
-                invitee.userName
+                invitee.displayName
             )
             AtomicToast.show(context, content, AtomicToast.Style.INFO)
         }
@@ -610,7 +611,7 @@ class SeatGridView @JvmOverloads constructor(
         ) {
             val content = context.getString(
                 R.string.common_battle_inviting,
-                inviter.userName
+                inviter.displayName
             )
             showDirectPKDialog(content, inviter.avatarURL, battleId)
         }
@@ -623,7 +624,7 @@ class SeatGridView @JvmOverloads constructor(
             battleInvitationDialog?.dismiss()
             val content = context.getString(
                 R.string.common_battle_inviter_cancel,
-                inviter.userName
+                inviter.displayName
             )
             AtomicToast.show(context, content, AtomicToast.Style.INFO)
         }
@@ -636,7 +637,7 @@ class SeatGridView @JvmOverloads constructor(
             if (TextUtils.equals(inviter.userID, TUIRoomEngine.getSelfInfo().userId)) {
                 AtomicToast.show(
                     context,
-                    context.getString(R.string.common_connect_invitation_timeout),
+                    context.getString(R.string.common_battle_invitation_timeout),
                     AtomicToast.Style.INFO
                 )
             }
@@ -649,7 +650,7 @@ class SeatGridView @JvmOverloads constructor(
         ) {
             val content = context.getString(
                 R.string.common_battle_invitee_reject,
-                invitee.userName
+                invitee.displayName
             )
             AtomicToast.show(context, content, AtomicToast.Style.INFO)
         }

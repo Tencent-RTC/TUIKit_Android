@@ -12,6 +12,7 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.completionHandler
+import com.trtc.uikit.livekit.common.displayName
 import com.trtc.uikit.livekit.common.ui.setDebounceClickListener
 import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
@@ -109,7 +110,7 @@ class UserManagerDialog(
         }
         imageHeadView.setContent(AvatarContent.URL(seatInfo.userInfo.avatarURL, R.drawable.livekit_ic_avatar))
 
-        userNameText.text = seatInfo.userInfo.userName
+        userNameText.text = seatInfo.userInfo.displayName
         userIdText.text = context.getString(R.string.common_user_id, seatInfo.userInfo.userID)
         updateAudioLockState(seatInfo.userInfo.allowOpenMicrophone == false)
     }

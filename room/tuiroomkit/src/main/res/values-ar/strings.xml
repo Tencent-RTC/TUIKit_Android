@@ -159,17 +159,22 @@
     <string name="roomkit_transcription_language_german">Deutsch (ألمانية)</string>
     <string name="roomkit_transcription_language_italian">Italiano (إيطالية)</string>
     <string name="roomkit_transcription_language_russian">Русский (روسية)</string>
-    <string name="roomkit_screen_sharing_tip">مشاركة الشاشة جارية</string>
+    <string name="roomkit_screen_sharing_tip">أنت تشارك شاشتك...</string>
     <string name="roomkit_room_type_meeting">غرفة اجتماع</string>
     <string name="roomkit_room_type_webinar">غرفة ندوة</string>
     <string name="roomkit_start_screen_share">مشاركة الشاشة</string>
-    <string name="roomkit_stop_screen_share">إيقاف المشاركة</string>
+    <string name="roomkit_stop_screen_share">إنهاء المشاركة</string>
+    <string name="roomkit_stop_screen_share_confirm">بعد إنهاء المشاركة، لن يتمكن الآخرون من الاستمرار في مشاهدة شاشتك. هل أنت متأكد أنك تريد إنهاء المشاركة؟</string>
+    <string name="roomkit_another_is_sharing_the_screen">مستخدم آخر يشارك الشاشة.</string>
     <string name="roomkit_btn_stop">إيقاف</string>
     <string name="roomkit_video_share_occupied">مقعد المتحدث الرئيسي مشغول بالفعل. لا يمكن تشغيل الكاميرا.</string>
     <string name="roomkit_screen_share_occupied">مقعد المتحدث الرئيسي مشغول بالفعل. لا يمكن بدء مشاركة الشاشة.</string>
     <string name="roomkit_camera_blocked_by_screen_share">مشاركة الشاشة جارية حالياً. لا يمكن تشغيل الفيديو. يرجى إيقاف مشاركة الشاشة أولاً</string>
     <string name="roomkit_screen_share_blocked_by_camera">البث المباشر للفيديو جارٍ حالياً. لا يمكن بدء مشاركة الشاشة. يرجى إيقاف الفيديو أولاً</string>
     <string name="roomkit_screen_share_start_message">شخص ما يقدم حاليًا. ستؤدي مشاركة الشاشة إلى مقاطعة عرضه التقديمي. هل تريد المتابعة؟</string>
+    <string name="roomkit_all_screen_share_disabled">تم تعطيل مشاركة الشاشة للمشاركين.</string>
+    <string name="roomkit_all_screen_share_enabled">تم تفعيل مشاركة الشاشة للمشاركين.</string>
+    <string name="roomkit_not_allowed_to_screen_share">حالياً يمكن للمضيف/المسؤولين فقط مشاركة الشاشة.</string>
     <string name="roomkit_video_start_message">شخص ما يقدم حاليًا. سيؤدي تشغيل الفيديو الخاص بك إلى مقاطعة عرضه التقديمي. هل تريد المتابعة؟</string>
     <string name="roomkit_toast_screen_share_closed_by_host">%s قام بإيقاف مشاركة الشاشة الخاصة بك</string>
     <string name="roomkit_screen_sharing_status">مشاركة الشاشة</string>
@@ -178,6 +183,9 @@
     <string name="roomkit_hands_up_list">قائمة الأيدي المرفوعة</string>
     <string name="roomkit_hands_up_empty">لا توجد أيدي مرفوعة</string>
     <string name="roomkit_toast_raise_hand_rejected">تم رفض طلب رفع يدك</string>
+    <string name="roomkit_enter_room_password_title">كلمة مرور الغرفة</string>
+    <string name="roomkit_please_input_room_password">يرجى إدخال كلمة مرور الغرفة</string>
+    <string name="roomkit_password_error">كلمة المرور غير صحيحة</string>
     <string name="roomkit_err_0_success">تمت العملية بنجاح</string>
     <string name="roomkit_err_general">خطأ عام غير مصنف مؤقتاً</string>
     <string name="roomkit_err_n2_request_rate_limited">تم تحديد معدل الطلبات، يرجى المحاولة لاحقاً</string>
@@ -271,4 +279,10 @@
     <string name="roomkit_permission_microphone">الميكروفون</string>
     <string name="roomkit_permission_mic_reason">يحتاج الوصول إلى الميكروفون الخاص بك لاستخدام ميزات غرفة الصوت والفيديو متعددة الأشخاص. تسجيل الفيديو مع الصوت يتطلب الوصول إلى الميكروفون.</string>
     <string name="roomkit_permission_camera_reason">يحتاج الوصول إلى الكاميرا الخاصة بك لاستخدام ميزات غرفة الصوت والفيديو متعددة الأشخاص. لتعمل مرشحات التجميل، سنقوم بجمع معلومات الوجه التي تلتقطها الكاميرا في الوقت الفعلي للكشف عن ملامح وجهك.</string>
+    <string name="roomkit_privacy_screen_share_tip_title">تذكير الأمان</string>
+    <string name="roomkit_privacy_screen_share_tip_content">قد تؤدي مشاركة الشاشة إلى تسريب معلومات خاصة مثل رموز التحقق عبر الرسائل القصيرة وكلمات المرور، مما يتسبب في خسائر مالية. يرجى توخي الحذر ضد الأنشطة الاحتيالية المختلفة.</string>
+    <string name="roomkit_privacy_screen_share_tip_continue">متابعة المشاركة</string>
+    <string name="roomkit_unable_to_shared_screen">يرجى الاتصال بنا لتجربة هذه الميزة</string>
+    <string name="roomkit_tips">تذكير ودّي</string>
+    <string name="roomkit_contact_us">اتصل بنا</string>
 </resources>

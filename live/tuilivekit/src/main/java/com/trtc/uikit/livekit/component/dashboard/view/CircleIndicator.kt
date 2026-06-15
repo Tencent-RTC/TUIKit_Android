@@ -29,7 +29,11 @@ class CircleIndicator @JvmOverloads constructor(
     }
 
     fun setCircleCount(count: Int) {
+        if (circleCount == count) {
+            return
+        }
         circleCount = count
+        update()
     }
 
     fun setCircleRadius(radius: Int) {

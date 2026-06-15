@@ -28,11 +28,12 @@ import com.trtc.uikit.livekit.features.audienceview.AudienceViewDefine.AudienceB
 import com.trtc.uikit.livekit.features.audienceview.AudienceViewDefine.AudienceNode
 import com.trtc.uikit.livekit.features.audienceview.AudienceViewDefine.AudienceTopRightItem
 import com.trtc.uikit.livekit.features.audienceview.store.AudienceStore
-import com.trtc.uikit.livekit.features.audienceview.view.menuview.AudienceBottomMenuView
-import com.trtc.uikit.livekit.features.audienceview.view.menuview.AudienceTopRightView
 import com.trtc.uikit.livekit.features.audienceview.view.coguest.panel.AnchorManagerDialog
 import com.trtc.uikit.livekit.features.audienceview.view.coguest.panel.CancelRequestDialog
 import com.trtc.uikit.livekit.features.audienceview.view.coguest.panel.CoGuestRequestFloatView
+import com.trtc.uikit.livekit.features.audienceview.view.menuview.AudienceBottomMenuView
+import com.trtc.uikit.livekit.features.audienceview.view.menuview.AudienceTopRightView
+import com.trtc.uikit.livekit.features.audienceview.view.userinfo.AdminManagerDialog
 import com.trtc.uikit.livekit.features.audienceview.view.userinfo.UserInfoDialog
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dip2px
@@ -59,6 +60,7 @@ class AudienceOverlayView @JvmOverloads constructor(
     internal val barrageStreamView: BarrageStreamView
 
     private var userInfoDialog: UserInfoDialog? = null
+    private var adminManagerDialog: AdminManagerDialog? = null
     private var anchorManagerDialog: AnchorManagerDialog? = null
     private var enterRoomNotifyStrategy: AudienceUserEnterRoomNotifyStrategy = AudienceUserEnterRoomNotifyStrategy.ALWAYS
     private var intervalSecondOnMerge: Long = 60_000L
@@ -365,7 +367,11 @@ class AudienceOverlayView @JvmOverloads constructor(
                 if (userInfo.userID == LoginStore.shared.loginState.loginUserInfo.value?.userID) {
                     return@onMessageClick
                 }
-                showUserInfoDialog(userInfo)
+                if (selfIsAdmin() && !userIsOwnerOrAdmin(userInfo.userID) ) {
+                    showAdminManageDialog(userInfo)
+                } else {
+                    showUserInfoDialog(userInfo)
+                }
             }
         })
     }
@@ -444,6 +450,24 @@ class AudienceOverlayView @JvmOverloads constructor(
         userInfoDialog?.show()
     }
 
+    private fun showAdminManageDialog(userInfo: LiveUserInfo) {
+        if (adminManagerDialog == null) {
+            adminManagerDialog = AdminManagerDialog(context, audienceStore)
+        }
+        adminManagerDialog?.init(userInfo)
+        adminManagerDialog?.show()
+    }
+
+    private fun selfIsAdmin(): Boolean {
+        val selfUserId = LoginStore.shared.loginState.loginUserInfo.value?.userID ?: return false
+        val adminList = audienceStore.getLiveAudienceStore().liveAudienceState.adminList.value
+        return adminList.any { it.userID == selfUserId }
+    }
+
+    private fun userIsOwnerOrAdmin(userId: String): Boolean {
+        val adminList = audienceStore.getLiveAudienceStore().liveAudienceState.adminList.value
+        return adminList.any { it.userID == userId } || userId == audienceStore.getLiveListState().currentLive.value.liveOwner.userID
+    }
 }
 
 enum class AudienceUserEnterRoomNotifyStrategy {

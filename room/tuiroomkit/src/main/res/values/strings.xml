@@ -159,17 +159,22 @@
     <string name="roomkit_transcription_language_german">Deutsch(German)</string>
     <string name="roomkit_transcription_language_italian">Italiano(Italian)</string>
     <string name="roomkit_transcription_language_russian">Русский(Russian)</string>
-    <string name="roomkit_screen_sharing_tip">Screen sharing in progress</string>
+    <string name="roomkit_screen_sharing_tip">You are sharing your screen...</string>
     <string name="roomkit_room_type_meeting">Meeting room</string>
     <string name="roomkit_room_type_webinar">Webinar room</string>
     <string name="roomkit_start_screen_share">Screen share</string>
-    <string name="roomkit_stop_screen_share">Stop sharing</string>
+    <string name="roomkit_stop_screen_share">End sharing</string>
+    <string name="roomkit_stop_screen_share_confirm">After ending sharing, others will no longer be able to view your screen. Are you sure you want to end sharing?</string>
+    <string name="roomkit_another_is_sharing_the_screen">Another user is sharing the screen.</string>
     <string name="roomkit_btn_stop">Stop</string>
     <string name="roomkit_video_share_occupied">The speaker seat is already occupied. Unable to enable the camera.</string>
     <string name="roomkit_screen_share_occupied">The speaker seat is already occupied. Unable to start screen sharing.</string>
     <string name="roomkit_camera_blocked_by_screen_share">Currently screen sharing. Unable to turn on video. Please stop screen sharing first</string>
     <string name="roomkit_screen_share_blocked_by_camera">Currently streaming video. Unable to start screen sharing. Please turn off video first</string>
     <string name="roomkit_screen_share_start_message">Someone is currently presenting. Starting screen sharing will interrupt their presentation. Continue?</string>
+    <string name="roomkit_all_screen_share_disabled">Screen sharing disabled for participants.</string>
+    <string name="roomkit_all_screen_share_enabled">Screen sharing enabled for participants.</string>
+    <string name="roomkit_not_allowed_to_screen_share">Currently only host/admins can share screen.</string>
     <string name="roomkit_video_start_message">Someone is currently presenting. Turning on your video will interrupt their presentation. Continue?</string>
     <string name="roomkit_toast_screen_share_closed_by_host">Your screen sharing has been stopped by %s</string>
     <string name="roomkit_screen_sharing_status">Screen sharing</string>
@@ -178,6 +183,9 @@
     <string name="roomkit_hands_up_list">Raised hands list</string>
     <string name="roomkit_hands_up_empty">No raised hands</string>
     <string name="roomkit_toast_raise_hand_rejected">Your raise hand request was rejected</string>
+    <string name="roomkit_enter_room_password_title">Room password</string>
+    <string name="roomkit_please_input_room_password">Please enter the room password</string>
+    <string name="roomkit_password_error">Incorrect password</string>
     <string name="roomkit_err_0_success">Operation successful</string>
     <string name="roomkit_err_general">Temporarily unclassified general error</string>
     <string name="roomkit_err_n2_request_rate_limited">Request rate limited, please try again later</string>
@@ -271,4 +279,10 @@
     <string name="roomkit_permission_microphone">Microphone</string>
     <string name="roomkit_permission_mic_reason">Needs access to your microphone for multi-person audio and video room features. Recording videos with audio requires microphone access.</string>
     <string name="roomkit_permission_camera_reason">Needs access to your camera for multi-person audio and video room features. For beauty filters to work, we will collect the facial information captured by your camera in real time to detect your facial features.</string>
+    <string name="roomkit_privacy_screen_share_tip_title">Security reminder</string>
+    <string name="roomkit_privacy_screen_share_tip_content">Screen sharing may leak private information such as SMS verification codes and passwords, causing property loss. Please be vigilant against various fraudulent activities.</string>
+    <string name="roomkit_privacy_screen_share_tip_continue">Continue sharing</string>
+    <string name="roomkit_unable_to_shared_screen">Please contact us to experience this feature</string>
+    <string name="roomkit_tips">Friendly reminder</string>
+    <string name="roomkit_contact_us">Contact us</string>
 </resources>

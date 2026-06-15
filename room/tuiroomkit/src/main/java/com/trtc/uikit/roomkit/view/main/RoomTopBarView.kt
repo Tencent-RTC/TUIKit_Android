@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.aitranscription.repository.AITranscriberRepository
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
@@ -58,6 +59,7 @@ class RoomTopBarView @JvmOverloads constructor(
     private var participantStore: RoomParticipantStore? = null
     private val deviceStore = DeviceStore.shared()
     private var roomInfoDialog: RoomPopupDialog? = null
+    private var repository: AITranscriberRepository? = null
 
     private val durationHandler = Handler(Looper.getMainLooper())
     private var durationStartTime: Long = 0L
@@ -91,6 +93,7 @@ class RoomTopBarView @JvmOverloads constructor(
     fun init(roomID: String, roomType: RoomType) {
         this.roomType = roomType
         super.init(roomID)
+        repository = AITranscriberRepository(roomID)
         ivCameraSwitch.visibility = if (roomType == RoomType.WEBINAR) GONE else VISIBLE
         ivAudioRoute.visibility = if (roomType == RoomType.WEBINAR) GONE else VISIBLE
     }
@@ -209,6 +212,9 @@ class RoomTopBarView @JvmOverloads constructor(
             RoomActionSheetDialog.Builder(context)
                 .setTips(R.string.roomkit_confirm_leave_room_by_owner)
                 .addAction(R.string.roomkit_leave_room, isWarning = false) {
+                    if (repository?.isTranscriptionStart == true) {
+                        repository?.stopTranscription(null)
+                    }
                     handleLeaveRoom()
                 }
                 .addAction(R.string.roomkit_end_room, isWarning = true) {
@@ -228,7 +234,6 @@ class RoomTopBarView @JvmOverloads constructor(
     private fun handleLeaveRoom() {
         logger.info("User confirmed to leave room")
         RoomEventNotifier.notifyWillLeaveRoom()
-        
         roomStore.leaveRoom(object : CompletionHandler {
             override fun onSuccess() {
                 logger.info("Leave room success")

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import com.tencent.imsdk.v2.V2TIMManager
+import com.tencent.imsdk.v2.V2TIMManager.V2TIM_STATUS_LOGINED
 import com.tencent.qcloud.tuicore.ServiceInitializer
 import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
@@ -23,7 +25,6 @@ class Initializer : ServiceInitializer() {
 
         val audioRecordService = TUIAudioMessageRecordService(context)
         TUICore.registerService(TUIConstants.TUICalling.SERVICE_NAME_AUDIO_RECORD, audioRecordService)
-        TUICallKitImpl.createInstance(context)
         if (context is Application) {
             context.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
                 private var foregroundActivities = 0
@@ -38,7 +39,8 @@ class Initializer : ServiceInitializer() {
                     if (foregroundActivities == 1 && !isChangingConfiguration) {
                         //  The Call page exits the background and re-enters without repeatedly pulling up the page.
                         if (Constants.CALL_FRAMEWORK_NATIVE == Constants.framework &&
-                            TUILogin.isUserLogined() && activity !is CallMainActivity) {
+                            V2TIMManager.getInstance().loginStatus == V2TIM_STATUS_LOGINED &&
+                            activity !is CallMainActivity) {
                             TUICallKitImpl.createInstance(context).queryOfflineCall()
                         }
                     }

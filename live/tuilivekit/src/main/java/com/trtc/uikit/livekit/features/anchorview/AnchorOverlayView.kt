@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,11 +31,19 @@ import com.trtc.uikit.livekit.features.anchorview.view.menuview.AnchorBottomMenu
 import com.trtc.uikit.livekit.features.anchorview.view.menuview.AnchorTopRightView
 import com.trtc.uikit.livekit.features.anchorview.view.usermanage.UserManagerDialog
 import io.trtc.tuikit.atomicxcore.api.barrage.Barrage
+import io.trtc.tuikit.atomicxcore.api.barrage.BarrageStore
+import io.trtc.tuikit.atomicxcore.api.barrage.CustomMessageEvent
 import io.trtc.tuikit.atomicxcore.api.gift.Gift
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @SuppressLint("ViewConstructor")
 class AnchorOverlayView @JvmOverloads constructor(
@@ -105,6 +114,7 @@ class AnchorOverlayView @JvmOverloads constructor(
     private var enterRoomNotifyStrategy: AnchorUserEnterRoomNotifyStrategy = AnchorUserEnterRoomNotifyStrategy.ALWAYS
     private var intervalSecondOnMerge: Long = 60_000L
     private val enterRoomUserTimestamps: MutableMap<String, Long> = mutableMapOf()
+    private var customMessageJob: Job? = null
 
     private val liveAudienceListener = object : LiveAudienceListener() {
         override fun onAudienceJoined(audience: LiveUserInfo) {
@@ -236,6 +246,7 @@ class AnchorOverlayView @JvmOverloads constructor(
 
         isComponentReady = true
         flushPendingReplacements()
+        startObserveCustomMessage()
     }
 
     private fun flushPendingReplacements() {
@@ -279,6 +290,39 @@ class AnchorOverlayView @JvmOverloads constructor(
 
     private fun stopObserveState() {
         anchorStore.getLiveAudienceStore().removeLiveAudienceListener(liveAudienceListener)
+        customMessageJob?.cancel()
+        customMessageJob = null
+    }
+
+    private fun startObserveCustomMessage() {
+        val liveId = LiveListStore.shared().liveState.currentLive.value.liveID
+        val barrageStore = BarrageStore.create(liveId)
+        customMessageJob = CoroutineScope(Dispatchers.Main).launch {
+            barrageStore.customMessageEvent.collect { event ->
+                when (event) {
+                    is CustomMessageEvent.CustomMessageReceived -> {
+                        handleCustomMessage(event.barrage)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleCustomMessage(barrage: Barrage) {
+        try {
+            val dataString = barrage.data ?: return
+            val json = JSONObject(dataString)
+            val messageSource = json.optString("messageSource", "")
+            val messageType = json.optString("messageType", "")
+            if (messageSource == "live_background" && messageType == "violation_alert") {
+                AtomicToast.show(
+                    context,
+                    context.getString(R.string.common_violation_alert_toast),
+                    AtomicToast.Style.WARNING
+                )
+            }
+        } catch (_: Exception) {
+        }
     }
 
     private fun shouldNotifyEnterRoom(userID: String): Boolean {

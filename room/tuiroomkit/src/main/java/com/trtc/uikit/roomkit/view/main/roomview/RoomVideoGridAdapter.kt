@@ -183,11 +183,12 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
                 // Stream changed - reinitialize participant view
                 currentStreamId = streamItem.uniqueId
                 participantView.init(streamItem.streamType, streamItem.participant)
-                participantView.setFillMode(FillMode.FILL)
             } else {
                 // Same stream - just update participant info
                 participantView.updateParticipant(streamItem.participant)
             }
+            val fillMode = if (streamItem.streamType == VideoStreamType.SCREEN) FillMode.FIT else FillMode.FILL
+            participantView.setFillMode(fillMode)
 
             nameOverlay.updateParticipant(streamItem.participant)
             updateAvatarVisibility(streamItem.participant)

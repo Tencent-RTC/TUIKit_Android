@@ -50,7 +50,7 @@ class TUICallKitImpl private constructor(context: Context) : TUICallKit() {
     private val callStatusObserver = object : CallListener() {
         override fun onCallStarted(callId: String, mediaType: CallMediaType) {
             if (selfIsCaller() && GlobalState.instance.enableAITranscriber) {
-                CallManager.instance.startRealtimeTranscriber()
+                CallManager.instance.startRealtimeTranscriber(callId)
             }
         }
         override fun onCallEnded(callId: String, mediaType: CallMediaType, reason: CallEndReason, userId: String) {
@@ -290,8 +290,9 @@ class TUICallKitImpl private constructor(context: Context) : TUICallKit() {
         floatPermission: Boolean, fcmData: Boolean,
         notificationPermission: Boolean, bgPermission: Boolean
     ) {
+        val enableBanner = GlobalState.instance.enableIncomingBanner
         when {
-            floatPermission -> startSmallScreenView(IncomingFloatBanner(context))
+            floatPermission && enableBanner -> startSmallScreenView(IncomingFloatBanner(context))
             fcmData && notificationPermission -> startSmallScreenView(IncomingNotificationBanner(context))
             bgPermission -> startFullScreenView()
             else -> Logger.w(TAG, "App is in background with no permission")

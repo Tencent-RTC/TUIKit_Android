@@ -168,6 +168,9 @@ class RoomVideoLayoutStrategy(
         recyclerView.isNestedScrollingEnabled = true
         gridDecoration.setShouldApplySpacing(false)
 
+        // Clear virtual grid-page size in case we were previously in speaker mode
+        getPagedLayoutManager()?.setGridPageSize(0, 0)
+
         val itemSize = gridDecoration.getItemSize()
         val pageWidth = itemSize.widthPx * PAGING_GRID_COLUMNS + itemSize.spacingPx * (PAGING_GRID_COLUMNS + 1)
         val pageHeight = itemSize.heightPx * PAGING_GRID_ROWS + itemSize.spacingPx * (PAGING_GRID_ROWS + 1)
@@ -181,7 +184,7 @@ class RoomVideoLayoutStrategy(
 
     /**
      * Configure speaker mode (screen share active)
-     * First page shows full-screen share, remaining pages show grid of participants
+     * Page 0: full-screen share; page 1+: grid of participants (same layout as PAGING mode)
      */
     private fun configureSpeakerMode(createNew: Boolean) {
         if (createNew) {
@@ -199,11 +202,14 @@ class RoomVideoLayoutStrategy(
         recyclerView.isNestedScrollingEnabled = true
         gridDecoration.setShouldApplySpacing(false)
 
-        // Same size as paging mode
+        // Fill the container so page 0 (screen share) can be truly full-screen
+        setSize(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+
+        // Keep grid pages (page 1+) visually identical to normal PAGING mode
         val itemSize = gridDecoration.getItemSize()
-        val pageWidth = itemSize.widthPx * PAGING_GRID_COLUMNS + itemSize.spacingPx * (PAGING_GRID_COLUMNS + 1)
-        val pageHeight = itemSize.heightPx * PAGING_GRID_ROWS + itemSize.spacingPx * (PAGING_GRID_ROWS + 1)
-        setSize(pageWidth, pageHeight)
+        val gridPageWidth = itemSize.widthPx * PAGING_GRID_COLUMNS + itemSize.spacingPx * (PAGING_GRID_COLUMNS + 1)
+        val gridPageHeight = itemSize.heightPx * PAGING_GRID_ROWS + itemSize.spacingPx * (PAGING_GRID_ROWS + 1)
+        getPagedLayoutManager()?.setGridPageSize(gridPageWidth, gridPageHeight)
 
         // Scroll to first page (full-screen speaker)
         if (createNew) {

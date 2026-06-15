@@ -1,8 +1,8 @@
 <resources>
     <string name="callkit_enter_pip_mode_fail_hint">Failed to enter Picture-in-Picture mode, Please check if the permission is enabled.</string>
-    <string name="callkit_invite_audio_call">Invited you to a voice call</string>
-    <string name="callkit_invite_video_call">Invites you to a video call</string>
-    <string name="callkit_invite_multi_call">Invitation to join a group call</string>
+    <string name="callkit_invite_audio_call">invites you to a voice call</string>
+    <string name="callkit_invite_video_call">invites you to a video call</string>
+    <string name="callkit_invite_multi_call">invites you to a group call</string>
     <string name="callkit_group_id_is_empty">groupId is empty</string>
     <string name="callkit_group_title_add_user">Add User</string>
     <string name="callkit_group_hint_you">(you)</string>
@@ -15,7 +15,7 @@
     <string name="callkit_record_tab_title_miss">Missed</string>
     <string name="callkit_record_done">Done</string>
     <string name="callkit_record_clear">Clear</string>
-    <string name="callkit_group_recall_unsupport">Multiple call records do not support recalls</string>
+    <string name="callkit_group_recall_unsupport">Redial is not supported for group calls</string>
     <string name="callkit_record_result_unknown">Unknown</string>
     <string name="callkit_record_result_missed">Missed</string>
     <string name="callkit_record_result_incoming">Incoming</string>
@@ -48,11 +48,11 @@
     <string name="callkit_video_call">Video Call</string>
     <string name="callkit_audio_call">Voice Call</string>
     <string name="callkit_user_exceed_limit">This call supports a maximum of 9 participants</string>
-    <string name="callkit_toast_other_party_hung_up">The other party has hung up. Call ended</string>
+    <string name="callkit_toast_other_party_hung_up">The other party hung up, call ended</string>
     <string name="callkit_toast_other_party_declined">The other party declined your call request</string>
     <string name="callkit_toast_other_party_no_response">The other party did not answer. Please try again later</string>
-    <string name="callkit_toast_other_party_busy">The other party is currently in another call. Please try again later</string>
-    <string name="callkit_toast_other_party_cancelled">The other party has cancelled the call</string>
+    <string name="callkit_toast_other_party_busy">The other party is busy. Please try again later</string>
+    <string name="callkit_toast_other_party_cancelled">The other party cancelled the call</string>
     <string name="callkit_toast_error_call_user_not_exist">User does not exist. Please verify if the user is registered or if invalid characters were entered</string>
     <string name="callkit_toast_error_camera_occupied">The camera is currently occupied by a system call</string>
     <string name="callkit_toast_error_microphone_occupied">The microphone is currently occupied by a system call</string>

@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.text.SpannableStringBuilder
 import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
 import android.util.Log
@@ -24,6 +23,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import com.trtc.uikit.livekit.R
+import com.trtc.uikit.livekit.common.displayName
 import com.trtc.uikit.livekit.component.barrage.view.adapter.BarrageItemAdapter
 import com.trtc.uikit.livekit.component.giftaccess.service.GiftConstants
 import io.trtc.tuikit.atomicxcore.api.barrage.Barrage
@@ -81,8 +81,7 @@ class GiftBarrageAdapter(private val mContext: Context) : BarrageItemAdapter {
 
         fun bind(barrage: Barrage) {
             val sb = SpannableStringBuilder()
-            var sender = barrage.sender.userName
-            sender = if (TextUtils.isEmpty(sender)) "" else sender
+            val sender = barrage.sender.displayName
             sb.append(sender)
             
             val userNameColor = context.resources.getColor(R.color.common_barrage_user_name_color)

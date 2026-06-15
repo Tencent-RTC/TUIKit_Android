@@ -15,6 +15,7 @@ import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
+import com.trtc.uikit.livekit.common.displayName
 import com.trtc.uikit.livekit.features.anchorview.store.AnchorStore
 import com.trtc.uikit.livekit.features.anchorview.store.MediaStore
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
@@ -131,7 +132,7 @@ class AnchorManagerDialog(
                 R.drawable.livekit_ic_avatar
             )
         )
-        userNameText.text = currentUserInfo.userInfo.userName
+        userNameText.text = currentUserInfo.userInfo.displayName
         userIdText.text = context.getString(R.string.common_user_id, currentUserInfo.userInfo.userID)
         updateMediaDeviceButton()
     }

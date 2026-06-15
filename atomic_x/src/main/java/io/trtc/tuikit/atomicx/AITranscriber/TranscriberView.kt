@@ -41,8 +41,10 @@ class TranscriberView(context: Context, attrs: AttributeSet?) : FrameLayout(cont
 
     private lateinit var messageListView: RecyclerView
     private val adapter = MessageListAdapter()
-    private val transcriberStore = AITranscriberStore.shared
+    private var transcriberStore: AITranscriberStore? = null
+    private var currentRoomID: String = ""
     private var collectJob: Job? = null
+    private var messageCollectJob: Job? = null
     private var isAutoRefreshMessage: Boolean = true
 
     private val dataObserver = object : RecyclerView.AdapterDataObserver() {
@@ -109,11 +111,6 @@ class TranscriberView(context: Context, attrs: AttributeSet?) : FrameLayout(cont
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        collectJob = CoroutineScope(Dispatchers.Main).launch {
-            transcriberStore.transcriberState.realtimeMessageList.collect { messages ->
-                adapter.submitList(messages.toList())
-            }
-        }
     }
 
     private fun isAtBottom(): Boolean {
@@ -127,6 +124,43 @@ class TranscriberView(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         super.onDetachedFromWindow()
         collectJob?.cancel()
         collectJob = null
+        messageCollectJob?.cancel()
+        messageCollectJob = null
+        currentRoomID = ""
+        transcriberStore = null
+    }
+
+    fun clearMessages() {
+        adapter.submitList(emptyList())
+    }
+
+    fun bindTranscriberStore(roomID: String) {
+        if (roomID.isEmpty()) {
+            currentRoomID = ""
+            messageCollectJob?.cancel()
+            messageCollectJob = null
+            updateMessages(emptyList())
+            transcriberStore = null
+            return
+        }
+        if (currentRoomID == roomID) {
+            updateMessages(AITranscriberStore.create(roomID).transcriberState.realtimeMessageList.value)
+            return
+        }
+        currentRoomID = roomID
+        messageCollectJob?.cancel()
+
+        transcriberStore = AITranscriberStore.create(roomID)
+
+        messageCollectJob = CoroutineScope(Dispatchers.Main).launch {
+            transcriberStore?.transcriberState?.realtimeMessageList?.collect { messages ->
+                updateMessages(messages)
+            }
+        }
+    }
+
+    private fun updateMessages(messages: List<TranscriberMessage>) {
+        adapter.submitList(messages.toList())
     }
 
     private fun openSettings() {
@@ -158,7 +192,7 @@ class TranscriberView(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             sourceLanguage = source,
             translationLanguages = languages
         )
-        AITranscriberStore.shared.updateRealtimeTranscriber(config, null)
+        transcriberStore?.updateRealtimeTranscriber(config, null)
     }
 
     private fun isCaller(): Boolean {

@@ -75,12 +75,16 @@ class AITranscriptionSettingView @JvmOverloads constructor(
     // UI
     private val backButtonContainer: ConstraintLayout
     private val settingRecyclerView: RecyclerView
+    private val loadMaskView: View
+    private val loadingProgressBar: android.widget.ProgressBar
 
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_view_ai_transcription_setting, this, true)
 
         backButtonContainer = findViewById(R.id.cl_back_button)
         settingRecyclerView = findViewById(R.id.rv_settings)
+        loadMaskView = findViewById(R.id.view_load_mask)
+        loadingProgressBar = findViewById(R.id.pb_loading)
 
         backButtonContainer.setOnClickListener { listener?.onSettingViewBackClicked() }
 
@@ -194,12 +198,17 @@ class AITranscriptionSettingView @JvmOverloads constructor(
 
         val picker = AITranscriptionPickerView(context, context.getString(R.string.roomkit_transcription_select_recognition_language), items) { index, _ ->
             val selectedLang = repo.sourceLanguageList[index]
+            showLoading()
             repo.updateTranscriptionSourceLanguage(selectedLang, completion = object :
                 CompletionHandler {
-                override fun onSuccess() {}
+                override fun onSuccess() {
+                    logger.info("updateTranscription sourceLanguage success")
+                    hideLoading()
+                }
 
                 override fun onFailure(code: Int, desc: String) {
-                    logger.error("Failed to update transcription sourceLanguage: code=$code, desc=$desc")
+                    logger.error("updateTranscription failed, code=$code, desc=$desc")
+                    hideLoading()
                 }
             })
         }
@@ -219,12 +228,17 @@ class AITranscriptionSettingView @JvmOverloads constructor(
 
         val picker = AITranscriptionPickerView(context, context.getString(R.string.roomkit_transcription_select_translation_language), items) { index, _ ->
             val selectedLang = repo.translationLanguageList[index]
+            showLoading()
             repo.updateTranscriptionTranslationLanguage(selectedLang, completion = object :
                 CompletionHandler {
-                override fun onSuccess() {}
+                override fun onSuccess() {
+                    logger.info("updateTranscription translationLanguage success")
+                    hideLoading()
+                }
 
                 override fun onFailure(code: Int, desc: String) {
-                    logger.error("Failed to update transcription translationLanguage: code=$code, desc=$desc")
+                    logger.error("updateTranscription failed, code=$code, desc=$desc")
+                    hideLoading()
                 }
             })
         }
@@ -386,6 +400,16 @@ class AITranscriptionSettingView @JvmOverloads constructor(
         tooltipWindow?.dismiss()
         tooltipWindow = null
         handler.removeCallbacksAndMessages(null)
+    }
+
+    private fun showLoading() {
+        loadMaskView.visibility = View.VISIBLE
+        loadingProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideLoading() {
+        loadMaskView.visibility = View.GONE
+        loadingProgressBar.visibility = View.GONE
     }
 
     override fun onDetachedFromWindow() {

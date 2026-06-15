@@ -35,6 +35,9 @@ import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
 import io.trtc.tuikit.atomicxcore.api.call.CallParams
 import io.trtc.tuikit.atomicxcore.api.call.CallStore
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import io.trtc.tuikit.atomicx.common.util.NotifyParams
+import io.trtc.tuikit.atomicx.common.util.TUIEventBus
+import io.trtc.tuikit.atomicx.common.util.TUIObserver
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -42,6 +45,16 @@ class CallKitService private constructor(context: Context) : ITUINotification, I
     ITUIObjectFactory {
     private var appContext: Context = context.applicationContext
     private var joinCallViewManager: JoinCallViewManager? = null
+
+    private val eventBusObserver = object : TUIObserver() {
+        override fun onNotify(event: String, key: String?, params: NotifyParams?) {
+            params?.data ?: return
+            when (event) {
+                EVENT_START_CALL -> handleStartCall(params)
+                EVENT_START_JOIN -> handleStartJoin(params)
+            }
+        }
+    }
 
     init {
         TUICore.registerEvent(
@@ -78,6 +91,9 @@ class CallKitService private constructor(context: Context) : ITUINotification, I
 
         TUICore.registerObjectFactory(TUIConstants.TUICalling.ObjectFactory.FACTORY_NAME, this)
         TUICore.registerExtension(TUIConstants.TUIChat.Extension.ChatViewTopAreaExtension.EXTENSION_ID, this)
+
+        TUIEventBus.shared.subscribe(EVENT_START_CALL, null, eventBusObserver)
+        TUIEventBus.shared.subscribe(EVENT_START_JOIN, null, eventBusObserver)
     }
 
     override fun onNotifyEvent(key: String?, subKey: String?, param: Map<String, Any>?) {
@@ -184,6 +200,13 @@ class CallKitService private constructor(context: Context) : ITUINotification, I
     companion object {
         private const val TAG = "CallKitService"
         private const val CALL_MEMBER_LIMIT = 9
+        private const val EVENT_START_CALL = "call.startCall"
+        private const val EVENT_START_JOIN = "call.startJoin"
+        private const val KEY_PARTICIPANT_IDS = "participantIds"
+        private const val KEY_MEDIA_TYPE = "mediaType"
+        private const val KEY_CHAT_GROUP_ID = "chatGroupId"
+        private const val KEY_TIMEOUT = "timeout"
+        private const val KEY_CALL_ID = "callId"
 
         fun sharedInstance(context: Context): CallKitService {
             return CallKitService(context)
@@ -514,6 +537,36 @@ class CallKitService private constructor(context: Context) : ITUINotification, I
             params.chatGroupId = groupID
         }
         TUICallKit.createInstance(appContext).calls(userIdList, mediaType, params, null)
+    }
+
+    // Handle TUIEventBus "call.startCall" event, initiate a call.
+    private fun handleStartCall(params: NotifyParams) {
+        val participantIds = params.data?.get(KEY_PARTICIPANT_IDS) as? List<*> ?: return
+        val userIdList = participantIds.filterIsInstance<String>()
+        if (userIdList.isEmpty()) {
+            return
+        }
+        val mediaTypeStr = params.data?.get(KEY_MEDIA_TYPE) as? String ?: "audio"
+        val chatGroupId = params.data?.get(KEY_CHAT_GROUP_ID) as? String ?: ""
+        val timeout = params.data?.get(KEY_TIMEOUT) as? Int ?: 30
+        val mediaType = if (mediaTypeStr == "video") CallMediaType.Video else CallMediaType.Audio
+
+        val callParams = CallParams()
+        callParams.chatGroupId = chatGroupId
+        callParams.timeout = timeout
+
+        Logger.i(TAG, "handleStartCall, userIdList: $userIdList, mediaType: $mediaType, chatGroupId: $chatGroupId")
+        TUICallKit.createInstance(appContext).calls(userIdList, mediaType, callParams, null)
+    }
+
+    // Handle TUIEventBus "call.startJoin" event, join an ongoing group call.
+    private fun handleStartJoin(params: NotifyParams) {
+        val callId = params.data?.get(KEY_CALL_ID) as? String
+        if (callId.isNullOrEmpty()) {
+            return
+        }
+        Logger.i(TAG, "handleStartJoin, callId: $callId")
+        TUICallKit.createInstance(appContext).join(callId, null)
     }
 
     override fun onCreateObject(objectName: String?, param: MutableMap<String?, Any?>?): Any? {

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import androidx.core.net.toUri
+import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
@@ -68,10 +69,12 @@ class DeviceOperator(context: Context) {
             requestDrawOverlaysPermission(context)
             return
         }
+        TUIRoomEngine.sharedInstance().enableSystemAudioSharing(true)
         deviceStore.startScreenShare()
     }
 
     fun stopScreenShare() {
+        TUIRoomEngine.sharedInstance().enableSystemAudioSharing(false)
         deviceStore.stopScreenShare()
     }
 

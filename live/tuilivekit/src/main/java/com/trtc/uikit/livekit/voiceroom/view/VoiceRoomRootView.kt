@@ -15,8 +15,6 @@ import com.tencent.cloud.tuikit.engine.extension.TUILiveListManager
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomObserver
-import com.trtc.uikit.livekit.component.karaoke.view.KaraokeControlView
-import com.trtc.uikit.livekit.component.karaoke.view.KaraokeFloatingView
 import com.tencent.qcloud.tuicore.TUIConstants
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.TUILogin
@@ -47,18 +45,22 @@ import com.trtc.uikit.livekit.component.giftaccess.service.GiftConstants.GIFT_VI
 import com.trtc.uikit.livekit.component.giftaccess.store.GiftStore
 import com.trtc.uikit.livekit.component.giftaccess.view.BarrageViewTypeDelegate
 import com.trtc.uikit.livekit.component.giftaccess.view.GiftBarrageAdapter
+import com.trtc.uikit.livekit.component.karaoke.view.KaraokeControlView
+import com.trtc.uikit.livekit.component.karaoke.view.KaraokeFloatingView
+import com.trtc.uikit.livekit.features.endstatistics.AnchorEndStatisticsView
+import com.trtc.uikit.livekit.features.endstatistics.AudienceEndStatisticsView
+import com.trtc.uikit.livekit.features.endstatistics.EndStatisticsDefine
 import com.trtc.uikit.livekit.voiceroom.interaction.common.CoHostView
 import com.trtc.uikit.livekit.voiceroom.interaction.common.LocalCoHostEmptyView
 import com.trtc.uikit.livekit.voiceroom.interaction.common.RemoteCoHostEmptyView
 import com.trtc.uikit.livekit.voiceroom.manager.VoiceRoomManager
 import com.trtc.uikit.livekit.voiceroom.store.LayoutType
+import com.trtc.uikit.livekit.voiceroom.store.LiveExtraInfo
 import com.trtc.uikit.livekit.voiceroom.store.LiveStatus
 import com.trtc.uikit.livekit.voiceroom.store.LiveStreamPrivacyStatus
 import com.trtc.uikit.livekit.voiceroom.view.TUIVoiceRoomFragment.RoomBehavior
 import com.trtc.uikit.livekit.voiceroom.view.basic.BasicView
 import com.trtc.uikit.livekit.voiceroom.view.bottommenu.BottomMenuView
-import com.trtc.uikit.livekit.voiceroom.view.dashboard.AnchorDashboardView
-import com.trtc.uikit.livekit.voiceroom.view.dashboard.AudienceDashboardView
 import com.trtc.uikit.livekit.voiceroom.view.preview.AnchorPreviewView
 import com.trtc.uikit.livekit.voiceroom.view.seatmanager.ListMenuInfo
 import com.trtc.uikit.livekit.voiceroom.view.seatmanager.SeatActionSheetDialog
@@ -479,8 +481,27 @@ class VoiceRoomRootView @JvmOverloads constructor(
     private fun initAnchorEndView() {
         if (voiceRoomManager == null) return
         layoutEndViewContainer.removeAllViews()
-        val anchorEndView = AnchorDashboardView(rootViewContext)
-        anchorEndView.init(liveID, voiceRoomManager!!)
+        val anchorEndView = AnchorEndStatisticsView(rootViewContext).apply {
+            val anchorEndStatisticsInfo = EndStatisticsDefine.AnchorEndStatisticsInfo()
+            val liveExtraInfo = voiceRoomManager?.prepareStore?.prepareState?.liveExtraInfo?.value ?: LiveExtraInfo()
+            anchorEndStatisticsInfo.apply {
+                roomId = liveID
+                liveDurationMS = liveExtraInfo.liveDurationMS
+                maxViewersCount = liveExtraInfo.maxAudienceCount.toLong()
+                messageCount = liveExtraInfo.messageCount.toLong()
+                giftIncome = liveExtraInfo.giftIncome.toLong()
+                giftSenderCount = liveExtraInfo.giftSenderCount.toLong()
+                likeCount = liveExtraInfo.likeCount.toLong()
+                liveEndedReason = liveExtraInfo.liveEndedReason
+            }
+            init(anchorEndStatisticsInfo)
+            setListener(object : EndStatisticsDefine.AnchorEndStatisticsViewListener {
+                override fun onCloseButtonClick() {
+                    (context as? Activity)?.finish()
+                }
+            })
+        }
+
         anchorEndView.setOnTouchListener { _, _ -> true }
         val layoutParams = RelativeLayout.LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -493,8 +514,18 @@ class VoiceRoomRootView @JvmOverloads constructor(
     private fun initAudienceEndView() {
         if (voiceRoomManager == null) return
         layoutEndViewContainer.removeAllViews()
-        val audienceEndView = AudienceDashboardView(rootViewContext)
-        audienceEndView.init(liveID, voiceRoomManager!!)
+        val audienceEndView = AudienceEndStatisticsView(rootViewContext).apply {
+            val ownerInfo = voiceRoomManager!!.prepareStore.prepareState.liveInfo.value.liveOwner
+            val ownerName = ownerInfo.userName.ifEmpty { ownerInfo.userID }
+            init(liveID, ownerName, ownerInfo.avatarURL)
+            setListener(object : EndStatisticsDefine.AudienceEndStatisticsViewListener {
+                override fun onCloseButtonClick() {
+                    voiceRoomManager?.prepareStore?.destroy()
+                    (context as? Activity)?.finish()
+                }
+            })
+        }
+
         audienceEndView.setOnTouchListener { _, _ -> true }
         val layoutParams = RelativeLayout.LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -656,6 +687,7 @@ class VoiceRoomRootView @JvmOverloads constructor(
                 override fun onSuccess(statisticsData: TUILiveListManager.LiveStatisticsData) {
                     voiceRoomManager?.prepareStore
                         ?.updateStatistics(
+                            liveDuration = statisticsData.liveDuration.toLong(),
                             audienceCount = statisticsData.totalViewers,
                             messageCount = statisticsData.totalMessageCount,
                             giftIncome = statisticsData.totalGiftCoins,
