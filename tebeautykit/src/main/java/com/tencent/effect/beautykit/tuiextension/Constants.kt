@@ -1,0 +1,27 @@
+package com.tencent.effect.beautykit.tuiextension
+
+object Constants {
+    const val KEY_EXTENSION_NAME             = "TEBeautyExtension"
+    const val METHOD_SET_LICENSE             = "setLicense"
+    const val METHOD_SET_VERSION             = "setVersion"
+    const val METHOD_COPY_RES                = "copyRes"
+    const val METHOD_INIT_BEAUTY_KIT         = "initBeautyKit"
+    const val METHOD_PROCESS_VIDEO_FRAME     = "processVideoFrame"
+    const val METHOD_DESTROY_BEAUTY_KIT      = "destroyBeautyKit"
+    const val METHOD_CHECK_RESOURCE          = "checkResource"
+    const val METHOD_EXPORT_PARAM            = "exportParam"
+    const val NOTIFY_START_ACTIVITY          = "onStartActivityNotifyEvent"
+    const val METHOD_ACTIVITY_RESULT         = "onActivityResult"
+    const val METHOD_ENABLE_HIGH_PERFORMANCE = "enableHighPerformance"
+    const val PARAM_BEAUTY_PANEL             = "beautyPanel"
+    const val PARAM_NAME_LICENSE_KEY         = "licenseKey"
+    const val PARAM_NAME_LICENSE_URL         = "licenseUrl"
+    const val PARAM_NAME_FRAME_WIDTH         = "frameWidth"
+    const val PARAM_NAME_FRAME_HEIGHT        = "frameHeight"
+    const val PARAM_NAME_SRC_TEXTURE_ID      = "srcTextureId"
+    const val PARAM_CONTEXT                  = "context"
+    const val PARAM_BEAUTY_VERSION           = "version"
+    const val PARAM_LAST_PARAM_LIST          = "lastParamList"
+    const val PARAM_ENABLE_HIGH_PERFORMANCE  = "isEnableHighPerformance"
+    const val PARAM_DISABLE_FEATURE          = "isEnableHighPerformanceFeature"
+}

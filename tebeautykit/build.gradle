@@ -1,0 +1,46 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdk 34
+    namespace "com.tencent.effect.tebeautykit"
+
+    defaultConfig {
+        minSdkVersion 21
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    def javaVersion = JavaVersion.VERSION_1_8
+    def gradleMajorVersion = gradle.gradleVersion.tokenize('.')[0].toInteger()
+    if (gradleMajorVersion >= 8) {
+        javaVersion = JavaVersion.VERSION_17
+    }
+
+    compileOptions {
+        sourceCompatibility javaVersion
+        targetCompatibility javaVersion
+    }
+    kotlinOptions {
+        jvmTarget = javaVersion
+    }
+}
+
+dependencies {
+    api 'com.google.android.material:material:1.12.0'
+    implementation 'com.tencent.mediacloud:TEBeautyKit:4.1.0.14'
+    implementation 'com.tencent.mediacloud:TencentEffect_S1-07:4.1.0.13'
+
+    api rootProject.getChildProjects().containsKey("tuicore") ? project(':tuicore') : "com.tencent.liteav.tuikit:tuicore:8.8.7357"
+}
