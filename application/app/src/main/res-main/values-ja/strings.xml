@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_hot_component">人気</string>
+    <string name="main_ui_component">UIコンポーネント</string>
+    <string name="main_report_hint">注意：これはデモアプリです。送金や当選に関する情報を信じないでください。通報してください</string>
+    <string name="main_trial_hint">* UIコンポーネントとは、UIを含むクイック統合ソリューションを提供することを意味します</string>
+    <string name="main_overseas_tab_products">製品</string>
+    <string name="main_overseas_tab_discovery">ディスカバリーラボ</string>
+    <string name="main_overseas_tag_kit">UIKit</string>
+    <string name="main_overseas_discovery_tips">以下の製品は開発中です。ご要望がございましたらお問い合わせください &gt;</string>
+    <string name="main_overseas_contact_us">お問い合わせ &gt;</string>
+</resources>

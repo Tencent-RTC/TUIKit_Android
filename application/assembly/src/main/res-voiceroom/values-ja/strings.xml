@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_voiceroom_card_title">ボイスルーム</string>
+    <string name="assembly_voiceroom_card_description">高音質・大部屋・スムーズなマイクオン/オフ</string>
+    <string name="assembly_voiceroom_list_go_live">ライブ配信を開始</string>
+</resources>

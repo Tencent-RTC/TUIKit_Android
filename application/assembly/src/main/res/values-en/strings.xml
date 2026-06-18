@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_scenes_application_card_title">Industry Scenario Practice</string>
+    <string name="assembly_scenes_application_card_description">Explore more</string>
+    <string name="assembly_common_cannot_start_room_during_call">You are in a call. Please try again after it ends.</string>
+    <string name="assembly_mini_program_title">Scene Experience</string>
+    <string name="assembly_mini_program_content">Choose the scene closest to your business and begin the RTC experience.</string>
+    <string name="assembly_mini_program_1v1_social">1v1 Social</string>
+    <string name="assembly_mini_program_online_education">Online Education</string>
+    <string name="assembly_mini_program_financial_service">Financial Service</string>
+    <string name="assembly_mini_program_claw_machine">Claw Machine</string>
+</resources>

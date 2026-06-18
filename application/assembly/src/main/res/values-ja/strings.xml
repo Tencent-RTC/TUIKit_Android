@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_scenes_application_card_title">業界シナリオ体験</string>
+    <string name="assembly_scenes_application_card_description">もっと見る</string>
+    <string name="assembly_common_cannot_start_room_during_call">通話中です。終了後にもう一度お試しください。</string>
+    <string name="assembly_mini_program_title">シーン体験</string>
+    <string name="assembly_mini_program_content">お客様のビジネスに最適なシーンを選択してRTC体験を始めましょう</string>
+    <string name="assembly_mini_program_1v1_social">1v1ソーシャル</string>
+    <string name="assembly_mini_program_online_education">オンライン教育</string>
+    <string name="assembly_mini_program_financial_service">金融サービス</string>
+    <string name="assembly_mini_program_claw_machine">クレーンゲーム</string>
+</resources>

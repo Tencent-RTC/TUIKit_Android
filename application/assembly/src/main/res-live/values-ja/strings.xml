@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_live_card_title">ライブ配信</string>
+    <string name="assembly_live_card_description">配信プレビュー・美顔フィルター・マルチホスト</string>
+    <string name="assembly_live_list_back">戻る</string>
+    <string name="assembly_live_list_create_room">ライブ配信を開始</string>
+    <string name="assembly_live_list_exit_float_window_tip">ライブ配信中です。後でもう一度お試しください。</string>
+    <string name="assembly_live_list_title">オンラインライブ</string>
+    <string name="assembly_live_list_has_stop">ライブ配信は終了しました</string>
+    <string name="assembly_over_seas_live_title">ビデオライブ</string>
+    <string name="assembly_over_seas_live_subtitle">インタラクティブなビデオライブをLive APIで作成し、シームレスなストリーミング体験を実現</string>
+    <string name="assembly_over_seas_voice_room_title">ボイスチャットルーム</string>
+    <string name="assembly_over_seas_voice_room_subtitle">インタラクティブなボイスチャットルームをLive APIで開始し、コミュニケーション体験を向上させます</string>
+</resources>

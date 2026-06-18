@@ -1,0 +1,50 @@
+[
+    {
+        "rightContextImageName": "",
+        "text": "您的好友下载\"腾讯云音视频\"APP",
+        "text_en": "Your friend downloads Tencent RTC app.",
+        "hasCopyButton": false,
+        "avartarType": 2,
+        "avartarImageName": "call_guide_avatar_friend",
+        "name": "朋友",
+        "name_en": "friend",
+        "leftContextImageName": "call_guide_app_download",
+        "leftContextImageName_en": "call_guide_app_download_en"
+    },
+    {
+        "leftContextImageName": "call_guide_app_login",
+        "leftContextImageName_en": "call_guide_app_login_en",
+        "hasCopyButton": false,
+        "avartarType": 2,
+        "avartarImageName": "call_guide_avatar_friend",
+        "name": "朋友",
+        "name_en": "friend",
+        "text": "好友打开APP注册登录后，点击\"通话\"模块",
+        "text_en": "Opens the app and click \"Calling\".",
+        "rightContextImageName": ""
+    },
+    {
+        "text": "好友选择\"呼叫其他用户\"，在搜索栏下方找到自己的用户ID",
+        "text_en": "Get the user ID.",
+        "avartarType": 2,
+        "avartarImageName": "call_guide_avatar_friend",
+        "name": "朋友",
+        "name_en": "friend",
+        "rightContextImageName": "",
+        "hasCopyButton": false,
+        "leftContextImageName": "call_guide_app_userid",
+        "leftContextImageName_en": "call_guide_app_userid_en"
+    },
+    {
+        "hasCopyButton": false,
+        "text": "你输入好友的用户ID，点击呼叫",
+        "text_en": "Enter the user ID and call.",
+        "avartarType": 1,
+        "avartarImageName": "call_guide_avatar_self",
+        "name": "自己",
+        "name_en": "self",
+        "rightContextImageName": "",
+        "leftContextImageName": "call_guide_app_call",
+        "leftContextImageName_en": "call_guide_app_call_en"
+    }
+]

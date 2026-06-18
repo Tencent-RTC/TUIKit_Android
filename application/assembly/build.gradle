@@ -1,0 +1,105 @@
+import com.android.build.api.attributes.ProductFlavorAttr
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'com.tencent.rtcube.modules'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 24
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'consumer-rules.pro'
+        }
+    }
+
+    flavorDimensions "channel"
+    productFlavors {
+        xiaomi { dimension "channel" }
+        rtcube { dimension "channel" }
+        tencentrtc { dimension "channel" }
+        rtcubelab { dimension "channel" }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        compose true
+        dataBinding true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.5.8'
+    }
+
+    sourceSets {
+        main {
+            res.srcDirs(
+                    'src/main/res',
+                    'src/main/res-call',
+                    'src/main/res-live',
+                    'src/main/res-room',
+                    'src/main/res-voiceroom',
+                    'src/main/res-scenes-application'
+            )
+        }
+    }
+}
+
+dependencies {
+    api project(':login')
+    api rootProject.ext.has('common') ? rootProject.ext.common : 'io.trtc.uikit:common:3.5.+'
+    api project(':tuicallkit-kt')
+
+    api project(':tuilivekit')
+
+    api project(':tuiroomkit')
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.activity.ktx
+    implementation libs.androidx.constraintlayout
+    implementation libs.material
+
+    implementation libs.lifecycle.runtime.ktx
+
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.ui
+    implementation libs.compose.ui.tooling.preview
+    implementation libs.compose.material3
+    implementation libs.compose.foundation
+    implementation libs.compose.runtime
+    implementation libs.activity.compose
+    implementation libs.lifecycle.viewmodel.compose
+    implementation libs.navigation.compose
+    implementation libs.coil
+    implementation libs.coil.compose
+
+    implementation libs.okhttp
+    implementation libs.okhttp.logging
+    implementation libs.retrofit
+    implementation libs.retrofit.gson
+
+    debugImplementation libs.compose.ui.tooling
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation platform(libs.compose.bom)
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+}

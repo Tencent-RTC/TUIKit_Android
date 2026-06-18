@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application>
+
+        <!-- iOA 企业登录配置 -->
+        <meta-data
+            android:name="ITLoginAppKey"
+            android:value="${IOA_APP_KEY}" />
+        <meta-data
+            android:name="ITLoginAppID"
+            android:value="${IOA_APP_ID}" />
+
+        <!-- 登录流程 Activity 容器 -->
+        <activity
+            android:name="com.tencent.rtcube.v2.login.LoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- iOA 登录承载 Activity（独立于 LoginActivity，便于在用户取消时随同 SDK 登录页一并销毁） -->
+        <activity
+            android:name="com.tencent.rtcube.v2.login.ioaauth.IOAAuthActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+
+        <activity
+            android:name="com.tencent.rtcube.v2.login.LoginWebViewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+
+    </application>
+
+</manifest>

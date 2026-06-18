@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_live_card_title">Live</string>
+    <string name="assembly_live_card_description">Live preview/Beauty filters/Multi-host</string>
+    <string name="assembly_live_list_back">Back</string>
+    <string name="assembly_live_list_create_room">Go Live</string>
+    <string name="assembly_live_list_exit_float_window_tip">Live streaming in progress. Please try again later.</string>
+    <string name="assembly_live_list_title">Video Live</string>
+    <string name="assembly_live_list_has_stop">Live broadcast has ended</string>
+    <string name="assembly_over_seas_live_title">Live</string>
+    <string name="assembly_over_seas_live_subtitle">Create Interactive Video Live with Live API for a Seamless Streaming Experience</string>
+    <string name="assembly_over_seas_voice_room_title">Voice Room</string>
+    <string name="assembly_over_seas_voice_room_subtitle">Enable Interactive Voice Room with Live API for an Enhanced Communication Experience</string>
+</resources>

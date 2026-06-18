@@ -1,0 +1,50 @@
+[
+    {
+        "leftContextImageName": "",
+        "leftContextImageName_en": "",
+        "text": "点击按钮复制以下地址，发送给电脑\nhttps://rtcube.cloud.tencent.com/com",
+        "text_en": "Click the button to copy the link and send to your computer.\nhttps://trtc.io/demo",
+        "hasCopyButton": true,
+        "avartarType": 1,
+        "name": "手机",
+        "name_en": "phone",
+        "avartarImageName": "call_guide_avatar_phone",
+        "rightContextImageName": ""
+    },
+    {
+        "text": "使用电脑浏览器打开地址，完成注册登录（请使用腾讯云帐号注册登录）",
+        "text_en": "Open the link in the computer browser.",
+        "avartarType": 2,
+        "avartarImageName": "call_guide_avatar_pc",
+        "name": "电脑",
+        "name_en": "pc",
+        "rightContextImageName": "",
+        "hasCopyButton": false,
+        "leftContextImageName": "call_guide_web_login",
+        "leftContextImageName_en": "call_guide_web_login_en"
+    },
+    {
+        "hasCopyButton": false,
+        "text": "查看用户ID",
+        "text_en": "Get the User ID.",
+        "avartarType": 1,
+        "name": "手机",
+        "name_en": "phone",
+        "avartarImageName": "call_guide_avatar_phone",
+        "rightContextImageName": "",
+        "leftContextImageName": "call_guide_web_userid",
+        "leftContextImageName_en": "call_guide_web_userid_en"
+    },
+    {
+        "leftContextImageName": "call_guide_app_call",
+        "leftContextImageName_en": "call_guide_app_call_en",
+        "hasCopyButton": false,
+        "avartarType": 2,
+        "avartarImageName": "call_guide_avatar_phone",
+        "name": "手机",
+        "name_en": "phone",
+        "text": "你输入好友的用户ID，点击呼叫",
+        "text_en": "Enter the user ID and call.",
+        "rightContextImageName": ""
+    }
+]

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_voiceroom_card_title">语聊房</string>
+    <string name="assembly_voiceroom_card_description">高音质·大房间·平滑上下麦</string>
+    <string name="assembly_voiceroom_list_go_live">开直播</string>
+</resources>

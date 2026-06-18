@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_hot_component">Hot</string>
+    <string name="main_ui_component">UIKit</string>
+    <string name="main_report_hint">Attention: This is a DEMO APP. Do not trust anyone asking you to transfer money. Report scam</string>
+    <string name="main_trial_hint">* The &quot;UI&quot; label indicates that the component comes with a ready-to-use UI kit.</string>
+    <string name="main_overseas_tab_products">Products</string>
+    <string name="main_overseas_tab_discovery">Discovery Lab</string>
+    <string name="main_overseas_tag_kit">UIKit</string>
+    <string name="main_overseas_discovery_tips">Products below are under exploration. If you have needs, please contact us &gt;</string>
+    <string name="main_overseas_contact_us">contact us &gt;</string>
+</resources>

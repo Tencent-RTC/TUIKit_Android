@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="app_color_white">#ffffff</color>
-    <color name="app_color_black">#000000</color>
-    <color name="app_text_color_hint">#BBBBBB</color>
-    <color name="app_color_blue">#006EFF</color>
-    <color name="app_color_input_no_match">#FA585E</color>
-    <color name="app_entrance_main">#EBEDF5</color>
-    <color name="app_color_main_text">#333333</color>
-    <color name="app_color_line">#EEEEEE</color>
-    <color name="app_list_divider">#E5E5E5</color>
-    <color name="app_color_tab_select">#006EFF</color>
-    <color name="xiaoshipin_colorRed">#FF3333</color>
-    <color name="app_color_main_item_subtitle">#777777</color>
-    <color name="app_color_call_search_text">#1C66E5</color>
-    <color name="app_color_main_tip_bg">#FFEEEC</color>
-    <color name="app_color_main_tip_text">#C85F51</color>
-    <color name="app_color_main_bg">#F1F3F8</color>
-    <color name="app_color_input_normal">#BBBBBB</color>
-    <color name="app_color_popup_card_line_bg">#E4E5E9</color>
-    <color name="app_color_navigation_bar">#F7F7F7</color>
-    <color name="app_color_read_dot_bg">#f74c31</color>
+    <!-- 品牌色 -->
+    <color name="app_primary">#006EFF</color>
+    <color name="app_primary_dark">#0056CC</color>
+    <color name="app_accent">#006EFF</color>
+
+    <!-- 基础色 -->
+    <color name="app_white">#FFFFFF</color>
+
+    <!-- 背景色 -->
+    <color name="app_background">#F5F5F5</color>
+    <color name="app_surface">#FFFFFF</color>
 </resources>

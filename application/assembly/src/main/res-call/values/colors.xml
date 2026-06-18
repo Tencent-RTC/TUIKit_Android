@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Call Module Colors -->
+    <color name="call_color_white">#FFFFFF</color>
+    <color name="call_color_line">#EEEEEE</color>
+    <color name="call_color_tab_select">#006EFF</color>
+    <color name="call_color_main_text">#333333</color>
+    <color name="call_color_blue">#FF0062E3</color>
+    <color name="call_color_cancel">#ED4651</color>
+    <color name="call_color_call_tip_bg">#FFF5EC</color>
+    <color name="call_color_tab_normal">#999999</color>
+    <color name="call_color_call_tip_text">#D9761A</color>
+    <color name="call_color_call_search_text">#1C66E5</color>
+    <color name="call_color_bg_btn_unselect">#F4F5F9</color>
+    <color name="call_entrance_main">#EBEDF5</color>
+
+</resources>

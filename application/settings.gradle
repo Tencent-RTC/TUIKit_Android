@@ -1,32 +1,20 @@
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-        flatDir {
-            dirs 'app/libs'
-        }
-        maven { url 'https://jitpack.io' }
-        maven { url "https://mirrors.tencent.com/repository/maven/thirdparty" }
-    }
-}
+rootProject.name = 'RTCubeV2'
 
 include ':app'
+include ':login'
+include ':assembly'
 
-include ':debug'
-
+// ---------------- client_uikit start ----------------
+def clientUikitPath = '../'
 include ':tuicallkit-kt'
-project(':tuicallkit-kt').projectDir = new File(settingsDir, "../call/tuicallkit-kt")
-
-include ':tuilivekit'
-project(':tuilivekit').projectDir = new File(settingsDir, "../live/tuilivekit")
+project(':tuicallkit-kt').projectDir = file("${clientUikitPath}/call/tuicallkit-kt")
 
 include ':tuiroomkit'
-project(':tuiroomkit').projectDir = new File(settingsDir, "../room/tuiroomkit")
+project(':tuiroomkit').projectDir = file("${clientUikitPath}/room/tuiroomkit")
+
+include ':tuilivekit'
+project(':tuilivekit').projectDir = file("${clientUikitPath}/live/tuilivekit")
 
 include ':atomic_x'
-project(':atomic_x').projectDir = new File(settingsDir, "../atomic_x")
-
-if (buildEngineSource.toBoolean()) {
-    apply from: new File(settingsDir, './engine_source_settings.gradle').getAbsolutePath()
-}
+project(':atomic_x').projectDir = file("${clientUikitPath}/atomic_x")
+// ---------------- client_uikit end ----------------

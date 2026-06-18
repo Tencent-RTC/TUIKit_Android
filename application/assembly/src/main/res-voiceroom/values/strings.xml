@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_voiceroom_card_title">Voice Room</string>
+    <string name="assembly_voiceroom_card_description">High audio quality/Large room/Smooth mic on/off</string>
+    <string name="assembly_voiceroom_list_go_live">Go Live</string>
+</resources>

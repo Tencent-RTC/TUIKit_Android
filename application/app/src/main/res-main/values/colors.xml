@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 导航栏 -->
+    <color name="main_navbar_bg">#FFFFFF</color>
+    <!-- 卡片 -->
+    <color name="main_card_title">#262B32</color>
+    <color name="main_card_arrow_tint">#BCC4D0</color>
+    <color name="main_card_description">#626E84</color>
+    <!-- Banner 卡片 -->
+    <color name="main_banner_card_title">#1C66E5</color>
+    <color name="main_banner_card_arrow_tint">#8A9BB5</color>
+    <!-- 标签 -->
+    <color name="main_tag_hot_bg">#F58A67</color>
+    <color name="main_tag_ui_component_bg">#73A1F0</color>
+    <!-- 举报横条 -->
+    <color name="main_report_bar_bg">#FFEEEC</color>
+    <color name="main_report_bar_text">#C85F51</color>
+    <!-- 底部说明文字 -->
+    <color name="main_footer_text">#A3A3A3</color>
+</resources>

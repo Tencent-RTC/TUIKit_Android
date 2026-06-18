@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="privacy_color_white">#FFFFFF</color>
+    <color name="privacy_color_black">#000000</color>
+    <color name="privacy_color_main_text">#333333</color>
+    <color name="privacy_color_line">#EEEEEE</color>
+    <color name="privacy_color_blue">#FF0062E3</color>
+    <color name="privacy_color_permission_result">#999999</color>
+    <color name="privacy_color_switch_unchecked_track">#CCCCCC</color>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_scenes_application_card_title">行业应用场景</string>
+    <string name="assembly_scenes_application_card_description">探索更多</string>
+    <string name="assembly_common_cannot_start_room_during_call">当前正在通话中，请结束后再试</string>
+    <string name="assembly_mini_program_title">场景体验</string>
+    <string name="assembly_mini_program_content">选择最贴近您业务的场景，开启RTC体验</string>
+    <string name="assembly_mini_program_1v1_social">1v1社交</string>
+    <string name="assembly_mini_program_online_education">在线教育</string>
+    <string name="assembly_mini_program_financial_service">金融服务</string>
+    <string name="assembly_mini_program_claw_machine">娃娃机</string>
+</resources>

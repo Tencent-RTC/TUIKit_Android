@@ -1,0 +1,50 @@
+[
+  {
+    "leftContextImageName": "",
+    "leftContextImageName_en": "",
+    "text": "点击按钮复制以下地址，发送给电脑\nhttps://rtcube.cloud.tencent.com/com",
+    "text_en": "Click the button to copy the link and send to your computer.\nhttps://trtc.io/demo",
+    "hasCopyButton": true,
+    "avartarType": 1,
+    "avartarImageName": "call_guide_avatar_self",
+    "name": "自己",
+    "name_en": "self",
+    "rightContextImageName": ""
+  },
+  {
+    "text": "好友用浏览器打开地址，点击\"通话\"模块（需先完成注册登录）",
+    "text_en": "Open the page and click \"Call\".",
+    "avartarType": 2,
+    "avartarImageName": "call_guide_avatar_friend",
+    "name": "朋友",
+    "name_en": "friend",
+    "rightContextImageName": "",
+    "hasCopyButton": false,
+    "leftContextImageName": "call_guide_web_open_call",
+    "leftContextImageName_en": "call_guide_web_login_en"
+  },
+  {
+    "text": "好友选择\"呼叫其他用户\"，在搜索栏下方找到自己的用户ID",
+    "text_en": "Get the user ID.",
+    "avartarType": 2,
+    "avartarImageName": "call_guide_avatar_friend",
+    "name": "朋友",
+    "name_en": "friend",
+    "rightContextImageName": "",
+    "hasCopyButton": false,
+    "leftContextImageName": "call_guide_app_userid",
+    "leftContextImageName_en": "call_guide_app_userid_en"
+  },
+  {
+    "hasCopyButton": false,
+    "text": "你输入好友的用户ID，点击呼叫",
+    "text_en": "Enter the user ID and call.",
+    "avartarType": 1,
+    "avartarImageName": "call_guide_avatar_self",
+    "name": "自己",
+    "name_en": "self",
+    "rightContextImageName": "",
+    "leftContextImageName": "call_guide_app_call",
+    "leftContextImageName_en": "call_guide_app_call_en"
+  }
+]

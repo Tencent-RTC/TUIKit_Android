@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_room_card_title">Conference</string>
+    <string name="assembly_room_card_description">Quick meeting/Invite/Manage participants/Share screen</string>
+</resources>

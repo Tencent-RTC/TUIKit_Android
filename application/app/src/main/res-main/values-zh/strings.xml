@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_hot_component">热门</string>
+    <string name="main_ui_component">UI组件</string>
+    <string name="main_report_hint">仅用于业务功能体验，请勿轻信汇款、中奖等涉及钱款的信息，谨防上当受骗，立即举报</string>
+    <string name="main_trial_hint">* UI 组件指该产品提供含 UI 快速集成方案，30 分钟上线同款能力</string>
+    <string name="main_overseas_tab_products">产品</string>
+    <string name="main_overseas_tab_discovery">发现实验室</string>
+    <string name="main_overseas_tag_kit">UIKit</string>
+    <string name="main_overseas_discovery_tips">以下产品尚在探索中，如有需要请联系我们 &gt;</string>
+    <string name="main_overseas_contact_us">联系我们 &gt;</string>
+</resources>

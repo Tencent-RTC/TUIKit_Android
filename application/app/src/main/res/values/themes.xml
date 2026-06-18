@@ -1,9 +1,20 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.APPUIKit" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.RTCubeV2" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- 主色调 -->
+        <item name="colorPrimary">@color/app_primary</item>
+        <item name="colorPrimaryVariant">@color/app_primary_dark</item>
+        <item name="colorOnPrimary">@color/app_white</item>
+        <!-- 次要色调 -->
+        <item name="colorSecondary">@color/app_accent</item>
+        <item name="colorSecondaryVariant">@color/app_accent</item>
+        <item name="colorOnSecondary">@color/app_white</item>
+        <!-- 背景 -->
+        <item name="android:colorBackground">@color/app_background</item>
+        <!-- 状态栏 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="Theme.APPUIKit" parent="Base.Theme.APPUIKit" />
 </resources>

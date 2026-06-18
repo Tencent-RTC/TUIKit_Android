@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_room_card_title">会议</string>
+    <string name="assembly_room_card_description">快速会议·邀请入会·会中管控·共享屏幕</string>
+</resources>

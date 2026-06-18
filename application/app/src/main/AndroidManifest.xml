@@ -2,25 +2,40 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
+        android:name="com.tencent.rtcube.v2.App"
         android:allowBackup="false"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/app_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@drawable/app_launcher"
+        android:icon="@drawable/app_ic_launcher"
+        android:roundIcon="@drawable/app_ic_launcher"
+        android:label="@string/root_app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.APPUIKit"
-        tools:replace="android:allowBackup"
-        tools:targetApi="31">
-        <activity
-            android:name=".main.MainActivity"
-            android:exported="false" />
+        tools:replace="android:allowBackup,android:theme,android:label"
+        android:theme="@style/Theme.RTCubeV2">
+
+        <provider
+            android:name="com.tencent.rtcube.v2.main.common.utils.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <activity
-            android:name="com.tencent.uikit.app.login.LoginActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.RTCubeV2">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,59 +43,15 @@
         </activity>
 
         <activity
-            android:name=".login.RegisterActivity"
+            android:name=".privacy.PrivacyActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.RTCubeV2" />
 
         <activity
-            android:name=".mine.SettingsActivity"
+            android:name=".mine.MineActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.RTCubeV2" />
 
-        <activity
-            android:name=".common.widget.ImageSelectActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".setting.LanguageSelectActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-        <activity
-            android:name=".main.call.GroupCallActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-        <activity
-            android:name=".main.live.LiveActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-        <activity
-            android:name=".main.call.SettingsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-        <activity
-            android:name=".main.call.SettingDetailActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-        <activity
-            android:name=".main.conference.ConferenceActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.app_uikit"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
-        </provider>
     </application>
 
 </manifest>

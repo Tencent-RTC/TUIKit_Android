@@ -2,28 +2,92 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    namespace 'com.tencent.uikit.app'
+    namespace 'com.tencent.rtcube.v2'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.trtc.uikit.livekit.example"
-        minSdkVersion 21
-        targetSdkVersion 34
-        versionCode 1
-        versionName "1.0"
+        applicationId 'com.tencent.trtc'
+        minSdk 24
+        targetSdk 34
+        versionCode 10
+        versionName '7.3.0'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+
+        manifestPlaceholders = [
+                // ioa party name, used for IOA integration; values injected from gradle.properties
+                ACCESS_PARTY_NAME: 'com_tencent_trtc',
+                // vivo / honor push identifier, used for TIMPush integration; values injected from gradle.properties
+                VIVO_APPKEY      : (project.findProperty('RTCUBE_VIVO_APPKEY') ?: ''),
+                VIVO_APPID       : (project.findProperty('RTCUBE_VIVO_APPID') ?: ''),
+                HONOR_APPID      : (project.findProperty('RTCUBE_HONOR_APPID') ?: ''),
+                IOA_APP_KEY      : (project.findProperty('RTCUBE_IOA_APP_KEY') ?: ''),
+                IOA_APP_ID       : (project.findProperty('RTCUBE_IOA_APP_ID') ?: '')
+        ]
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("trtc.keystore")
+            storePassword "tencent.com"
+            keyAlias "tencent"
+            keyPassword "tencent.com"
+        }
     }
 
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    packagingOptions {
-        exclude '/META-INF/{AL2.0,LGPL2.1}'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
+    flavorDimensions "channel"
+    productFlavors {
+        xiaomi {
+            dimension "channel"
+            applicationId "com.tencent.trtc"
+        }
+        rtcube {
+            dimension "channel"
+            applicationId "com.tencent.trtc"
+        }
+        tencentrtc {
+            dimension "channel"
+            applicationId "com.tencent.rtc.app"
+        }
+        rtcubelab {
+            dimension "channel"
+            applicationId "com.tencent.trtc"
+            isDefault true
+        }
+    }
+
+    sourceSets {
+        main {
+            res.srcDirs(
+                    'src/main/res',
+                    'src/main/res-main',
+                    'src/main/res-mine',
+                    'src/main/res-privacy',
+                    'src/main/res-overseas'
+            )
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+        dataBinding true
+        buildConfig true
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.5.8'
     }
 
     compileOptions {
@@ -32,24 +96,58 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17
+        jvmTarget = '17'
+    }
+
+    lint {
+        error 'RtlHardcoded'
+        error 'RtlCompat'
+        error 'RtlEnabled'
     }
 }
 
 dependencies {
-    api project(':tuicallkit-kt')
-    api project(':tuilivekit')
-    api project(':tuiroomkit')
-    api rootProject.getProperties().containsKey("common") ? rootProject.ext.common : "io.trtc.uikit:common:3.3.0.1194"
-    api project(':debug')
+    implementation project(':login')
+    implementation project(':assembly')
 
-    implementation("androidx.core:core:1.13.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation "androidx.navigation:navigation-fragment:2.1.0"
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.activity.ktx
+    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.constraintlayout
+    implementation libs.material
 
-    androidTestImplementation libs.androidx.junit
-    androidTestImplementation libs.androidx.espresso.core
+    implementation libs.lifecycle.runtime.ktx
+
+    implementation libs.kotlinx.coroutines.android
+
+    implementation libs.okhttp
+    implementation libs.okhttp.logging
+    implementation libs.retrofit
+    implementation libs.retrofit.serialization
+    implementation libs.retrofit.gson
+
+    implementation libs.kotlinx.serialization.json
+
+    implementation libs.coil
+    implementation libs.coil.compose
+
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.ui
+    implementation libs.compose.ui.tooling.preview
+    implementation libs.compose.material3
+    implementation libs.compose.foundation
+    implementation libs.compose.runtime
+    implementation libs.activity.compose
+    implementation libs.lifecycle.viewmodel.compose
+    implementation libs.lifecycle.runtime.compose
+    implementation libs.navigation.compose
+    debugImplementation libs.compose.ui.tooling
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+   
+    debugImplementation libs.leakcanary
+    implementation rootProject.ext.featureDelivery
+ 
+    // TIMPush
+    implementation 'com.tencent.timpush:timpush:latest.release' 
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assembly_room_card_title">会議</string>
+    <string name="assembly_room_card_description">クイック会議・招待・参加者管理・画面共有</string>
+</resources>

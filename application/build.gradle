@@ -1,17 +1,55 @@
 buildscript {
+    ext.kotlin_version = '1.9.22'
     repositories {
+        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
+        maven { url "https://mirrors.tencent.com/nexus/repository/gradle-plugins/" }
+        maven { url "https://mirrors.tencent.com/repository/maven/liteavsdk" }
+        // configure bugly
+        maven { url "https://mirrors.tencent.com/repository/maven/thirdparty" }
+        // scene application miniprogram
+        maven { url 'https://maven-dev.tcmppcloud.com/fHKFBbEjd/repository/maven-public/' }
         google()
         mavenCentral()
+        // configure HMS Core SDK Maven address
+        maven { url 'https://developer.huawei.com/repo/' }
+        maven { url 'https://developer.hihonor.com/repo' }
+        maven { url "https://storage.googleapis.com/r8-releases/raw" }
     }
     dependencies {
-        def gradleMajorVersion = gradle.gradleVersion.tokenize('.')[0].toInteger()
-        if (gradleMajorVersion >= 8) {
-            classpath 'com.android.tools.build:gradle:8.3.0'
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
-        } else {
-            classpath 'com.android.tools.build:gradle:4.2.1'
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+        classpath 'com.android.tools.build:gradle:8.6.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+
+        classpath 'com.huawei.agconnect:agcp:1.4.1.300'
+        classpath 'com.hihonor.mcs:asplugin:2.0.1.300'
+        classpath 'com.google.gms:google-services:4.3.15'
+
+        classpath 'com.sensorsdata.analytics.android:android-gradle-plugin2:4.0.6'
+        classpath("com.android.tools:r8:8.13.8")
+
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.8.20"
+    }
+}
+
+allprojects {
+    repositories {
+        flatDir {
+            dirs project(':app').file('libs')
+            if (rootProject.findProject(':tuishortvideo') != null) {
+                dirs project(':tuishortvideo').file('libs')
+            }
         }
+        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
+        maven { url "https://mirrors.tencent.com/nexus/repository/gradle-plugins/" }
+        maven { url "https://storage.googleapis.com/r8-releases/raw" }
+        maven { url "https://mirrors.tencent.com/repository/maven/liteavsdk" }
+        maven { url "https://mirrors.tencent.com/repository/maven/thirdparty" }
+        // scene application miniprogram
+        maven { url 'https://maven-dev.tcmppcloud.com/fHKFBbEjd/repository/maven-public/' }
+        google()
+        mavenCentral()
+        maven { url 'https://developer.huawei.com/repo/' }
+        maven { url 'https://developer.hihonor.com/repo' }
     }
 }
 
@@ -20,9 +58,29 @@ task clean(type: Delete) {
 }
 
 ext {
+    compileSdkVersion = 35
+    targetSdkVersion = 35
+    buildToolsVersion = "35.0.0"
+    minSdkVersion = 21
+//    liteavSdk = "com.tencent.liteav:LiteAVSDK_Ultimate:12.7.0.19074"
     liteavSdk = "com.tencent.liteav:LiteAVSDK_Professional:13.2.0.20058"
-    roomEngineSdk = buildEngineSource.toBoolean() ? project(":engine_source") : "io.trtc.uikit:rtc_room_engine:4.2.0.28"
-    atomicxCoreSdk = buildAtomicxCoreSource.toBoolean() ? project(":atomicxcore") : "io.trtc.uikit:atomicx-core:4.2.0.28"
-    imSdk = "com.tencent.imsdk:imsdk-plus:8.7.7201"
-    common = "io.trtc.uikit:common:3.5.0.1332"
+    liteavScreenCaptureSdk = "com.tencent.liteav:LiteAVSDK_ScreenCapture:13.0.0.19676"
+    roomEngineSdk = buildEngineSource.toBoolean() ? project(":engine_source") : "io.trtc.uikit:rtc_room_engine:latest.release"
+    atomicxCoreSdk = buildAtomicxCoreSource.toBoolean() ? project(":atomicxcore") : "io.trtc.uikit:atomicx-core:latest.release"
+    tencentEffectSdk = "com.tencent.mediacloud:TencentEffect_GAME:4.2.0.14"
+    tebeautyKitSdk = "com.tencent.mediacloud:TEBeautyKit:4.2.0.6"
+    featureDelivery = "com.google.android.play:feature-delivery:2.1.0"
+    imSdk = "com.tencent.imsdk:imsdk-plus:latest.release"
+}
+
+subprojects {
+    configurations.configureEach {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == "com.tencent.imsdk"
+                    && details.requested.name == "imsdk-plus") {
+                details.useTarget rootProject.ext.imSdk
+                details.because "Force all modules to use the same IMSDK version"
+            }
+        }
+    }
 }
