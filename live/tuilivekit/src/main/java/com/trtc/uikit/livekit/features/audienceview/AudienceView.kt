@@ -1,7 +1,9 @@
 package com.trtc.uikit.livekit.features.audienceview
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -10,6 +12,7 @@ import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
 import com.trtc.uikit.livekit.common.EVENT_PARAMS_IS_LINKING
+import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
 import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_LINK_STATUS_CHANGE
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.audienceview.store.access.TUILiveListDataSource
@@ -19,6 +22,7 @@ import com.trtc.uikit.livekit.features.audienceview.store.LiveInfoListStore
 import com.trtc.uikit.livekit.features.audienceview.view.liveListviewpager.LiveListViewPager
 import com.trtc.uikit.livekit.features.audienceview.view.liveListviewpager.LiveListViewPagerAdapter
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
+import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.SeatLayoutTemplate
 import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
@@ -147,11 +151,13 @@ class AudienceView @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_LINK_STATUS_CHANGE, this)
+        TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, this)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         TUICore.unRegisterEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_LINK_STATUS_CHANGE, this)
+        TUICore.unRegisterEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, this)
         audienceLiveView?.leaveRoom()
     }
 
@@ -175,6 +181,17 @@ class AudienceView @JvmOverloads constructor(
     override fun onNotifyEvent(key: String, subKey: String, param: Map<String, Any>?) {
         if (EVENT_SUB_KEY_LINK_STATUS_CHANGE == subKey) {
             onLinkStatusChanged(param)
+        }
+        if (TextUtils.equals(key, EVENT_KEY_LIVE_KIT) && EVENT_SUB_KEY_DESTROY_LIVE_VIEW == subKey) {
+            if (context is Activity) {
+                val activity = context as Activity
+                if (activity.isFinishing || activity.isDestroyed) {
+                    return
+                }
+                val liveInfo = LiveListStore.shared().liveState.currentLive.value
+                destroy()
+                notifyListeners { it.onClickCloseButton(liveInfo) }
+            }
         }
     }
 

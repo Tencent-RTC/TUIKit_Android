@@ -126,6 +126,11 @@ class OnlineMusicService : MusicCatalogService() {
         onSuccess: (JSONObject) -> Unit,
         onFailure: (Int, String?) -> Unit,
     ) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            Log.e(TAG, "request failed: invalid url=$url, httpBaseUrl not configured")
+            mainHandler.post { onFailure(ERR_INVALID_URL, "invalid url: $url") }
+            return
+        }
         val req = Request.Builder()
             .url(url)
             .post(body.toString().toRequestBody(JSON_MEDIA_TYPE))
@@ -220,6 +225,7 @@ class OnlineMusicService : MusicCatalogService() {
         private const val ERR_DATA_NULL = -1
         private const val ERR_RESPONSE_INVALID = -2
         private const val ERR_NETWORK_FAILURE = -3
+        private const val ERR_INVALID_URL = -4
 
         @Volatile
         private var licenseKey: String = ""

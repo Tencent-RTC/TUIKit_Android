@@ -1,2 +1,4 @@
 .DS_Store
 **/.DS_Store
+live/tuilivekit/.gradle/
+room/tuiroomkit/.gradle/

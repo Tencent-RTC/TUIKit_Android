@@ -18,11 +18,10 @@ import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.qcloud.tuicore.TUICore
 import com.tencent.qcloud.tuicore.interfaces.ITUINotification
 import com.trtc.uikit.livekit.R
-import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
-import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.component.pippanel.PIPPanelStore
+import com.trtc.uikit.livekit.component.pippanel.PictureInPictureStore
 import com.trtc.uikit.livekit.features.audienceview.AudienceView
 import com.trtc.uikit.livekit.features.audienceview.AudienceViewDefine.AudienceViewListener
 import com.trtc.uikit.livekit.features.endstatistics.AudienceEndStatisticsView
@@ -31,8 +30,8 @@ import com.trtc.uikit.livekit.livestream.impl.LiveInfoUtils
 import com.trtc.uikit.livekit.livestream.impl.VideoLiveKitImpl
 import io.trtc.tuikit.atomicx.common.FullScreenActivity
 import io.trtc.tuikit.atomicx.common.foregroundservice.VideoForegroundService
-import com.trtc.uikit.livekit.component.pippanel.PictureInPictureStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
+import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.login.LoginStatus
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
@@ -79,15 +78,14 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
 
         layoutContainer = findViewById(R.id.fl_container)
         val liveInfo = LiveInfoUtils.convertBundleToLiveInfo(liveBundle)
-        
+
         audienceView = AudienceView(this).apply {
             init(this@VideoLiveAudienceActivity, liveInfo.liveID)
             addListener(this@VideoLiveAudienceActivity)
         }
-        
+
         layoutContainer.addView(audienceView)
         VideoLiveKitImpl.createInstance(applicationContext).addCallingAPIListener(this)
-        TUICore.registerEvent(EVENT_KEY_LIVE_KIT, EVENT_SUB_KEY_DESTROY_LIVE_VIEW, this)
         lifecycleScope.launchWhenStarted {
             launch {
                 PermissionRequest.requestCompleteEvent.collect {
@@ -120,15 +118,12 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
             TextUtils.equals(key, KEY_EXTENSION_NAME) && TextUtils.equals(subKey, NOTIFY_START_ACTIVITY) -> {
                 val intent = param?.get("intent") as? Intent
                 val requestCode = param?.get("requestCode") as? Int
-                
+
                 if (requestCode != null && intent != null) {
                     startActivityForResult(intent, requestCode)
                 } else if (intent != null) {
                     startActivity(intent)
                 }
-            }
-            TextUtils.equals(key, EVENT_KEY_LIVE_KIT) && EVENT_SUB_KEY_DESTROY_LIVE_VIEW == subKey -> {
-                destroyAudienceView()
             }
         }
     }
@@ -146,6 +141,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
     }
 
     override fun onDestroy() {
+        AtomicPopover.dismissAll()
         super.onDestroy()
         BackgroundLaunchDetector.unregisterActivityLifecycleCallbacks(application, "VideoLiveAudienceActivity")
         PIPPanelStore.sharedInstance().reset()
@@ -167,6 +163,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
         TUICore.callService(KEY_EXTENSION_NAME, METHOD_ACTIVITY_RESULT, param)
     }
 
+    @Suppress("MissingSuperCall")
     override fun onBackPressed() {
         // Do nothing
     }
@@ -207,7 +204,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
         }
         audienceView?.enablePictureInPictureMode(isInPictureInPictureMode)
         audienceEndStatisticsView?.enablePipMode(isInPictureInPictureMode)
-        
+
         if (!isInPictureInPictureMode && lifecycle.currentState == Lifecycle.State.CREATED
             && PictureInPictureStore.shared.hasPipPermission(this)) {
             destroyAudienceView()
@@ -245,7 +242,7 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
                 }
             })
         }
-        
+
         layoutContainer.removeAllViews()
         layoutContainer.addView(audienceEndStatisticsView)
     }
@@ -256,6 +253,10 @@ class VideoLiveAudienceActivity : FullScreenActivity(),
             val roomId = audienceView?.getRoomId()
             PIPPanelStore.sharedInstance().setPictureInPictureModeRoomId(roomId ?: "")
         }
+    }
+
+    override fun onClickCloseButton(liveInfo: LiveInfo) {
+        finishAndRemoveTask()
     }
 
     private fun destroyAudienceView() {

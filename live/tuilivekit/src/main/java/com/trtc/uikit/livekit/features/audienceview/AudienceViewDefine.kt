@@ -7,7 +7,7 @@ object AudienceViewDefine {
     interface AudienceViewListener {
         fun onLiveEnded(roomId: String, ownerName: String, ownerAvatarUrl: String)
         fun onClickFloatWindow()
-
+        fun onClickCloseButton(liveInfo: LiveInfo)
         fun onCreateLiveView(audienceView: AudienceLiveView, liveInfo: LiveInfo) {}
 
         fun onLiveViewDidAppear(audienceView: AudienceLiveView, liveInfo: LiveInfo) {}
