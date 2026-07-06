@@ -1,4 +1,4 @@
-package com.tencent.rtcube.v2.login.tokenauth.utils
+package com.tencent.rtcube.v2.login.components.service
 
 import android.content.Context
 import com.tencent.mmkv.MMKV
@@ -19,7 +19,7 @@ object TokenCacheManager {
     private fun checkInit(): MMKV {
         return checkNotNull(mmkv) {
             "TokenCacheManager has not been initialized. " +
-            "Call TokenCacheManager.init(context) in Application.onCreate() before use."
+                    "Call TokenCacheManager.init(context) in Application.onCreate() before use."
         }
     }
 

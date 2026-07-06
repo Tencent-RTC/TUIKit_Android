@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.tencent.rtcube.v2.login.LoginEntry
-import com.tencent.rtcube.v2.login.tokenauth.utils.TokenCacheManager
+import com.tencent.rtcube.v2.login.components.service.TokenCacheManager
 import com.trtc.uikit.livekit.component.karaoke.store.ActionCallback
 import com.trtc.uikit.livekit.component.karaoke.store.GetSongListCallBack
 import com.trtc.uikit.livekit.component.karaoke.store.MusicCatalogService

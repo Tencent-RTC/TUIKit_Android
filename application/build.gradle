@@ -61,7 +61,7 @@ ext {
     compileSdkVersion = 35
     targetSdkVersion = 35
     buildToolsVersion = "35.0.0"
-    minSdkVersion = 21
+    minSdkVersion = 23
 //    liteavSdk = "com.tencent.liteav:LiteAVSDK_Ultimate:12.7.0.19074"
     liteavSdk = "com.tencent.liteav:LiteAVSDK_Professional:13.2.0.20058"
     liteavScreenCaptureSdk = "com.tencent.liteav:LiteAVSDK_ScreenCapture:13.0.0.19676"

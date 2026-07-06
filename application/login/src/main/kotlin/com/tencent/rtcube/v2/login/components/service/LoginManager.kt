@@ -13,7 +13,6 @@ import com.tencent.rtcube.v2.login.components.model.LoginError
 import com.tencent.rtcube.v2.login.components.model.LoginResult
 import com.tencent.rtcube.v2.login.components.model.UserModel
 import com.tencent.rtcube.v2.login.components.service.LoginManager.currentUserFlow
-import com.tencent.rtcube.v2.login.tokenauth.utils.TokenCacheManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

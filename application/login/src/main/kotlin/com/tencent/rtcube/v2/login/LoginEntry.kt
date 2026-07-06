@@ -21,11 +21,8 @@ import com.tencent.rtcube.v2.login.components.service.BlackListResult
 import com.tencent.rtcube.v2.login.components.service.LoginManager
 import com.tencent.rtcube.v2.login.components.service.LoginService
 import com.tencent.rtcube.v2.login.components.service.TUILoginListenerHandler
+import com.tencent.rtcube.v2.login.components.service.TokenCacheManager
 import com.tencent.rtcube.v2.login.debugauth.store.DebugAuthStore
-import com.tencent.rtcube.v2.login.hiddenconfig.HiddenConfigCredentials
-import com.tencent.rtcube.v2.login.ioaauth.store.IOAAuthStore
-import com.tencent.rtcube.v2.login.tokenauth.store.TokenAuthStore
-import com.tencent.rtcube.v2.login.tokenauth.utils.TokenCacheManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -321,28 +318,10 @@ object LoginEntry {
                 }
                 return@runWhenInitialized
             }
-
-            // auto login via token
-            entryScope.launch {
-                val store = TokenAuthStore(entryScope)
-                store.performAutoLogin()
-                val result = store.resultFlow.first()
-                result.onSuccess {
-                    markLoggedIn(mode ?: LoginMode.TOKEN_AUTH)
-                }.onFailure {
-                    clearLoggedIn()
-                    TokenCacheManager.clear()
-                    LoginManager.clearLoginInfo()
-                }
-                callback(result)
-            }
         }
     }
 
     fun logout(callback: ((Result<Unit>) -> Unit)? = null) {
-        if (currentUser.value?.isLoginByMOA() == true) {
-            IOAAuthStore.logoutIfNeeded()
-        }
         clearLoggedIn()
         _hiddenCredentialsFlow.value = null
         LoginManager.clearLoginInfo()

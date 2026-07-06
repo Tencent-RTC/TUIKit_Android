@@ -1,5 +1,7 @@
 package com.tencent.rtcube.v2.login
 
+import java.io.Serializable
+
 /**
  * Login module configuration.
  */
@@ -41,3 +43,10 @@ data class LoginConfig(
         )
     }
 }
+
+data class HiddenConfigCredentials(
+    val sdkAppId: String,
+    val userId: String,
+    val userSig: String,
+) : Serializable
+
