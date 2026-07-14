@@ -186,6 +186,19 @@
     <string name="roomkit_enter_room_password_title">Room password</string>
     <string name="roomkit_please_input_room_password">Please enter the room password</string>
     <string name="roomkit_password_error">Incorrect password</string>
+    <string name="roomkit_cloud_record_start_title">Start cloud recording?</string>
+    <string name="roomkit_cloud_record_start_tips">Once enabled, the room\'s audio/video and shared screen content will be recorded to the cloud, and all participants will be notified.</string>
+    <string name="roomkit_cloud_record_stop_title">Stop cloud recording?</string>
+    <string name="roomkit_cloud_record_stop_tips">Once stopped, audio/video and shared screen content will no longer be recorded. All participants will be notified.</string>
+    <string name="roomkit_cloud_record_stop">Stop recording</string>
+    <string name="roomkit_cloud_record_recording">Recording</string>
+    <string name="roomkit_cloud_record_ended">Cloud recording ended</string>
+    <string name="roomkit_cloud_record_end_abnormal">Cloud recording was interrupted unexpectedly</string>
+    <string name="roomkit_cloud_record">Record</string>
+    <string name="roomkit_cloud_record_start_confirm">Start Recording</string>
+    <string name="roomkit_cloud_record_started_title">Cloud recording in progress</string>
+    <string name="roomkit_cloud_record_started_tips">%s started cloud recording. Audio, video, and shared screen content in the room will be recorded. By staying in the room, you consent to being recorded.</string>
+    <string name="roomkit_i_know">Got it</string>
     <string name="roomkit_err_0_success">Operation successful</string>
     <string name="roomkit_err_general">Temporarily unclassified general error</string>
     <string name="roomkit_err_n2_request_rate_limited">Request rate limited, please try again later</string>
@@ -271,6 +284,7 @@
     <string name="roomkit_err_100502_room_metadata_total_limit">The total size of all value in the room\'s metadata exceeds the maximum byte limit</string>
     <string name="roomkit_err_100503_room_metadata_no_valid_keys">There is no valid keys when delete metadata</string>
     <string name="roomkit_err_100504_room_metadata_key_size_limit">The size of key in the room\'s metadata exceeds the maximum byte limit</string>
+    <string name="roomkit_err_101072_recording_config_not_enabled">Recording configuration does not exist or is not enabled</string>
     <string name="roomkit_err_7002_invalid_user_id">Invalid userid</string>
     <string name="roomkit_room_running">Running</string>
     <string name="roomkit_permission_tips">Please turn on the %1$s permission first</string>

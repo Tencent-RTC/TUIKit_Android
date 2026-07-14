@@ -43,6 +43,11 @@
     <color name="roomkit_color_ai_record_bg">#22262E</color>
     <color name="roomkit_color_ai_record_text">#F2F5FC</color>
 
+    <!-- Cloud recording colors -->
+    <color name="roomkit_color_recording_floating_bg">#B322262E</color>
+    <color name="roomkit_color_recording_dot">#FF2E2E</color>
+    <color name="roomkit_color_recording_popup_bg">#B322262E</color>
+
     <!-- AI Transcription colors -->
     <color name="roomkit_color_ai_shadow">#99000000</color>
     <color name="roomkit_color_ai_text_white_b3">#B3FFFFFF</color>

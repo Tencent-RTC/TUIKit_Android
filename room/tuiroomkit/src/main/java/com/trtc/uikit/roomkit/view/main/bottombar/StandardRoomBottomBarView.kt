@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.net.toUri
 import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.operator.DeviceOperator
 import com.trtc.uikit.roomkit.base.ui.BaseView
@@ -20,9 +21,11 @@ import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
+import io.trtc.tuikit.atomicxcore.api.room.RecordingStatus
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomType
+import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -61,6 +64,13 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
     private val ivScreenShare: ImageView by lazy { findViewById(R.id.iv_screen_share) }
 
     private val llAiTool: LinearLayout by lazy { findViewById(R.id.ll_ai_tool) }
+
+    private val llRecording: LinearLayout by lazy { findViewById(R.id.ll_recording) }
+    private val ivRecording: ImageView by lazy { findViewById(R.id.iv_recording) }
+    private val tvRecording: TextView by lazy { findViewById(R.id.tv_recording) }
+
+    private var isRecording = false
+    private var recordingConfirmDialog: RoomAlertDialog? = null
 
     private var participantStore: RoomParticipantStore? = null
     private val roomStore = RoomStore.shared()
@@ -124,6 +134,18 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
                     updateScreenShareStatus(screenStatus, userRole, isAllScreenShareDisabled)
                 }
             }
+            launch {
+                combine(
+                    participantStore.state.localParticipant.map { it?.role ?: ParticipantRole.GENERAL_USER }
+                        .distinctUntilChanged(),
+                    roomStore.state.currentRoom.map { it?.recordingInfo?.status ?: RecordingStatus.NONE }
+                        .distinctUntilChanged()
+                ) { role, status ->
+                    role to status
+                }.collect { (role, status) ->
+                    updateRecordingStatus(role, status)
+                }
+            }
         }
     }
 
@@ -133,6 +155,7 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
         scope.cancel()
         roomParticipantListViewDialog?.dismiss()
         roomParticipantListViewDialog = null
+        dismissRecordingConfirmDialog()
     }
 
     private fun initView() {
@@ -141,6 +164,7 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
         llCamera.setOnClickListener { handleCameraClick() }
         llScreenShare.setOnClickListener { handleScreenShareClick() }
         llAiTool.setOnClickListener { handleAiToolClick() }
+        llRecording.setOnClickListener { handleRecordingClick() }
     }
 
     private fun updateParticipantCount(count: Int) {
@@ -365,5 +389,74 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
     private fun handleAiToolClick() {
         logger.info("handleAiToolClick")
         listener?.onAIToolsButtonTapped()
+    }
+
+    private fun updateRecordingStatus(role: ParticipantRole, status: RecordingStatus) {
+        val wasRecording = isRecording
+        isRecording = status == RecordingStatus.RECORDING
+        val canManage = role == ParticipantRole.OWNER || role == ParticipantRole.ADMIN
+        llRecording.visibility = if (canManage) VISIBLE else GONE
+        if (isRecording) {
+            ivRecording.setImageResource(R.drawable.roomkit_ic_recording_on)
+            tvRecording.text = context.getString(R.string.roomkit_cloud_record_recording)
+        } else {
+            ivRecording.setImageResource(R.drawable.roomkit_ic_recording)
+            tvRecording.text = context.getString(R.string.roomkit_cloud_record)
+        }
+        if (!canManage || wasRecording != isRecording) {
+            dismissRecordingConfirmDialog()
+        }
+    }
+
+    private fun dismissRecordingConfirmDialog() {
+        recordingConfirmDialog?.takeIf { it.isShowing }?.dismiss()
+        recordingConfirmDialog = null
+    }
+
+    private fun handleRecordingClick() {
+        if (isRecording) showStopRecordingConfirmDialog() else showStartRecordingConfirmDialog()
+    }
+
+    private fun showStartRecordingConfirmDialog() {
+        dismissRecordingConfirmDialog()
+        recordingConfirmDialog = RoomAlertDialog.Builder(context)
+            .setTitle(R.string.roomkit_cloud_record_start_title)
+            .setMessage(R.string.roomkit_cloud_record_start_tips)
+            .setNegativeButton(R.string.roomkit_cancel)
+            .setPositiveButton(R.string.roomkit_cloud_record_start_confirm) { startRecording() }
+            .show()
+    }
+
+    private fun showStopRecordingConfirmDialog() {
+        dismissRecordingConfirmDialog()
+        recordingConfirmDialog = RoomAlertDialog.Builder(context)
+            .setTitle(R.string.roomkit_cloud_record_stop_title)
+            .setMessage(R.string.roomkit_cloud_record_stop_tips)
+            .setWarning(true)
+            .setNegativeButton(R.string.roomkit_cancel)
+            .setPositiveButton(R.string.roomkit_cloud_record_stop) { stopRecording() }
+            .show()
+    }
+
+    private fun startRecording() {
+        roomStore.startRecording(completion = object : CompletionHandler {
+            override fun onSuccess() {}
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("startRecording failed:code=$code,desc=$desc")
+                ErrorLocalized.showError(context, code)
+            }
+        })
+    }
+
+    private fun stopRecording() {
+        roomStore.stopRecording(object : CompletionHandler {
+            override fun onSuccess() {}
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("stopRecording failed:code=$code,desc=$desc")
+                ErrorLocalized.showError(context, code)
+            }
+        })
     }
 }

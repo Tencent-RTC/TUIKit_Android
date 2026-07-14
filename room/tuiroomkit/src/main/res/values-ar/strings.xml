@@ -186,6 +186,19 @@
     <string name="roomkit_enter_room_password_title">كلمة مرور الغرفة</string>
     <string name="roomkit_please_input_room_password">يرجى إدخال كلمة مرور الغرفة</string>
     <string name="roomkit_password_error">كلمة المرور غير صحيحة</string>
+    <string name="roomkit_cloud_record_start_title">هل تريد بدء التسجيل السحابي؟</string>
+    <string name="roomkit_cloud_record_start_tips">بعد التفعيل، سيتم تسجيل الصوت والفيديو ومحتوى الشاشة المشتركة في الغرفة إلى السحابة، وسيتم إخطار جميع المشاركين.</string>
+    <string name="roomkit_cloud_record_stop_title">إنهاء التسجيل السحابي؟</string>
+    <string name="roomkit_cloud_record_stop_tips">بعد الإيقاف، لن يتم تسجيل الصوت والفيديو ومحتوى الشاشة المشتركة بعد الآن، وسيتم إخطار جميع المشاركين.</string>
+    <string name="roomkit_cloud_record_stop">إنهاء التسجيل</string>
+    <string name="roomkit_cloud_record_recording">جارٍ التسجيل</string>
+    <string name="roomkit_cloud_record_ended">انتهى التسجيل السحابي</string>
+    <string name="roomkit_cloud_record_end_abnormal">تم انقطاع التسجيل السحابي بشكل غير متوقع</string>
+    <string name="roomkit_cloud_record">التسجيل</string>
+    <string name="roomkit_cloud_record_start_confirm">بدء التسجيل</string>
+    <string name="roomkit_cloud_record_started_title">جارٍ التسجيل السحابي</string>
+    <string name="roomkit_cloud_record_started_tips">بدأ %s التسجيل السحابي. سيتم تسجيل الصوت والفيديو ومحتوى مشاركة الشاشة في الغرفة. بالبقاء في الغرفة، فإنك توافق على التسجيل.</string>
+    <string name="roomkit_i_know">حسنًا، فهمت</string>
     <string name="roomkit_err_0_success">تمت العملية بنجاح</string>
     <string name="roomkit_err_general">خطأ عام غير مصنف مؤقتاً</string>
     <string name="roomkit_err_n2_request_rate_limited">تم تحديد معدل الطلبات، يرجى المحاولة لاحقاً</string>
@@ -271,6 +284,7 @@
     <string name="roomkit_err_100502_room_metadata_total_limit">الحجم الإجمالي لجميع القيم في البيانات الوصفية للغرفة يتجاوز الحد الأقصى للبايت</string>
     <string name="roomkit_err_100503_room_metadata_no_valid_keys">لا توجد مفاتيح صالحة عند حذف البيانات الوصفية</string>
     <string name="roomkit_err_100504_room_metadata_key_size_limit">حجم المفتاح في البيانات الوصفية للغرفة يتجاوز الحد الأقصى للبايت</string>
+    <string name="roomkit_err_101072_recording_config_not_enabled">تكوين التسجيل غير موجود أو غير مفعل</string>
     <string name="roomkit_err_7002_invalid_user_id">معرف مستخدم غير صالح</string>
     <string name="roomkit_room_running">قيد التشغيل</string>
     <string name="roomkit_permission_tips">يرجى تشغيل إذن %1$s أولاً</string>

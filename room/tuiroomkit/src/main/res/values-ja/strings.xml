@@ -186,6 +186,19 @@
     <string name="roomkit_enter_room_password_title">入室パスワード</string>
     <string name="roomkit_please_input_room_password">入室パスワードを入力してください</string>
     <string name="roomkit_password_error">パスワードが間違っています</string>
+    <string name="roomkit_cloud_record_start_title">クラウド録画を開始しますか？</string>
+    <string name="roomkit_cloud_record_start_tips">有効にすると、ルーム内の音声・映像および共有画面の内容がクラウドに録画され、すべての参加者に通知されます。</string>
+    <string name="roomkit_cloud_record_stop_title">クラウド録画を終了しますか？</string>
+    <string name="roomkit_cloud_record_stop_tips">録画を終了すると、ルーム内の音声・映像および共有画面の内容のクラウドへの録画が停止され、すべての参加者に通知されます。</string>
+    <string name="roomkit_cloud_record_stop">録画を終了</string>
+    <string name="roomkit_cloud_record_recording">録画中</string>
+    <string name="roomkit_cloud_record_ended">クラウド録画が終了しました</string>
+    <string name="roomkit_cloud_record_end_abnormal">クラウド録画が予期せず中断されました</string>
+    <string name="roomkit_cloud_record">録画</string>
+    <string name="roomkit_cloud_record_start_confirm">録画を開始</string>
+    <string name="roomkit_cloud_record_started_title">クラウド録画中</string>
+    <string name="roomkit_cloud_record_started_tips">%sがクラウド録画を開始しました。ルーム内の音声、映像、画面共有などの内容が録画されます。ルームに留まることで、録画に同意したものとみなされます。</string>
+    <string name="roomkit_i_know">了解しました</string>
     <string name="roomkit_err_0_success">操作が成功しました</string>
     <string name="roomkit_err_general">未分類の一般エラー</string>
     <string name="roomkit_err_n2_request_rate_limited">リクエストが制限されています。後でもう一度お試しください</string>
@@ -271,6 +284,7 @@
     <string name="roomkit_err_100502_room_metadata_total_limit">ルームメタデータの全値の合計サイズが最大バイト制限を超えています</string>
     <string name="roomkit_err_100503_room_metadata_no_valid_keys">メタデータ削除時に有効なキーがありません</string>
     <string name="roomkit_err_100504_room_metadata_key_size_limit">ルームメタデータのキーサイズが最大バイト制限を超えています</string>
+    <string name="roomkit_err_101072_recording_config_not_enabled">録画設定が存在しないか、有効になっていません</string>
     <string name="roomkit_err_7002_invalid_user_id">無効なユーザーID</string>
     <string name="roomkit_room_running">実行中</string>
     <string name="roomkit_permission_tips">まず%1$sの権限をオンにしてください</string>

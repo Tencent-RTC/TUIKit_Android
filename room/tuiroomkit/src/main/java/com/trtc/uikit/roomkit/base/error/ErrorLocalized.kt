@@ -181,7 +181,8 @@ object ErrorLocalized {
         METADATA_VALUE_SIZE_EXCEEDS_BYTE_LIMIT(100501),
         METADATA_TOTAL_VALUE_SIZE_EXCEEDS_BYTE_LIMIT(100502),
         METADATA_NO_VALID_KEY(100503),
-        METADATA_KEY_SIZE_EXCEEDS_BYTE_LIMIT(100504);
+        METADATA_KEY_SIZE_EXCEEDS_BYTE_LIMIT(100504),
+        RECORDING_CONFIG_NOT_ENABLED(101072);
 
         fun getDescription(context: Context): String {
             return when (this) {
@@ -265,6 +266,7 @@ object ErrorLocalized {
                 METADATA_TOTAL_VALUE_SIZE_EXCEEDS_BYTE_LIMIT -> context.getString(R.string.roomkit_err_100502_room_metadata_total_limit)
                 METADATA_NO_VALID_KEY -> context.getString(R.string.roomkit_err_100503_room_metadata_no_valid_keys)
                 METADATA_KEY_SIZE_EXCEEDS_BYTE_LIMIT -> context.getString(R.string.roomkit_err_100504_room_metadata_key_size_limit)
+                RECORDING_CONFIG_NOT_ENABLED -> context.getString(R.string.roomkit_err_101072_recording_config_not_enabled)
             }
         }
 

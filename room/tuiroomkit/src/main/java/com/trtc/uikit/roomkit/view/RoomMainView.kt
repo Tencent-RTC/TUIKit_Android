@@ -15,6 +15,7 @@ import com.trtc.uikit.roomkit.aitranscription.subtitleview.AISubtitleView
 import com.trtc.uikit.roomkit.barrage.BarrageInputView
 import com.trtc.uikit.roomkit.barrage.BarrageStreamView
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
+import com.trtc.uikit.roomkit.base.event.RoomEventNotifier
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.extension.getSenderDisplayName
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
@@ -29,6 +30,7 @@ import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarView
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarViewListener
 import com.trtc.uikit.roomkit.view.main.RoomTopBarView
+import com.trtc.uikit.roomkit.view.main.RoomRecordingFloatingView
 import com.trtc.uikit.roomkit.view.main.RoomView
 import com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareOverlayView
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
@@ -49,6 +51,7 @@ import io.trtc.tuikit.atomicxcore.api.room.RoomListener
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantListener
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
+import io.trtc.tuikit.atomicxcore.api.room.RecordingStopReason
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomType
 import io.trtc.tuikit.atomicxcore.api.room.RoomUser
@@ -101,6 +104,7 @@ class RoomMainView @JvmOverloads constructor(
     private val barrageInputView: BarrageInputView by lazy { findViewById(R.id.barrage_input_view) }
     private val barrageStreamView: BarrageStreamView by lazy { findViewById(R.id.barrage_stream_view) }
     private val screenShareOverlayView: ScreenShareOverlayView by lazy { findViewById(R.id.screen_share_overlay_view) }
+    private val recordingFloatingView: RoomRecordingFloatingView by lazy { findViewById(R.id.recording_floating_view) }
 
     private var roomType = RoomType.STANDARD
     private val roomStore = RoomStore.shared()
@@ -111,6 +115,7 @@ class RoomMainView @JvmOverloads constructor(
     private var passwordDialog: EnterRoomPasswordDialog? = null
     private var localUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID
     private var connectConfig: ConnectConfig? = null
+    private var recordingNoticeDialog: RoomAlertDialog? = null
 
     private lateinit var repository: AITranscriberRepository
 
@@ -289,6 +294,25 @@ class RoomMainView @JvmOverloads constructor(
             logger.info("Room ended: roomID=${roomInfo.roomID}, roomName=${roomInfo.roomName}")
             showRoomDismissedDialog()
         }
+
+        override fun onRecordingStopped(roomInfo: RoomInfo, operator: RoomUser, reason: RecordingStopReason) {
+            logger.info("onRecordingStopped: roomInfo: $roomInfo, operator=${operator}, reason=$reason")
+            dismissRecordingNoticeDialog()
+            if (reason == RecordingStopReason.RECORDER_LEFT_ROOM) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_cloud_record_end_abnormal), Style.WARNING)
+                return
+            }
+            if (reason == RecordingStopReason.STOPPED_BY_USER && operator.userID == localUserID) {
+                return
+            }
+            AtomicToast.show(context, context.getString(R.string.roomkit_cloud_record_ended), Style.INFO)
+        }
+
+        override fun onRecordingStarted(roomInfo: RoomInfo, operator: RoomUser) {
+            logger.info("onRecordingStarted: roomInfo: $roomInfo, operator=${operator}")
+            if (operator.userID.isEmpty() || operator.userID == localUserID) return
+            showRecordingStartedDialog(operator)
+        }
     }
 
     fun init(roomID: String, roomType: RoomType, behavior: RoomBehavior, config: ConnectConfig? = null) {
@@ -301,6 +325,7 @@ class RoomMainView @JvmOverloads constructor(
         roomView.init(roomID, roomType)
         topBarView.init(roomID, roomType)
         bottomBarView.init(roomID, roomType)
+        recordingFloatingView.init(roomID, roomType)
         bottomBarView.listener = this
         if (roomType == RoomType.WEBINAR) {
             barrageInputView.init(roomID)
@@ -343,7 +368,13 @@ class RoomMainView @JvmOverloads constructor(
         dismissCameraInvitationDialog()
         dismissMicrophoneInvitationDialog()
         dismissPasswordDialog()
+        dismissRecordingNoticeDialog()
         scope.cancel()
+    }
+
+    private fun dismissRecordingNoticeDialog() {
+        recordingNoticeDialog?.takeIf { it.isShowing }?.dismiss()
+        recordingNoticeDialog = null
     }
 
     private fun subscribeSourceLanguageChange() {
@@ -359,6 +390,33 @@ class RoomMainView @JvmOverloads constructor(
                 }
             }
         }
+    }
+
+    private fun showRecordingStartedDialog(operator: RoomUser) {
+        dismissRecordingNoticeDialog()
+        val message = context.getString(R.string.roomkit_cloud_record_started_tips, operator.getDisplayName())
+        recordingNoticeDialog = RoomAlertDialog.Builder(topmostContext())
+            .setTitle(R.string.roomkit_cloud_record_started_title)
+            .setMessage(message)
+            .setNegativeButton(R.string.roomkit_leave_room) { handleLeaveRoom() }
+            .setPositiveButton(R.string.roomkit_i_know)
+            .show()
+    }
+
+    private fun handleLeaveRoom() {
+        logger.info("Leave room from recording-started notice")
+        RoomEventNotifier.notifyWillLeaveRoom()
+        roomStore.leaveRoom(object : CompletionHandler {
+            override fun onSuccess() {
+                (context as? Activity)?.finish()
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("leaveRoom failed: code=$code, desc=$desc")
+                ErrorLocalized.showError(context, code)
+                (context as? Activity)?.finish()
+            }
+        })
     }
 
     private fun createRoom(roomID: String, createRoomOptions: CreateRoomOptions) {
