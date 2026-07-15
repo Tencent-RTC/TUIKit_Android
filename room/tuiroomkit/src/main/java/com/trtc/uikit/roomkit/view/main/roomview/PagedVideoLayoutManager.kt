@@ -1,5 +1,6 @@
 package com.trtc.uikit.roomkit.view.main.roomview
 
+import android.content.res.Configuration
 import android.graphics.PointF
 import android.view.View
 import android.view.ViewGroup
@@ -71,6 +72,7 @@ class PagedVideoLayoutManager(
 
     private var scrollState = RecyclerView.SCROLL_STATE_IDLE
     private var lastSpeakerMode = false
+    private var attachedRecyclerView: RecyclerView? = null
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
         val params = RecyclerView.LayoutParams(
@@ -82,7 +84,11 @@ class PagedVideoLayoutManager(
         return params
     }
 
-    override fun canScrollHorizontally(): Boolean = true
+    override fun canScrollHorizontally(): Boolean {
+        val orientation = attachedRecyclerView?.resources?.configuration?.orientation
+            ?: Configuration.ORIENTATION_PORTRAIT
+        return orientation != Configuration.ORIENTATION_LANDSCAPE
+    }
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         if (state.isPreLayout) return
@@ -118,6 +124,7 @@ class PagedVideoLayoutManager(
     override fun onAttachedToWindow(view: RecyclerView) {
         super.onAttachedToWindow(view)
         cachedAdapter = view.adapter
+        attachedRecyclerView = view
 
         // Listen to scroll state changes
         view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -125,6 +132,11 @@ class PagedVideoLayoutManager(
                 scrollState = newState
             }
         })
+    }
+
+    override fun onDetachedFromWindow(view: RecyclerView, recycler: RecyclerView.Recycler) {
+        super.onDetachedFromWindow(view, recycler)
+        attachedRecyclerView = null
     }
 
     /**

@@ -34,8 +34,9 @@
 
         <activity
             android:name=".RoomMainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="locked" />
 
         <activity
             android:name=".aitranscription.AITranscriptionSettingActivity"

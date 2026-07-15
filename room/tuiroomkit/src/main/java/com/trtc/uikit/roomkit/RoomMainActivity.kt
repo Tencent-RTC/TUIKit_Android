@@ -1,8 +1,12 @@
 package com.trtc.uikit.roomkit
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.trtc.uikit.roomkit.view.RoomMainView
 import io.trtc.tuikit.atomicx.common.FullScreenActivity
@@ -57,7 +61,13 @@ class RoomMainActivity : FullScreenActivity() {
 
         val roomType = if (isWebinarRoom(roomID)) RoomType.WEBINAR else RoomType.STANDARD
         roomMainView?.init(roomID, roomType, behavior, config)
+        applySystemBarStyle(resources.configuration.orientation)
         startForegroundService()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        applySystemBarStyle(newConfig.orientation)
     }
 
     override fun onDestroy() {
@@ -68,6 +78,18 @@ class RoomMainActivity : FullScreenActivity() {
 
     @Suppress("MissingSuperCall")
     override fun onBackPressed() {
+    }
+
+    private fun applySystemBarStyle(orientation: Int) {
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            controller.show(WindowInsetsCompat.Type.systemBars())
+        }
     }
 
     private fun startForegroundService() {

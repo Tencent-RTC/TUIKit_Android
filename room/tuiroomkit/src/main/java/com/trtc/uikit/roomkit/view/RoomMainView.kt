@@ -1,11 +1,15 @@
 package com.trtc.uikit.roomkit.view
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.aitranscription.AIMinutesActivity
@@ -29,8 +33,8 @@ import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarView
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarViewListener
-import com.trtc.uikit.roomkit.view.main.RoomTopBarView
 import com.trtc.uikit.roomkit.view.main.RoomRecordingFloatingView
+import com.trtc.uikit.roomkit.view.main.RoomTopBarView
 import com.trtc.uikit.roomkit.view.main.RoomView
 import com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareOverlayView
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
@@ -46,12 +50,13 @@ import io.trtc.tuikit.atomicxcore.api.room.CreateRoomOptions
 import io.trtc.tuikit.atomicxcore.api.room.DeviceRequestInfo
 import io.trtc.tuikit.atomicxcore.api.room.KickedOutOfRoomReason
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
+import io.trtc.tuikit.atomicxcore.api.room.RecordingStatus
+import io.trtc.tuikit.atomicxcore.api.room.RecordingStopReason
 import io.trtc.tuikit.atomicxcore.api.room.RoomInfo
 import io.trtc.tuikit.atomicxcore.api.room.RoomListener
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantListener
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
-import io.trtc.tuikit.atomicxcore.api.room.RecordingStopReason
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomType
 import io.trtc.tuikit.atomicxcore.api.room.RoomUser
@@ -105,6 +110,8 @@ class RoomMainView @JvmOverloads constructor(
     private val barrageStreamView: BarrageStreamView by lazy { findViewById(R.id.barrage_stream_view) }
     private val screenShareOverlayView: ScreenShareOverlayView by lazy { findViewById(R.id.screen_share_overlay_view) }
     private val recordingFloatingView: RoomRecordingFloatingView by lazy { findViewById(R.id.recording_floating_view) }
+    private val orientationSwitchButton: ImageView by lazy { findViewById(R.id.orientation_switch_button) }
+    private var currentScreenSharerID: String? = null
 
     private var roomType = RoomType.STANDARD
     private val roomStore = RoomStore.shared()
@@ -337,10 +344,19 @@ class RoomMainView @JvmOverloads constructor(
             barrageStreamView.visibility = GONE
         }
         RoomDataReporter.reportComponent()
+        orientationSwitchButton.setOnClickListener {
+            switchOrientation()
+        }
+        updateOrientationVisibility(resources.configuration.orientation)
         when (behavior) {
             is RoomBehavior.Create -> createRoom(roomID, behavior.options)
             is RoomBehavior.Join -> joinRoom(roomID)
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateOrientationVisibility(newConfig.orientation)
     }
 
     override fun initStore(roomID: String) {
@@ -357,6 +373,12 @@ class RoomMainView @JvmOverloads constructor(
                 .map { it?.screenShareStatus ?: DeviceStatus.OFF }
                 .distinctUntilChanged()
                 .collect { screenShareOverlayView.updateScreenStatus(it) }
+        }
+        scope.launch {
+            participantStore.state.participantWithScreen
+                .map { it?.userID }
+                .distinctUntilChanged()
+                .collect(::onScreenSharerChanged)
         }
     }
 
@@ -696,6 +718,67 @@ class RoomMainView @JvmOverloads constructor(
 
     private fun topmostContext(): Context {
         return AIMinutesActivity.getForegroundInstance() ?: context
+    }
+
+    private fun updateOrientationVisibility(orientation: Int) {
+        val isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE
+        topBarView.visibility = if (isLandscape) GONE else VISIBLE
+        bottomBarView.visibility = if (isLandscape) GONE else VISIBLE
+        if (isLandscape) aiSubtitleView.visibility = GONE
+        if (roomType == RoomType.WEBINAR) {
+            barrageInputView.visibility = if (isLandscape) GONE else VISIBLE
+            barrageStreamView.visibility = if (isLandscape) GONE else VISIBLE
+        }
+        recordingFloatingView.visibility = when {
+            isLandscape -> GONE
+            roomStore.state.currentRoom.value?.recordingInfo?.status == RecordingStatus.RECORDING -> VISIBLE
+            else -> GONE
+        }
+        updateOrientationSwitchButtonVisibility(orientation)
+    }
+
+    private fun updateOrientationSwitchButtonVisibility(
+        orientation: Int = resources.configuration.orientation
+    ) {
+        val hasRemoteSharer = currentScreenSharerID != null && currentScreenSharerID != localUserID
+        val shouldShow = roomType != RoomType.WEBINAR && hasRemoteSharer
+        orientationSwitchButton.visibility = if (shouldShow) VISIBLE else GONE
+        val isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE
+        orientationSwitchButton.setImageResource(
+            if (isLandscape) R.drawable.roomkit_ic_switch_portrait_button
+            else R.drawable.roomkit_ic_switch_landscape_button
+        )
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun switchOrientation() {
+        val activity = context as? Activity ?: return
+        val currentlyLandscape =
+            resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        activity.requestedOrientation = if (currentlyLandscape) {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun forcePortraitIfLandscape() {
+        val activity = context as? Activity ?: return
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+    }
+
+    private fun onScreenSharerChanged(newSharerID: String?) {
+        if (currentScreenSharerID == newSharerID) {
+            return
+        }
+        currentScreenSharerID = newSharerID
+        updateOrientationSwitchButtonVisibility()
+        if (newSharerID.isNullOrEmpty()) {
+            forcePortraitIfLandscape()
+        }
     }
 
     fun isAISubtitleVisible(): Boolean {
