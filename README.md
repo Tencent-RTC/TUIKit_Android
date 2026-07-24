@@ -38,6 +38,14 @@ TUIKit_Android provides complete UI implementations for the following core busin
     * **Contact Management:** Support friend and blacklist management.
     * **Group Management:** Support group profile, group member, and group settings management.
 
+* **Video Conference:**
+
+    * **Cross-Platform Interoperability:** Supports seamless interconnection of TUIRoomKit components across multiple platforms including Android, iOS, Web, Flutter, HarmonyOS, and UniApp, ensuring barrier-free cross-end communication.
+    * **Member Management:** Supports various room management functions such as mute all, disable video for all, mute/disable video for individual members, device requests & invitations, role management, and kicking out participants.
+    * **Screen Sharing:** Powered by screen acquisition capabilities on all platforms polished with 3,000+ market applications, combined with exclusive AI encoding algorithms to deliver clearer images at a lower bitrate.
+    * **Cloud Recording:** Enables users to record in scenarios such as video conferencing, online education, and live interactive broadcasting, meeting diverse needs like archiving and auditing important content.
+    * **Barrage:** Supports sending and receiving barrage messages in Webinar rooms to enhance interactive experiences.
+
 ## Quick Start
 
 ### 1. Environment Setup
