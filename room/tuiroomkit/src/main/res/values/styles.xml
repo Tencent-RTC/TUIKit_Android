@@ -32,4 +32,20 @@
         <item name="android:textSize">14sp</item>
         <item name="fontFamily">sans-serif-medium</item>
     </style>
+
+    <style name="RoomkitBottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="RoomKitFullScreenDialog" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowBackground">@color/roomkit_color_background</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:statusBarColor">@color/roomkit_color_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowAnimationStyle">@style/RoomKitBottomDialogAnimation</item>
+    </style>
 </resources>

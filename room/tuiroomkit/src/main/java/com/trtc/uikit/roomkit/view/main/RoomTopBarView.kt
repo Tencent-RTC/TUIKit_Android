@@ -250,6 +250,7 @@ class RoomTopBarView @JvmOverloads constructor(
 
     private fun handleEndRoom() {
         logger.info("Owner confirmed to end room")
+        repository?.stopTranscription(null)
         roomStore.endRoom(object : CompletionHandler {
             override fun onSuccess() {
                 logger.info("End room success")

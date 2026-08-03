@@ -73,6 +73,11 @@ class ParticipantManagerView @JvmOverloads constructor(
             sharedRepository = repository
             sharedHideAISubtitleCallback = hideAISubtitleCallback
         }
+
+        fun unbindRepository() {
+            sharedRepository = null
+            sharedHideAISubtitleCallback = null
+        }
     }
 
     init {

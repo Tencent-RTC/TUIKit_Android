@@ -1,6 +1,5 @@
 package com.trtc.uikit.roomkit.view
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
@@ -14,13 +13,14 @@ import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.RoomMainActivity
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.ui.RoomActionSheetDialog
+import com.trtc.uikit.roomkit.base.utils.generateRoomID
+import com.trtc.uikit.roomkit.base.utils.generateWebinarRoomID
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.login.UserProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.math.pow
 
 /**
  * Room creation configuration screen.
@@ -35,9 +35,6 @@ class RoomCreateView @JvmOverloads constructor(
 
     enum class RoomType { STANDARD, WEBINAR }
 
-    private val roomIdLength: Int = 6
-
-    private val ivBack: ImageView by lazy { findViewById(R.id.iv_back) }
     private val tvYourName: TextView by lazy { findViewById(R.id.tv_your_name) }
     private val llRoomType: LinearLayout by lazy { findViewById(R.id.ll_room_type_container) }
     private val tvRoomType: TextView by lazy { findViewById(R.id.tv_room_type) }
@@ -87,10 +84,6 @@ class RoomCreateView @JvmOverloads constructor(
     }
 
     private fun initView() {
-        ivBack.setOnClickListener {
-            handleBackClick()
-        }
-
         llRoomType.setOnClickListener {
             showRoomTypeDialog()
         }
@@ -144,10 +137,6 @@ class RoomCreateView @JvmOverloads constructor(
         tvYourName.text = userName
     }
 
-    private fun handleBackClick() {
-        (context as? Activity)?.finish()
-    }
-
     private fun handleAudioClick() {
         isAudioEnabled = !isAudioEnabled
         updateAudioSwitch()
@@ -164,7 +153,10 @@ class RoomCreateView @JvmOverloads constructor(
     }
 
     private fun handleCreateRoomClick() {
-        val roomID = generateRoomID()
+        val roomID = when (selectedRoomType) {
+            RoomType.WEBINAR -> generateWebinarRoomID()
+            RoomType.STANDARD -> generateRoomID()
+        }
         val localUserName = LoginStore.shared.loginState.loginUserInfo.value?.getDisplayName() ?: ""
         val roomName = if (selectedRoomType == RoomType.WEBINAR) {
             context.getString(R.string.roomkit_user_webinar_room, localUserName)
@@ -181,18 +173,6 @@ class RoomCreateView @JvmOverloads constructor(
         }
         context.startActivity(intent)
     }
-
-    private fun generateRoomID(): String {
-        val min = 10.pow(roomIdLength - 1)
-        val max = 10.pow(roomIdLength) - 1
-        val id = (min..max).random().toString()
-        return when (selectedRoomType) {
-            RoomType.WEBINAR -> "webinar_$id"
-            RoomType.STANDARD -> id
-        }
-    }
-
-    private fun Int.pow(exponent: Int): Int = toDouble().pow(exponent).toInt()
 
     private fun updateAudioSwitch() {
         ivAudioSwitch.setImageResource(

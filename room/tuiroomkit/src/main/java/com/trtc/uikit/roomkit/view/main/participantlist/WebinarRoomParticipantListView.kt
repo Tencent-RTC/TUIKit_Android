@@ -38,7 +38,7 @@ class WebinarRoomParticipantListView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : BaseView(context, attrs, defStyleAttr) {
 
-    private val logger = RoomKitLogger.getLogger("RoomParticipantListView")
+    private val logger = RoomKitLogger.getLogger("WebinarRoomParticipantListView")
 
     companion object {
         private const val TAB_INDEX_PARTICIPANT = 0

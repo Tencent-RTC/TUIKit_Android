@@ -32,7 +32,6 @@ class RoomJoinView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val ivBack: ImageView by lazy { findViewById(R.id.iv_back) }
     private val etRoomId: EditText by lazy { findViewById(R.id.et_room_id) }
     private val tvYourName: TextView by lazy { findViewById(R.id.tv_your_name) }
     private val llAudio: LinearLayout by lazy { findViewById(R.id.ll_audio) }
@@ -80,10 +79,6 @@ class RoomJoinView @JvmOverloads constructor(
     }
 
     private fun initView() {
-        ivBack.setOnClickListener {
-            handleBackClick()
-        }
-
         llAudio.setOnClickListener {
             handleAudioClick()
         }
@@ -108,10 +103,6 @@ class RoomJoinView @JvmOverloads constructor(
 
     private fun updateUserInfo(userInfo: UserProfile) {
         tvYourName.text = userInfo.getDisplayName()
-    }
-
-    private fun handleBackClick() {
-        (context as? android.app.Activity)?.finish()
     }
 
     private fun handleAudioClick() {

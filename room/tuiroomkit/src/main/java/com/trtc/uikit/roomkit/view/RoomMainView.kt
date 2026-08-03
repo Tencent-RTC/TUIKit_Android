@@ -387,6 +387,7 @@ class RoomMainView @JvmOverloads constructor(
         roomStore.removeRoomListener(roomListener)
         repository.stopTranscription()
         repository.destroy()
+        ParticipantManagerView.unbindRepository()
         dismissCameraInvitationDialog()
         dismissMicrophoneInvitationDialog()
         dismissPasswordDialog()
@@ -450,9 +451,6 @@ class RoomMainView @JvmOverloads constructor(
                 if (roomType == RoomType.WEBINAR) {
                     getAudienceList()
                 }
-                connectConfig?.let {
-                    initConnectConfig(it)
-                }
                 bottomBarView.visibility = VISIBLE
             }
 
@@ -473,10 +471,6 @@ class RoomMainView @JvmOverloads constructor(
                 getParticipantList()
                 if (roomType == RoomType.WEBINAR) {
                     getAudienceList()
-                } else {
-                    connectConfig?.let {
-                        initConnectConfig(it)
-                    }
                 }
                 bottomBarView.visibility = VISIBLE
             }
@@ -531,10 +525,15 @@ class RoomMainView @JvmOverloads constructor(
 
     private fun getParticipantList() {
         logger.info("Store instance: ${participantStore.hashCode()} getParticipantList")
-
+        val roomInfo = roomStore.state.currentRoom.value ?: return
         participantStore?.getParticipantList("", object : ListResultCompletionHandler<RoomParticipant> {
             override fun onSuccess(result: List<RoomParticipant>, cursor: String) {
                 logger.info("getParticipantList success result size:${result.size} cursor:$cursor")
+                if (localUserID == roomInfo.roomOwner.userID || result.any { it.userID == localUserID }) {
+                    connectConfig?.let {
+                        initConnectConfig(it)
+                    }
+                }
             }
 
             override fun onFailure(code: Int, desc: String) {
@@ -559,12 +558,9 @@ class RoomMainView @JvmOverloads constructor(
     }
 
     private fun initConnectConfig(config: ConnectConfig) {
-        val roomInfo = roomStore.state.currentRoom.value
-        val isAllMicrophoneDisabled = roomInfo?.isAllMicrophoneDisabled == true
-        val isAllCameraDisabled = roomInfo?.isAllCameraDisabled == true
-
+        val roomInfo = roomStore.state.currentRoom.value ?: return
         scope.launch {
-            if (config.autoEnableMicrophone && !isAllMicrophoneDisabled) {
+            if (config.autoEnableMicrophone && canOpenMicrophone(roomInfo)) {
                 try {
                     deviceOperator.unmuteMicrophone(participantStore)
                 } catch (e: Exception) {
@@ -572,7 +568,7 @@ class RoomMainView @JvmOverloads constructor(
                 }
             }
 
-            if (config.autoEnableCamera && !isAllCameraDisabled) {
+            if (config.autoEnableCamera && canOpenCamera(roomInfo)) {
                 try {
                     deviceOperator.openCamera()
                 } catch (e: Exception) {
@@ -580,7 +576,29 @@ class RoomMainView @JvmOverloads constructor(
                 }
             }
         }
-        enableSpeaker(config.autoEnableSpeaker)
+        if (roomInfo.roomType == RoomType.STANDARD) {
+            enableSpeaker(config.autoEnableSpeaker)
+        }
+    }
+
+    private fun canOpenCamera(roomInfo: RoomInfo): Boolean {
+        if (localUserID == roomInfo.roomOwner.userID) {
+            return true
+        }
+        if (roomInfo.roomType == RoomType.STANDARD && participantStore?.state?.localParticipant?.value?.role == ParticipantRole.ADMIN) {
+            return true
+        }
+        return !roomInfo.isAllCameraDisabled
+    }
+
+    private fun canOpenMicrophone(roomInfo: RoomInfo): Boolean {
+        if (localUserID == roomInfo.roomOwner.userID) {
+            return true
+        }
+        if (participantStore?.state?.localParticipant?.value?.role == ParticipantRole.ADMIN) {
+            return true
+        }
+        return !roomInfo.isAllMicrophoneDisabled
     }
 
     private fun enableSpeaker(enableSpeaker: Boolean) {

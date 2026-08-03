@@ -85,7 +85,7 @@ class AIMinutesAdapter(
     override fun getItemCount(): Int = segmentIds.size
 
     class MinutesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val speakerContainer: LinearLayout = itemView.findViewById(R.id.ll_speaker_container)
+        private val speakerContainer: ViewGroup = itemView.findViewById(R.id.ll_speaker_container)
         private val nameLabel: TextView = itemView.findViewById(R.id.tv_speaker_name)
         private val timestampLabel: TextView = itemView.findViewById(R.id.tv_timestamp)
         private val cardView: LinearLayout = itemView.findViewById(R.id.ll_card)

@@ -1,53 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/roomkit_color_background">
+    android:background="@color/roomkit_color_background"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.trtc.uikit.roomkit.base.ui.widget.RoomTopBar
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="104dp"
-        android:background="@android:color/white"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="44dp" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <ImageView
-                android:id="@+id/iv_back"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_centerVertical="true"
-                android:background="@drawable/roomkit_ic_back"
-                tools:ignore="ContentDescription" />
-
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="8dp"
-                android:layout_toEndOf="@id/iv_back"
-                android:text="@string/roomkit_create_room"
-                android:textColor="@color/roomkit_color_text_primary"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        app:title="@string/roomkit_create_room" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="104dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <ScrollView
@@ -264,4 +233,4 @@
                 android:textStyle="bold" />
         </FrameLayout>
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

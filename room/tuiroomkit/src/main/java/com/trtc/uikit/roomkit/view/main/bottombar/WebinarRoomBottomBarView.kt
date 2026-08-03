@@ -177,18 +177,20 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
             launch {
                 combine(
                     isLocalInParticipantList,
-                    localCameraStatus
-                ) { isLocalInList, camStatus ->
-                    updateCameraStatus(isLocalInList, camStatus)
+                    localCameraStatus,
+                    localRole
+                ) { isLocalInList, camStatus, role ->
+                    updateCameraStatus(isLocalInList, camStatus, role)
                 }.collect {}
             }
 
             launch {
                 combine(
                     isLocalInParticipantList,
-                    localScreenShareStatus
-                ) { isLocalInList, screenStatus ->
-                    updateScreenShareStatus(isLocalInList, screenStatus)
+                    localScreenShareStatus,
+                    localRole
+                ) { isLocalInList, screenStatus, role ->
+                    updateScreenShareStatus(isLocalInList, screenStatus, role)
                 }.collect {}
             }
 
@@ -306,10 +308,11 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
 
     private fun updateCameraStatus(
         isLocalInParticipantList: Boolean,
-        cameraStatus: DeviceStatus?
+        cameraStatus: DeviceStatus?,
+        role: ParticipantRole?
     ) {
-        logger.info("updateCameraStatus isLocalInParticipantList:$isLocalInParticipantList cameraStatus:$cameraStatus")
-        if (!isLocalInParticipantList) {
+        logger.info("updateCameraStatus isLocalInParticipantList:$isLocalInParticipantList cameraStatus:$cameraStatus role:$role")
+        if (!isLocalInParticipantList || role != ParticipantRole.OWNER) {
             llCamera.visibility = GONE
             return
         }
@@ -330,10 +333,11 @@ class WebinarRoomBottomBarView @JvmOverloads constructor(
 
     private fun updateScreenShareStatus(
         isLocalInParticipantList: Boolean,
-        screenStatus: DeviceStatus
+        screenStatus: DeviceStatus,
+        role: ParticipantRole?
     ) {
-        logger.info("updateScreenShareStatus isLocalInParticipantList:$isLocalInParticipantList screenStatus:$screenStatus")
-        if (!isLocalInParticipantList) {
+        logger.info("updateScreenShareStatus isLocalInParticipantList:$isLocalInParticipantList screenStatus:$screenStatus role:$role")
+        if (!isLocalInParticipantList || role != ParticipantRole.OWNER) {
             llScreenShare.visibility = GONE
             return
         }

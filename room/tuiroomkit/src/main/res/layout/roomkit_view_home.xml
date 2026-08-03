@@ -1,36 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/roomkit_color_background">
+    android:background="@color/roomkit_color_bg_home">
 
     <ImageView
         android:id="@+id/iv_back"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="69dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:src="@drawable/roomkit_ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/user_info_container"
+        app:layout_constraintBottom_toBottomOf="@+id/user_info_container"
         tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:id="@+id/user_info_container"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginStart="54dp"
-        android:layout_marginTop="60dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="57dp"
         android:layout_marginEnd="16dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_back"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="UseCompoundDrawables">
 
         <androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/iv_user_avatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:scaleType="centerCrop"
             android:src="@drawable/roomkit_ic_default_avatar"
             app:round="20dp" />
@@ -44,76 +49,149 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:textColor="@color/roomkit_color_text_tertiary"
+            android:textColor="@color/roomkit_color_text_quaternary"
             android:textSize="16sp" />
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/join_room_container"
-        android:layout_width="263dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="56dp"
-        android:layout_marginTop="526dp"
-        android:background="@drawable/roomkit_bg_gradient_button"
-        android:foreground="?android:attr/selectableItemBackground">
+    <LinearLayout
+        android:id="@+id/btn_create_room"
+        android:layout_width="90dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/roomkit_bg_bottom_item_blue"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/btn_join_room"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_info_container">
 
-        <LinearLayout
-            android:id="@+id/btn_join_room"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables,UselessParent">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/roomkit_ic_create_room"
+            tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/roomkit_ic_join_room"
-                tools:ignore="ContentDescription" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/roomkit_create_room"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/roomkit_join_room"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </FrameLayout>
+    <LinearLayout
+        android:id="@+id/btn_join_room"
+        android:layout_width="90dp"
+        android:layout_height="80dp"
+        android:background="@drawable/roomkit_bg_bottom_item_blue"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/btn_schedule_room"
+        app:layout_constraintStart_toEndOf="@+id/btn_create_room"
+        app:layout_constraintTop_toTopOf="@+id/btn_create_room">
 
-    <FrameLayout
-        android:id="@+id/create_room_container"
-        android:layout_width="263dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="56dp"
-        android:layout_marginTop="604dp"
-        android:background="@drawable/roomkit_bg_gradient_button"
-        android:foreground="?android:attr/selectableItemBackground">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/roomkit_ic_join_room"
+            tools:ignore="ContentDescription" />
 
-        <LinearLayout
-            android:id="@+id/btn_create_room"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables,UselessParent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/roomkit_join_room"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/roomkit_ic_create_room" />
+    <LinearLayout
+        android:id="@+id/btn_schedule_room"
+        android:layout_width="90dp"
+        android:layout_height="80dp"
+        android:background="@drawable/roomkit_bg_bottom_item_blue"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_join_room"
+        app:layout_constraintTop_toTopOf="@+id/btn_join_room">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/roomkit_create_room"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </FrameLayout>
-</FrameLayout>
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/roomkit_ic_schedule_room"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/roomkit_schedule_room"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divide_line"
+        android:layout_width="0dp"
+        android:layout_height="1px"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/roomkit_color_divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_join_room" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_scheduled_rooms"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:paddingBottom="20dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divide_line" />
+
+    <LinearLayout
+        android:id="@+id/ll_no_scheduled_room"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divide_line">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="79dp"
+            android:src="@drawable/roomkit_ic_no_scheduled_room"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_no_scheduled_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/roomkit_no_scheduled_room"
+            android:textColor="@color/roomkit_color_g5"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

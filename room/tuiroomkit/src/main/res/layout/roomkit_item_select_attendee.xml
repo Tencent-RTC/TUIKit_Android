@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_attendee_root"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    tools:ignore="UnusedAttribute"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <ImageView
+        android:id="@+id/iv_attendee_select"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="@drawable/roomkit_bg_attendee_unselected"
+        android:contentDescription="@null" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/iv_attendee_avatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="6dp"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/roomkit_ic_default_avatar"
+        app:roundPercent="1" />
+
+    <TextView
+        android:id="@+id/tv_attendee_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/roomkit_color_text_primary"
+        android:textSize="14sp"
+        tools:text="Alice" />
+</LinearLayout>

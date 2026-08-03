@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:ignore="UnusedAttribute">
+
+    <com.trtc.uikit.roomkit.base.ui.widget.RoomTopBar
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/roomkit_select_attendee_title" />
+
+    <EditText
+        android:id="@+id/et_search_attendee"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/roomkit_bg_search_edit"
+        android:drawablePadding="6dp"
+        android:hint="@string/roomkit_search_attendee_hint"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="10dp"
+        android:singleLine="true"
+        android:textColor="@color/roomkit_color_text_primary"
+        android:textColorHint="@color/roomkit_color_search_edit_hint"
+        android:textSize="14sp"
+        app:drawableStartCompat="@drawable/roomkit_ic_search" />
+
+    <TextView
+        android:id="@+id/tv_all_participant_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/roomkit_color_text_primary"
+        android:textSize="14sp"
+        tools:text="All contacts(3)" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_attendee_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never" />
+
+        <TextView
+            android:id="@+id/tv_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/roomkit_no_friends"
+            android:textColor="@color/roomkit_color_text_hint"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@drawable/roomkit_bg_top_shadow_gradient" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:minHeight="50dp"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:id="@+id/btn_confirm_attendee"
+            android:layout_width="76dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/roomkit_bg_btn_confirm_blue"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            tools:text="Confirm(0)" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_selected_avatars"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/btn_confirm_attendee"
+            android:orientation="horizontal"
+            android:overScrollMode="never"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/ll_selected_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/btn_confirm_attendee"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_selected_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/roomkit_color_text_primary"
+                android:textSize="14sp"
+                tools:text="Selected: 12" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@null"
+                android:src="@drawable/roomkit_ic_arrow_top" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>
