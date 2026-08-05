@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_root"
-    android:layout_width="56dp"
-    android:layout_height="79dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_marginTop="8dp"
     android:gravity="center_horizontal"
@@ -18,9 +18,16 @@
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:breakStrategy="simple"
+        android:hyphenationFrequency="none"
         android:textColor="@color/common_text_color_primary"
         android:textSize="12sp" />
 </LinearLayout>

@@ -1,12 +1,11 @@
-package com.trtc.uikit.livekit.features.anchorview.view.coguest.panel
+package com.trtc.uikit.livekit.features.anchorview.view.usermanage
 
 import android.content.Context
 import android.text.TextUtils
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.cloud.tuikit.engine.room.TUIRoomDefine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomEngine
 import com.tencent.cloud.tuikit.engine.room.TUIRoomObserver
@@ -16,16 +15,14 @@ import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.common.PermissionRequest
 import com.trtc.uikit.livekit.common.completionHandler
 import com.trtc.uikit.livekit.common.displayName
+import com.trtc.uikit.livekit.common.ui.setDebounceClickListener
 import com.trtc.uikit.livekit.features.anchorview.store.AnchorStore
 import com.trtc.uikit.livekit.features.anchorview.store.MediaStore
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
-import com.trtc.uikit.livekit.common.ui.setDebounceClickListener
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
-import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
@@ -48,7 +45,7 @@ class AnchorManagerDialog(
 ) : AtomicPopover(context) {
 
     companion object {
-        private val LOGGER = LiveKitLogger.getFeaturesLogger("AnchorManagerDialog")
+        private val LOGGER = LiveKitLogger.Companion.getFeaturesLogger("AnchorManagerDialog")
         private const val BUTTON_DISABLE_ALPHA = 0.24f
         private const val BUTTON_ENABLE_ALPHA = 1.0f
     }
@@ -60,12 +57,15 @@ class AnchorManagerDialog(
     private lateinit var flipCameraContainer: View
     private lateinit var followContainer: View
     private lateinit var handUpContainer: View
+    private lateinit var featuredHostContainer: View
     private lateinit var audioContainer: View
     private lateinit var videoContainer: View
     private lateinit var ivAudio: ImageView
     private lateinit var tvAudio: TextView
     private lateinit var ivVideo: ImageView
     private lateinit var tvVideo: TextView
+    private lateinit var ivFeaturedHost: ImageView
+    private lateinit var tvFeaturedHost: TextView
     private lateinit var textUnfollow: TextView
     private lateinit var imageFollowIcon: ImageView
     private var confirmDialog: AtomicAlertDialog? = null
@@ -103,6 +103,7 @@ class AnchorManagerDialog(
         userNameText = rootView.findViewById(R.id.user_name)
         imageHeadView = rootView.findViewById(R.id.iv_head)
         handUpContainer = rootView.findViewById(R.id.hand_up_container)
+        featuredHostContainer = rootView.findViewById(R.id.featured_host_container)
         flipCameraContainer = rootView.findViewById(R.id.flip_camera_container)
         followContainer = rootView.findViewById(R.id.fl_follow_panel)
         ivAudio = rootView.findViewById(R.id.iv_audio)
@@ -111,6 +112,8 @@ class AnchorManagerDialog(
         videoContainer = rootView.findViewById(R.id.video_container)
         ivVideo = rootView.findViewById(R.id.iv_video)
         tvVideo = rootView.findViewById(R.id.tv_video)
+        ivFeaturedHost = rootView.findViewById(R.id.iv_featured_host)
+        tvFeaturedHost = rootView.findViewById(R.id.tv_featured_host)
         textUnfollow = rootView.findViewById(R.id.tv_unfollow)
         imageFollowIcon = rootView.findViewById(R.id.iv_follow)
 
@@ -118,6 +121,7 @@ class AnchorManagerDialog(
         flipCameraContainer.setDebounceClickListener { clickSwitchCameraButton() }
         audioContainer.setDebounceClickListener { clickMicrophoneButton() }
         videoContainer.setDebounceClickListener { clickCameraButton() }
+        featuredHostContainer.setDebounceClickListener { clickFeaturedHostButton() }
     }
 
     private fun updateView() {
@@ -127,7 +131,7 @@ class AnchorManagerDialog(
         }
 
         imageHeadView.setContent(
-            AvatarContent.URL(
+            AtomicAvatar.AvatarContent.URL(
                 currentUserInfo.userInfo.avatarURL,
                 R.drawable.livekit_ic_avatar
             )
@@ -139,20 +143,49 @@ class AnchorManagerDialog(
 
     private fun updateMediaDeviceButton() {
         if (isSelfUser()) {
-            flipCameraContainer.visibility = VISIBLE
-            handUpContainer.visibility = GONE
-            followContainer.visibility = GONE
-            videoContainer.visibility = GONE
+            flipCameraContainer.visibility = View.VISIBLE
+            handUpContainer.visibility = View.GONE
+            followContainer.visibility = View.GONE
+            videoContainer.visibility = View.GONE
+            featuredHostContainer.visibility = View.GONE
         } else {
-            flipCameraContainer.visibility = GONE
-            handUpContainer.visibility = VISIBLE
-            followContainer.visibility = VISIBLE
+            flipCameraContainer.visibility = View.GONE
+            handUpContainer.visibility = View.VISIBLE
+            followContainer.visibility = View.VISIBLE
             if (anchorManager.getState().liveInfo.seatTemplate == SeatLayoutTemplate.VideoLandscape4Seats) {
-                videoContainer.visibility = GONE
+                videoContainer.visibility = View.GONE
             } else {
-                videoContainer.visibility = VISIBLE
+                videoContainer.visibility = View.VISIBLE
             }
+            updateFeaturedHostButton()
         }
+    }
+
+    private fun updateFeaturedHostButton() {
+        val supportFeaturedHost =
+            anchorManager.getState().liveInfo.seatTemplate == SeatLayoutTemplate.VideoFixedFloat7Seats
+        if (!supportFeaturedHost || !isAdmin() || isSelfUser()) {
+            featuredHostContainer.visibility = View.GONE
+            return
+        }
+        // TODO by xander, 之前未提测主咖功能，先屏蔽入口。
+        featuredHostContainer.visibility = View.GONE
+        val isFeaturedHost = isCurrentUserFeaturedHost()
+        ivFeaturedHost.setImageResource(
+            if (isFeaturedHost) R.drawable.livekit_ic_revoke_featured_host
+            else R.drawable.livekit_ic_set_featured_host
+        )
+        tvFeaturedHost.setText(
+            if (isFeaturedHost) R.string.live_anchor_manager_revoke_featured_host
+            else R.string.live_anchor_manager_set_featured_host
+        )
+    }
+
+    private fun isCurrentUserFeaturedHost(): Boolean {
+        val currentUserInfo = seatInfo ?: return false
+        val seatList = LiveSeatStore.Companion.create(LiveListStore.Companion.shared().liveState.currentLive.value.liveID)
+            .liveSeatState.seatList.value
+        return seatList.any { it.userInfo.userID == currentUserInfo.userInfo.userID && it.isFeaturedHost }
     }
 
     private fun isSelfUser(): Boolean {
@@ -160,11 +193,11 @@ class AnchorManagerDialog(
         if (TextUtils.isEmpty(currentUserInfo.userInfo.userID)) {
             return false
         }
-        return currentUserInfo.userInfo.userID == LoginStore.shared.loginState.loginUserInfo.value?.userID
+        return currentUserInfo.userInfo.userID == LoginStore.Companion.shared.loginState.loginUserInfo.value?.userID
     }
 
     private fun isAdmin(): Boolean {
-        return LoginStore.shared.loginState.loginUserInfo.value?.userID == LiveListStore.shared().liveState.currentLive.value.liveOwner.userID
+        return LoginStore.Companion.shared.loginState.loginUserInfo.value?.userID == LiveListStore.Companion.shared().liveState.currentLive.value.liveOwner.userID
     }
 
     private fun addObserver() {
@@ -183,6 +216,9 @@ class AnchorManagerDialog(
             }
             launch {
                 onConnectUserListChanged()
+            }
+            launch {
+                onSeatListChanged()
             }
         }
         TUIRoomEngine.sharedInstance().addObserver(tuiRoomObserver)
@@ -208,11 +244,11 @@ class AnchorManagerDialog(
         anchorManager.getUserState().followingUserList.collect { followUsers ->
             seatInfo?.let { currentUserInfo ->
                 if (followUsers.contains(currentUserInfo.userInfo.userID)) {
-                    textUnfollow.visibility = GONE
-                    imageFollowIcon.visibility = VISIBLE
+                    textUnfollow.visibility = View.GONE
+                    imageFollowIcon.visibility = View.VISIBLE
                 } else {
-                    imageFollowIcon.visibility = GONE
-                    textUnfollow.visibility = VISIBLE
+                    imageFollowIcon.visibility = View.GONE
+                    textUnfollow.visibility = View.VISIBLE
                 }
             }
         }
@@ -233,13 +269,13 @@ class AnchorManagerDialog(
                         if (currentUserInfo.userInfo.userName.isNotBlank()) currentUserInfo.userInfo.userName else currentUserInfo.userInfo.userID
                     )
                 confirmButton(context.getString(R.string.common_end_link), onClick = {
-                    LiveSeatStore.create(LiveListStore.shared().liveState.currentLive.value.liveID)
+                    LiveSeatStore.Companion.create(LiveListStore.Companion.shared().liveState.currentLive.value.liveID)
                         .kickUserOutOfSeat(
                             currentUserInfo.userInfo.userID,
                             completionHandler {
                                 onError { code, desc ->
                                     LOGGER.error("disconnectUser failed:code:$code,desc:$desc")
-                                    ErrorLocalized.onError(code)
+                                    ErrorLocalized.Companion.onError(code)
                                 }
                             })
                     dismiss()
@@ -257,7 +293,7 @@ class AnchorManagerDialog(
             confirmDialog?.init {
                 title = context.getString(R.string.common_terminate_room_connection_message)
                 confirmButton(context.getString(R.string.common_disconnection), onClick = {
-                    CoGuestStore.create(LiveListStore.shared().liveState.currentLive.value.liveID)
+                    CoGuestStore.Companion.create(LiveListStore.Companion.shared().liveState.currentLive.value.liveID)
                         .disconnect(null)
                     dismiss()
                 },type = AtomicAlertDialog.TextColorPreset.RED)
@@ -271,15 +307,15 @@ class AnchorManagerDialog(
         seatInfo?.let {
             if (isSelfUser()) {
                 if (it.userInfo.microphoneStatus == DeviceStatus.ON) {
-                    LiveSeatStore.create(LiveListStore.shared().liveState.currentLive.value.liveID).muteMicrophone()
+                    LiveSeatStore.Companion.create(LiveListStore.Companion.shared().liveState.currentLive.value.liveID).muteMicrophone()
                 } else {
-                    LiveSeatStore.create(LiveListStore.shared().liveState.currentLive.value.liveID)
+                    LiveSeatStore.Companion.create(LiveListStore.Companion.shared().liveState.currentLive.value.liveID)
                         .unmuteMicrophone(object : CompletionHandler {
                             override fun onSuccess() {}
 
                             override fun onFailure(code: Int, desc: String) {
                                 LOGGER.error("unMuteMicrophone failed:code:$code,desc:$desc")
-                                ErrorLocalized.onError(code)
+                                ErrorLocalized.Companion.onError(code)
                             }
 
                         })
@@ -304,9 +340,9 @@ class AnchorManagerDialog(
         val currentUserInfo = seatInfo ?: return
 
         if (isSelfUser()) {
-            if (DeviceStore.shared().deviceState.cameraStatus.value == DeviceStatus.ON) {
-                DeviceStore.shared().closeLocalCamera()
-                flipCameraContainer.visibility = GONE
+            if (DeviceStore.Companion.shared().deviceState.cameraStatus.value == DeviceStatus.ON) {
+                DeviceStore.Companion.shared().closeLocalCamera()
+                flipCameraContainer.visibility = View.GONE
             } else {
                 startCamera()
             }
@@ -328,13 +364,13 @@ class AnchorManagerDialog(
     }
 
     private fun clickSwitchCameraButton() {
-        val isFront = DeviceStore.shared().deviceState.isFrontCamera.value
-        DeviceStore.shared().switchCamera(!isFront)
+        val isFront = DeviceStore.Companion.shared().deviceState.isFrontCamera.value
+        DeviceStore.Companion.shared().switchCamera(!isFront)
         dismiss()
     }
 
     private fun startCamera() {
-        val isFrontCamera = DeviceStore.shared().deviceState.isFrontCamera.value
+        val isFrontCamera = DeviceStore.Companion.shared().deviceState.isFrontCamera.value
         ContextProvider.getApplicationContext()?.apply {
             PermissionRequest.requestCameraPermissions(this, object :
                 PermissionCallback() {
@@ -344,14 +380,14 @@ class AnchorManagerDialog(
 
                 override fun onGranted() {
                     LOGGER.info("requestCameraPermissions:[onGranted]")
-                    DeviceStore.shared().openLocalCamera(isFrontCamera, object : CompletionHandler {
+                    DeviceStore.Companion.shared().openLocalCamera(isFrontCamera, object : CompletionHandler {
                         override fun onSuccess() {
 
                         }
 
                         override fun onFailure(code: Int, desc: String) {
                             LOGGER.error("startCamera failed:code:$code,desc:$desc")
-                            ErrorLocalized.onError(code)
+                            ErrorLocalized.Companion.onError(code)
                         }
 
                     })
@@ -361,7 +397,7 @@ class AnchorManagerDialog(
     }
 
     private suspend fun onMicrophoneStatusChanged() {
-        DeviceStore.shared().deviceState.microphoneStatus.collect {
+        DeviceStore.Companion.shared().deviceState.microphoneStatus.collect {
             seatInfo?.let {
                 val isAudioLocked = anchorManager.getState().lockAudioUserList.value?.contains(it.userInfo.userID)
                 if (!isSelfUser()) {
@@ -424,7 +460,7 @@ class AnchorManagerDialog(
                 } else {
                     audioContainer.isEnabled = true
                     ivAudio.alpha = BUTTON_ENABLE_ALPHA
-                    val isMicrophoneMuted = DeviceStore.shared().deviceState.microphoneStatus.value == DeviceStatus.OFF
+                    val isMicrophoneMuted = DeviceStore.Companion.shared().deviceState.microphoneStatus.value == DeviceStatus.OFF
                     if (isMicrophoneMuted) {
                         ivAudio.setImageResource(R.drawable.livekit_ic_mute_audio)
                         tvAudio.setText(R.string.common_unmute_audio)
@@ -456,24 +492,24 @@ class AnchorManagerDialog(
                         )
                     }
                 } else {
-                    val isCameraOpened = (DeviceStatus.ON == DeviceStore.shared().deviceState.cameraStatus.value)
+                    val isCameraOpened = (DeviceStatus.ON == DeviceStore.Companion.shared().deviceState.cameraStatus.value)
                     if (isVideoLocked) {
                         videoContainer.isEnabled = false
                         ivVideo.alpha = BUTTON_DISABLE_ALPHA
                         ivVideo.setImageResource(R.drawable.livekit_ic_stop_video)
                         tvVideo.setText(R.string.common_start_video)
-                        flipCameraContainer.visibility = GONE
+                        flipCameraContainer.visibility = View.GONE
                     } else {
                         videoContainer.isEnabled = true
                         ivVideo.alpha = BUTTON_ENABLE_ALPHA
                         if (isCameraOpened) {
                             ivVideo.setImageResource(R.drawable.livekit_ic_start_video)
                             tvVideo.setText(R.string.common_stop_video)
-                            flipCameraContainer.visibility = VISIBLE
+                            flipCameraContainer.visibility = View.VISIBLE
                         } else {
                             ivVideo.setImageResource(R.drawable.livekit_ic_stop_video)
                             tvVideo.setText(R.string.common_start_video)
-                            flipCameraContainer.visibility = GONE
+                            flipCameraContainer.visibility = View.GONE
                         }
                     }
                 }
@@ -482,9 +518,9 @@ class AnchorManagerDialog(
     }
 
     private suspend fun onConnectUserListChanged() {
-        CoGuestStore.create(LiveListStore.shared().liveState.currentLive.value.liveID).coGuestState.connected.collect {
+        CoGuestStore.Companion.create(LiveListStore.Companion.shared().liveState.currentLive.value.liveID).coGuestState.connected.collect {
             val userList: List<SeatUserInfo> =
-                it.filterNot { it.liveID != LiveListStore.shared().liveState.currentLive.value.liveID }
+                it.filterNot { it.liveID != LiveListStore.Companion.shared().liveState.currentLive.value.liveID }
             seatInfo?.let {
                 val isConnected = userList.any { item ->
                     it.userInfo.userID == item.userID
@@ -497,6 +533,31 @@ class AnchorManagerDialog(
 
         }
 
+    }
+
+    private suspend fun onSeatListChanged() {
+        LiveSeatStore.Companion.create(LiveListStore.Companion.shared().liveState.currentLive.value.liveID)
+            .liveSeatState.seatList.collect {
+                updateFeaturedHostButton()
+            }
+    }
+
+    private fun clickFeaturedHostButton() {
+        val currentUserInfo = seatInfo ?: return
+        val liveID = LiveListStore.Companion.shared().liveState.currentLive.value.liveID
+        val targetUserID = currentUserInfo.userInfo.userID
+        val handler = completionHandler {
+            onError { code, desc ->
+                LOGGER.error("featuredHost failed:code:$code,desc:$desc")
+                ErrorLocalized.Companion.onError(code)
+            }
+        }
+        if (isCurrentUserFeaturedHost()) {
+            LiveSeatStore.Companion.create(liveID).revokeFeaturedHost(targetUserID, handler)
+        } else {
+            LiveSeatStore.Companion.create(liveID).setFeaturedHost(targetUserID, handler)
+        }
+        dismiss()
     }
 
     private val tuiRoomObserver = object : TUIRoomObserver() {

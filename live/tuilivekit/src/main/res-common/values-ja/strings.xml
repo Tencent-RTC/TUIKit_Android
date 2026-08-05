@@ -51,6 +51,7 @@
     <string name="common_end_connection_tips">現在、接続されている州では、「ライブブロードキャストルームを閉じる」または「閉じる」必要がありますか？</string>
     <string name="common_end_pk">PKを終了します</string>
     <string name="common_end_pk_tips">現在、PKステータスでは、「PKを終了」する必要がありますか、それとも「ライブブロードキャストルームを閉じる」必要がありますか？</string>
+    <string name="common_anchor_end_pk_tips">現在、PKステータスです。「ライブブロードキャストルームを閉じる」必要がありますか？</string>
     <string name="common_float_window_received_battle_invitation">PKの招待状を受け取った後、フルスクリーンモードに戻って後処理を行うことができます</string>
     <string name="common_float_window_received_connection_invitation">オンラインの招待状を受け取った後、フルスクリーンモードに戻って後処理を行うことができます。</string>
     <string name="common_kick_out_of_room">取り除く</string>
@@ -458,4 +459,8 @@
     <string name="common_select_app_to_live">アプリを選択してライブを開始</string>
     <string name="common_violation_alert_toast">現在のコンテンツにはプラットフォーム規約に違反するリスクがあります。ご注意ください</string>
     <string name="live_song_unknown_artist">不明</string>
+    <string name="live_anchor_manager_set_featured_host">メインホストに設定</string>
+    <string name="live_anchor_manager_revoke_featured_host">メインホストを解除</string>
+    <string name="common_enter_anchor_live_room">配信ルームへ</string>
+    <string name="common_battle_all_member_exit_win">すべてのPKメンバーが途中で退場しました。今回は現在のホストの勝利として判定されます</string>
 </resources>

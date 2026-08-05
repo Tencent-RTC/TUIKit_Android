@@ -17,12 +17,14 @@ import com.trtc.uikit.livekit.component.barrage.view.adapter.BarrageItemDefaultA
 import com.trtc.uikit.livekit.component.barrage.view.adapter.BarrageItemTypeDelegate
 import com.trtc.uikit.livekit.component.barrage.view.adapter.BarrageMsgListAdapter
 import com.trtc.uikit.livekit.component.barrage.viewmodel.BarrageConstants
+import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicxcore.api.barrage.Barrage
 import io.trtc.tuikit.atomicxcore.api.barrage.BarrageStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @SuppressLint("ViewConstructor")
 class BarrageStreamView @JvmOverloads constructor(

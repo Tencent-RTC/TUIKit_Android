@@ -108,6 +108,8 @@ class ErrorLocalized {
         const val LIVE_CONNECTION_ERROR_RETRY = 5
         const val LIVE_CONNECTION_ROOM_MISMATCH = 6
 
+
+        const val LIVE_IM_ERROR_INVALID_PARAM = 6017
         const val LIVE_IM_ERROR_FREQ_LIMIT = 7008
         const val LIVE_IM_ERROR_GROUP_SHUTUP_DENY = 10017
         const val LIVE_IM_ERROR_SENSITIVE_WORD = 7015
@@ -441,6 +443,9 @@ class ErrorLocalized {
 
                 LIVE_IM_ERROR_FREQ_LIMIT ->
                     context.getString(R.string.live_barrage_error_freq_limit)
+
+                LIVE_IM_ERROR_INVALID_PARAM ->
+                    context.getString(R.string.common_server_error_param_illegal)
 
                 LIVE_IM_ERROR_GROUP_SHUTUP_DENY ->
                     context.getString(R.string.live_barrage_error_disable_message_by_admin)

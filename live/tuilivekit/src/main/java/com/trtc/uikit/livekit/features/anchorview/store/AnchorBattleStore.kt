@@ -58,6 +58,7 @@ data class AnchorBattleState(
     val isBattleRunning: StateFlow<Boolean?>,
     val isOnDisplayResult: StateFlow<Boolean?>,
     val durationCountDown: StateFlow<Int>,
+    val lastEndedReason: StateFlow<BattleEndedReason?>,
     var battleConfig: BattleConfig,
     var battleId: String,
     var isShowingStartView: Boolean,
@@ -72,6 +73,7 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
     private val _isBattleRunning = MutableStateFlow<Boolean?>(null)
     private val _isOnDisplayResult = MutableStateFlow<Boolean?>(null)
     private val _durationCountDown = MutableStateFlow(0)
+    private val _lastEndedReason = MutableStateFlow<BattleEndedReason?>(null)
 
     internal val battleState = AnchorBattleState(
         battledUsers = _battledUsers,
@@ -81,6 +83,7 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
         isBattleRunning = _isBattleRunning,
         isOnDisplayResult = _isOnDisplayResult,
         durationCountDown = _durationCountDown,
+        lastEndedReason = _lastEndedReason,
         battleConfig = BattleConfig(),
         battleId = "",
         isShowingStartView = false
@@ -95,8 +98,8 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
         }
 
         override fun onBattleEnded(battleInfo: BattleInfo, reason: BattleEndedReason?) {
-            logger.info("onBattleEnded:[battleInfo:$battleInfo]")
-            onBattleEnded(battleInfo)
+            logger.info("onBattleEnded:[battleInfo:$battleInfo],[reason:$reason]")
+            onBattleEndedHandler(battleInfo, reason)
         }
 
         override fun onUserJoinBattle(battleID: String, battleUser: SeatUserInfo) {
@@ -196,6 +199,7 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
         if (battleInfo == null || _isBattleRunning.value == true) {
             return
         }
+        _lastEndedReason.update { null }
         battleState.battleId = battleInfo.battleID
         battleState.battleConfig = battleInfo.config
         var duration = (battleInfo.config.duration + battleInfo.startTime - getCurrentTimestamp() / 1000).toInt()
@@ -232,12 +236,13 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
         battleState.isShowingStartView = true
     }
 
-    private fun onBattleEnded(battleInfo: BattleInfo?) {
+    private fun onBattleEndedHandler(battleInfo: BattleInfo?, reason: BattleEndedReason? = null) {
         mainHandler.removeCallbacksAndMessages(null)
         battleState.isShowingStartView = false
         battleState.battleId = ""
         battleState.battleConfig = BattleConfig()
         _sentBattleRequests.update { arrayListOf() }
+        _lastEndedReason.update { reason }
 
         battleInfo?.let {
             val list = _battledUsers.value.toMutableList()
@@ -250,6 +255,15 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
         }
         _isBattleRunning.update { false }
         mainHandler.removeCallbacksAndMessages(null)
+
+        if (reason == BattleEndedReason.ALL_MEMBER_EXIT) {
+            _isOnDisplayResult.update { false }
+            resetState()
+            ContextProvider.getApplicationContext()?.apply {
+                showToast(this.getString(R.string.common_battle_all_member_exit_win))
+            }
+            return
+        }
 
         val connectedList = CoHostStore.create(liveInfo.liveID).coHostState.connected.value
         if (connectedList.isEmpty()) {
@@ -414,7 +428,7 @@ class AnchorBattleStore(val liveInfo: LiveInfo) {
 
     companion object {
         val isDebugMode = BuildConfig.LIVE_DEV_MODE
-        val BATTLE_REQUEST_TIMEOUT = if (isDebugMode) 30 else 10
+        val BATTLE_REQUEST_TIMEOUT = if (isDebugMode) 30 else 0
         val BATTLE_DURATION = if (isDebugMode) 60 else 30
         const val BATTLE_END_INFO_DURATION = 5
 

@@ -41,7 +41,7 @@ import com.trtc.uikit.livekit.features.anchorview.view.AnchorVideoViewAdapter
 import com.trtc.uikit.livekit.features.anchorview.view.BasicView
 import com.trtc.uikit.livekit.features.anchorview.view.LiveStreamEndDialog
 import com.trtc.uikit.livekit.features.anchorview.view.battle.panel.BattleCountdownDialog
-import com.trtc.uikit.livekit.features.anchorview.view.coguest.panel.AnchorManagerDialog
+import com.trtc.uikit.livekit.features.anchorview.view.usermanage.AnchorManagerDialog
 import com.trtc.uikit.livekit.features.anchorview.view.game.AnchorGameView
 import com.trtc.uikit.livekit.livestream.VideoLiveAnchorActivity
 import io.trtc.tuikit.atomicx.common.foregroundservice.VideoForegroundService

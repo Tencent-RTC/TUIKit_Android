@@ -28,7 +28,7 @@
 
         <activity
             android:name=".livestream.VideoLiveAnchorActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode|locale|layoutDirection|fontScale"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -44,7 +44,7 @@
 
         <activity
             android:name=".livestream.VideoLiveAudienceActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode|locale|layoutDirection|fontScale"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

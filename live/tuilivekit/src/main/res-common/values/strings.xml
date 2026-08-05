@@ -51,6 +51,7 @@
     <string name="common_end_connection_tips">You are currently co-hosting with other streamers. Would you like to [End Co-host] or [End Live] ?</string>
     <string name="common_end_pk">End PK</string>
     <string name="common_end_pk_tips">You are currently in PK mode. Would you like to [End PK] or [End Live] ?</string>
+    <string name="common_anchor_end_pk_tips">You are currently in PK mode. Would you like to [End Live] ?</string>
     <string name="common_float_window_received_battle_invitation">You\'ve received an invitation to battle, and you can go back to full-screen mode for post-processing</string>
     <string name="common_float_window_received_connection_invitation">You\'ve received an invitation to connect, and you can go back to full-screen mode for post-processing</string>
     <string name="common_kick_out_of_room">Remove</string>
@@ -178,10 +179,10 @@
     <string name="common_beauty_panel_title">One-click beauty</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_change_voice">Voice changer</string>
-    <string name="common_change_voice_child">Naughty child</string>
+    <string name="common_change_voice_child">Kid</string>
     <string name="common_change_voice_ethereal">Ethereal</string>
-    <string name="common_change_voice_girl">Loli</string>
-    <string name="common_change_voice_none">Original</string>
+    <string name="common_change_voice_girl">Girl</string>
+    <string name="common_change_voice_none">Default</string>
     <string name="common_change_voice_uncle">Uncle</string>
     <string name="common_common_gift_income">Gift Income</string>
     <string name="common_common_like_count">Likes Count</string>
@@ -223,7 +224,7 @@
     <string name="common_reverb_karaoke">KTV</string>
     <string name="common_reverb_loud_and_loud">Loud</string>
     <string name="common_reverb_low">Low</string>
-    <string name="common_reverb_metallic_sound">Metallic sound</string>
+    <string name="common_reverb_metallic_sound">Metallic</string>
     <string name="common_reverb_none">No effect</string>
     <string name="common_room_destroy">Broadcast has been ended</string>
     <string name="common_room_info_liveroom_id">Live Room ID:</string>
@@ -231,7 +232,7 @@
     <string name="common_main_item_video_live">Video Live</string>
     <string name="common_go_live">Go Live</string>
     <string name="common_main_item_voice_room">Voice Room</string>
-    <string name="common_main_item_ktv_room">KTV</string>
+    <string name="common_main_item_ktv_room">Karaoke</string>
     <string name="common_server_error_already_on_the_mic">Already on the seat</string>
     <string name="common_server_error_already_on_the_mic_queue">Already on the seat queue</string>
     <string name="common_server_error_battle_does_not_exist_or_has_ended">The battle does not exist or has ended</string>
@@ -458,4 +459,8 @@
     <string name="common_select_app_to_live">Select App and Start Live</string>
     <string name="common_violation_alert_toast">Current content may violate platform guidelines, please follow the rules</string>
     <string name="live_song_unknown_artist">Unknown</string>
+    <string name="live_anchor_manager_set_featured_host">Set as Featured</string>
+    <string name="live_anchor_manager_revoke_featured_host">Revoke Featured</string>
+    <string name="common_enter_anchor_live_room">Enter Live Room</string>
+    <string name="common_battle_all_member_exit_win">All PK members exited early, this round is judged as a victory for the current host</string>
 </resources>

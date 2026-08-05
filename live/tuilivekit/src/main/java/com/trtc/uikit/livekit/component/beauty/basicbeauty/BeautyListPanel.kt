@@ -116,9 +116,7 @@ class BeautyListPanel @JvmOverloads constructor(
         recycleBeautyList.layoutManager = GridLayoutManager(context, spanCount)
 
         val screenWidth = ScreenUtil.getScreenWidth(context)
-        val itemWidth = ScreenUtil.dip2px(56f)
-        val spanSpace0 = (screenWidth - spanCount * itemWidth) / spanCount
-        val spanSpace1 = (screenWidth - spanCount * itemWidth) / (spanCount + 1)
+        val itemWidth = screenWidth / spanCount
 
         recycleBeautyList.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
@@ -127,8 +125,9 @@ class BeautyListPanel @JvmOverloads constructor(
                 parent: RecyclerView,
                 state: RecyclerView.State
             ) {
-                val position = parent.getChildLayoutPosition(view) % spanCount
-                outRect.left = (1 + position) * spanSpace1 - position * spanSpace0
+                view.layoutParams = view.layoutParams.apply {
+                    width = itemWidth
+                }
             }
         })
         recycleBeautyList.adapter = beautyListAdapter

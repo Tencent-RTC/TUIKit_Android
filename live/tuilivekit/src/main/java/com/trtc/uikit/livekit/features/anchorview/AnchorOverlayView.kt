@@ -125,6 +125,7 @@ class AnchorOverlayView @JvmOverloads constructor(
                     userID = audience.userID
                     userName = audience.userName
                     avatarURL = audience.avatarURL
+                    level = audience.level
                 }
             }
             _barrageStreamView.insertBarrages(barrage)
@@ -399,7 +400,7 @@ class AnchorOverlayView @JvmOverloads constructor(
                         sender.userName
                     }
                     this.sender.avatarURL = sender.avatarURL
-
+                    this.sender.level = sender.level
                     val extInfo = hashMapOf<String, String>(
                         GIFT_VIEW_TYPE to GIFT_VIEW_TYPE_1.toString(),
                         GIFT_NAME to gift.name,

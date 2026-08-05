@@ -5,7 +5,6 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.anchorview.store.AnchorBattleStore.Companion.BATTLE_DURATION
-import com.trtc.uikit.livekit.features.anchorview.store.AnchorBattleStore.Companion.BATTLE_REQUEST_TIMEOUT
 import com.trtc.uikit.livekit.features.anchorview.store.AnchorStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
@@ -34,9 +33,7 @@ class AnchorBattleManageDialog(
     private var anchorEndBattleDialog: AnchorEndBattleDialog? = null
 
     fun handleBattleClick() {
-        if (battleState.isBattleRunning.value == true && anchorBattleStore.isSelfInBattle()) {
-            showEndBattlePanel()
-        } else {
+        if (battleState.isBattleRunning.value == false || !anchorBattleStore.isSelfInBattle()) {
             requestBattle()
         }
     }
@@ -70,11 +67,11 @@ class AnchorBattleManageDialog(
 
         val battleConfig = BattleConfig().apply {
             duration = BATTLE_DURATION
-            needResponse = true
+            needResponse = false
             extensionInfo = ""
         }
         BattleStore.create(liveID).requestBattle(
-            battleConfig, list, BATTLE_REQUEST_TIMEOUT, object : BattleRequestCallback {
+            battleConfig, list, 0, object : BattleRequestCallback {
                 override fun onSuccess(
                     battleInfo: BattleInfo, resultMap: Map<String, Int>,
                 ) {

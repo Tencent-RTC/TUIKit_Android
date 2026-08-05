@@ -9,6 +9,7 @@ android {
         minSdkVersion 21
         versionName "1.0"
         versionCode 1
+        // 增加编译变量，支持在测试模式下调整 Live 模块 battle 相关时长和 CoHostTimeout 时长
         def devMode = false
         buildConfigField "boolean", "LIVE_DEV_MODE", "${devMode}"
     }
@@ -78,8 +79,9 @@ dependencies {
     def projects = this.rootProject.getAllprojects().stream().map { project -> project.name }.collect()
     api projects.contains("tuicore") ? project(':tuicore') : "com.tencent.liteav.tuikit:tuicore:8.8.7357"
 
-    api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:4.2.0.28"
-    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.2.0.28"
-    api rootProject.getProperties().containsKey("liteavSdk") ? rootProject.ext.liteavSdk : "com.tencent.liteav:LiteAVSDK_Professional:13.2.0.20058"
+    api rootProject.getProperties().containsKey("roomEngineSdk") ? rootProject.ext.roomEngineSdk : "io.trtc.uikit:rtc_room_engine:4.3.0.25"
+    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:4.3.0.25"
+    api rootProject.getProperties().containsKey("liteavSdk") ? rootProject.ext.liteavSdk : "com.tencent.liteav:LiteAVSDK_Professional:13.4.0.20477"
+    api rootProject.getProperties().containsKey("liteavScreenCaptureSdk") ? rootProject.ext.liteavScreenCaptureSdk : "com.tencent.liteav:LiteAVSDK_ScreenCapture:13.4.0.20477"
     api rootProject.getProperties().containsKey("imSdk") ? rootProject.ext.imSdk : "com.tencent.imsdk:imsdk-plus:8.7.7201"
 }

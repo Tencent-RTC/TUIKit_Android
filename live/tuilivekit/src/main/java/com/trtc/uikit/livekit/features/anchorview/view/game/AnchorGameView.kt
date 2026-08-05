@@ -7,7 +7,7 @@ import android.widget.FrameLayout
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.anchorview.store.AnchorStore
-import com.trtc.uikit.livekit.features.anchorview.view.coguest.panel.AnchorManagerDialog
+import com.trtc.uikit.livekit.features.anchorview.view.usermanage.AnchorManagerDialog
 import io.trtc.tuikit.atomicxcore.api.live.SeatInfo
 
 /**

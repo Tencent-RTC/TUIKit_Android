@@ -51,6 +51,7 @@
     <string name="common_end_connection_tips">أنت حالياً في بث مشترك. هل تريد [إنهاء البث المشترك] أم [إنهاء البث]؟</string>
     <string name="common_end_pk">إنهاء المنافسة</string>
     <string name="common_end_pk_tips">أنت حالياً في وضع المنافسة. هل تريد [إنهاء المنافسة] أم [إنهاء البث]؟</string>
+    <string name="common_anchor_end_pk_tips">أنت حالياً في وضع المنافسة. هل تريد [إنهاء البث]؟</string>
     <string name="common_float_window_received_battle_invitation">لقد تلقيت دعوة للمنافسة، يمكنك العودة إلى وضع ملء الشاشة للمعالجة</string>
     <string name="common_float_window_received_connection_invitation">لقد تلقيت دعوة للاتصال، يمكنك العودة إلى وضع ملء الشاشة للمعالجة</string>
     <string name="common_kick_out_of_room">إزالة</string>
@@ -458,4 +459,8 @@
     <string name="common_select_app_to_live">بث مباشر للعبةاختر التطبيق وابدأ البث المباشر</string>
     <string name="common_violation_alert_toast">المحتوى الحالي قد ينتهك إرشادات المنصة، يرجى الالتزام بالقواعد</string>
     <string name="live_song_unknown_artist">غير معروف</string>
+    <string name="live_anchor_manager_set_featured_host">تعيين كمضيف رئيسي</string>
+    <string name="live_anchor_manager_revoke_featured_host">إلغاء المضيف الرئيسي</string>
+    <string name="common_enter_anchor_live_room">الذهاب إلى غرفة البث</string>
+    <string name="common_battle_all_member_exit_win">غادر جميع أعضاء المنافسة مبكرًا، يمنح الفوز للمضيف الحالي في هذه الجولة</string>
 </resources>

@@ -80,6 +80,18 @@
             android:text="@string/common_follow_anchor"
             app:buttonColorType="primary"
             app:buttonIconPosition="none"
+            android:layout_marginBottom="14dp"
+            app:buttonTextSize="14sp"
+            app:buttonVariant="filled" />
+
+        <io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
+            android:id="@+id/atomic_btn_jump_live_room"
+            android:layout_width="275dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:text="@string/common_enter_anchor_live_room"
+            app:buttonColorType="primary"
+            app:buttonIconPosition="none"
             android:layout_marginBottom="34dp"
             app:buttonTextSize="14sp"
             app:buttonVariant="filled" />

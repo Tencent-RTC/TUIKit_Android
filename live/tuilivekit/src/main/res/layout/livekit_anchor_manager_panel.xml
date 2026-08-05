@@ -210,6 +210,43 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/featured_host_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:ignore="UseCompoundDrawables">
+
+                <RelativeLayout
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/audio_effect_settings_item_not_select_background">
+
+                    <ImageView
+                        android:id="@+id/iv_featured_host"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_centerInParent="true"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/livekit_ic_set_featured_host" />
+                </RelativeLayout>
+
+                <io.trtc.tuikit.atomicx.widget.basicwidget.label.AtomicLabel
+                    android:id="@+id/tv_featured_host"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="6dp"
+                    android:singleLine="true"
+                    android:text="@string/live_anchor_manager_set_featured_host"
+                    android:textColor="@color/text_color_primary"
+                    android:textSize="@dimen/text_size_12" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/hand_up_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

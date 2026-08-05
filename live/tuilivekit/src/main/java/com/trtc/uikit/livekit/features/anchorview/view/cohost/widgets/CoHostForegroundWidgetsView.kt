@@ -9,8 +9,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.trtc.uikit.livekit.common.ui.setDebounceClickListener
 import com.trtc.uikit.livekit.features.anchorview.store.AnchorStore
 import com.trtc.uikit.livekit.features.anchorview.view.BasicView
+import com.trtc.uikit.livekit.features.anchorview.view.usermanage.AnchorManagerDialog
 import com.trtc.uikit.livekit.features.anchorview.view.cohost.panel.AnchorCoHostOperateDialog
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.live.CoGuestStore
@@ -41,8 +43,13 @@ class CoHostForegroundWidgetsView @JvmOverloads constructor(
         state = seatInfo
         super.init(manager)
 
-        if (LoginStore.shared.loginState.loginUserInfo.value?.userID != seatInfo.userInfo.userID) {
-            setOnClickListener { showCoHostOperateDialog() }
+        setDebounceClickListener {
+            if (LoginStore.shared.loginState.loginUserInfo.value?.userID != seatInfo.userInfo.userID) {
+                showCoHostOperateDialog()
+            } else if (LoginStore.shared.loginState.loginUserInfo.value?.userID
+                == LiveListStore.shared().liveState.currentLive.value.liveOwner.userID) {
+                showAnchorManagerDialog()
+            }
         }
     }
 
@@ -135,6 +142,14 @@ class CoHostForegroundWidgetsView @JvmOverloads constructor(
     private fun showCoHostOperateDialog() {
         anchorStore?.let {
             val anchorManagerDialog = AnchorCoHostOperateDialog(baseContext, it)
+            anchorManagerDialog.init(state)
+            anchorManagerDialog.show()
+        }
+    }
+
+    private fun showAnchorManagerDialog() {
+        anchorStore?.let {
+            val anchorManagerDialog = AnchorManagerDialog(baseContext, it)
             anchorManagerDialog.init(state)
             anchorManagerDialog.show()
         }

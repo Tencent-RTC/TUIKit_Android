@@ -9,8 +9,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
+import com.trtc.uikit.livekit.common.ui.setDebounceClickListener
 import com.trtc.uikit.livekit.features.audienceview.store.AudienceStore
 import com.trtc.uikit.livekit.features.audienceview.view.BasicView
+import com.trtc.uikit.livekit.features.audienceview.view.cohost.panel.CoHostAnchorInfoDialog
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +32,7 @@ class CoHostForegroundWidgetsView @JvmOverloads constructor(
     private lateinit var layoutUserInfo: LinearLayout
     private lateinit var textName: TextView
     private lateinit var imageMuteAudio: ImageView
+    private var anchorInfoDialog: CoHostAnchorInfoDialog? = null
     private var seatUserInfo: SeatUserInfo = SeatUserInfo()
 
     fun init(manager: AudienceStore, seatInfo: SeatUserInfo) {
@@ -44,6 +47,9 @@ class CoHostForegroundWidgetsView @JvmOverloads constructor(
         layoutUserInfo = findViewById(R.id.ll_user_info)
         imageMuteAudio = findViewById(R.id.iv_mute_audio)
         textName = findViewById(R.id.tv_name)
+        setDebounceClickListener {
+            showAnchorInfoDialog()
+        }
     }
 
     override fun refreshView() {
@@ -64,6 +70,33 @@ class CoHostForegroundWidgetsView @JvmOverloads constructor(
         }
         textName.text =
             if (TextUtils.isEmpty(seatUserInfo.userName)) seatUserInfo.userID else seatUserInfo.userName
+    }
+
+    private fun showAnchorInfoDialog() {
+        if (TextUtils.isEmpty(seatUserInfo.userID)) {
+            LOGGER.warn("showAnchorInfoDialog skipped, empty userID")
+            return
+        }
+        val dialog = anchorInfoDialog
+        if (dialog == null || !dialog.isAttachedToValidWindow()) {
+            dialog?.runCatching { if (isShowing) dismiss() }
+            anchorInfoDialog = CoHostAnchorInfoDialog(context, audienceStore)
+        }
+        anchorInfoDialog?.init(seatUserInfo)
+        if (anchorInfoDialog?.isShowing != true) {
+            anchorInfoDialog?.show()
+        }
+    }
+
+    private fun CoHostAnchorInfoDialog.isAttachedToValidWindow(): Boolean {
+        val activity = (context as? android.app.Activity) ?: return false
+        return !activity.isFinishing && !activity.isDestroyed
+    }
+
+    override fun onDetachedFromWindow() {
+        anchorInfoDialog?.runCatching { if (isShowing) dismiss() }
+        anchorInfoDialog = null
+        super.onDetachedFromWindow()
     }
 
     override fun addObserver() {

@@ -187,6 +187,7 @@ class AudienceOverlayView @JvmOverloads constructor(
                     userID = audience.userID
                     userName = audience.userName
                     avatarURL = audience.avatarURL
+                    level = audience.level
                 }
             }
             barrageStreamView.insertBarrages(barrage)
@@ -396,6 +397,7 @@ class AudienceOverlayView @JvmOverloads constructor(
                 barrage.sender.userName =
                     if (TextUtils.isEmpty(sender.userName)) sender.userID else sender.userName
                 barrage.sender.avatarURL = sender.avatarURL
+                barrage.sender.level = sender.level
                 val extInfo = HashMap<String, String>()
                 extInfo[GIFT_VIEW_TYPE] = GIFT_VIEW_TYPE_1.toString()
                 extInfo[GIFT_NAME] = gift.name

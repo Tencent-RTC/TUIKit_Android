@@ -45,22 +45,15 @@ class LiveStreamEndDialog(
     }
 
     private fun initBattleDialog(dialog: AtomicAlertDialog, currentLiveId: String) {
-        val title = context.getString(R.string.common_end_pk_tips)
+        val title = context.getString(R.string.common_anchor_end_pk_tips)
         dialog.init {
             init(title)
 
             addItem(
-                text = context.getString(R.string.common_end_pk),
-                type = AtomicAlertDialog.TextColorPreset.RED,
+                text = context.getString(R.string.common_end_live),
+                type = AtomicAlertDialog.TextColorPreset.RED
             ) {
                 exitBattle(currentLiveId)
-                it.dismiss()
-            }
-
-            addItem(
-                text = context.getString(R.string.common_end_live),
-                type = AtomicAlertDialog.TextColorPreset.PRIMARY
-            ) {
                 onEndLive()
                 it.dismiss()
             }

@@ -58,7 +58,7 @@ class BeautyListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
         with(holder) {
-            textTitle.text = item.title
+            textTitle.text = item.title.toBreakable()
             imageIcon.run {
                 setImageResource(item.icon)
                 setBackgroundResource(
@@ -107,3 +107,9 @@ class BeautyListAdapter(
         fun onItemClick(type: BeautyType)
     }
 }
+
+/**
+ * 在每个字符间插入零宽空格 (U+200B)，让长英文单词也能在任意位置换行显示。
+ */
+private fun String.toBreakable(): String =
+    if (this.length <= 1) this else this.toCharArray().joinToString("\u200B")

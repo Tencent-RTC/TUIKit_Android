@@ -9,6 +9,7 @@ import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.anchorview.store.BattleUser
 import com.trtc.uikit.livekit.features.anchorview.view.BasicView
+import io.trtc.tuikit.atomicxcore.api.live.BattleEndedReason
 import io.trtc.tuikit.atomicxcore.api.live.CoHostStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import kotlinx.coroutines.CoroutineScope
@@ -75,13 +76,31 @@ class BattleInfoView @JvmOverloads constructor(
 
     private fun onBattleStart() {
         singleBattleScoreView.visibility = GONE
-        visibility = VISIBLE
-        battleStartView.visibility = VISIBLE
-        postDelayed({ battleStartView.visibility = GONE }, 1000)
+        val isPipMode = mediaState?.isPipModeEnabled?.value == true
+        visibility = if (isPipMode) GONE else VISIBLE
+        battleStartView.visibility = if (isPipMode) GONE else VISIBLE
+        if (!isPipMode) {
+            postDelayed({ battleStartView.visibility = GONE }, 1000)
+        }
     }
 
     private fun onBattleEnd() {
-        if (mediaState?.isPipModeEnabled?.value != true && battleState?.isBattleRunning?.value == true) {
+        // If the PK ends because all members exited, the store layer has already:
+        //  1) suppressed the isOnDisplayResult=true phase (so the result UI won't show)
+        //  2) toasted "all members exited, current host wins by default"
+        // The view should therefore skip both the "PK End" text and the result UI.
+        if (anchorBattleStore?.battleState?.lastEndedReason?.value == BattleEndedReason.ALL_MEMBER_EXIT) {
+            visibility = GONE
+            battleStartView.visibility = GONE
+            battleResultView.visibility = GONE
+            singleBattleScoreView.visibility = GONE
+            return
+        }
+        // onBattleEnd is triggered when isBattleRunning=false, so the previous condition
+        // (isBattleRunning==true) could never be satisfied. Keep the view visible during
+        // the battle-result display phase so the "PK end" text can be seen.
+        if (mediaState?.isPipModeEnabled?.value != true
+            && battleState?.isOnDisplayResult?.value == true) {
             visibility = VISIBLE
         }
         battleTimeView.text = baseContext.getString(R.string.common_battle_pk_end)
@@ -180,9 +199,14 @@ class BattleInfoView @JvmOverloads constructor(
 
     private fun stopDisplayBattleResult() {
         updateTime(0)
-        visibility = GONE
         battleStartView.visibility = GONE
         battleResultView.visibility = GONE
+        // Only hide self when there is no ongoing PK. Otherwise a newly started PK
+        // (after the previous peer stream ended and re-connected) would be mistakenly hidden
+        // due to the connected-list change fired before onBattleStart takes effect.
+        if (battleState?.isBattleRunning?.value != true) {
+            visibility = GONE
+        }
     }
 
     private suspend fun onConnectedListChange() {
@@ -192,6 +216,11 @@ class BattleInfoView @JvmOverloads constructor(
                 stopDisplayBattleResult()
             } else if (it.size == 2 && battleState?.isBattleRunning?.value == true) {
                 singleBattleScoreView.visibility = VISIBLE
+                // Ensure the container is visible when a new PK is running with 2 co-hosts,
+                // in case it was previously hidden by stopDisplayBattleResult during the last PK end.
+                if (mediaState?.isPipModeEnabled?.value != true) {
+                    visibility = VISIBLE
+                }
             } else {
                 singleBattleScoreView.visibility = GONE
             }
@@ -216,6 +245,7 @@ class BattleInfoView @JvmOverloads constructor(
                     true -> onBattleStart()
                     false -> onBattleEnd()
                 }
+                onPipModeChange()
             }
         }
 
@@ -223,12 +253,17 @@ class BattleInfoView @JvmOverloads constructor(
 
     private suspend fun onPipModeObserver() {
         mediaState?.isPipModeEnabled?.collect {
-            if (it) {
-                visibility = GONE
-            } else {
-                if (battleState?.isBattleRunning?.value == true) {
-                    visibility = VISIBLE
-                }
+            onPipModeChange()
+        }
+    }
+
+    private fun onPipModeChange() {
+        if (mediaState?.isPipModeEnabled?.value == true) {
+            visibility = GONE
+        } else {
+            if (battleState?.isBattleRunning?.value == true) {
+                visibility = VISIBLE
+                requestLayout()
             }
         }
     }

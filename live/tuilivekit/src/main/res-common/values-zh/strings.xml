@@ -51,6 +51,7 @@
     <string name="common_end_connection_tips">当前处于连线状态，是否需要「断开连线」或「关闭直播间」</string>
     <string name="common_end_pk">结束PK</string>
     <string name="common_end_pk_tips">当前处于PK状态，是否需要「结束PK」或「关闭直播间」</string>
+    <string name="common_anchor_end_pk_tips">当前处于PK状态，是否需要「关闭直播间」</string>
     <string name="common_float_window_received_battle_invitation">收到PK邀请，可回到全屏模式后处理</string>
     <string name="common_float_window_received_connection_invitation">收到连线邀请，可回到全屏模式后处理</string>
     <string name="common_kick_out_of_room">移除</string>
@@ -259,7 +260,7 @@
     <string name="common_server_error_not_on_the_mic_queue">没有在排麦列表中</string>
     <string name="common_server_error_not_on_the_mic_seat">未在麦上</string>
     <string name="common_server_error_not_started_yet">该 battle 场次还未开始</string>
-    <string name="common_server_error_param_illegal">请参数非法，请根据错误描述检查请求是否正确</string>
+    <string name="common_server_error_param_illegal">请求参数非法，请根据错误描述检查请求参数是否正确</string>
     <string name="common_server_error_requires_password">当前房间需要密码才能进入</string>
     <string name="common_server_error_room_admin_quantity_exceeds_the_upper_limit">管理员数量超过上限</string>
     <string name="common_server_error_room_does_not_exist">房间不存在，或者曾经存在过，但是目前已经被解散</string>
@@ -458,4 +459,8 @@
     <string name="common_select_app_to_live">选择应用并开始直播</string>
     <string name="common_violation_alert_toast">当前画面或内容存在违规风险，请注意平台规范</string>
     <string name="live_song_unknown_artist">未知</string>
+    <string name="live_anchor_manager_set_featured_host">设为主咖</string>
+    <string name="live_anchor_manager_revoke_featured_host">取消主咖</string>
+    <string name="common_enter_anchor_live_room">去TA的直播间</string>
+    <string name="common_battle_all_member_exit_win">所有PK成员提前退出，本局判当前主播胜利</string>
 </resources>

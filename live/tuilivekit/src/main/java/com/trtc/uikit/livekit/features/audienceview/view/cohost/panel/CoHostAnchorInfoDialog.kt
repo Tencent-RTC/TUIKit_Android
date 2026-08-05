@@ -1,4 +1,4 @@
-package com.trtc.uikit.livekit.features.audienceview.view.userinfo
+package com.trtc.uikit.livekit.features.audienceview.view.cohost.panel
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,36 +9,41 @@ import android.widget.TextView
 import com.tencent.imsdk.v2.V2TIMFollowInfo
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMValueCallback
+import com.tencent.qcloud.tuicore.TUICore
 import com.trtc.uikit.livekit.R
+import com.trtc.uikit.livekit.common.EVENT_KEY_LIVE_KIT
+import com.trtc.uikit.livekit.common.EVENT_SUB_KEY_DESTROY_LIVE_VIEW
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.audienceview.store.AudienceStore
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.ui.setDebounceClickListener
+import com.trtc.uikit.livekit.livestream.VideoLiveKit
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar
 import io.trtc.tuikit.atomicx.widget.basicwidget.avatar.AtomicAvatar.AvatarContent
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.AtomicButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.button.ButtonColorType
 import io.trtc.tuikit.atomicx.widget.basicwidget.popover.AtomicPopover
-import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
-import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
+import io.trtc.tuikit.atomicxcore.api.CompletionHandler
+import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
+import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @SuppressLint("ViewConstructor")
-class UserInfoDialog(
+class CoHostAnchorInfoDialog(
     private val context: Context,
     private val audienceStore: AudienceStore
 ) : AtomicPopover(context) {
 
     private lateinit var buttonFollow: AtomicButton
+    private lateinit var buttonJumpLiveRoom: AtomicButton
     private lateinit var textUserName: TextView
     private lateinit var textUserId: TextView
     private lateinit var imageAvatar: AtomicAvatar
     private lateinit var textFans: TextView
-    private var userInfo: LiveUserInfo? = null
+    private var seatUserInfo: SeatUserInfo? = null
     private var subscribeStateJob: Job? = null
 
     init {
@@ -46,9 +51,9 @@ class UserInfoDialog(
         initView()
     }
 
-    fun init(userInfo: LiveUserInfo) {
-        this.userInfo = userInfo
-        audienceStore.getIMStore().checkFollowUser(userInfo.userID)
+    fun init(info: SeatUserInfo) {
+        this.seatUserInfo = info
+        audienceStore.getIMStore().checkFollowUser(info.userID)
         updateView()
     }
 
@@ -65,7 +70,7 @@ class UserInfoDialog(
     }
 
     private fun initView() {
-        val view = LayoutInflater.from(context).inflate(R.layout.livekit_user_info, null)
+        val view = LayoutInflater.from(context).inflate(R.layout.livekit_co_host_anchor_info, null)
         bindViewId(view)
         updateView()
         setContent(view)
@@ -73,6 +78,7 @@ class UserInfoDialog(
 
     private fun bindViewId(view: View) {
         buttonFollow = view.findViewById(R.id.atomic_btn_follow)
+        buttonJumpLiveRoom = view.findViewById(R.id.atomic_btn_jump_live_room)
         textUserName = view.findViewById(R.id.tv_anchor_name)
         textUserId = view.findViewById(R.id.tv_user_id)
         imageAvatar = view.findViewById(R.id.iv_avatar)
@@ -92,7 +98,7 @@ class UserInfoDialog(
 
     @SuppressLint("SetTextI18n")
     private fun updateView() {
-        val userInfo = this.userInfo ?: return
+        val userInfo = this.seatUserInfo ?: return
         if (TextUtils.isEmpty(userInfo.userID)) {
             return
         }
@@ -101,13 +107,16 @@ class UserInfoDialog(
         textUserId.text = context.getString(R.string.common_user_id, userInfo.userID)
         val avatarUrl = userInfo.avatarURL
         imageAvatar.setContent(AvatarContent.URL(avatarUrl, R.drawable.livekit_ic_avatar))
+        val currentLiveID = audienceStore.getLiveListStore().liveState.currentLive.value.liveID
+        buttonJumpLiveRoom.visibility = if (userInfo.liveID == currentLiveID) View.GONE else View.VISIBLE
 
         refreshFollowButton()
-        buttonFollow.setDebounceClickListener { onFollowButtonClick() }
+        buttonFollow.setDebounceClickListener { followButtonClick() }
+        buttonJumpLiveRoom.setDebounceClickListener { jumpLiveRoomButtonClick() }
     }
 
     private fun getFansNumber() {
-        val userInfo = this.userInfo ?: return
+        val userInfo = this.seatUserInfo ?: return
         if (TextUtils.isEmpty(userInfo.userID)) {
             return
         }
@@ -130,7 +139,7 @@ class UserInfoDialog(
     }
 
     private fun refreshFollowButton() {
-        val userInfo = this.userInfo ?: return
+        val userInfo = this.seatUserInfo ?: return
         val isFollowed = audienceStore.getIMState().followingUserList.value.contains(userInfo.userID)
 
         if (isFollowed) {
@@ -148,19 +157,41 @@ class UserInfoDialog(
     }
 
     private fun onFollowingUserChanged() {
-        val userInfo = this.userInfo ?: return
+        val userInfo = this.seatUserInfo ?: return
         if (TextUtils.isEmpty(userInfo.userID)) {
             return
         }
         refreshFollowButton()
     }
 
-    private fun onFollowButtonClick() {
-        val userInfo = this.userInfo ?: return
+    private fun followButtonClick() {
+        val userInfo = this.seatUserInfo ?: return
         if (audienceStore.getIMState().followingUserList.value.contains(userInfo.userID) == true) {
             audienceStore.getIMStore().unfollowUser(userInfo.userID)
         } else {
             audienceStore.getIMStore().followUser(userInfo.userID)
+        }
+    }
+
+    private fun jumpLiveRoomButtonClick() {
+        seatUserInfo?.let {
+            if (isShowing) {
+                dismiss()
+            }
+            TUICore.notifyEvent(
+                EVENT_KEY_LIVE_KIT,
+                EVENT_SUB_KEY_DESTROY_LIVE_VIEW,
+                null
+            )
+            LiveListStore.shared().leaveLive(object : CompletionHandler {
+                override fun onSuccess() {
+                    VideoLiveKit.createInstance(context).joinLive(it.liveID)
+                }
+
+                override fun onFailure(code: Int, desc: String) {
+                    ErrorLocalized.onError(code)
+                }
+            })
         }
     }
 

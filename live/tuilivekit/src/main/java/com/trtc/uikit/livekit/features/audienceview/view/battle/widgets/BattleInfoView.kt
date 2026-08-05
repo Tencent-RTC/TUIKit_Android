@@ -11,6 +11,7 @@ import com.tencent.rtmp.TXLiveBase
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitLogger
 import com.trtc.uikit.livekit.features.audienceview.view.BasicView
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.live.BattleEndedReason
 import io.trtc.tuikit.atomicxcore.api.live.BattleInfo
 import io.trtc.tuikit.atomicxcore.api.live.BattleListener
@@ -39,7 +40,7 @@ class BattleInfoView @JvmOverloads constructor(
 
     private val battleListener = object : BattleListener() {
         override fun onBattleEnded(battleInfo: BattleInfo, reason: BattleEndedReason?) {
-            onBattleEnd()
+            onBattleEnd(reason)
         }
     }
 
@@ -124,8 +125,15 @@ class BattleInfoView @JvmOverloads constructor(
         }, 1000)
     }
 
-    private fun onBattleEnd() {
-        logger.info("onBattleEnd:" + hashCode())
+    private fun onBattleEnd(reason: BattleEndedReason?) {
+        logger.info("onBattleEnd:hashCode=${hashCode()}, reason=$reason")
+        if (reason == BattleEndedReason.ALL_MEMBER_EXIT) {
+            mainHandler.removeCallbacksAndMessages(null)
+            viewState.durationCountDown.value = 0
+            audienceStore.getViewState().isOnDisplayResult.value = null
+            stopDisplayBattleResult()
+            return
+        }
         visibility = if (mediaState.isPictureInPictureMode.value) GONE else VISIBLE
 
         audienceStore.getViewState().isOnDisplayResult.value = true
