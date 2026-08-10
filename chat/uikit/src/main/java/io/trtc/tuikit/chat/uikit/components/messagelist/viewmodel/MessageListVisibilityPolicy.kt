@@ -33,6 +33,9 @@ internal class MessageListVisibilityPolicy(
                 return false
             }
         }
+        if (config.messageExclusionMatchers.any { it.matches(message) }) {
+            return false
+        }
         return true
     }
 }

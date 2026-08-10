@@ -20,21 +20,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.ContactPickerDialog
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.messagelist.utils.WindowThemeUtil
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.displayName
-import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ChatConversationActionConfig
-import io.trtc.tuikit.chat.uikit.components.conversationlist.viewmodel.ConversationListViewModel
+import io.trtc.tuikit.chat.uikit.components.common.WindowThemeUtil
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.uikit.components.widgets.Avatar
+import io.trtc.tuikit.chat.uikit.components.widgets.DialogNavBar
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
 import io.trtc.tuikit.atomicxcore.api.contact.ContactStore
 import io.trtc.tuikit.atomicxcore.api.conversation.ConversationInfo
-import io.trtc.tuikit.atomicxcore.api.conversation.ConversationListStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -53,10 +51,7 @@ class ForwardTargetSelectorDialog(
     private val themeStore = ThemeStore.shared(context)
     private val dialogScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val conversationViewModel = ConversationListViewModel(
-        conversationListStore = ConversationListStore.create(),
-        conversationActionConfig = ChatConversationActionConfig()
-    )
+    private val conversationStore = ForwardConversationStore(scope = dialogScope)
     private val contactStore: ContactStore = ContactStore.shared
     private var friendList: List<ContactInfo> = emptyList()
 
@@ -108,10 +103,16 @@ class ForwardTargetSelectorDialog(
         }
 
         rootLayout.addView(
-            buildTopBar(colors),
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp2px(56f, dm).roundToInt()
+            DialogNavBar.create(
+                context,
+                DialogNavBar.Config(
+                    mode = DialogNavBar.Mode.CancelTitleConfirm,
+                    title = context.getString(R.string.message_list_select_conversation),
+                    colors = colors,
+                    onLeadingClick = { dismiss() },
+                    showConfirm = false,
+                    horizontalPaddingDp = 16f
+                )
             )
         )
 
@@ -145,7 +146,7 @@ class ForwardTargetSelectorDialog(
                     val total = lm.itemCount
                     val lastVisible = lm.findLastVisibleItemPosition()
                     if (total > 0 && lastVisible >= total - 3) {
-                        conversationViewModel.loadMoreConversation()
+                        conversationStore.loadMoreConversation()
                     }
                 }
             })
@@ -170,50 +171,6 @@ class ForwardTargetSelectorDialog(
 
         refreshBottomBar()
         return rootLayout
-    }
-
-    private fun buildTopBar(colors: ColorTokens): View {
-        val hPad = dp2px(16f, dm).roundToInt()
-        val bar = FrameLayout(context).apply {
-            setPadding(hPad, 0, hPad, 0)
-            setBackgroundColor(colors.bgColorOperate)
-        }
-
-        val cancelText = TextView(context).apply {
-            text = context.getString(R.string.uikit_cancel)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            setTextColor(colors.textColorLink)
-            gravity = Gravity.CENTER_VERTICAL
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { dismiss() }
-        }
-        bar.addView(
-            cancelText,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.START or Gravity.CENTER_VERTICAL
-            )
-        )
-        cancelText.expandTouchTarget()
-
-        val title = TextView(context).apply {
-            text = context.getString(R.string.message_list_select_conversation)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            setTextColor(colors.textColorPrimary)
-            setTypeface(typeface, Typeface.BOLD)
-            gravity = Gravity.CENTER
-        }
-        bar.addView(
-            title,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER
-            )
-        )
-        return bar
     }
 
     private fun buildContactEntry(colors: ColorTokens): View {
@@ -242,7 +199,7 @@ class ForwardTargetSelectorDialog(
             )
 
             val arrow = ImageView(context).apply {
-                setImageResource(R.drawable.chat_setting_ic_arrow_right)
+                setImageResource(R.drawable.uikit_ic_arrow_right)
                 imageTintList = android.content.res.ColorStateList.valueOf(colors.textColorSecondary)
             }
             val arrowSize = dp2px(18f, dm).roundToInt()
@@ -334,7 +291,7 @@ class ForwardTargetSelectorDialog(
             return
         }
         val preSelectedUserIds = collectPreSelectedUserIds()
-        ContactPickerDialog(
+        ForwardContactPickerDialog(
             context = context,
             title = context.getString(R.string.message_list_select_from_contacts),
             contacts = friendList,
@@ -353,10 +310,8 @@ class ForwardTargetSelectorDialog(
     private fun collectPreSelectedUserIds(): List<String> {
         val ids = LinkedHashSet<String>()
         selectedContacts.forEach { ids.add(it.userID) }
-        conversationViewModel.selectedConversations.value.forEach { conversation ->
-            if (conversation.conversationID.startsWith(C2C_PREFIX)) {
-                ids.add(conversation.conversationID.removePrefix(C2C_PREFIX))
-            }
+        conversationStore.selectedConversations.value.forEach { conversation ->
+            ConversationIDUtil.userIdOrNull(conversation.conversationID)?.let { ids.add(it) }
         }
         return ids.toList()
     }
@@ -369,16 +324,16 @@ class ForwardTargetSelectorDialog(
 
         val deselectedUserIds = preSelectedUserIds.filter { it !in returnedUserIds }
         deselectedUserIds.forEach { userId ->
-            val c2cId = "$C2C_PREFIX$userId"
-            conversationViewModel.selectedConversations.value
+            val c2cId = ConversationIDUtil.fromUser(userId)
+            conversationStore.selectedConversations.value
                 .firstOrNull { it.conversationID == c2cId }
-                ?.let { conversationViewModel.removeSelection(it) }
+                ?.let { conversationStore.removeSelection(it) }
         }
 
         selectedContacts.clear()
         returnedContacts.forEach { contact ->
-            val c2cId = "$C2C_PREFIX${contact.userID}"
-            val existsAsConv = conversationViewModel.selectedConversations.value
+            val c2cId = ConversationIDUtil.fromUser(contact.userID)
+            val existsAsConv = conversationStore.selectedConversations.value
                 .any { it.conversationID == c2cId }
             if (!existsAsConv) {
                 selectedContacts.add(contact)
@@ -390,23 +345,21 @@ class ForwardTargetSelectorDialog(
     }
 
     private fun isConversationSelected(conversation: ConversationInfo): Boolean {
-        if (conversationViewModel.isSelected(conversation)) {
+        if (conversationStore.isSelected(conversation)) {
             return true
         }
-        if (conversation.conversationID.startsWith(C2C_PREFIX)) {
-            val userId = conversation.conversationID.removePrefix(C2C_PREFIX)
+        ConversationIDUtil.userIdOrNull(conversation.conversationID)?.let { userId ->
             return selectedContacts.any { it.userID == userId }
         }
         return false
     }
 
     private fun toggleConversation(conversation: ConversationInfo) {
-        if (conversationViewModel.isSelected(conversation)) {
-            conversationViewModel.removeSelection(conversation)
+        if (conversationStore.isSelected(conversation)) {
+            conversationStore.removeSelection(conversation)
             return
         }
-        if (conversation.conversationID.startsWith(C2C_PREFIX)) {
-            val userId = conversation.conversationID.removePrefix(C2C_PREFIX)
+        ConversationIDUtil.userIdOrNull(conversation.conversationID)?.let { userId ->
             val matchingContact = selectedContacts.firstOrNull { it.userID == userId }
             if (matchingContact != null) {
                 selectedContacts.remove(matchingContact)
@@ -415,24 +368,24 @@ class ForwardTargetSelectorDialog(
                 return
             }
         }
-        conversationViewModel.addSelection(conversation)
+        conversationStore.addSelection(conversation)
     }
 
     private fun selectedConversationIDs(): List<String> {
-        val conversationIds = conversationViewModel.selectedConversations.value
+        val conversationIds = conversationStore.selectedConversations.value
             .map { it.conversationID }
-        val contactIds = selectedContacts.map { "$C2C_PREFIX${it.userID}" }
+        val contactIds = selectedContacts.map { ConversationIDUtil.fromUser(it.userID) }
         return (conversationIds + contactIds).distinct()
     }
 
     private fun collectState() {
         dialogScope.launch {
-            conversationViewModel.conversationList.collectLatest { list ->
+            conversationStore.conversationList.collectLatest { list ->
                 adapter.submitList(list)
             }
         }
         dialogScope.launch {
-            conversationViewModel.selectedConversations.collectLatest {
+            conversationStore.selectedConversations.collectLatest {
                 adapter.notifyDataSetChanged()
                 refreshBottomBar()
             }
@@ -467,7 +420,7 @@ class ForwardTargetSelectorDialog(
         val colors = colors()
         avatarStrip.removeAllViews()
 
-        val conversationItems = conversationViewModel.selectedConversations.value.map {
+        val conversationItems = conversationStore.selectedConversations.value.map {
             AvatarChipInfo(
                 key = "conv_${it.conversationID}",
                 avatarUrl = it.avatarURL.orEmpty(),
@@ -609,9 +562,5 @@ class ForwardTargetSelectorDialog(
 
     private fun colors(): ColorTokens {
         return themeStore.themeState.value.currentTheme.tokens.color
-    }
-
-    private companion object {
-        const val C2C_PREFIX = "c2c_"
     }
 }

@@ -14,7 +14,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageUIAction
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import kotlin.math.roundToInt
@@ -197,6 +196,8 @@ internal class LongPressActionMenuBuilder(
                     if (action.iconResId != 0) {
                         setImageResource(action.iconResId)
                         imageTintList = ColorStateList.valueOf(iconTint)
+                    } else {
+                        visibility = View.GONE
                     }
                 },
                 LinearLayout.LayoutParams(18.dp, 18.dp).apply {
@@ -260,35 +261,17 @@ internal object LongPressActionMenuPolicy {
     }
 }
 
-internal fun buildLongPressPopupActions(
-    actions: List<MessageUIAction>,
-    customActions: List<MessageCustomAction>
+internal fun toLongPressPopupActions(
+    actions: List<MessageCustomAction>
 ): List<LongPressPopupAction> {
-    val builtInActions = actions.map { action ->
-        OrderedLongPressPopupAction(
-            order = action.order,
-            action = LongPressPopupAction(
-                title = action.name,
-                dangerousAction = action.dangerousAction,
-                iconResId = action.icon,
-                onClick = action.action
-            )
+    return actions.map { action ->
+        LongPressPopupAction(
+            title = action.title,
+            dangerousAction = action.dangerous,
+            iconResId = action.iconResID,
+            onClick = action.action
         )
     }
-    val extraActions = customActions.map { action ->
-        OrderedLongPressPopupAction(
-            order = action.order,
-            action = LongPressPopupAction(
-                title = action.title,
-                dangerousAction = action.dangerousAction,
-                iconResId = action.iconResID,
-                onClick = action.action
-            )
-        )
-    }
-    return (builtInActions + extraActions)
-        .sortedBy { it.order }
-        .map { it.action }
 }
 
 internal data class LongPressPopupAction(
@@ -296,11 +279,6 @@ internal data class LongPressPopupAction(
     val dangerousAction: Boolean,
     @DrawableRes val iconResId: Int,
     val onClick: (MessageInfo) -> Unit
-)
-
-private data class OrderedLongPressPopupAction(
-    val order: Int,
-    val action: LongPressPopupAction
 )
 
 internal data class LongPressPopupContent(

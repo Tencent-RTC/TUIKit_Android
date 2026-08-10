@@ -13,7 +13,7 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import com.tencent.cloud.tuikit.engine.common.ContextProvider;
-import java.util.Locale;
+import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils;
 
 public class VideoRecorderResourceUtils {
     public static final String DRAWABLE_RESOURCE_PREFIX = "@drawable/";
@@ -110,10 +110,7 @@ public class VideoRecorderResourceUtils {
     }
 
     public static String secondsToTimeString(long timeMs) {
-        long seconds = timeMs / 1000;
-        int minutes = (int) (seconds / 60);
-        seconds = (int) (seconds % 60);
-        return String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
+        return ChatDateTimeUtils.formatDurationMillis(timeMs);
     }
 
     public static int parseRGB(String hex) {

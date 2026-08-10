@@ -161,7 +161,7 @@ object TranslationTextParser {
             val customMatcher = customPattern.matcher(text)
             while (customMatcher.find()) {
                 val matched = text.substring(customMatcher.start(), customMatcher.end())
-                if (EmojiManager.littleEmojiKeyList.contains(matched)) {
+                if (EmojiManager.sortedLittleEmojiKeyList.contains(matched)) {
                     result.add(customMatcher.start()..(customMatcher.end() - 1))
                 }
             }

@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.uikit.components.widgets.Avatar
@@ -298,13 +299,6 @@ internal class GroupMemberPreviewSection @JvmOverloads constructor(
     private fun getColors(): ColorTokens {
         return ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
     }
-
-    private val GroupMember.displayName: String
-        get() = when {
-            !nameCard.isNullOrEmpty() -> nameCard!!
-            !nickname.isNullOrEmpty() -> nickname!!
-            else -> userID
-        }
 
     private enum class ActionType {
         ADD,

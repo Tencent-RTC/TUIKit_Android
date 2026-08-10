@@ -1,6 +1,5 @@
 package io.trtc.tuikit.chat.uikit.components.chatsetting.ui
 import android.app.Dialog
-import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
 import android.util.TypedValue
@@ -9,8 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.CheckBox
-import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
@@ -18,17 +15,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.chatsetting.permission.GroupMemberActionPolicy
-import io.trtc.tuikit.chat.uikit.components.chatsetting.utils.findViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupMemberListViewModel
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupMemberListViewModelFactory
-import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.chatsetting.utils.WindowThemeUtil
+import io.trtc.tuikit.chat.uikit.components.common.WindowThemeUtil
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionItem
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionSheet
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.uikit.components.widgets.Avatar
+import io.trtc.tuikit.chat.uikit.components.widgets.DialogNavBar
 import io.trtc.tuikit.atomicxcore.api.group.GroupMember
 import io.trtc.tuikit.atomicxcore.api.group.GroupMemberRole
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +57,7 @@ class GroupMemberListView(
     private var viewModel: GroupMemberListViewModel? = null
     private var viewScope: CoroutineScope? = null
     private var adapter: MemberAdapter? = null
-    private lateinit var confirmTextView: TextView
+    private lateinit var navBar: DialogNavBar
 
     private var currentMembers: List<GroupMember> = emptyList()
     private val selectedMemberIds = linkedSetOf<String>()
@@ -94,7 +92,25 @@ class GroupMemberListView(
             )
         }
 
-        rootLayout.addView(buildTopBar(colors, dm))
+        navBar = DialogNavBar.create(
+            context,
+            DialogNavBar.Config(
+                mode = DialogNavBar.Mode.BackTitle,
+                title = title ?: context.getString(R.string.chat_setting_group_members),
+                colors = colors,
+                onLeadingClick = { dismiss() },
+                onConfirmClick = {
+                    val selectedMembers = currentMembers.filter { selectedMemberIds.contains(it.userID) }
+                    if (selectedMembers.isNotEmpty()) {
+                        onConfirm(selectedMembers)
+                        dismiss()
+                    }
+                },
+                showConfirm = isSelectionMode,
+                leadingContentDescription = context.getString(R.string.chat_setting_back)
+            )
+        )
+        rootLayout.addView(navBar)
 
         rootLayout.addView(
             View(context).apply {
@@ -190,88 +206,9 @@ class GroupMemberListView(
         adapter?.notifyDataSetChanged()
     }
 
-    private fun buildTopBar(colors: ColorTokens, dm: android.util.DisplayMetrics): FrameLayout {
-        val navBarHPad = dp2px(16f, dm).toInt()
-        val topBar = FrameLayout(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp2px(56f, dm).toInt()
-            )
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            setBackgroundColor(colors.bgColorOperate)
-            setPadding(navBarHPad, 0, navBarHPad, 0)
-        }
-
-        val backRow = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.START or Gravity.CENTER_VERTICAL
-            )
-            contentDescription = context.getString(R.string.chat_setting_back)
-            setOnClickListener { dismiss() }
-        }
-        topBar.addView(backRow)
-        backRow.expandTouchTarget()
-
-        val iconSize = dp2px(16f, dm).toInt()
-        backRow.addView(
-            ImageView(context).apply {
-                layoutParams = LinearLayout.LayoutParams(iconSize, iconSize)
-                setImageResource(R.drawable.uikit_ic_back)
-                imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
-                scaleType = ImageView.ScaleType.CENTER_INSIDE
-            }
-        )
-
-        topBar.addView(
-            TextView(context).apply {
-                text = title ?: context.getString(R.string.chat_setting_group_members)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-                setTextColor(colors.textColorPrimary)
-                gravity = Gravity.CENTER
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
-                layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    Gravity.CENTER
-                )
-            }
-        )
-
-        confirmTextView = TextView(context).apply {
-            text = context.getString(R.string.uikit_confirm)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            gravity = Gravity.CENTER_VERTICAL
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.END or Gravity.CENTER_VERTICAL
-            )
-            visibility = if (isSelectionMode) View.VISIBLE else View.GONE
-            isClickable = true
-            isFocusable = true
-            setOnClickListener {
-                val selectedMembers = currentMembers.filter { selectedMemberIds.contains(it.userID) }
-                if (selectedMembers.isEmpty()) return@setOnClickListener
-                onConfirm(selectedMembers)
-                dismiss()
-            }
-        }
-        topBar.addView(confirmTextView)
-
-        return topBar
-    }
-
     private fun updateConfirmState(colors: ColorTokens) {
         if (!isSelectionMode) return
-        val hasSelection = selectedMemberIds.isNotEmpty()
-        confirmTextView.setTextColor(
-            if (hasSelection) colors.textColorLink else colors.textColorDisable
-        )
+        navBar.setConfirmEnabled(selectedMemberIds.isNotEmpty(), colors)
     }
 
     private fun showMemberActionSheet(member: GroupMember) {
@@ -444,10 +381,3 @@ class GroupMemberListView(
         ) : RecyclerView.ViewHolder(itemView)
     }
 }
-
-private val GroupMember.displayName: String
-    get() = when {
-        !nameCard.isNullOrEmpty() -> nameCard!!
-        !nickname.isNullOrEmpty() -> nickname!!
-        else -> userID
-    }

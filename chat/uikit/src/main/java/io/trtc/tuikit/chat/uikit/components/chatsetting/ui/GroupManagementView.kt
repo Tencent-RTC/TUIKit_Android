@@ -1,14 +1,12 @@
 package io.trtc.tuikit.chat.uikit.components.chatsetting.ui
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,9 +15,9 @@ import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.chatsetting.permission.GroupPermission
 import io.trtc.tuikit.chat.uikit.components.chatsetting.permission.GroupPermissionManager
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupChatSettingViewModel
-import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.chatsetting.utils.WindowThemeUtil
+import io.trtc.tuikit.chat.uikit.components.common.WindowThemeUtil
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionItem
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionSheet
@@ -27,6 +25,7 @@ import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import android.graphics.drawable.GradientDrawable
 import android.widget.HorizontalScrollView
 import io.trtc.tuikit.chat.uikit.components.widgets.Avatar
+import io.trtc.tuikit.chat.uikit.components.widgets.DialogNavBar
 import io.trtc.tuikit.chat.uikit.components.widgets.Switch
 import io.trtc.tuikit.chat.uikit.components.widgets.SwitchSize
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
@@ -172,59 +171,18 @@ class GroupManagementView(
             )
         }
 
-        val navBarHPad = dp2px(16f, dm).toInt()
-        val topBar = FrameLayout(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp2px(56f, dm).toInt()
-            )
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            setBackgroundColor(colors.bgColorOperate)
-            setPadding(navBarHPad, 0, navBarHPad, 0)
-        }
-
-        val backRow = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.START or Gravity.CENTER_VERTICAL
-            )
-            contentDescription = context.getString(R.string.contact_list_back)
-        }
-
-        val iconSize = dp2px(16f, dm).toInt()
-        backRow.addView(
-            ImageView(context).apply {
-                layoutParams = LinearLayout.LayoutParams(iconSize, iconSize)
-                setImageResource(R.drawable.uikit_ic_back)
-                imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
-                scaleType = ImageView.ScaleType.CENTER_INSIDE
-            }
-        )
-
-        backRow.setOnClickListener { dismiss() }
-        topBar.addView(backRow)
-        backRow.expandTouchTarget()
-
-        topBar.addView(
-            TextView(context).apply {
-                text = context.getString(R.string.chat_setting_group_management)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-                setTextColor(colors.textColorPrimary)
-                gravity = Gravity.CENTER
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
-                layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    Gravity.CENTER
+        wrapper.addView(
+            DialogNavBar.create(
+                context,
+                DialogNavBar.Config(
+                    mode = DialogNavBar.Mode.BackTitle,
+                    title = context.getString(R.string.chat_setting_group_management),
+                    colors = colors,
+                    onLeadingClick = { dismiss() },
+                    leadingContentDescription = context.getString(R.string.uikit_back)
                 )
-            }
+            )
         )
-
-        wrapper.addView(topBar)
 
         wrapper.addView(
             View(context).apply {
@@ -748,10 +706,3 @@ class GroupManagementView(
         ) : RecyclerView.ViewHolder(itemView)
     }
 }
-
-private val GroupMember.displayName: String
-    get() = when {
-        !nameCard.isNullOrEmpty() -> nameCard!!
-        !nickname.isNullOrEmpty() -> nickname!!
-        else -> userID
-    }

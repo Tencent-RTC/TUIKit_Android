@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.findContactListViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.canHandle
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.fromUserDisplayName
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.getApplicationTypeText
@@ -45,7 +45,7 @@ internal class GroupApplicationDialog(
 ) : ContactSubPageDialog(context) {
 
     private val viewModel: GroupApplicationSubViewModel by lazy {
-        val owner = context.findContactListViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("GroupApplicationDialog requires a ViewModelStoreOwner host context.")
         val key = "${GroupApplicationSubViewModel::class.java.name}:${System.identityHashCode(this)}"
         ViewModelProvider(owner, GroupApplicationSubViewModelFactory(groupStore))

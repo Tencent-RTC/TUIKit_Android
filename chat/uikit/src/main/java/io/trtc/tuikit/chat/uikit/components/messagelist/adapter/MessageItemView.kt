@@ -10,7 +10,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageUIAction
+import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageActionIDs
+import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.BubbleStyle
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageContentRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderActions
@@ -44,6 +45,7 @@ class MessageItemView(
     private val timeView: TextView
     private val checkBox: ImageView
     private val contentRow: LinearLayout
+    private val inlineTimeView: TextView
     private val leftAvatarView: Avatar
     private val rightAvatarView: Avatar
     private val middleColumn: LinearLayout
@@ -62,6 +64,7 @@ class MessageItemView(
     private val highlightController: MessageItemHighlightController
     private var maxBubbleWidth: Int = 0
     private var maxRowWidth: Int = 0
+    private var inlineTimeReserveWidth: Int = 0
     private val customContentRendererAdapters = IdentityHashMap<MessageContentRenderer, CustomContentRendererAdapter>()
     private var cachedContentRenderer: MessageRenderer? = null
     private var cachedContentView: View? = null
@@ -72,6 +75,7 @@ class MessageItemView(
         timeView = hierarchy.timeView
         checkBox = hierarchy.checkBox
         contentRow = hierarchy.contentRow
+        inlineTimeView = hierarchy.inlineTimeView
         leftAvatarView = hierarchy.leftAvatarView
         rightAvatarView = hierarchy.rightAvatarView
         middleColumn = hierarchy.middleColumn
@@ -117,14 +121,15 @@ class MessageItemView(
         shouldHighlight: Boolean,
         onHighlightConsumed: (String) -> Unit,
         onLongClick: (View) -> Unit,
-        onAuxiliaryTextLongClick: (anchorView: View, actions: List<MessageUIAction>) -> Unit,
+        onAuxiliaryTextLongClick: (anchorView: View, actions: List<MessageCustomAction>) -> Unit,
         onCheckToggle: () -> Unit,
         onUserClick: (String) -> Unit,
         onUserLongClick: (String) -> Unit,
         onQuoteClick: (MessageQuoteInfo) -> Unit,
         enableMessageInteraction: Boolean = true,
         enableQuoteNavigation: Boolean = true,
-        showMessageReadReceipt: Boolean = true
+        showMessageReadReceipt: Boolean = true,
+        inlineTimeString: String? = null
     ) {
         val cellSpacingPx = (config.cellSpacing * density).toInt()
         setPadding(paddingLeft, cellSpacingPx, paddingRight, cellSpacingPx)
@@ -141,6 +146,10 @@ class MessageItemView(
         val renderConfig = renderer.renderConfig
 
         val checkBoxVisible = isMultiSelectMode && renderConfig.showMessageMeta
+        bindInlineTime(
+            inlineTimeString = if (renderConfig.showMessageMeta) inlineTimeString else null,
+            colors = colors
+        )
         applyMaxWidthForMode(checkBoxVisible, statusReserveWidth = 0)
 
         visibility = View.VISIBLE
@@ -229,7 +238,10 @@ class MessageItemView(
         contentRow.gravity = horizontalGravity or Gravity.TOP
         middleColumn.gravity = horizontalGravity
         nicknameView.gravity = horizontalGravity
-        quoteBubbleView.gravity = horizontalGravity
+        (quoteBubbleView.layoutParams as? LinearLayout.LayoutParams)?.let { params ->
+            params.gravity = horizontalGravity
+            quoteBubbleView.layoutParams = params
+        }
         bubbleRow.gravity = horizontalGravity or Gravity.BOTTOM
         violationView.gravity = horizontalGravity
 
@@ -401,6 +413,8 @@ class MessageItemView(
         onHighlightConsumed: (String) -> Unit
     ) {
         timeView.visibility = View.GONE
+        inlineTimeView.visibility = View.GONE
+        inlineTimeReserveWidth = 0
         leftAvatarView.visibility = View.GONE
         rightAvatarView.visibility = View.GONE
         nicknameView.visibility = View.GONE
@@ -442,6 +456,26 @@ class MessageItemView(
         this@MessageItemView.setOnClickListener(null)
         this@MessageItemView.isClickable = false
         highlightController.apply(message, colors, shouldHighlight, onHighlightConsumed)
+    }
+
+    private fun bindInlineTime(inlineTimeString: String?, colors: ColorTokens) {
+        if (!inlineTimeString.isNullOrEmpty()) {
+            inlineTimeView.visibility = View.VISIBLE
+            inlineTimeView.text = inlineTimeString
+            inlineTimeView.setTextColor(colors.textColorSecondary)
+            inlineTimeReserveWidth = resolveInlineTimeReserveWidth(inlineTimeString)
+        } else {
+            inlineTimeView.visibility = View.GONE
+            inlineTimeView.text = null
+            inlineTimeReserveWidth = 0
+        }
+    }
+
+    private fun resolveInlineTimeReserveWidth(timeText: String): Int {
+        val layoutParams = inlineTimeView.layoutParams as? LayoutParams
+        val margins = (layoutParams?.marginStart ?: 0) + (layoutParams?.marginEnd ?: 0)
+        val textWidth = inlineTimeView.paint.measureText(timeText).toInt().coerceAtLeast(0)
+        return textWidth + margins
     }
 
     private fun bindContentRenderer(
@@ -536,7 +570,7 @@ class MessageItemView(
         viewModel: MessageListViewModel,
         isMultiSelectMode: Boolean,
         enableMessageInteraction: Boolean,
-        onAuxiliaryTextLongClick: (anchorView: View, actions: List<MessageUIAction>) -> Unit
+        onAuxiliaryTextLongClick: (anchorView: View, actions: List<MessageCustomAction>) -> Unit
     ) {
         auxiliaryTextBubbleView.visibility = View.GONE
         auxiliaryTextBubbleView.setOnLongClickListener(null)
@@ -612,16 +646,18 @@ class MessageItemView(
     private fun buildAuxiliaryTextActions(
         onCopy: () -> Unit,
         onForward: () -> Unit
-    ): List<MessageUIAction> {
+    ): List<MessageCustomAction> {
         return listOf(
-            MessageUIAction(
-                name = context.getString(R.string.message_list_menu_copy),
-                icon = R.drawable.message_list_menu_copy_icon,
+            MessageCustomAction(
+                ID = MessageActionIDs.COPY,
+                title = context.getString(R.string.message_list_menu_copy),
+                iconResID = R.drawable.message_list_menu_copy_icon,
                 action = { onCopy() }
             ),
-            MessageUIAction(
-                name = context.getString(R.string.message_list_menu_forward),
-                icon = R.drawable.message_list_menu_forward_icon,
+            MessageCustomAction(
+                ID = MessageActionIDs.FORWARD,
+                title = context.getString(R.string.message_list_menu_forward),
+                iconResID = R.drawable.message_list_menu_forward_icon,
                 action = { onForward() }
             )
         )
@@ -747,7 +783,8 @@ class MessageItemView(
             preferredBubbleMaxWidth = maxBubbleWidth,
             checkBoxVisible = checkBoxVisible,
             statusReserveWidth = statusReserveWidth,
-            density = density
+            density = density,
+            inlineTimeReserveWidth = inlineTimeReserveWidth
         )
         if (bubbleRow.maxWidth != maxWidths.rowMaxWidth) {
             bubbleRow.maxWidth = maxWidths.rowMaxWidth
@@ -759,7 +796,8 @@ class MessageItemView(
             maxRowWidth = maxRowWidth,
             preferredBubbleMaxWidth = maxBubbleWidth,
             checkBoxVisible = checkBoxVisible,
-            density = density
+            density = density,
+            inlineTimeReserveWidth = inlineTimeReserveWidth
         )
         if (auxiliaryTextBubbleView.maxWidth != auxiliaryTextMaxWidth) {
             auxiliaryTextBubbleView.maxWidth = auxiliaryTextMaxWidth

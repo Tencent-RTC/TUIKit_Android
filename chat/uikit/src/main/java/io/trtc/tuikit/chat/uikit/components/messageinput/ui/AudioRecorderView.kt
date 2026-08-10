@@ -28,13 +28,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import kotlin.math.abs
 import kotlin.math.sin
-import java.util.Locale
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.AudioRecorder
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.AudioRecorderListener
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.AudioRecorderResult
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.AudioRecorderResultCode
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils
 import io.trtc.tuikit.chat.uikit.components.common.ChatPermissionHelper
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
@@ -418,6 +418,7 @@ private class AudioRecorderOverlay(
     }
 
     init {
+        rootView.layoutDirection = anchorView.layoutDirection
         buildLayout()
         applyThemedBackground()
     }
@@ -432,13 +433,14 @@ private class AudioRecorderOverlay(
         )
 
         val actionSize = (80 * density).toInt()
+        val actionHorizontalMargin = (72 * density).toInt()
         val cancelLp = FrameLayout.LayoutParams(actionSize, actionSize, Gravity.BOTTOM or Gravity.START)
-        cancelLp.leftMargin = (72 * density).toInt()
+        cancelLp.marginStart = actionHorizontalMargin
         cancelLp.bottomMargin = (107 * density).toInt()
         rootView.addView(cancelButtonView, cancelLp)
 
         val transcribeLp = FrameLayout.LayoutParams(actionSize, actionSize, Gravity.BOTTOM or Gravity.END)
-        transcribeLp.rightMargin = (72 * density).toInt()
+        transcribeLp.marginEnd = actionHorizontalMargin
         transcribeLp.bottomMargin = (107 * density).toInt()
         rootView.addView(transcribeButtonView, transcribeLp)
 
@@ -455,8 +457,8 @@ private class AudioRecorderOverlay(
             bubbleHeight,
             Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL,
         )
-        bubbleLp.leftMargin = bubbleDefaultHorizontalMargin
-        bubbleLp.rightMargin = bubbleDefaultHorizontalMargin
+        bubbleLp.marginStart = bubbleDefaultHorizontalMargin
+        bubbleLp.marginEnd = bubbleDefaultHorizontalMargin
         bubbleLp.bottomMargin = bubbleDefaultBottomMargin
         rootView.addView(bubbleView, bubbleLp)
     }
@@ -529,8 +531,8 @@ private class AudioRecorderOverlay(
             bubbleHeight = bubbleHeight,
         )
         val layoutParams = bubbleView.layoutParams as FrameLayout.LayoutParams
-        layoutParams.leftMargin = layout.leftMargin
-        layoutParams.rightMargin = layout.rightMargin
+        layoutParams.marginStart = layout.leftMargin
+        layoutParams.marginEnd = layout.rightMargin
         layoutParams.bottomMargin = layout.bottomMargin
         layoutParams.height = layout.height
         bubbleView.layoutParams = layoutParams
@@ -936,7 +938,14 @@ private class BubbleView(context: Context) : View(context) {
     private fun drawDuration(canvas: Canvas, w: Float, h: Float) {
         val centerY = h / 2f
         val textY = centerY - (durationPaint.descent() + durationPaint.ascent()) / 2f
-        canvas.drawText(durationText, w - 16f * density, textY, durationPaint)
+        val padding = 16f * density
+        if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            durationPaint.textAlign = Paint.Align.LEFT
+            canvas.drawText(durationText, padding, textY, durationPaint)
+        } else {
+            durationPaint.textAlign = Paint.Align.RIGHT
+            canvas.drawText(durationText, w - padding, textY, durationPaint)
+        }
     }
 
 }
@@ -948,8 +957,7 @@ internal object AudioRecorderDurationTextPolicy {
         if (durationMs == null) {
             return PLACEHOLDER
         }
-        val seconds = (durationMs / 1000).coerceAtLeast(0)
-        return String.format(Locale.US, "%02d:%02d", seconds / 60, seconds % 60)
+        return ChatDateTimeUtils.formatDurationMillis(durationMs.toLong())
     }
 }
 

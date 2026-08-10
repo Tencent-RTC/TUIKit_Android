@@ -10,6 +10,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
+import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ChatConversationActionConfig
+import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ConversationActionConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.conversationlist.ui.ConversationListView
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -41,10 +43,7 @@ class ConversationsPageView @JvmOverloads constructor(
     private val conversationListView: ConversationListView
     private val searchBarBgDrawable: GradientDrawable
 
-    var onSearchClick: (() -> Unit)? = null
-    var onConversationClick: ((String) -> Unit)? = null
-    var onStartChatClick: (() -> Unit)? = null
-    var onCreateGroupClick: (() -> Unit)? = null
+    private var onSearchClick: (() -> Unit)? = null
 
     private val density = resources.displayMetrics.density
     private fun dp(value: Int): Int = (value * density).toInt()
@@ -124,9 +123,7 @@ class ConversationsPageView @JvmOverloads constructor(
         }
         coordinatorLayout.addView(conversationListView, listParams)
 
-        conversationListView.setup { conversationInfo: ConversationInfo ->
-            onConversationClick?.invoke(conversationInfo.conversationID)
-        }
+        conversationListView.setup()
         applyColors(themeStore.themeState.value.currentTheme.tokens.color)
     }
 
@@ -155,11 +152,26 @@ class ConversationsPageView @JvmOverloads constructor(
         searchText.setTextColor(colors.textColorTertiary)
     }
 
-    fun setHeaderTitle(title: String) {
-        pageHeader.setTitle(title)
+    private fun setSearchBarVisible(visible: Boolean) {
+        appBarLayout.visibility = if (visible) VISIBLE else GONE
     }
 
-    fun setHeaderRightAction(view: View) {
-        pageHeader.setEditContent(view)
+    @JvmOverloads
+    fun setup(
+        config: ConversationActionConfigProtocol = ChatConversationActionConfig(),
+        showSearchBar: Boolean = true,
+        headerTitle: String? = null,
+        headerRightAction: View? = null,
+        onConversationClick: ((ConversationInfo) -> Unit)? = null,
+        onSearchClick: (() -> Unit)? = null
+    ) {
+        this.onSearchClick = onSearchClick
+        setSearchBarVisible(showSearchBar)
+        headerTitle?.let { pageHeader.setTitle(it) }
+        headerRightAction?.let { pageHeader.setEditContent(it) }
+        conversationListView.setup(
+            config = config,
+            onConversationClick = onConversationClick ?: {}
+        )
     }
 }

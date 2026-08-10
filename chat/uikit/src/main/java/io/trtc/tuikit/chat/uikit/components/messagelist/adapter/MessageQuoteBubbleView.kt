@@ -179,25 +179,33 @@ internal class MessageQuoteBubbleView(context: Context) : MaxWidthLinearLayout(c
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             ellipsize = TextUtils.TruncateAt.END
             includeFontPadding = false
+            textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+            textDirection = View.TEXT_DIRECTION_LOCALE
         }
     }
 
     private fun applyContentAlignment(alignment: MessageQuoteBubbleContentAlignment) {
-        val gravityValue = alignment.toGravity()
+        val gravityValue = alignment.toAbsoluteGravity(isLocaleRtl())
         gravity = gravityValue
         applyLinearLayoutChildGravity(senderView, gravityValue)
         applyLinearLayoutChildGravity(contentView, gravityValue)
         applyLinearLayoutChildGravity(thumbnailContainer, gravityValue)
         senderView.gravity = gravityValue
         contentView.gravity = gravityValue
-        senderView.textAlignment = alignment.toTextAlignment()
-        contentView.textAlignment = alignment.toTextAlignment()
+        senderView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+        contentView.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+        senderView.textDirection = View.TEXT_DIRECTION_LOCALE
+        contentView.textDirection = View.TEXT_DIRECTION_LOCALE
     }
 
     private fun applyLinearLayoutChildGravity(view: View, gravityValue: Int) {
         val params = view.layoutParams as? LayoutParams ?: return
         params.gravity = gravityValue
         view.layoutParams = params
+    }
+
+    private fun isLocaleRtl(): Boolean {
+        return resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
     }
 
     private fun createLabels(): MessageQuoteLabels {
@@ -268,17 +276,10 @@ internal enum class MessageQuoteBubbleOrientation {
 internal enum class MessageQuoteBubbleContentAlignment {
     START;
 
-    fun toGravity(): Int {
+    fun toAbsoluteGravity(isRtl: Boolean): Int {
         return when (this) {
-            START -> Gravity.START
-            else -> Gravity.START
-        }
-    }
-
-    fun toTextAlignment(): Int {
-        return when (this) {
-            START -> View.TEXT_ALIGNMENT_VIEW_START
-            else -> View.TEXT_ALIGNMENT_VIEW_START
+            START -> if (isRtl) Gravity.RIGHT else Gravity.LEFT
+            else -> if (isRtl) Gravity.RIGHT else Gravity.LEFT
         }
     }
 }

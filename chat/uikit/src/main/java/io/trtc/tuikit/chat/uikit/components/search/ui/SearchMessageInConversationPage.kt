@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.search.utils.HighlightUtils
 import io.trtc.tuikit.chat.uikit.components.search.utils.displayName
 import io.trtc.tuikit.chat.uikit.components.search.utils.getMessageAbstract
@@ -90,7 +91,7 @@ class SearchMessageInConversationPage(
         conversationArrow = ImageView(context).apply {
             val iconSize = dpToPx(16)
             layoutParams = LayoutParams(iconSize, iconSize)
-            setImageResource(R.drawable.chat_setting_ic_arrow_right)
+            setImageResource(R.drawable.uikit_ic_arrow_right)
             scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
         conversationCard.addView(conversationArrow)
@@ -332,13 +333,25 @@ private class MessageItemView(context: Context) : LinearLayout(context) {
         senderName.text = message.messageSender
         senderName.setTextColor(colors.textColorPrimary)
 
-        val messageAbstract = message.getMessageAbstract(context)
+        val rawAbstract = message.getMessageAbstract(context)
+        val bindToken = "${message.msgID.orEmpty()}|$keywords|$rawAbstract|${messageContent.textSize}"
+        messageContent.setTag(R.id.emoji_span_bind_token_tag, bindToken)
         messageContent.text = HighlightUtils.highlight(
-            messageAbstract,
+            EmojiSpanHelper.replaceEmojiKeysWithNames(rawAbstract),
             keywords,
             colors.textColorLink,
             colors.textColorSecondary
         )
+        EmojiSpanHelper.applyEmojiSpans(
+            context,
+            HighlightUtils.highlight(rawAbstract, keywords, colors.textColorLink, colors.textColorSecondary),
+            messageContent.textSize,
+            messageContent
+        ) { spanned ->
+            if (messageContent.getTag(R.id.emoji_span_bind_token_tag) == bindToken) {
+                messageContent.text = spanned
+            }
+        }
     }
 
     private fun dpToPx(dp: Int): Int {

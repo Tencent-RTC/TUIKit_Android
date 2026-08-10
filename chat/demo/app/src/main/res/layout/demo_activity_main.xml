@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/demo_mainContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,20 +21,110 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
+        <LinearLayout
             android:id="@+id/demo_bottomNav"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:itemActiveIndicatorStyle="@style/demo_TabActiveIndicator"
-            app:itemIconSize="24dp"
-            app:itemPaddingBottom="6dp"
-            app:itemPaddingTop="6dp"
-            app:itemRippleColor="@android:color/transparent"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/demo_bottom_nav_menu" />
+            android:gravity="center_vertical"
+            android:minHeight="56dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/demo_tab_messages"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp">
+
+                <ImageView
+                    android:id="@+id/demo_tab_messages_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/demo_ic_tab_messages" />
+
+                <TextView
+                    android:id="@+id/demo_tab_messages_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/demo_tab_messages"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/demo_tab_contacts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp">
+
+                <ImageView
+                    android:id="@+id/demo_tab_contacts_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/demo_ic_tab_contacts" />
+
+                <TextView
+                    android:id="@+id/demo_tab_contacts_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/demo_tab_contacts"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/demo_tab_me"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp">
+
+                <ImageView
+                    android:id="@+id/demo_tab_me_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/demo_ic_tab_me" />
+
+                <TextView
+                    android:id="@+id/demo_tab_me_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/demo_tab_me"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
 
         <io.trtc.tuikit.chat.uikit.components.widgets.AvatarBadgeView
             android:id="@+id/demo_messageUnreadBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+
+        <io.trtc.tuikit.chat.uikit.components.widgets.AvatarBadgeView
+            android:id="@+id/demo_contactsUnreadBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible" />

@@ -1,10 +1,9 @@
 package io.trtc.tuikit.chat.uikit.components.search.utils
 import android.content.Context
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.getCreateGroupDisplayString
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.getSystemInfoDisplayString
-import io.trtc.tuikit.chat.uikit.components.messagelist.utils.jsonData2Dictionary
+import io.trtc.tuikit.chat.uikit.components.common.jsonData2Dictionary
 import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageType
@@ -13,11 +12,6 @@ import io.trtc.tuikit.atomicxcore.api.message.TipsMessagePayload
 import io.trtc.tuikit.atomicxcore.api.search.FriendSearchInfo
 import io.trtc.tuikit.atomicxcore.api.search.GroupSearchInfo
 import io.trtc.tuikit.atomicxcore.api.search.MessageSearchResultItem
-
-val FriendSearchInfo.displayName: String
-    get() = friendRemark?.takeIf { it.isNotEmpty() }
-        ?: userInfo?.nickname?.takeIf { it.isNotEmpty() }
-        ?: userID
 
 val FriendSearchInfo.userAvatarURL: String
     get() = userInfo?.avatarURL ?: ""
@@ -42,8 +36,7 @@ val MessageInfo.messageSenderAvatarUrl: String
 fun MessageInfo.getMessageAbstract(context: Context): String {
     return when (messageType) {
         MessageType.TEXT -> {
-            val rawText = (messagePayload as? TextMessagePayload)?.text ?: ""
-            EmojiSpanHelper.replaceEmojiKeysWithNames(rawText)
+            (messagePayload as? TextMessagePayload)?.text ?: ""
         }
         MessageType.IMAGE -> context.getString(R.string.message_list_message_type_image)
         MessageType.AUDIO -> context.getString(R.string.message_list_message_type_voice)

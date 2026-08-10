@@ -1,5 +1,6 @@
 <resources>
     <string name="message_input_edit_text_hint">رسالة أو اضغط...</string>
+    <string name="message_input_edit_text_hint_text_only">أرسل رسالة...</string>
     <string name="message_input_album">الصور</string>
     <string name="message_input_take_photo">التقاط صورة</string>
     <string name="message_input_record_video">تسجيل فيديو</string>
@@ -30,4 +31,9 @@
     <string name="message_input_record_audio_permission_settings_tip">يرجى تفعيل إذن الميكروفون من إعدادات النظام.</string>
     <string name="message_input_minimal_hint">رسالة</string>
     <string name="message_input_send">إرسال</string>
+    <string name="message_input_message_type_image">[صورة]</string>
+    <string name="message_input_message_type_voice">[صوت]</string>
+    <string name="message_input_message_type_video">[فيديو]</string>
+    <string name="message_input_message_type_file">[ملف]</string>
+    <string name="message_input_message_type_animate_emoji">[ملصق متحرك]</string>
 </resources>

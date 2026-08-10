@@ -3,6 +3,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
+import io.trtc.tuikit.chat.uikit.components.messagelist.typing.TypingIndicatorController
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messageinput.ui.MessageInputView
@@ -15,6 +17,7 @@ import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.chat.uikit.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
@@ -32,8 +35,12 @@ class ChatPageView @JvmOverloads constructor(
     private val themeStore = ThemeStore.shared(context)
     private var viewScope: CoroutineScope? = null
 
-    private var onMultiSelectStateChanged: (Boolean) -> Unit = {}
-    private var onUserClick: (String) -> Unit = {}
+    private var typingController: TypingIndicatorController? = null
+    private var typingCollectJob: Job? = null
+    private var typingConversationID: String? = null
+    private var typingEnabled = false
+
+    private var onTypingStatusChanged: (Boolean) -> Unit = {}
 
     init {
         LayoutInflater.from(context).inflate(R.layout.uikit_page_chat, this, true)
@@ -50,10 +57,13 @@ class ChatPageView @JvmOverloads constructor(
                 applyColors(state.currentTheme.tokens.color)
             }
         }
+        obtainTypingControllerIfNeeded()
+        bindTypingController()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        releaseTypingController()
         viewScope?.cancel()
         viewScope = null
     }
@@ -62,31 +72,67 @@ class ChatPageView @JvmOverloads constructor(
         setBackgroundColor(colors.bgColorOperate)
     }
 
+    private fun obtainTypingControllerIfNeeded() {
+        if (!isAttachedToWindow || !typingEnabled || typingController != null) return
+        val conversationID = typingConversationID ?: return
+        typingController = TypingIndicatorController.obtain(conversationID)
+    }
+
+    private fun releaseTypingController() {
+        typingCollectJob?.cancel()
+        typingCollectJob = null
+        typingController?.let { TypingIndicatorController.release(it) }
+        typingController = null
+    }
+
+    private fun bindTypingController() {
+        typingCollectJob?.cancel()
+        typingCollectJob = null
+        val controller = typingController ?: return
+        val scope = viewScope ?: return
+        typingCollectJob = scope.launch {
+            controller.typingState.collectLatest { isTyping ->
+                onTypingStatusChanged(isTyping)
+            }
+        }
+    }
+
     fun setup(
         conversationID: String,
         locateMessage: MessageInfo? = null,
         messageListConfig: MessageListConfigProtocol = ChatMessageListConfig(),
         messageInputConfig: MessageInputConfigProtocol = ChatMessageInputConfig(),
+        onTypingStatusChanged: (Boolean) -> Unit = {},
         onMultiSelectStateChanged: (Boolean) -> Unit = {},
         onUserClick: (String) -> Unit = {}
     ) {
-        this.onMultiSelectStateChanged = onMultiSelectStateChanged
-        this.onUserClick = onUserClick
+        this.onTypingStatusChanged = onTypingStatusChanged
+
+        releaseTypingController()
+        typingConversationID = conversationID
+        typingEnabled = messageListConfig.enableTyping && ConversationIDUtil.isC2C(conversationID)
+        obtainTypingControllerIfNeeded()
+        bindTypingController()
+
         messageListView.setup(
             conversationID = conversationID,
             config = messageListConfig,
             locateMessage = locateMessage,
             onMultiSelectStateChanged = { isMultiSelect ->
                 messageInputView.visibility = if (isMultiSelect) GONE else VISIBLE
-                this.onMultiSelectStateChanged(isMultiSelect)
+                onMultiSelectStateChanged(isMultiSelect)
             },
-            onUserClick = { userID ->
-                this.onUserClick(userID)
-            }
+            onUserClick = onUserClick
         )
+        val typingStatusSender: ((Boolean) -> Unit)? = if (typingEnabled) {
+            { isTyping -> typingController?.sendTypingStatus(isTyping) }
+        } else {
+            null
+        }
         messageInputView.setup(
             conversationID = conversationID,
-            config = messageInputConfig
+            config = messageInputConfig,
+            typingStatusSender = typingStatusSender
         )
     }
 
@@ -96,11 +142,5 @@ class ChatPageView @JvmOverloads constructor(
 
     fun isInMultiSelectMode(): Boolean {
         return messageListView.isInMultiSelectMode()
-    }
-
-    fun release() {
-        viewScope?.cancel()
-        viewScope = null
-        messageListView.release()
     }
 }

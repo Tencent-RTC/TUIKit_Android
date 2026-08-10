@@ -1,13 +1,14 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.ui.popups
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageUIAction
-import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 
-internal fun List<MessageUIAction>.withDeleteConfirmation(
-    deleteActionName: String,
+import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
+import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageActionIDs
+import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
+
+internal fun List<MessageCustomAction>.withDeleteConfirmation(
     onDeleteRequested: (MessageInfo, onConfirm: () -> Unit) -> Unit
-): List<MessageUIAction> {
+): List<MessageCustomAction> {
     return map { action ->
-        if (action.name == deleteActionName && action.dangerousAction) {
+        if (action.ID == MessageActionIDs.DELETE) {
             action.copy(
                 action = { message ->
                     onDeleteRequested(message) {

@@ -42,6 +42,7 @@
     <string name="message_list_quote_sender_format">%1$s:</string>
     <string name="message_list_quote_accessibility_format">اقتباس %1$s: %2$s</string>
     <string name="message_list_quote_original_unreachable">تعذر تحديد موقع الرسالة الأصلية</string>
+    <string name="message_list_quote_original_filtered">الرسالة الأصلية غير معروضة</string>
     <string name="message_list_message_tips_mute">تم كتمه</string>
     <string name="message_list_message_tips_unmute">تم إلغاء الكتم</string>
     <string name="message_list_message_tips_group_pin_message">قام "%1$s" بتثبيت رسالة</string>
@@ -115,8 +116,6 @@
     <string name="message_list_menu_convert_to_text">تحويل إلى نص</string>
     <string name="message_list_menu_hide">إخفاء</string>
     <string name="message_list_convert_to_text_failed">تعذر التحويل</string>
-    <string name="message_list_copied">تم النسخ</string>
-
     <string name="message_list_menu_translate">ترجمة</string>
     <string name="message_list_translate_failed">تعذرت الترجمة</string>
     <string name="message_list_translate_default_tips">الترجمة مقدمة من Tencent Cloud IM</string>
@@ -148,4 +147,7 @@
     <string name="message_list_join_group_call">انضمام</string>
     <string name="message_list_join_group_call_users">%d أشخاص في مكالمة</string>
     <string name="message_list_time_yesterday">أمس</string>
+    <string name="message_list_mention_all">الجميع</string>
+    <string name="message_list_violation_message">[رسالة مخالفة]</string>
+    <string name="message_list_user_count_suffix">\u200Fو%1$d آخرين\u200F</string>
 </resources>

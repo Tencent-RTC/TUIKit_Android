@@ -1,14 +1,9 @@
 package io.trtc.tuikit.chat.uikit.components.contactlist.ui
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -16,9 +11,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -26,7 +19,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.WindowThemeUtil
+import io.trtc.tuikit.chat.uikit.components.common.WindowThemeUtil
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addcontact.AddContactFlowStep
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addcontact.AddContactNavigator
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addcontact.SelfWordingProvider
@@ -38,15 +31,16 @@ import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addcontact.buildAddCo
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addcontact.buildAddContactSearchResultView
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addcontact.buildAddContactSectionSpacer
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addcontact.buildAddContactSectionTitle
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.displayName
-import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.findContactListViewModelStoreOwner
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.hideKeyboard
+import io.trtc.tuikit.chat.uikit.components.common.displayName
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.setAfterTextChangedListener
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.AddContactAndGroupViewModel
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.AddContactAndGroupViewModelFactory
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.AddType
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.ContactRequestResultPolicy
+import io.trtc.tuikit.chat.uikit.components.widgets.DialogNavBar
+import io.trtc.tuikit.chat.uikit.components.widgets.SearchBar
+import io.trtc.tuikit.chat.uikit.components.widgets.SearchBarConfig
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
@@ -69,7 +63,7 @@ internal class AddContactAndGroupDialog(
 ) : Dialog(context, android.R.style.Theme_NoTitleBar) {
 
     private val viewModel: AddContactAndGroupViewModel by lazy {
-        val owner = context.findContactListViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("AddContactAndGroupDialog requires a ViewModelStoreOwner host context.")
         val key = "${AddContactAndGroupViewModel::class.java.name}:${System.identityHashCode(this)}"
         ViewModelProvider(owner, AddContactAndGroupViewModelFactory(contactStore, groupStore))
@@ -79,10 +73,8 @@ internal class AddContactAndGroupDialog(
     private var searchStateJob: Job? = null
 
     private lateinit var rootLayout: LinearLayout
-    private lateinit var navBar: FrameLayout
+    private lateinit var navBar: DialogNavBar
     private lateinit var divider: View
-    private lateinit var headerTitle: TextView
-    private lateinit var headerBackIcon: ImageView
     private lateinit var contentContainer: FrameLayout
 
     private var currentStep = AddContactFlowStep.SEARCH
@@ -105,52 +97,15 @@ internal class AddContactAndGroupDialog(
             fitsSystemWindows = true
         }
 
-        val navBarHeight = dp2px(56f, dm).toInt()
-        navBar = FrameLayout(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                navBarHeight
+        navBar = DialogNavBar.create(
+            context,
+            DialogNavBar.Config(
+                mode = DialogNavBar.Mode.BackTitle,
+                colors = colors,
+                onLeadingClick = { handleBack() },
+                leadingContentDescription = context.getString(R.string.uikit_back)
             )
-            setPadding(dp2px(16f, dm).toInt(), 0, dp2px(16f, dm).toInt(), 0)
-            setBackgroundColor(colors.bgColorOperate)
-        }
-
-        val backRow = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.START or Gravity.CENTER_VERTICAL
-            )
-            contentDescription = context.getString(R.string.contact_list_back)
-            setOnClickListener { handleBack() }
-        }
-
-        val backIconSize = dp2px(16f, dm).toInt()
-        headerBackIcon = ImageView(context).apply {
-            layoutParams = LinearLayout.LayoutParams(backIconSize, backIconSize)
-            setImageResource(R.drawable.uikit_ic_back)
-            imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
-            scaleType = ImageView.ScaleType.CENTER_INSIDE
-        }
-        backRow.addView(headerBackIcon)
-        navBar.addView(backRow)
-        backRow.expandTouchTarget()
-
-        headerTitle = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            setTextColor(colors.textColorPrimary)
-            setTypeface(typeface, Typeface.BOLD)
-            gravity = Gravity.CENTER
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER
-            )
-        }
-        navBar.addView(headerTitle)
+        )
         rootLayout.addView(navBar)
 
         divider = View(context).apply {
@@ -262,7 +217,7 @@ internal class AddContactAndGroupDialog(
 
     private fun updateHeader() {
         val titleRes = AddContactNavigator.titleRes(currentStep, addType)
-        headerTitle.text = context.getString(titleRes)
+        navBar.setTitle(context.getString(titleRes))
         applyWindowTheme()
     }
 
@@ -283,88 +238,31 @@ internal class AddContactAndGroupDialog(
             setBackgroundColor(colors.bgColorOperate)
         }
 
-        val searchBarContainer = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+        val searchBar = SearchBar(context).configure(
+            SearchBarConfig(
+                showBack = false,
+                showCancel = false,
+                inputHeightDp = 36,
+                hint = if (addType == AddType.CONTACT) {
+                    context.getString(R.string.contact_list_user_id)
+                } else {
+                    context.getString(R.string.contact_list_group_id)
+                },
+                debounceMs = 0L,
+                searchIconRes = R.drawable.contact_list_ic_search,
+                clearIconRes = R.drawable.contact_list_ic_search_clear,
+                paddingHorizontalDp = 16,
+                paddingVerticalDp = 12,
+                expandTouchTargets = false
+            )
+        ).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            setPadding(
-                dp2px(16f, dm).toInt(), dp2px(12f, dm).toInt(),
-                dp2px(16f, dm).toInt(), dp2px(12f, dm).toInt()
-            )
+            editText.imeOptions = EditorInfo.IME_ACTION_SEARCH
         }
-
-        val inputContainer = FrameLayout(context).apply {
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            layoutParams = LinearLayout.LayoutParams(
-                0, dp2px(36f, dm).toInt(), 1f
-            )
-            background = GradientDrawable().apply {
-                setColor(colors.bgColorInput)
-                cornerRadius = dp2px(10f, dm)
-            }
-        }
-
-        val searchInput = EditText(context).apply {
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            textDirection = View.TEXT_DIRECTION_LOCALE
-            gravity = Gravity.CENTER_VERTICAL or Gravity.START
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-            setTextColor(colors.textColorPrimary)
-            setHintTextColor(colors.textColorTertiary)
-            hint = if (addType == AddType.CONTACT) {
-                context.getString(R.string.contact_list_user_id)
-            } else {
-                context.getString(R.string.contact_list_group_id)
-            }
-            background = null
-            setSingleLine()
-            imeOptions = EditorInfo.IME_ACTION_SEARCH
-            val horizontalPadding = dp2px(36f, dm).toInt()
-            setPadding(horizontalPadding, 0, horizontalPadding, 0)
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        }
-        inputContainer.addView(searchInput)
-
-        val searchIcon = ImageView(context).apply {
-            setImageResource(R.drawable.contact_list_ic_search)
-            setColorFilter(colors.textColorTertiary)
-            val iconSize = dp2px(15f, dm).toInt()
-            layoutParams = FrameLayout.LayoutParams(
-                iconSize, iconSize,
-                Gravity.START or Gravity.CENTER_VERTICAL
-            ).apply {
-                marginStart = dp2px(8f, dm).toInt()
-            }
-        }
-        inputContainer.addView(searchIcon)
-
-        val clearButton = ImageView(context).apply {
-            setImageResource(R.drawable.contact_list_ic_search_clear)
-            setColorFilter(colors.textColorPrimary)
-            val iconSize = dp2px(16f, dm).toInt()
-            layoutParams = FrameLayout.LayoutParams(
-                iconSize, iconSize,
-                Gravity.END or Gravity.CENTER_VERTICAL
-            ).apply {
-                marginEnd = dp2px(10f, dm).toInt()
-            }
-            visibility = View.GONE
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { searchInput.setText("") }
-        }
-        inputContainer.addView(clearButton)
-
-        searchBarContainer.addView(inputContainer)
-
-        container.addView(searchBarContainer)
+        container.addView(searchBar)
 
         val myIdTextView = TextView(context).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
@@ -393,23 +291,16 @@ internal class AddContactAndGroupDialog(
         }
         container.addView(resultContainer)
 
-        searchInput.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val text = s?.toString() ?: ""
-                viewModel.updateSearchKeyword(text)
-                val notEmpty = text.isNotEmpty()
-                clearButton.visibility = if (notEmpty) View.VISIBLE else View.GONE
-                if (!notEmpty) {
-                    resultContainer.removeAllViews()
-                }
+        searchBar.onQueryChanged = { text ->
+            viewModel.updateSearchKeyword(text)
+            if (text.isEmpty()) {
+                resultContainer.removeAllViews()
             }
-        })
-        searchInput.setText(viewModel.uiState.value.searchKeyword)
+        }
+        searchBar.setQuery(viewModel.uiState.value.searchKeyword, notify = true)
 
         val performSearch = {
-            searchInput.hideKeyboard()
+            searchBar.hideKeyboard()
             if (addType == AddType.CONTACT) {
                 viewModel.searchContact()
             } else {
@@ -417,7 +308,7 @@ internal class AddContactAndGroupDialog(
             }
         }
 
-        searchInput.setOnEditorActionListener { _, actionId, _ ->
+        searchBar.editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performSearch()
                 true
@@ -665,16 +556,10 @@ internal class AddContactAndGroupDialog(
             rootLayout.setBackgroundColor(colors.bgColorOperate)
         }
         if (::navBar.isInitialized) {
-            navBar.setBackgroundColor(colors.bgColorOperate)
+            navBar.applyColors(colors)
         }
         if (::divider.isInitialized) {
             divider.setBackgroundColor(colors.strokeColorSecondary)
-        }
-        if (::headerTitle.isInitialized) {
-            headerTitle.setTextColor(colors.textColorPrimary)
-        }
-        if (::headerBackIcon.isInitialized) {
-            headerBackIcon.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
         }
         window?.let { WindowThemeUtil.applyDialogSystemBarStyle(it, colors) }
     }

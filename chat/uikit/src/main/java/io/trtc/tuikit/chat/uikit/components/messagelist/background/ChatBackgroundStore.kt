@@ -2,10 +2,6 @@ package io.trtc.tuikit.chat.uikit.components.messagelist.background
 import android.content.Context
 import com.tencent.mmkv.MMKV
 
-data class ChatBackgroundChangedEvent(
-    val conversationID: String
-)
-
 internal interface ChatBackgroundStore {
     fun getImageUri(conversationID: String): String?
     fun setImageUri(conversationID: String, imageUri: String?)

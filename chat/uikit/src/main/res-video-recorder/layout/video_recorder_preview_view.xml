@@ -37,17 +37,18 @@
 
         </LinearLayout>
 
-        <Button
+        <TextView
                 android:id="@+id/video_recorder_send_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="20dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:fontFamily="@string/video_recorder_common_font"
+                android:gravity="center"
                 android:includeFontPadding="false"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
                 android:minWidth="60dp"
                 android:minHeight="0dp"
                 android:paddingStart="12dp"

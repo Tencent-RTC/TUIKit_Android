@@ -1,4 +1,5 @@
-package io.trtc.tuikit.chat.uikit.components.messagelist.utils
+package io.trtc.tuikit.chat.uikit.components.common
+
 import android.graphics.drawable.ColorDrawable
 import android.view.Window
 import androidx.core.view.WindowInsetsControllerCompat

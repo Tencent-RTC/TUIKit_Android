@@ -78,8 +78,6 @@ class ReactionQuickPickerView(
             return
         }
 
-        EmojiManager.initialize(context)
-        RecentEmojiManager.initialize(context)
         val quickEmojis = getQuickEmojis(message)
         if (quickEmojis.isEmpty()) {
             visibility = View.GONE
@@ -167,7 +165,9 @@ class ReactionQuickPickerView(
                     viewModel.removeMessageReaction(message, emoji.key)
                 } else {
                     viewModel.addMessageReaction(message, emoji.key)
-                    RecentEmojiManager.updateRecentEmoji(emoji.key)
+                    EmojiManager.reactionEmojiGroup?.let {
+                        RecentEmojiManager.updateRecentEmoji(it.id, emoji.key)
+                    }
                 }
                 onHandled()
             }
@@ -272,7 +272,8 @@ class ReactionQuickPickerView(
     }
 
     private fun getQuickEmojis(message: MessageInfo): List<Emoji> {
-        val allEmojis = EmojiManager.littleEmojiList
+        val reactionGroup = EmojiManager.reactionEmojiGroup ?: return emptyList()
+        val allEmojis = EmojiManager.reactionEmojiListForPicker()
         if (allEmojis.isEmpty()) {
             return emptyList()
         }
@@ -282,7 +283,9 @@ class ReactionQuickPickerView(
         orderedKeys += message.reactionList
             .filter { it.reactedByMyself }
             .map { it.reactionID }
-        orderedKeys += RecentEmojiManager.getRecentEmojiList().take(MAX_QUICK_EMOJI_COUNT)
+        orderedKeys += RecentEmojiManager.getRecentEmojiList(reactionGroup.id)
+            .filter { emojiMap.containsKey(it) }
+            .take(MAX_QUICK_EMOJI_COUNT)
         orderedKeys += allEmojis.map { it.key }
 
         val result = mutableListOf<Emoji>()

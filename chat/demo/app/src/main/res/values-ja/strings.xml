@@ -1,4 +1,8 @@
 <resources>
+    <string name="demo_chat_custom_message_menu_title">カスタムメッセージ</string>
+    <string name="demo_chat_typing_indicator">入力中…</string>
+    <string name="demo_chat_custom_message_content">クラウドコミュニケーションIMファミリーへようこそ！</string>
+    <string name="demo_chat_custom_message_view_details">詳細を見る</string>
     <string name="demo_voice_message_settings">音声メッセージ設定</string>
     <string name="demo_voice_clone">声のクローン</string>
     <string name="demo_voice_select">声の選択</string>

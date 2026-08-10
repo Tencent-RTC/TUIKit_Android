@@ -13,7 +13,7 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.Text
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.VideoMessageRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageParser
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallParticipantType
-import io.trtc.tuikit.chat.uikit.components.messagelist.utils.jsonData2Dictionary
+import io.trtc.tuikit.chat.uikit.components.common.jsonData2Dictionary
 import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageStatus

@@ -58,12 +58,17 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
                 else -> if (isRtl) !isSelf else isSelf
             }
         }
+
+        private fun isLocaleRtl(context: Context): Boolean {
+            return context.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+        }
     }
 
     override fun createView(context: Context, parent: ViewGroup): View {
         val density = context.resources.displayMetrics.density
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
+            layoutDirection = View.LAYOUT_DIRECTION_LTR
             gravity = Gravity.CENTER_VERTICAL
             val horizontalPadding = (12 * density).toInt()
             val verticalPadding = (8 * density).toInt()
@@ -78,10 +83,6 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
             setImageDrawable(createVoiceLayerDrawable(context))
             tag = TAG_ANIM_ICON
         }
-        container.addView(
-            animIcon,
-            LinearLayout.LayoutParams((16 * density).toInt(), (16 * density).toInt()),
-        )
 
         val durationView = TextView(context).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
@@ -90,13 +91,7 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
             ellipsize = android.text.TextUtils.TruncateAt.END
             tag = TAG_DURATION
         }
-        val durationLp = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-        ).apply {
-            marginStart = (4 * density).toInt()
-        }
-        container.addView(durationView, durationLp)
+        applyContentOrder(container, animIcon, durationView, isRtl = false)
 
         return container
     }
@@ -126,16 +121,19 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
         val isCurrentMessage = audioState.playingMessageId == message.msgID
         val isPlaying = isCurrentMessage && audioState.isPlaying
 
+        val isRtl = isLocaleRtl(view.context)
         val shouldAlignEnd = shouldAlignContentEnd(
             alignment = config.alignment,
             isSelf = message.isSentBySelf,
-            isRtl = view.layoutDirection == View.LAYOUT_DIRECTION_RTL
+            isRtl = isRtl,
         )
         container.gravity = if (shouldAlignEnd) {
             Gravity.END or Gravity.CENTER_VERTICAL
         } else {
             Gravity.START or Gravity.CENTER_VERTICAL
         }
+        applyContentOrder(container, animIcon, durationView, isRtl)
+        animIcon.scaleX = if (isRtl) -1f else 1f
 
         tintVoiceLayers(animIcon.drawable, contentColor)
 
@@ -179,6 +177,32 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
         val animIcon = view.findViewWithTag<ImageView>(TAG_ANIM_ICON) ?: return
         stopPlayingAnimation(animIcon)
         resetVoiceLayersAlpha(animIcon.drawable)
+    }
+
+    private fun applyContentOrder(
+        container: LinearLayout,
+        animIcon: ImageView,
+        durationView: TextView,
+        isRtl: Boolean,
+    ) {
+        val density = container.resources.displayMetrics.density
+        val spacing = (4 * density).toInt()
+        val iconSize = (16 * density).toInt()
+        val iconLp = LinearLayout.LayoutParams(iconSize, iconSize)
+        val durationLp = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )
+        container.removeAllViews()
+        if (isRtl) {
+            container.addView(durationView, durationLp)
+            iconLp.marginStart = spacing
+            container.addView(animIcon, iconLp)
+        } else {
+            container.addView(animIcon, iconLp)
+            durationLp.marginStart = spacing
+            container.addView(durationView, durationLp)
+        }
     }
 
     private fun createVoiceLayerDrawable(context: Context): LayerDrawable {

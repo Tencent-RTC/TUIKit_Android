@@ -27,4 +27,7 @@
     <string name="uikit_chat_permission_mic_dialog_alert">للسماح بالوصول إلى الميكروفون، اذهب إلى الإعدادات -> التطبيقات -> %s لاستخدام رسائل الصوت، وكاميرات الفيديو، ومكالمات الصوت والفيديو، واستنساخ الصوت كالمعتاد.</string>
     <string name="uikit_chat_permission_camera_dialog_alert">السماح بالوصول إلى الكاميرا في الإعدادات -> التطبيقات -> %s لاستخدام وظائف التصوير الفوتوغرافي والفيديو والمكالمات الفيديو كالمعتاد.</string>
     <string name="uikit_chat_permission_storage_dialog_alert">السماح بالوصول إلى التخزين في الإعدادات -> التطبيقات -> %s لاستخدام وظيفة حفظ الصور والفيديو بشكل طبيعي.</string>
+    <string name="uikit_copied">تم النسخ</string>
+    <string name="uikit_back">رجوع</string>
+    <string name="uikit_empty_content">لا يوجد محتوى</string>
 </resources>

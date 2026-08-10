@@ -17,6 +17,8 @@ internal const val MEDIA_BUBBLE_REACTION_TOP_MARGIN_DP = 6
 internal const val MULTI_SELECT_CHECKBOX_SIZE_DP = 22
 internal const val MULTI_SELECT_CHECKBOX_MARGIN_END_DP = 12
 
+internal const val INLINE_MESSAGE_TIME_MARGIN_START_DP = 8
+
 internal const val STATUS_AREA_WORST_CASE_DP = 60
 
 internal const val MESSAGE_AVATAR_SIZE_DP = 40

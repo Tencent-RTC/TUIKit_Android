@@ -1,33 +1,27 @@
 package io.trtc.tuikit.chat.uikit.components.contactlist.ui
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.TypedValue
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
-import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.WindowThemeUtil
-import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
+import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.WindowThemeUtil
+import io.trtc.tuikit.chat.uikit.components.widgets.DialogNavBar
 
 internal abstract class ContactSubPageDialog(context: Context) : Dialog(context, android.R.style.Theme_NoTitleBar) {
 
     protected lateinit var rootLayout: LinearLayout
     protected lateinit var contentContainer: FrameLayout
-    private lateinit var titleView: TextView
-    private lateinit var backIconView: ImageView
+    private lateinit var navBar: DialogNavBar
     private lateinit var dividerView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,57 +38,15 @@ internal abstract class ContactSubPageDialog(context: Context) : Dialog(context,
             fitsSystemWindows = true
         }
 
-        val navBarHeight = dp2px(56f, dm).toInt()
-        val navBarHPad = dp2px(16f, dm).toInt()
-
-        val navBar = FrameLayout(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                navBarHeight
+        navBar = DialogNavBar.create(
+            context,
+            DialogNavBar.Config(
+                mode = DialogNavBar.Mode.BackTitle,
+                colors = colors,
+                onLeadingClick = { dismiss() },
+                leadingContentDescription = context.getString(R.string.uikit_back)
             )
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            setPadding(navBarHPad, 0, navBarHPad, 0)
-            setBackgroundColor(colors.bgColorOperate)
-        }
-
-        val backRow = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.START or Gravity.CENTER_VERTICAL
-            )
-            contentDescription = context.getString(R.string.contact_list_back)
-        }
-
-        val iconSize = dp2px(16f, dm).toInt()
-        backIconView = ImageView(context).apply {
-            layoutParams = LinearLayout.LayoutParams(iconSize, iconSize)
-            setImageResource(R.drawable.uikit_ic_back)
-            imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
-            scaleType = ImageView.ScaleType.CENTER_INSIDE
-        }
-        backRow.addView(backIconView)
-
-        backRow.setOnClickListener { dismiss() }
-        navBar.addView(backRow)
-        backRow.expandTouchTarget()
-
-        titleView = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            setTextColor(colors.textColorPrimary)
-            gravity = Gravity.CENTER
-            setTypeface(typeface, android.graphics.Typeface.BOLD)
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER
-            )
-        }
-        navBar.addView(titleView)
-
+        )
         rootLayout.addView(navBar)
 
         dividerView = View(context).apply {
@@ -129,13 +81,12 @@ internal abstract class ContactSubPageDialog(context: Context) : Dialog(context,
     }
 
     protected fun setTitle(title: String) {
-        titleView.text = title
+        navBar.setTitle(title)
     }
 
     protected fun refreshNavBarColors(colors: ColorTokens) {
         rootLayout.setBackgroundColor(colors.bgColorOperate)
-        titleView.setTextColor(colors.textColorPrimary)
-        backIconView.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
+        navBar.applyColors(colors)
         dividerView.setBackgroundColor(colors.strokeColorSecondary)
         window?.let { WindowThemeUtil.applyDialogSystemBarStyle(it, colors) }
     }

@@ -101,7 +101,7 @@ class SettingRowNavigate @JvmOverloads constructor(
     }
 
     private fun applyAccessory(colors: ColorTokens) {
-        val drawableResId = customAccessoryResId ?: if (showArrow) R.drawable.chat_setting_ic_arrow_right else null
+        val drawableResId = customAccessoryResId ?: if (showArrow) R.drawable.uikit_ic_arrow_right else null
         if (drawableResId == null) {
             accessoryImageView.visibility = GONE
             return

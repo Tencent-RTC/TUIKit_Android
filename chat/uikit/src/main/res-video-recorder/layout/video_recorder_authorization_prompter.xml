@@ -9,10 +9,11 @@
 
     <TextView
             android:id="@+id/video_recorder_dialog_title"
-            style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/video_recorder_prompter"/>
+            android:text="@string/video_recorder_prompter"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
     <TextView
             android:id="@+id/video_recorder_authorization_prompter_tv"

@@ -153,7 +153,7 @@ class MoreActionsPanelView @JvmOverloads constructor(
                 }
             }
             val lp = LinearLayout.LayoutParams(dotSize, dotSize).apply {
-                if (i > 0) leftMargin = spacing
+                if (i > 0) marginStart = spacing
             }
             indicatorContainer.addView(dot, lp)
         }

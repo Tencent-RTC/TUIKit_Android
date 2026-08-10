@@ -31,6 +31,7 @@ class CallingMessageRenderer : MessageRenderer {
         val density = context.resources.displayMetrics.density
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
+            layoutDirection = View.LAYOUT_DIRECTION_LTR
             gravity = Gravity.CENTER_VERTICAL
             val horizontalPadding = (12 * density).toInt()
             val verticalPadding = (8 * density).toInt()
@@ -112,11 +113,18 @@ class CallingMessageRenderer : MessageRenderer {
             else -> 0
         }
 
+        val isRtl = CallMessageDisplayPolicy.isLocaleRtl(view.context)
         if (iconRes != 0) {
             icon.visibility = View.VISIBLE
             icon.setImageResource(iconRes)
             icon.drawable?.setTint(contentColor)
-            icon.scaleX = if (CallMessageDisplayPolicy.shouldMirrorVideoIcon(message.isSentBySelf, callModel.streamMediaType)) {
+            icon.scaleX = if (
+                CallMessageDisplayPolicy.shouldMirrorCallIcon(
+                    isSelf = message.isSentBySelf,
+                    streamMediaType = callModel.streamMediaType,
+                    isRtl = isRtl,
+                )
+            ) {
                 -1f
             } else {
                 1f
@@ -126,7 +134,7 @@ class CallingMessageRenderer : MessageRenderer {
             icon.scaleX = 1f
         }
 
-        applyContentOrder(container, textView, icon, message.isSentBySelf)
+        applyContentOrder(container, textView, icon, message.isSentBySelf, isRtl)
 
         val canReCall = callModel.streamMediaType == CallStreamMediaType.VOICE ||
             callModel.streamMediaType == CallStreamMediaType.VIDEO
@@ -144,12 +152,14 @@ class CallingMessageRenderer : MessageRenderer {
         container: LinearLayout,
         textView: TextView,
         icon: ImageView,
-        isSelf: Boolean
+        isSelf: Boolean,
+        isRtl: Boolean,
     ) {
         container.removeAllViews()
-        CallMessageDisplayPolicy.contentOrder(isSelf).forEach { part ->
+        CallMessageDisplayPolicy.contentOrder(isSelf, isRtl).forEach { part ->
             when (part) {
-                CallMessageContentPart.ICON -> container.addView(icon, iconLayoutParams(container, isSelf))
+                CallMessageContentPart.ICON ->
+                    container.addView(icon, iconLayoutParams(container, isSelf, isRtl))
                 CallMessageContentPart.TEXT -> container.addView(textView, textLayoutParams())
                 else -> Unit
             }
@@ -158,14 +168,16 @@ class CallingMessageRenderer : MessageRenderer {
 
     private fun iconLayoutParams(
         container: LinearLayout,
-        isSelf: Boolean
+        isSelf: Boolean,
+        isRtl: Boolean,
     ): LinearLayout.LayoutParams {
         val spacing = (ICON_TEXT_SPACING_DP * container.resources.displayMetrics.density).toInt()
+        val iconAfterText = isSelf xor isRtl
         return LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply {
-            if (isSelf) {
+            if (iconAfterText) {
                 marginStart = spacing
             } else {
                 marginEnd = spacing
@@ -209,8 +221,12 @@ internal enum class CallMessageContentPart {
 }
 
 internal object CallMessageDisplayPolicy {
-    fun contentOrder(isSelf: Boolean): List<CallMessageContentPart> {
-        return if (isSelf) {
+    fun isLocaleRtl(context: Context): Boolean {
+        return context.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+    }
+
+    fun contentOrder(isSelf: Boolean, isRtl: Boolean = false): List<CallMessageContentPart> {
+        return if (isSelf xor isRtl) {
             listOf(CallMessageContentPart.TEXT, CallMessageContentPart.ICON)
         } else {
             listOf(CallMessageContentPart.ICON, CallMessageContentPart.TEXT)
@@ -224,10 +240,13 @@ internal object CallMessageDisplayPolicy {
         return isShowUnreadPoint && !isSelf
     }
 
-    fun shouldMirrorVideoIcon(
+    fun shouldMirrorCallIcon(
         isSelf: Boolean,
-        streamMediaType: CallStreamMediaType
+        streamMediaType: CallStreamMediaType,
+        isRtl: Boolean = false,
     ): Boolean {
-        return !isSelf && streamMediaType == CallStreamMediaType.VIDEO
+        val isCallMedia = streamMediaType == CallStreamMediaType.VIDEO ||
+            streamMediaType == CallStreamMediaType.VOICE
+        return isCallMedia && ((!isSelf) xor isRtl)
     }
 }

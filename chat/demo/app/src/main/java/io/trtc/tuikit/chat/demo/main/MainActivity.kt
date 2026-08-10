@@ -2,9 +2,10 @@ package io.trtc.tuikit.chat.demo.main
 
 import io.trtc.tuikit.chat.demo.common.BadgeDragPolicy
 import io.trtc.tuikit.chat.demo.common.BaseActivity
+import io.trtc.tuikit.chat.demo.common.AppConstants
+import io.trtc.tuikit.chat.demo.customerservice.CustomerServiceManager
 import io.trtc.tuikit.chat.demo.settings.SettingsPageView
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Gravity
 import android.view.MotionEvent
@@ -13,14 +14,13 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.ContactFlowLauncher
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -31,7 +31,6 @@ import io.trtc.tuikit.atomicxcore.api.group.GetGroupInfoCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.group.GroupEvent
 import io.trtc.tuikit.atomicxcore.api.group.GroupInfo
 import io.trtc.tuikit.atomicxcore.api.group.GroupStore
-import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.chat.app.R
 import io.trtc.tuikit.chat.demo.chat.ChatActivity
 import io.trtc.tuikit.chat.demo.search.SearchActivity
@@ -49,42 +48,42 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-data class TabItem(
-    val title: Int,
-    val menuItemId: Int
+private data class BottomTab(
+    val tabId: Int,
+    val root: LinearLayout,
+    val icon: ImageView,
+    val text: TextView
 )
 
-private const val BADGE_HORIZONTAL_OFFSET_DP = 4
 private const val BADGE_CLEAR_DRAG_THRESHOLD_DP = 48
 
 class MainActivity : BaseActivity() {
 
     private lateinit var viewPager: ViewPager2
-    private lateinit var bottomNav: BottomNavigationView
+    private lateinit var bottomNav: LinearLayout
     private lateinit var bottomNavContainer: FrameLayout
     private lateinit var messageUnreadBadge: AvatarBadgeView
+    private lateinit var contactsUnreadBadge: AvatarBadgeView
     private lateinit var mainContainer: LinearLayout
     private lateinit var tabDivider: View
+    private lateinit var bottomTabs: List<BottomTab>
 
     private var conversationsAddButton: ImageView? = null
     private var contactsAddButton: ImageView? = null
+    private var selectedTabIndex = 0
     private var isDraggingMessageBadge = false
     private var messageBadgeDragStartRawX = 0f
     private var messageBadgeDragStartRawY = 0f
     private var messageBadgeAnchorLayoutListener: View.OnLayoutChangeListener? = null
     private var trackedMessageBadgeAnchorView: View? = null
+    private var contactsBadgeAnchorLayoutListener: View.OnLayoutChangeListener? = null
+    private var trackedContactsBadgeAnchorView: View? = null
 
     private val themeStore by lazy { ThemeStore.shared(this) }
     private val conversationListStore by lazy { ConversationListStore.create() }
     private val contactStore by lazy { ContactStore.shared }
     private val groupStore by lazy { GroupStore.shared }
     private var mainScope: CoroutineScope? = null
-
-    private val tabItems = listOf(
-        TabItem(R.string.demo_tab_messages, R.id.demo_tab_messages),
-        TabItem(R.string.demo_tab_contacts, R.id.demo_tab_contacts),
-        TabItem(R.string.demo_tab_me, R.id.demo_tab_me)
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +98,28 @@ class MainActivity : BaseActivity() {
         bottomNavContainer = findViewById(R.id.demo_bottomNavContainer)
         bottomNav = findViewById(R.id.demo_bottomNav)
         messageUnreadBadge = findViewById(R.id.demo_messageUnreadBadge)
+        contactsUnreadBadge = findViewById(R.id.demo_contactsUnreadBadge)
         tabDivider = findViewById(R.id.demo_tabDivider)
+        bottomTabs = listOf(
+            BottomTab(
+                tabId = R.id.demo_tab_messages,
+                root = findViewById(R.id.demo_tab_messages),
+                icon = findViewById(R.id.demo_tab_messages_icon),
+                text = findViewById(R.id.demo_tab_messages_text)
+            ),
+            BottomTab(
+                tabId = R.id.demo_tab_contacts,
+                root = findViewById(R.id.demo_tab_contacts),
+                icon = findViewById(R.id.demo_tab_contacts_icon),
+                text = findViewById(R.id.demo_tab_contacts_text)
+            ),
+            BottomTab(
+                tabId = R.id.demo_tab_me,
+                root = findViewById(R.id.demo_tab_me),
+                icon = findViewById(R.id.demo_tab_me_icon),
+                text = findViewById(R.id.demo_tab_me_text)
+            )
+        )
 
         ViewCompat.setOnApplyWindowInsetsListener(mainContainer) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -170,18 +190,12 @@ class MainActivity : BaseActivity() {
         conversationsAddButton?.setColorFilter(colors.textColorPrimary)
         contactsAddButton?.setColorFilter(colors.textColorPrimary)
 
-        val tabColorStateList = ColorStateList(
-            arrayOf(
-                intArrayOf(android.R.attr.state_checked),
-                intArrayOf(-android.R.attr.state_checked)
-            ),
-            intArrayOf(colors.textColorLink, colors.textColorSecondary)
-        )
-        bottomNav.itemIconTintList = tabColorStateList
-        bottomNav.itemTextColor = tabColorStateList
-        applyTabBadgeColors(colors)
+        updateSelectedTabColors(colors)
         if (::messageUnreadBadge.isInitialized) {
             messageUnreadBadge.updateColors()
+        }
+        if (::contactsUnreadBadge.isInitialized) {
+            contactsUnreadBadge.updateColors()
         }
     }
 
@@ -198,27 +212,46 @@ class MainActivity : BaseActivity() {
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                bottomNav.menu.getItem(position).isChecked = true
+                selectTab(position, updatePager = false)
             }
         })
     }
 
     private fun setupBottomNav() {
-        bottomNav.itemTextAppearanceActive =
-            com.google.android.material.R.style.TextAppearance_Material3_LabelSmall
-        bottomNav.itemTextAppearanceInactive =
-            com.google.android.material.R.style.TextAppearance_Material3_LabelSmall
-
-        bottomNav.setOnItemSelectedListener { item ->
-            val index = tabItems.indexOfFirst { it.menuItemId == item.itemId }
-            if (index >= 0) {
-                viewPager.setCurrentItem(index, false)
-                true
-            } else {
-                false
+        bottomTabs.forEachIndexed { index, tab ->
+            tab.root.setOnClickListener {
+                selectTab(index, updatePager = true)
             }
         }
+        selectTab(0, updatePager = false)
         setupMessageBadgeDrag()
+        setupContactsBadgeLayout()
+    }
+
+    private fun selectTab(index: Int, updatePager: Boolean) {
+        if (index !in bottomTabs.indices) {
+            return
+        }
+        selectedTabIndex = index
+        if (updatePager && viewPager.currentItem != index) {
+            viewPager.setCurrentItem(index, false)
+        }
+        updateSelectedTabColors(themeStore.themeState.value.currentTheme.tokens.color)
+    }
+
+    private fun updateSelectedTabColors(colors: ColorTokens) {
+        if (!::bottomTabs.isInitialized) {
+            return
+        }
+        bottomTabs.forEachIndexed { index, tab ->
+            val color = if (index == selectedTabIndex) {
+                colors.textColorLink
+            } else {
+                colors.textColorSecondary
+            }
+            tab.icon.setColorFilter(color)
+            tab.text.setTextColor(color)
+        }
     }
 
     private fun setupMessageBadgeDrag() {
@@ -232,14 +265,23 @@ class MainActivity : BaseActivity() {
         mainContainer.clipChildren = false
         mainContainer.clipToPadding = false
         bottomNavContainer.bringChildToFront(messageUnreadBadge)
+        bottomNavContainer.bringChildToFront(contactsUnreadBadge)
         messageUnreadBadge.setOnTouchListener { badgeView, event ->
             handleMessageBadgeTouch(badgeView, event)
         }
-        bottomNav.addOnLayoutChangeListener { v, l, t, r, b, _, _, _, _ ->
+        bottomNav.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             if (messageUnreadBadge.visibility == View.VISIBLE && !isDraggingMessageBadge) {
                 positionMessageUnreadBadge()
             }
+            if (contactsUnreadBadge.visibility == View.VISIBLE) {
+                positionContactsUnreadBadge()
+            }
         }
+    }
+
+    private fun setupContactsBadgeLayout() {
+        contactsUnreadBadge.elevation = 24.dpToPx().toFloat()
+        contactsUnreadBadge.translationZ = 24.dpToPx().toFloat()
     }
 
     private fun handleMessageBadgeTouch(badgeView: View, event: MotionEvent): Boolean {
@@ -383,41 +425,17 @@ class MainActivity : BaseActivity() {
         )
     }
 
-    private fun applyTabBadgeColors(colors: ColorTokens) {
-        bottomNav.getBadge(R.id.demo_tab_contacts)?.let { badge ->
-            configureTabBadge(badge, colors)
-        }
-    }
-
-    private fun configureTabBadge(
-        badge: BadgeDrawable,
-        colors: ColorTokens
-    ) {
-        badge.backgroundColor = colors.textColorError
-        badge.badgeTextColor = 0xFFFFFFFF.toInt()
-        badge.badgeGravity = BadgeDrawable.TOP_END
-        badge.horizontalOffset = BADGE_HORIZONTAL_OFFSET_DP.dpToPx()
-        badge.verticalOffset = 0
-        badge.maxCharacterCount = 3
-    }
-
-    private fun updateTabBadge(menuItemId: Int, unreadCount: Int) {
-        if (menuItemId == R.id.demo_tab_messages) {
+    private fun updateTabBadge(tabId: Int, unreadCount: Int) {
+        if (tabId == R.id.demo_tab_messages) {
             updateMessageTabBadge(unreadCount)
             return
         }
-        if (unreadCount > 0) {
-            val badge = bottomNav.getOrCreateBadge(menuItemId)
-            configureTabBadge(badge, themeStore.themeState.value.currentTheme.tokens.color)
-            badge.isVisible = true
-            badge.number = unreadCount
-        } else {
-            bottomNav.removeBadge(menuItemId)
+        if (tabId == R.id.demo_tab_contacts) {
+            updateContactsTabBadge(unreadCount)
         }
     }
 
     private fun updateMessageTabBadge(unreadCount: Int) {
-        bottomNav.removeBadge(R.id.demo_tab_messages)
         if (unreadCount <= 0) {
             if (!isDraggingMessageBadge) {
                 messageUnreadBadge.visibility = View.INVISIBLE
@@ -439,37 +457,59 @@ class MainActivity : BaseActivity() {
         showMessageBadgeWhenReady()
     }
 
-    private fun showMessageBadgeWhenReady() {
-        val itemView = findMessageTabItemView()
-        if (itemView == null || itemView.width == 0) {
-            bottomNav.post { showMessageBadgeWhenReady() }
+    private fun updateContactsTabBadge(unreadCount: Int) {
+        if (unreadCount <= 0) {
+            contactsUnreadBadge.visibility = View.INVISIBLE
             return
         }
-        val anchorView = findMessageBadgeAnchorView(itemView)
-        if (anchorView.width == 0) {
+        val text = if (unreadCount > 99) "99+" else unreadCount.toString()
+        contactsUnreadBadge.setType(AvatarBadgeView.BadgeType.Text)
+        contactsUnreadBadge.setText(text)
+        contactsUnreadBadge.updateColors()
+        showContactsBadgeWhenReady()
+    }
+
+    private fun showMessageBadgeWhenReady() {
+        val anchorView = findTabIcon(R.id.demo_tab_messages)
+        if (anchorView == null || anchorView.width == 0) {
             bottomNav.post { showMessageBadgeWhenReady() }
             return
         }
         attachMessageBadgeAnchorLayoutListener(anchorView)
         val unspec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         messageUnreadBadge.measure(unspec, unspec)
-        applyMessageBadgeLayoutParams(anchorView)
+        applyOverlayBadgeLayoutParams(messageUnreadBadge, anchorView)
         if (messageUnreadBadge.visibility != View.VISIBLE) {
             messageUnreadBadge.visibility = View.VISIBLE
         }
     }
 
-    private fun applyMessageBadgeLayoutParams(anchorView: View) {
+    private fun showContactsBadgeWhenReady() {
+        val anchorView = findTabIcon(R.id.demo_tab_contacts)
+        if (anchorView == null || anchorView.width == 0) {
+            bottomNav.post { showContactsBadgeWhenReady() }
+            return
+        }
+        attachContactsBadgeAnchorLayoutListener(anchorView)
+        val unspec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        contactsUnreadBadge.measure(unspec, unspec)
+        applyOverlayBadgeLayoutParams(contactsUnreadBadge, anchorView)
+        if (contactsUnreadBadge.visibility != View.VISIBLE) {
+            contactsUnreadBadge.visibility = View.VISIBLE
+        }
+    }
+
+    private fun applyOverlayBadgeLayoutParams(badgeView: AvatarBadgeView, anchorView: View) {
         val anchorLoc = IntArray(2).also { anchorView.getLocationInWindow(it) }
         val containerLoc = IntArray(2).also { bottomNavContainer.getLocationInWindow(it) }
         val anchorLeftInContainer = anchorLoc[0] - containerLoc[0]
         val anchorTopInContainer = anchorLoc[1] - containerLoc[1]
         val isRtl = bottomNav.layoutDirection == View.LAYOUT_DIRECTION_RTL
-        val badgeW = messageUnreadBadge.width.takeIf { it > 0 }
-            ?: messageUnreadBadge.measuredWidth.takeIf { it > 0 }
+        val badgeW = badgeView.width.takeIf { it > 0 }
+            ?: badgeView.measuredWidth.takeIf { it > 0 }
             ?: return
-        val badgeH = messageUnreadBadge.height.takeIf { it > 0 }
-            ?: messageUnreadBadge.measuredHeight.takeIf { it > 0 }
+        val badgeH = badgeView.height.takeIf { it > 0 }
+            ?: badgeView.measuredHeight.takeIf { it > 0 }
             ?: return
         val badgePosition = BadgeDragPolicy.badgeTopEndPosition(
             anchorLeft = anchorLeftInContainer,
@@ -481,7 +521,7 @@ class MainActivity : BaseActivity() {
             verticalOffsetPx = 0,
             isRtl = isRtl
         )
-        val existing = messageUnreadBadge.layoutParams as? FrameLayout.LayoutParams
+        val existing = badgeView.layoutParams as? FrameLayout.LayoutParams
         if (existing != null &&
             existing.leftMargin == badgePosition.left &&
             existing.topMargin == badgePosition.top &&
@@ -502,7 +542,7 @@ class MainActivity : BaseActivity() {
             rightMargin = 0
             bottomMargin = 0
         }
-        messageUnreadBadge.layoutParams = params
+        badgeView.layoutParams = params
     }
 
     private fun attachMessageBadgeAnchorLayoutListener(anchorView: View) {
@@ -520,50 +560,43 @@ class MainActivity : BaseActivity() {
         messageBadgeAnchorLayoutListener = listener
     }
 
+    private fun attachContactsBadgeAnchorLayoutListener(anchorView: View) {
+        if (trackedContactsBadgeAnchorView === anchorView) return
+        trackedContactsBadgeAnchorView?.let { prev ->
+            contactsBadgeAnchorLayoutListener?.let { prev.removeOnLayoutChangeListener(it) }
+        }
+        val listener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            if (contactsUnreadBadge.visibility == View.VISIBLE) {
+                positionContactsUnreadBadge()
+            }
+        }
+        anchorView.addOnLayoutChangeListener(listener)
+        trackedContactsBadgeAnchorView = anchorView
+        contactsBadgeAnchorLayoutListener = listener
+    }
+
     private fun positionMessageUnreadBadge() {
         if (messageUnreadBadge.visibility != View.VISIBLE) return
-        val itemView = findMessageTabItemView() ?: return
-        val anchorView = findMessageBadgeAnchorView(itemView)
+        val anchorView = findTabIcon(R.id.demo_tab_messages) ?: return
         if (anchorView.width == 0) return
         attachMessageBadgeAnchorLayoutListener(anchorView)
-        applyMessageBadgeLayoutParams(anchorView)
+        applyOverlayBadgeLayoutParams(messageUnreadBadge, anchorView)
     }
 
-    private fun findMessageTabItemView(): View? {
-        val itemIndex = tabItems.indexOfFirst { it.menuItemId == R.id.demo_tab_messages }
-        if (itemIndex < 0) {
-            return null
-        }
-        val menuView = (0 until bottomNav.childCount)
-            .map { bottomNav.getChildAt(it) }
-            .filterIsInstance<ViewGroup>()
-            .firstOrNull { it.childCount >= tabItems.size }
-            ?: return null
-        return menuView.getChildAt(itemIndex)
+    private fun positionContactsUnreadBadge() {
+        if (contactsUnreadBadge.visibility != View.VISIBLE) return
+        val anchorView = findTabIcon(R.id.demo_tab_contacts) ?: return
+        if (anchorView.width == 0) return
+        attachContactsBadgeAnchorLayoutListener(anchorView)
+        applyOverlayBadgeLayoutParams(contactsUnreadBadge, anchorView)
     }
 
-    private fun findMessageBadgeAnchorView(itemView: View): View {
-        return itemView.findViewById<View>(com.google.android.material.R.id.navigation_bar_item_icon_view)
-            ?: findFirstImageView(itemView)
-            ?: itemView
-    }
-
-    private fun findFirstImageView(view: View): ImageView? {
-        if (view is ImageView) {
-            return view
-        }
-        if (view !is ViewGroup) {
-            return null
-        }
-        for (index in 0 until view.childCount) {
-            findFirstImageView(view.getChildAt(index))?.let { return it }
-        }
-        return null
+    private fun findTabIcon(tabId: Int): ImageView? {
+        return bottomTabs.firstOrNull { it.tabId == tabId }?.icon
     }
 
     private fun createConversationsPage(): View {
         val page = ConversationsPageView(this)
-        page.setHeaderTitle(getString(R.string.demo_page_conversations_title))
         val addButton = ImageView(this).apply {
             setImageResource(io.trtc.tuikit.chat.uikit.R.drawable.uikit_ic_add_circle)
             layoutParams = ViewGroup.LayoutParams(24.dpToPx(), 24.dpToPx())
@@ -575,40 +608,45 @@ class MainActivity : BaseActivity() {
                 listOf(
                     PopupMenuItem(
                         title = getString(R.string.demo_start_chat),
-                        onClick = { page.onStartChatClick?.invoke() },
+                        onClick = {
+                            ContactFlowLauncher.showStartSingleChatPage(this) { conversationId ->
+                                ChatActivity.start(this, conversationId)
+                            }
+                        },
                         iconResId = io.trtc.tuikit.chat.uikit.R.drawable.uikit_ic_user_add
                     ),
                     PopupMenuItem(
                         title = getString(R.string.demo_create_group),
-                        onClick = { page.onCreateGroupClick?.invoke() },
+                        onClick = {
+                            ContactFlowLauncher.showCreateGroupChatPage(this) { conversationId ->
+                                ChatActivity.start(this, conversationId)
+                            }
+                        },
                         iconResId = io.trtc.tuikit.chat.uikit.R.drawable.uikit_ic_chat_add
                     )
                 )
             )
         }
-        page.setHeaderRightAction(addButton)
-        page.onConversationClick = { conversationID ->
-            ChatActivity.start(this, conversationID)
-        }
-        page.onSearchClick = {
-            SearchActivity.Companion.start(this)
-        }
-        page.onStartChatClick = {
-            ContactFlowLauncher.showStartSingleChatPage(this) { conversationId ->
-                ChatActivity.start(this, conversationId)
+        page.setup(
+            headerTitle = getString(R.string.demo_page_conversations_title),
+            headerRightAction = addButton,
+            onConversationClick = { conversationInfo ->
+                val conversationID = conversationInfo.conversationID
+                if (conversationID == AppConstants.CUSTOMER_SERVICE_CONVERSATION_ID) {
+                    CustomerServiceManager.openCustomerServiceChat(this)
+                } else {
+                    ChatActivity.start(this, conversationID)
+                }
+            },
+            onSearchClick = {
+                SearchActivity.Companion.start(this)
             }
-        }
-        page.onCreateGroupClick = {
-            ContactFlowLauncher.showCreateGroupChatPage(this) { conversationId ->
-                ChatActivity.start(this, conversationId)
-            }
-        }
+        )
         return page
     }
 
     private fun createContactsPage(): View {
         val page = ContactsPageView(this)
-        page.setHeaderTitle(getString(R.string.demo_page_contacts_title))
         val addButton = ImageView(this).apply {
             setImageResource(io.trtc.tuikit.chat.uikit.R.drawable.uikit_ic_add_circle)
             layoutParams = ViewGroup.LayoutParams(24.dpToPx(), 24.dpToPx())
@@ -620,19 +658,20 @@ class MainActivity : BaseActivity() {
                 listOf(
                     PopupMenuItem(
                         title = getString(R.string.demo_add_friend),
-                        onClick = { page.onAddFriendClick?.invoke() },
+                        onClick = { ContactFlowLauncher.showAddFriendPage(this) },
                         iconResId = io.trtc.tuikit.chat.uikit.R.drawable.uikit_ic_user_add
                     ),
                     PopupMenuItem(
                         title = getString(R.string.demo_add_group),
-                        onClick = { page.onAddGroupClick?.invoke() },
+                        onClick = { ContactFlowLauncher.showAddGroupPage(this) },
                         iconResId = io.trtc.tuikit.chat.uikit.R.drawable.uikit_ic_chat_add
                     )
                 )
             )
         }
-        page.setHeaderRightAction(addButton)
         page.setup(
+            headerTitle = getString(R.string.demo_page_contacts_title),
+            headerRightAction = addButton,
             onContactClick = { contactInfo ->
                 ChatActivity.start(this, "c2c_${contactInfo.userID}")
             },
@@ -640,12 +679,6 @@ class MainActivity : BaseActivity() {
                 ChatActivity.start(this, "group_${contactInfo.userID}")
             }
         )
-        page.onAddFriendClick = {
-            ContactFlowLauncher.showAddFriendPage(this)
-        }
-        page.onAddGroupClick = {
-            ContactFlowLauncher.showAddGroupPage(this)
-        }
         return page
     }
 

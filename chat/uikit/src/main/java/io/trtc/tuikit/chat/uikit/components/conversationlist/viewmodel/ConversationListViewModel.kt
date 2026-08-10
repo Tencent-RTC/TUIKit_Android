@@ -1,19 +1,23 @@
 package io.trtc.tuikit.chat.uikit.components.conversationlist.viewmodel
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ChatConversationActionConfig
-import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ConversationActionConfigProtocol
-import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationMenuAction
-import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationMuteAction
-import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.isUnread
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
-import io.trtc.tuikit.atomicxcore.api.conversation.ConversationLoadOption
 import io.trtc.tuikit.atomicxcore.api.conversation.ConversationInfo
 import io.trtc.tuikit.atomicxcore.api.conversation.ConversationListStore
+import io.trtc.tuikit.atomicxcore.api.conversation.ConversationLoadOption
 import io.trtc.tuikit.atomicxcore.api.conversation.ConversationMarkType
 import io.trtc.tuikit.atomicxcore.api.conversation.ReceiveMessageOption
+import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.uicustom.CustomEditor
+import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ChatConversationActionConfig
+import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ConversationActionConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ConversationActionCustomizer
+import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationActionIDs
+import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationCustomAction
+import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationCustomActionContext
+import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.isUnread
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,11 +25,108 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-private const val ACTION_ORDER_READ = 100
-private const val ACTION_ORDER_MUTE = 200
-private const val ACTION_ORDER_PIN = 300
-private const val ACTION_ORDER_CLEAR = 400
-private const val ACTION_ORDER_DELETE = 500
+internal data class ConversationActionCallbacks(
+    val onClearUnreadCount: (ConversationInfo) -> Unit = {},
+    val onMarkAsUnread: (ConversationInfo) -> Unit = {},
+    val onPinConversation: (ConversationInfo) -> Unit = {},
+    val onUnpinConversation: (ConversationInfo) -> Unit = {},
+    val onMuteConversation: (conversationID: String, mute: Boolean) -> Unit = { _, _ -> },
+    val onClearMessage: (ConversationInfo) -> Unit = {},
+    val onDeleteConversation: (ConversationInfo) -> Unit = {},
+)
+
+internal data class ConversationActionTitleResIDs(
+    val markRead: Int,
+    val markUnread: Int,
+    val mute: Int,
+    val unmute: Int,
+    val pin: Int,
+    val unpin: Int,
+    val clear: Int,
+    val delete: Int,
+) {
+    companion object {
+        fun defaults(): ConversationActionTitleResIDs {
+            return ConversationActionTitleResIDs(
+                markRead = R.string.conversation_list_mark_read,
+                markUnread = R.string.conversation_list_mark_unread,
+                mute = R.string.conversation_list_mute,
+                unmute = R.string.conversation_list_unmute,
+                pin = R.string.conversation_list_pin,
+                unpin = R.string.conversation_list_unpin,
+                clear = R.string.conversation_list_clear,
+                delete = R.string.conversation_list_delete,
+            )
+        }
+    }
+}
+
+internal fun buildDefaultConversationActions(
+    isSupportMarkUnread: Boolean,
+    isSupportMute: Boolean,
+    isSupportPin: Boolean,
+    isSupportClearHistory: Boolean,
+    isSupportDelete: Boolean,
+    isUnread: Boolean,
+    isPinned: Boolean,
+    isReceiving: Boolean,
+    titleResIDs: ConversationActionTitleResIDs,
+    callbacks: ConversationActionCallbacks,
+): List<ConversationCustomAction> {
+    val actions = mutableListOf<ConversationCustomAction>()
+    if (isSupportMarkUnread) {
+        actions += ConversationCustomAction(
+            ID = ConversationActionIDs.MARK_UNREAD,
+            titleResID = if (isUnread) titleResIDs.markRead else titleResIDs.markUnread,
+            action = if (isUnread) callbacks.onClearUnreadCount else callbacks.onMarkAsUnread,
+        )
+    }
+    if (isSupportMute) {
+        actions += ConversationCustomAction(
+            ID = ConversationActionIDs.MUTE,
+            titleResID = if (isReceiving) titleResIDs.mute else titleResIDs.unmute,
+            action = { target ->
+                callbacks.onMuteConversation(target.conversationID, isReceiving)
+            },
+        )
+    }
+    if (isSupportPin) {
+        actions += ConversationCustomAction(
+            ID = ConversationActionIDs.PIN,
+            titleResID = if (isPinned) titleResIDs.unpin else titleResIDs.pin,
+            action = if (isPinned) callbacks.onUnpinConversation else callbacks.onPinConversation,
+        )
+    }
+    if (isSupportClearHistory) {
+        actions += ConversationCustomAction(
+            ID = ConversationActionIDs.CLEAR_HISTORY,
+            titleResID = titleResIDs.clear,
+            action = callbacks.onClearMessage,
+        )
+    }
+    if (isSupportDelete) {
+        actions += ConversationCustomAction(
+            ID = ConversationActionIDs.DELETE,
+            titleResID = titleResIDs.delete,
+            dangerous = true,
+            action = callbacks.onDeleteConversation,
+        )
+    }
+    return actions
+}
+
+internal fun applyConversationActionCustomizer(
+    actionContext: ConversationCustomActionContext,
+    defaults: List<ConversationCustomAction>,
+    customizer: ConversationActionCustomizer?,
+): List<ConversationCustomAction> {
+    if (customizer == null) {
+        return defaults
+    }
+    val editor = CustomEditor(actionContext, defaults)
+    customizer.customize(editor)
+    return editor.build()
+}
 
 class ConversationListViewModel(
     val conversationListStore: ConversationListStore,
@@ -54,12 +155,19 @@ class ConversationListViewModel(
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
 
+    private val _initialLoadFinished = MutableStateFlow(false)
+    val initialLoadFinished: StateFlow<Boolean> = _initialLoadFinished.asStateFlow()
+
     init {
         conversationListStore.loadConversations(
             ConversationLoadOption(),
             object : CompletionHandler {
-                override fun onSuccess() {}
-                override fun onFailure(code: Int, desc: String) {}
+                override fun onSuccess() {
+                    _initialLoadFinished.value = true
+                }
+                override fun onFailure(code: Int, desc: String) {
+                    _initialLoadFinished.value = true
+                }
             }
         )
     }
@@ -91,22 +199,31 @@ class ConversationListViewModel(
         _selectedConversations.value = selectedConversationMap.values.toSet()
     }
 
-    fun getActions(conversationInfo: ConversationInfo): List<ConversationMenuAction> {
-        return buildConversationMenuActions(
-            conversationInfo = conversationInfo,
-            conversationActionConfig = conversationActionConfig,
-            onClearUnreadCount = { clearUnreadCount(it) },
-            onMarkAsUnread = { markAsUnRead(it) },
-            onPinConversation = { pinConversation(it) },
-            onUnpinConversation = { unpinConversation(it) },
-            onMuteConversation = { conversationID, mute ->
-                conversationListStore.setReceiveMessageOpt(
-                    conversationID,
-                    if (mute) ReceiveMessageOption.NOT_NOTIFY else ReceiveMessageOption.RECEIVE
-                )
-            },
-            onClearMessage = { clearMessage(it) },
-            onDeleteConversation = { deleteConversation(it) }
+    fun getDefaultActions(conversationInfo: ConversationInfo): List<ConversationCustomAction> {
+        return buildDefaultConversationActions(
+            isSupportMarkUnread = conversationActionConfig.isSupportMarkUnread,
+            isSupportMute = conversationActionConfig.isSupportMute,
+            isSupportPin = conversationActionConfig.isSupportPin,
+            isSupportClearHistory = conversationActionConfig.isSupportClearHistory,
+            isSupportDelete = conversationActionConfig.isSupportDelete,
+            isUnread = conversationInfo.isUnread,
+            isPinned = conversationInfo.isPinned,
+            isReceiving = conversationInfo.receiveOption == ReceiveMessageOption.RECEIVE,
+            titleResIDs = ConversationActionTitleResIDs.defaults(),
+            callbacks = ConversationActionCallbacks(
+                onClearUnreadCount = { clearUnreadCount(it) },
+                onMarkAsUnread = { markAsUnRead(it) },
+                onPinConversation = { pinConversation(it) },
+                onUnpinConversation = { unpinConversation(it) },
+                onMuteConversation = { conversationID, mute ->
+                    conversationListStore.setReceiveMessageOpt(
+                        conversationID,
+                        if (mute) ReceiveMessageOption.NOT_NOTIFY else ReceiveMessageOption.RECEIVE
+                    )
+                },
+                onClearMessage = { clearMessage(it) },
+                onDeleteConversation = { deleteConversation(it) },
+            ),
         )
     }
 
@@ -174,61 +291,5 @@ class ConversationListViewModelFactory(
             return ConversationListViewModel(conversationListStore, conversationActionConfig) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-}
-
-internal fun buildConversationMenuActions(
-    conversationInfo: ConversationInfo,
-    conversationActionConfig: ConversationActionConfigProtocol,
-    onClearUnreadCount: (ConversationInfo) -> Unit = {},
-    onMarkAsUnread: (ConversationInfo) -> Unit = {},
-    onPinConversation: (ConversationInfo) -> Unit = {},
-    onUnpinConversation: (ConversationInfo) -> Unit = {},
-    onMuteConversation: (conversationID: String, mute: Boolean) -> Unit = { _, _ -> },
-    onClearMessage: (ConversationInfo) -> Unit = {},
-    onDeleteConversation: (ConversationInfo) -> Unit = {}
-): List<ConversationMenuAction> {
-    val readAction = ConversationMenuAction().apply {
-        if (conversationInfo.isUnread) {
-            titleResID = R.string.conversation_list_mark_read
-            action = { onClearUnreadCount(it) }
-        } else {
-            titleResID = R.string.conversation_list_mark_unread
-            action = { onMarkAsUnread(it) }
-        }
-        order = ACTION_ORDER_READ
-    }
-    val pinAction = ConversationMenuAction().apply {
-        if (conversationInfo.isPinned) {
-            titleResID = R.string.conversation_list_unpin
-            action = { onUnpinConversation(it) }
-        } else {
-            titleResID = R.string.conversation_list_pin
-            action = { onPinConversation(it) }
-        }
-        order = ACTION_ORDER_PIN
-    }
-    val muteAction = ConversationMuteAction.create(
-        conversation = conversationInfo,
-        order = ACTION_ORDER_MUTE,
-        onMuteConversation = onMuteConversation
-    )
-    val clearAction = ConversationMenuAction(
-        titleResID = R.string.conversation_list_clear,
-        action = { onClearMessage(it) },
-        order = ACTION_ORDER_CLEAR
-    )
-    val deleteAction = ConversationMenuAction(
-        titleResID = R.string.conversation_list_delete,
-        dangerous = true,
-        action = { onDeleteConversation(it) },
-        order = ACTION_ORDER_DELETE
-    )
-    return mutableListOf<ConversationMenuAction>().apply {
-        if (conversationActionConfig.isSupportMarkUnread) add(readAction)
-        if (conversationActionConfig.isSupportMute) add(muteAction)
-        if (conversationActionConfig.isSupportPin) add(pinAction)
-        if (conversationActionConfig.isSupportClearHistory) add(clearAction)
-        if (conversationActionConfig.isSupportDelete) add(deleteAction)
     }
 }

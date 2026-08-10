@@ -14,7 +14,6 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageUIAction
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.reactions.ReactionQuickPickerView
 import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListViewModel
 import io.trtc.tuikit.atomicx.theme.ThemeStore
@@ -29,15 +28,14 @@ internal class MessageLongPressPopup(
     private val message: MessageInfo,
     private val viewModel: MessageListViewModel,
     private val config: MessageListConfigProtocol,
-    actions: List<MessageUIAction>,
-    customActions: List<MessageCustomAction>
+    actions: List<MessageCustomAction>
 ) {
 
     private val density = context.resources.displayMetrics.density
     private val colors: ColorTokens
         get() = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
 
-    private val allActions = buildLongPressPopupActions(actions, customActions)
+    private val allActions = toLongPressPopupActions(actions)
     private var popupWindow: PopupWindow? = null
 
     private var bubbleLayout: BubbleMenuLayout? = null

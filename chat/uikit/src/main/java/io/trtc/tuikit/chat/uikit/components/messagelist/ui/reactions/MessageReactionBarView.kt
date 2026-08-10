@@ -74,7 +74,6 @@ class MessageReactionBarView(
         lastReactionSignature = signature
         visibility = View.VISIBLE
         gravity = rowHorizontalGravity
-        EmojiManager.initialize(context)
         setOnClickListener { onClick(message) }
 
         val availableWidth = maxWidth.coerceAtLeast(160.dp)
@@ -282,7 +281,7 @@ class MessageReactionBarView(
         } else {
             (totalUserCount - 1).coerceAtLeast(1)
         }
-        val suffix = context.getString(R.string.contact_list_group_name_suffix, count)
+        val suffix = context.getString(R.string.message_list_user_count_suffix, count)
         return if (isChineseLocale) {
             trimmedDisplayName + suffix
         } else {

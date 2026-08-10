@@ -61,8 +61,6 @@ class EmojiPickerView @JvmOverloads constructor(
     private var previewPopup: PopupWindow? = null
 
     init {
-        EmojiManager.initialize(context)
-        RecentEmojiManager.initialize(context)
         layoutDirection = View.LAYOUT_DIRECTION_LOCALE
 
         val rootLayout = LinearLayout(context).apply {
@@ -220,7 +218,7 @@ class EmojiPickerView @JvmOverloads constructor(
             onEmojiClick = { emoji ->
                 val currentGroup = emojiGroupList.firstOrNull { it.id == groupId } ?: group
                 if (currentGroup.isLittleEmoji) {
-                    RecentEmojiManager.updateRecentEmoji(emoji.key)
+                    RecentEmojiManager.updateRecentEmoji(currentGroup.id, emoji.key)
                 }
                 onEmojiClick(currentGroup, emoji)
             },
@@ -233,18 +231,19 @@ class EmojiPickerView @JvmOverloads constructor(
     }
 
     private fun applyEmojiGroups(groups: List<EmojiGroup>) {
-        emojiGroupList = groups
-        tabAdapter.submitGroups(groups)
-        gridAdaptersByGroupId.keys.retainAll(groups.map { it.id }.toSet())
-        pagerAdapter.submitPageCount(groups.size)
+        val pickerGroups = EmojiManager.filterEmojiGroupsForPicker(groups)
+        emojiGroupList = pickerGroups
+        tabAdapter.submitGroups(pickerGroups)
+        gridAdaptersByGroupId.keys.retainAll(pickerGroups.map { it.id }.toSet())
+        pagerAdapter.submitPageCount(pickerGroups.size)
         pagerAdapter.notifyDataSetChanged()
 
-        if (groups.isEmpty()) {
+        if (pickerGroups.isEmpty()) {
             bottomBar.visibility = View.GONE
             return
         }
 
-        val selectedIndex = viewPager.currentItem.coerceIn(0, groups.lastIndex)
+        val selectedIndex = viewPager.currentItem.coerceIn(0, pickerGroups.lastIndex)
         if (selectedIndex != viewPager.currentItem) {
             viewPager.setCurrentItem(selectedIndex, false)
         }
@@ -262,10 +261,12 @@ class EmojiPickerView @JvmOverloads constructor(
         val items = mutableListOf<EmojiGridAdapter.GridItem>()
 
         if (group.isLittleEmoji) {
-            val recentKeys = RecentEmojiManager.recentEmojis.value
-            if (recentKeys.isNotEmpty()) {
+            val groupEmojisByKey = group.emojis.associateBy { it.key }
+            val recentEmojis = RecentEmojiManager.getRecentEmojiList(group.id)
+                .mapNotNull { groupEmojisByKey[it] }
+                .take(RECENT_EMOJI_DISPLAY_COUNT)
+            if (recentEmojis.isNotEmpty()) {
                 items.add(EmojiGridAdapter.GridItem.Header(context.getString(R.string.emoji_picker_recent)))
-                val recentEmojis = recentKeys.mapNotNull { key -> EmojiManager.findEmojiByKey(key) }.take(8)
                 recentEmojis.forEach { emoji ->
                     items.add(EmojiGridAdapter.GridItem.EmojiItem(emoji))
                 }
@@ -310,7 +311,11 @@ class EmojiPickerView @JvmOverloads constructor(
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
 
-        previewPopup?.showAtLocation(this, Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, dpToPx(100f).toInt())
+        val location = IntArray(2)
+        getLocationInWindow(location)
+        val x = location[0] + (width - size) / 2
+        val y = location[1]
+        previewPopup?.showAtLocation(this, Gravity.NO_GRAVITY, x, y)
     }
 
     private fun dismissEmojiPreview() {
@@ -332,7 +337,7 @@ class EmojiPickerView @JvmOverloads constructor(
         }
 
         scope.launch {
-            RecentEmojiManager.recentEmojis.collectLatest {
+            RecentEmojiManager.recentEmojiVersion.collectLatest {
                 refreshAllGrids()
             }
         }
@@ -382,5 +387,9 @@ class EmojiPickerView @JvmOverloads constructor(
 
     private fun dpToPx(dp: Float): Float {
         return dp * context.resources.displayMetrics.density
+    }
+
+    companion object {
+        private const val RECENT_EMOJI_DISPLAY_COUNT = 8
     }
 }

@@ -33,8 +33,7 @@ class ReactionEmojiPickerDialog(
     private val density = context.resources.displayMetrics.density
     private val themeStore = ThemeStore.shared(context)
     private val emojiList: List<Emoji> by lazy {
-        EmojiManager.initialize(context)
-        EmojiManager.littleEmojiList
+        EmojiManager.reactionEmojiListForPicker()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,8 +56,9 @@ class ReactionEmojiPickerDialog(
                     viewModel.removeMessageReaction(message, emoji.key)
                 } else {
                     viewModel.addMessageReaction(message, emoji.key)
-                    RecentEmojiManager.initialize(context)
-                    RecentEmojiManager.updateRecentEmoji(emoji.key)
+                    EmojiManager.reactionEmojiGroup?.let {
+                        RecentEmojiManager.updateRecentEmoji(it.id, emoji.key)
+                    }
                 }
                 dismiss()
             }

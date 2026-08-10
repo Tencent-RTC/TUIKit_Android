@@ -39,13 +39,14 @@ internal object MessageItemDisplayPolicy {
         preferredBubbleMaxWidth: Int,
         checkBoxVisible: Boolean,
         statusReserveWidth: Int,
-        density: Float
+        density: Float,
+        inlineTimeReserveWidth: Int = 0
     ): MessageItemMaxWidths {
-        val offset = if (checkBoxVisible) {
+        val offset = (if (checkBoxVisible) {
             resolveMultiSelectCheckBoxArea(density)
         } else {
             0
-        }
+        }) + inlineTimeReserveWidth.coerceAtLeast(0)
         val rowWidth = (maxRowWidth - offset).coerceAtLeast(0)
         val preferredBubbleWidth = (preferredBubbleMaxWidth - offset).coerceAtLeast(0)
         val bubbleWidth = MessageStatusLayoutPolicy.resolveBubbleMaxWidth(
@@ -63,13 +64,14 @@ internal object MessageItemDisplayPolicy {
         maxRowWidth: Int,
         preferredBubbleMaxWidth: Int,
         checkBoxVisible: Boolean,
-        density: Float
+        density: Float,
+        inlineTimeReserveWidth: Int = 0
     ): Int {
-        val offset = if (checkBoxVisible) {
+        val offset = (if (checkBoxVisible) {
             resolveMultiSelectCheckBoxArea(density)
         } else {
             0
-        }
+        }) + inlineTimeReserveWidth.coerceAtLeast(0)
         val rowWidth = (maxRowWidth - offset).coerceAtLeast(0)
         val preferredBubbleWidth = (preferredBubbleMaxWidth - offset).coerceAtLeast(0)
         return minOf(rowWidth, preferredBubbleWidth).coerceAtLeast(0)

@@ -1,8 +1,6 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.ui.readreceipts
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
@@ -10,18 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.messagelist.utils.WindowThemeUtil
-import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
+import io.trtc.tuikit.chat.uikit.components.common.WindowThemeUtil
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.chat.uikit.components.widgets.Avatar
+import io.trtc.tuikit.chat.uikit.components.widgets.DialogNavBar
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.group.GroupMember
 import io.trtc.tuikit.atomicxcore.api.message.MessageActionStore
@@ -45,8 +40,8 @@ class MessageReadReceiptDialog(
     private val messageActionStore = MessageActionStore.create(message)
     private val dialogScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private lateinit var readTabButton: Button
-    private lateinit var unreadTabButton: Button
+    private lateinit var readTabButton: TextView
+    private lateinit var unreadTabButton: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MemberAdapter
 
@@ -114,10 +109,21 @@ class MessageReadReceiptDialog(
             fitsSystemWindows = true
         }
 
-        root.addView(buildNavBar(), LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            56.dp
-        ))
+        root.addView(
+            DialogNavBar.create(
+                context,
+                DialogNavBar.Config(
+                    mode = DialogNavBar.Mode.BackTitle,
+                    title = context.getString(R.string.message_list_read_receipt_detail),
+                    colors = colors,
+                    onLeadingClick = { dismiss() }
+                )
+            ),
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                56.dp
+            )
+        )
 
         root.addView(View(context).apply {
             setBackgroundColor(colors.strokeColorSecondary)
@@ -160,56 +166,17 @@ class MessageReadReceiptDialog(
         return root
     }
 
-    private fun buildNavBar(): FrameLayout {
-        val colors = themeStore.themeState.value.currentTheme.tokens.color
-        val navBar = FrameLayout(context).apply {
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            setPadding(16.dp, 0, 16.dp, 0)
-            setBackgroundColor(colors.bgColorOperate)
-        }
-
-        val backRow = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.START or Gravity.CENTER_VERTICAL
-            )
-            setOnClickListener { dismiss() }
-        }
-        backRow.addView(ImageView(context).apply {
-            setImageResource(R.drawable.uikit_ic_back)
-            imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
-            scaleType = ImageView.ScaleType.CENTER_INSIDE
-        }, LinearLayout.LayoutParams(16.dp, 16.dp))
-        navBar.addView(backRow)
-        backRow.expandTouchTarget()
-
-        navBar.addView(TextView(context).apply {
-            text = context.getString(R.string.message_list_read_receipt_detail)
-            textSize = 16f
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(colors.textColorPrimary)
-            gravity = Gravity.CENTER
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER
-            )
-        })
-
-        return navBar
-    }
-
     private fun createTabButton(
         text: String,
         onClick: () -> Unit
-    ): Button {
-        return Button(context).apply {
+    ): TextView {
+        return TextView(context).apply {
             this.text = text
+            gravity = Gravity.CENTER
+            isClickable = true
+            isFocusable = true
             isAllCaps = false
+            setPadding(12.dp, 8.dp, 12.dp, 8.dp)
             setOnClickListener { onClick() }
         }
     }

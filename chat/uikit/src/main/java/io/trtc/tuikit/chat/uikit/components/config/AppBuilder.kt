@@ -3,7 +3,10 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.mmkv.MMKV
+import io.trtc.tuikit.atomicx.theme.Theme
+import io.trtc.tuikit.atomicx.theme.ThemeStore
 import java.util.Locale
 
 enum class ThemeMode {
@@ -60,15 +63,17 @@ object AppBuilderConfig {
     private var mmkv: MMKV? = null
     private var translateTargetLanguageValue: String = Locale.getDefault().language
 
-    internal fun initStorage(context: Context) {
-        if (mmkv == null) {
-            MMKV.initialize(context.applicationContext)
+    init {
+        val appContext = ContextProvider.getApplicationContext()
+        if (appContext != null) {
+            MMKV.initialize(appContext)
             mmkv = MMKV.mmkvWithID(MMKV_ID)
             val saved = mmkv?.decodeString(KEY_TRANSLATE_TARGET_LANGUAGE, "")
             if (!saved.isNullOrEmpty()) {
                 translateTargetLanguageValue = saved
             }
         }
+        AppBuilder.ensureInitialized()
     }
 
     var translateTargetLanguage: String
@@ -83,46 +88,54 @@ object AppBuilderConfig {
         }
 }
 
-class AppBuilder private constructor() {
-    private val configFileName = "appConfig.json"
-    private var hasInit = false
+object AppBuilder {
+    private const val CONFIG_FILE_NAME = "appConfig.json"
+
+    init {
+        val appContext = ContextProvider.getApplicationContext()
+        if (appContext == null) {
+            Log.w("AppBuilder", "Failed to init: application context is null")
+        } else {
+            loadConfigFromAssets(appContext)
+        }
+    }
+
+    internal fun ensureInitialized() = Unit
 
     private fun loadConfigFromAssets(context: Context) {
         try {
-            val jsonString = context.assets.open(configFileName)
+            val jsonString = context.assets.open(CONFIG_FILE_NAME)
                 .bufferedReader()
                 .use { it.readText() }
 
             val gson = Gson()
             val jsonObject = gson.fromJson(jsonString, JsonObject::class.java)
-            parseConfig(jsonObject)
+            parseConfig(jsonObject, context)
         } catch (e: Exception) {
             Log.w("AppBuilder", "Failed to load config from assets: ${e.message}")
         }
     }
 
-    private fun loadConfig(context: Context) {
-        if (!hasInit) {
-            AppBuilderConfig.initStorage(context)
-            loadConfigFromAssets(context)
-            hasInit = true
-        }
-    }
-
-    private fun parseConfig(json: JsonObject) {
+    private fun parseConfig(json: JsonObject, context: Context) {
         val config = AppBuilderConfig
 
         json.getAsJsonObject("theme")?.let { theme ->
             theme.get("mode")?.asString?.let { modeString ->
-                when (modeString) {
-                    "system" -> config.themeMode = ThemeMode.SYSTEM
-                    "light" -> config.themeMode = ThemeMode.LIGHT
-                    "dark" -> config.themeMode = ThemeMode.DARK
+                val mode = when (modeString) {
+                    "system" -> ThemeMode.SYSTEM
+                    "light" -> ThemeMode.LIGHT
+                    "dark" -> ThemeMode.DARK
+                    else -> null
+                }
+                mode?.let {
+                    config.themeMode = it
+                    ThemeStore.shared(context).setTheme(it.toTheme(context))
                 }
             }
 
             theme.get("primaryColor")?.asString?.let { primaryColor ->
                 config.primaryColor = primaryColor
+                ThemeStore.shared(context).setPrimaryColor(primaryColor)
             }
         }
 
@@ -196,11 +209,11 @@ class AppBuilder private constructor() {
         }
     }
 
-    companion object {
-        private val instance: AppBuilder by lazy { AppBuilder() }
-
-        fun loadConfig(context: Context) {
-            instance.loadConfig(context.applicationContext)
+    private fun ThemeMode.toTheme(context: Context): Theme {
+        return when (this) {
+            ThemeMode.SYSTEM -> Theme.systemTheme(context)
+            ThemeMode.LIGHT -> Theme.lightTheme(context)
+            ThemeMode.DARK -> Theme.darkTheme(context)
         }
     }
 }

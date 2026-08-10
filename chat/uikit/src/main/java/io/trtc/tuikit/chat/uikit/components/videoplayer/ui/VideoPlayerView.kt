@@ -26,6 +26,7 @@ import com.bumptech.glide.Glide
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
+import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils
 import io.trtc.tuikit.chat.uikit.components.videoplayer.ui.widget.ShadowImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -400,7 +401,7 @@ class VideoPlayerView @JvmOverloads constructor(
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    currentTimeView.text = formatTime(progress.toLong())
+                    currentTimeView.text = ChatDateTimeUtils.formatDurationMillis(progress.toLong())
                 }
             }
 
@@ -453,7 +454,7 @@ class VideoPlayerView @JvmOverloads constructor(
                     applyVideoTransform()
                     loadingView.visibility = View.GONE
                     seekBar.max = mp.duration.coerceAtLeast(0)
-                    durationView.text = formatTime(mp.duration.toLong())
+                    durationView.text = ChatDateTimeUtils.formatDurationMillis(mp.duration.toLong())
                     updatePlaybackUi()
                 }
                 setOnVideoSizeChangedListener { _, width, height ->
@@ -535,8 +536,8 @@ class VideoPlayerView @JvmOverloads constructor(
         }
         seekBar.max = duration
         seekBar.progress = currentPosition
-        currentTimeView.text = formatTime(currentPosition.toLong())
-        durationView.text = formatTime(duration.toLong())
+        currentTimeView.text = ChatDateTimeUtils.formatDurationMillis(currentPosition.toLong())
+        durationView.text = ChatDateTimeUtils.formatDurationMillis(duration.toLong())
     }
 
     private fun updatePlaybackUi() {
@@ -658,7 +659,7 @@ class VideoPlayerView @JvmOverloads constructor(
     private fun buildTimeTextView(alphaPercent: Float = 1.0f): TextView {
         return TextView(context).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-            text = formatTime(0)
+            text = ChatDateTimeUtils.formatDurationMillis(0)
             setTextColor(Color.WHITE)
             alpha = alphaPercent
             setShadowLayer(
@@ -672,21 +673,6 @@ class VideoPlayerView @JvmOverloads constructor(
 
     private fun dpToPx(value: Int): Int {
         return (value * resources.displayMetrics.density).toInt()
-    }
-
-    private fun formatTime(timeMs: Long): String {
-        if (timeMs <= 0) {
-            return "00:00"
-        }
-        val totalSeconds = timeMs / 1000
-        val hours = totalSeconds / 3600
-        val minutes = (totalSeconds % 3600) / 60
-        val seconds = totalSeconds % 60
-        return if (hours > 0) {
-            String.format("%02d:%02d:%02d", hours, minutes, seconds)
-        } else {
-            String.format("%02d:%02d", minutes, seconds)
-        }
     }
 
     companion object {

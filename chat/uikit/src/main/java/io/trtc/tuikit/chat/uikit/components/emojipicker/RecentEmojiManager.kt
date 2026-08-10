@@ -1,7 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.emojipicker
-import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,27 +9,29 @@ import kotlinx.coroutines.flow.asStateFlow
 
 object RecentEmojiManager {
     private const val MMKV_ID = "recent_emoji_cache"
-    private const val KEY_RECENT_EMOJI = "recent_emoji_list"
+    private const val KEY_RECENT_EMOJI_PREFIX = "recent_emoji_list_"
     private const val MAX_RECENT_EMOJI_COUNT = 8
 
     private lateinit var mmkv: MMKV
     private val gson = Gson()
 
-    private val _recentEmojis = MutableStateFlow<List<String>>(emptyList())
-    val recentEmojis: StateFlow<List<String>> = _recentEmojis.asStateFlow()
+    private val _recentEmojiVersion = MutableStateFlow(0L)
+    val recentEmojiVersion: StateFlow<Long> = _recentEmojiVersion.asStateFlow()
 
-    @JvmStatic
-    fun initialize(context: Context) {
-        MMKV.initialize(context)
-        mmkv = MMKV.mmkvWithID(MMKV_ID)
-        _recentEmojis.value = getRecentEmojiList()
+    init {
+        val appContext = ContextProvider.getApplicationContext()
+        if (appContext == null) {
+            IllegalStateException("RecentEmojiManager init failed: application context is null").printStackTrace()
+        } else {
+            MMKV.initialize(appContext)
+            mmkv = MMKV.mmkvWithID(MMKV_ID)
+        }
     }
 
-    @JvmStatic
-    fun getRecentEmojiList(): List<String> {
+    fun getRecentEmojiList(groupId: String): List<String> {
         if (!::mmkv.isInitialized) return emptyList()
 
-        val json = mmkv.getString(KEY_RECENT_EMOJI, null)
+        val json = mmkv.getString(storageKey(groupId), null)
         return if (json.isNullOrEmpty()) {
             emptyList()
         } else {
@@ -43,22 +45,10 @@ object RecentEmojiManager {
         }
     }
 
-    @JvmStatic
-    fun saveRecentEmojiList(emojiList: List<String>) {
+    fun updateRecentEmoji(groupId: String, emojiKey: String) {
         if (!::mmkv.isInitialized) return
 
-        try {
-            val json = gson.toJson(emojiList)
-            mmkv.putString(KEY_RECENT_EMOJI, json)
-            _recentEmojis.value = emojiList
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    @JvmStatic
-    fun updateRecentEmoji(emojiKey: String) {
-        val recentList = getRecentEmojiList().toMutableList()
+        val recentList = getRecentEmojiList(groupId).toMutableList()
         recentList.remove(emojiKey)
         recentList.add(0, emojiKey)
 
@@ -66,6 +56,14 @@ object RecentEmojiManager {
             recentList.removeAt(recentList.size - 1)
         }
 
-        saveRecentEmojiList(recentList)
+        try {
+            val json = gson.toJson(recentList)
+            mmkv.putString(storageKey(groupId), json)
+            _recentEmojiVersion.value += 1
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
+    private fun storageKey(groupId: String) = KEY_RECENT_EMOJI_PREFIX + groupId
 }

@@ -1,4 +1,5 @@
-package io.trtc.tuikit.chat.uikit.components.chatsetting.utils
+package io.trtc.tuikit.chat.uikit.components.common
+
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.lifecycle.ViewModelStoreOwner

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="chat_uikit_theme_page_background">#FFF6F6F6</color>
     <color name="uikit_page_background">#FFFFFFFF</color>
     <color name="uikit_surface_background">#FFFFFFFF</color>
     <color name="uikit_nav_background">#FFFFFFFF</color>

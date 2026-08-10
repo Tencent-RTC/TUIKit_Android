@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.FileUtil
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.FileUtils
@@ -26,6 +27,7 @@ class FileMessageRenderer : MessageRenderer {
         val density = context.resources.displayMetrics.density
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
+            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
             gravity = Gravity.CENTER_VERTICAL
             val pad = (12 * density).toInt()
             setPadding(pad, pad, pad, pad)
@@ -169,7 +171,7 @@ class FileMessageRenderer : MessageRenderer {
             colors.textColorSecondary
         }
         val fileSize = payload?.fileSize?.toLong() ?: 0L
-        sizeView.text = formatFileSize(fileSize)
+        sizeView.text = FileUtil.formatFileSize(fileSize)
         sizeView.setTextColor(footerTextColor)
 
         val filePath = payload?.filePath?.takeIf { it.isNotBlank() }
@@ -223,17 +225,5 @@ class FileMessageRenderer : MessageRenderer {
                 R.drawable.message_list_file_type_img
             else -> R.drawable.message_list_file_type_unknown
         }
-    }
-
-    private fun formatFileSize(size: Long): String {
-        if (size <= 0) return "0 B"
-        val units = arrayOf("B", "KB", "MB", "GB")
-        var sizeDouble = size.toDouble()
-        var unitIndex = 0
-        while (sizeDouble >= 1024 && unitIndex < units.size - 1) {
-            sizeDouble /= 1024
-            unitIndex++
-        }
-        return String.format(Locale.getDefault(), "%.1f %s", sizeDouble, units[unitIndex])
     }
 }

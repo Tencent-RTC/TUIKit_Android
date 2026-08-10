@@ -12,9 +12,10 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.messageinput.utils.WindowThemeUtil
+import io.trtc.tuikit.chat.uikit.components.common.WindowThemeUtil
 import io.trtc.tuikit.chat.uikit.components.messageinput.model.MentionInfo
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -27,16 +28,10 @@ import io.trtc.tuikit.atomicxcore.api.group.GroupMember
 import io.trtc.tuikit.atomicxcore.api.group.GroupMemberFilterRole
 import io.trtc.tuikit.atomicxcore.api.group.GroupMemberStore
 
-private fun GroupMember.getDisplayName(): String {
-    return nameCard?.takeIf { it.isNotBlank() }
-        ?: nickname?.takeIf { it.isNotBlank() }
-        ?: userID
-}
-
 private fun GroupMember.toUserPickerData(): UserPickerData<GroupMember> {
     return UserPickerData(
         key = userID,
-        label = getDisplayName(),
+        label = displayName,
         avatarUrl = avatarURL,
         extraData = this
     )
@@ -285,7 +280,7 @@ class MentionMemberDialogFragment : DialogFragment() {
                 addAll(selectedMembers.map {
                     MentionInfo(
                         userID = it.userID,
-                        displayName = it.getDisplayName()
+                        displayName = it.displayName
                     )
                 })
             }

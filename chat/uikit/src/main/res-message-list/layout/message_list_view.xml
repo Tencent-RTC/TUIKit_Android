@@ -59,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp" />
 
-    <com.google.android.material.card.MaterialCardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/message_list_floating_entry_card"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
@@ -101,7 +101,7 @@
                 android:textSize="14sp" />
 
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 
     <io.trtc.tuikit.chat.uikit.components.messagelist.listen.ListenPlaybackBar
         android:id="@+id/message_list_listen_playback_bar"

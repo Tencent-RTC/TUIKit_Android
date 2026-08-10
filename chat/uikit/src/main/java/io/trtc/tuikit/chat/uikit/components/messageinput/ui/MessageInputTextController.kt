@@ -19,6 +19,7 @@ internal class MessageInputTextController(
     private val updateSendButtonVisibility: (InputUiState) -> Unit,
     private val clearQuote: () -> Unit,
     private val onMentionTrigger: () -> Unit,
+    private val onTypingContentChanged: (Boolean) -> Unit = {},
     initialInputText: String = ""
 ) {
     var inputText: String = initialInputText
@@ -56,6 +57,7 @@ internal class MessageInputTextController(
                 }
                 if (!isProgrammaticInsert) {
                     hasUserEditedText = true
+                    onTypingContentChanged(newText.isNotEmpty())
                 }
                 inputText = newText
                 refreshSendButtonIfReady()
@@ -84,6 +86,21 @@ internal class MessageInputTextController(
             inputText = ""
             refreshSendButtonIfReady()
         }
+    }
+
+    fun sendFaceMessage(faceIndex: Int, faceData: String) {
+        val quotedMessage = if (isCoordinatorInitialized()) {
+            currentState().overlay.quoteMessage?.toMessageInfo()
+        } else {
+            null
+        }
+        viewModelProvider()?.sendFaceMessage(
+            context = context,
+            faceIndex = faceIndex,
+            faceData = faceData,
+            quotedMessage = quotedMessage,
+            onSuccess = clearQuote
+        )
     }
 
     fun resetInputText() {

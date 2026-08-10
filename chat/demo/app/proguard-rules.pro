@@ -20,3 +20,5 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class com.tencent.qcloud.** { *; }
+-keep class com.tencentcloud.tencentcloudcustomer.** { *; }
+-keep class com.tencent.imsdk.** { *; }

@@ -6,10 +6,10 @@ internal object MessageInputLongPressRecordingPolicy {
     fun shouldArmRecording(
         inputMode: InputMode,
         surface: InputSurfaceState,
-        isAudioRecorderEnabled: Boolean,
+        isLongPressToTalkEnabled: Boolean,
         hasInputText: Boolean,
     ): Boolean {
-        return isAudioRecorderEnabled &&
+        return isLongPressToTalkEnabled &&
             !hasInputText &&
             inputMode == InputMode.TEXT &&
             surface == InputSurfaceState.NONE

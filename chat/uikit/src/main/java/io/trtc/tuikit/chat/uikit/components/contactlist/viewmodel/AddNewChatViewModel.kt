@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.displayName
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.chat.uikit.components.userpicker.model.UserPickerData
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
@@ -164,7 +165,7 @@ class AddNewChatViewModel(
         if (currentState.chatType == ChatType.SINGLE) {
             val contact = currentState.selectedContacts.first()
             _uiState.value = currentState.copy(
-                createdConversationId = "c2c_${contact.userID}",
+                createdConversationId = ConversationIDUtil.fromUser(contact.userID),
                 isCreating = false
             )
         } else {
@@ -264,7 +265,7 @@ class AddNewChatViewModel(
             completion = object : CreateGroupCompletionHandler {
                 override fun onSuccess(groupID: String) {
                     lastCreatedGroupID = groupID
-                    val conversationId = "group_$groupID"
+                    val conversationId = ConversationIDUtil.fromGroup(groupID)
                     val createdGroupType = currentSelectedGroupType.value.type
                     _uiState.value = _uiState.value.copy(
                         isCreating = false,

@@ -32,9 +32,7 @@ internal class LongPressEmojiPanelBuilder(
     }
 
     fun build(cardWidth: Int): View {
-        EmojiManager.initialize(context)
-        RecentEmojiManager.initialize(context)
-        val emojis = EmojiManager.littleEmojiList
+        val emojis = EmojiManager.reactionEmojiListForPicker()
         val pages = emojis.chunked(MessageReactionPanelPolicy.PAGE_SIZE)
         val pageCount = pages.size.coerceAtLeast(1)
         val showIndicator = pageCount > 1
@@ -113,8 +111,7 @@ internal class LongPressEmojiPanelBuilder(
     }
 
     private fun pageCount(): Int {
-        EmojiManager.initialize(context)
-        return MessageReactionPanelPolicy.pageCount(EmojiManager.littleEmojiList.size)
+        return MessageReactionPanelPolicy.pageCount(EmojiManager.reactionEmojiListForPicker().size)
     }
 
     private fun buildEmojiPage(items: List<Emoji>): View {
@@ -181,7 +178,9 @@ internal class LongPressEmojiPanelBuilder(
                     viewModel.removeMessageReaction(message, emoji.key)
                 } else {
                     viewModel.addMessageReaction(message, emoji.key)
-                    RecentEmojiManager.updateRecentEmoji(emoji.key)
+                    EmojiManager.reactionEmojiGroup?.let {
+                        RecentEmojiManager.updateRecentEmoji(it.id, emoji.key)
+                    }
                 }
                 onDismiss()
             }

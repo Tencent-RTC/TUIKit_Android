@@ -5,7 +5,6 @@ import io.trtc.tuikit.chat.demo.common.Event
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -147,7 +146,8 @@ class SettingsPageView @JvmOverloads constructor(
         allSpacers.addAll(listOf(
             findViewById(R.id.demo_spacer1),
             findViewById(R.id.demo_spacer2),
-            findViewById(R.id.demo_spacerVoice)
+            findViewById(R.id.demo_spacerVoice),
+            findViewById(R.id.demo_spacer4)
         ))
 
         setupSettingsItems()
@@ -227,16 +227,10 @@ class SettingsPageView @JvmOverloads constructor(
     }
 
     private fun setupSettingsItems() {
-        val savedThemeMode = MMKV.defaultMMKV().decodeInt(KEY_THEME_MODE, AppConstants.THEME_MODE_SYSTEM)
-        val themeDisplayName = when (savedThemeMode) {
-            AppConstants.THEME_MODE_LIGHT -> context.getString(R.string.demo_settings_theme_light)
-            AppConstants.THEME_MODE_DARK -> context.getString(R.string.demo_settings_theme_dark)
-            else -> context.getString(R.string.demo_settings_theme_system)
-        }
         setupEntryItem(
             itemTheme,
             context.getString(R.string.demo_settings_theme),
-            themeDisplayName
+            currentThemeDisplayName()
         ) {
             showThemeSelector()
         }
@@ -392,8 +386,16 @@ class SettingsPageView @JvmOverloads constructor(
         updateEntryValue(itemAddRule, value)
     }
 
+    private fun currentThemeDisplayName(): String {
+        return when (themeStore.themeState.value.currentTheme.id) {
+            Theme.DARK_THEME_ID -> context.getString(R.string.demo_settings_theme_dark)
+            Theme.SYSTEM_THEME_ID -> context.getString(R.string.demo_settings_theme_system)
+            Theme.LIGHT_THEME_ID -> context.getString(R.string.demo_settings_theme_light)
+            else -> context.getString(R.string.demo_settings_theme_system)
+        }
+    }
+
     private fun showThemeSelector() {
-        val themeStore = ThemeStore.shared(context)
         val options = listOf(
             ActionItem(text = context.getString(R.string.demo_settings_theme_system), value = AppConstants.THEME_MODE_SYSTEM),
             ActionItem(text = context.getString(R.string.demo_settings_theme_light), value = AppConstants.THEME_MODE_LIGHT),
@@ -402,16 +404,8 @@ class SettingsPageView @JvmOverloads constructor(
         ActionSheet.show(context, options) { selected ->
             val mode = selected.value as Int
             updateEntryValue(itemTheme, selected.text)
-            MMKV.defaultMMKV().encode(KEY_THEME_MODE, mode)
             when (mode) {
-                AppConstants.THEME_MODE_SYSTEM -> {
-                    val isNight = (context.resources.configuration.uiMode and
-                        Configuration.UI_MODE_NIGHT_MASK) ==
-                        Configuration.UI_MODE_NIGHT_YES
-                    themeStore.setTheme(
-                        if (isNight) Theme.darkTheme(context) else Theme.lightTheme(context)
-                    )
-                }
+                AppConstants.THEME_MODE_SYSTEM -> themeStore.setTheme(Theme.systemTheme(context))
                 AppConstants.THEME_MODE_LIGHT -> themeStore.setTheme(Theme.lightTheme(context))
                 AppConstants.THEME_MODE_DARK -> themeStore.setTheme(Theme.darkTheme(context))
             }
@@ -496,7 +490,6 @@ class SettingsPageView @JvmOverloads constructor(
 
     companion object {
         private const val KEY_ENABLE_READ_RECEIPT = AppConstants.KEY_ENABLE_READ_RECEIPT
-        private const val KEY_THEME_MODE = AppConstants.KEY_THEME_MODE
         private const val KEY_APP_LANGUAGE = AppConstants.KEY_APP_LANGUAGE
     }
 }

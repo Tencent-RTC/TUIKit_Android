@@ -22,6 +22,7 @@ internal data class MessageItemViewHierarchy(
     val timeView: TextView,
     val checkBox: ImageView,
     val contentRow: LinearLayout,
+    val inlineTimeView: TextView,
     val leftAvatarView: Avatar,
     val rightAvatarView: Avatar,
     val middleColumn: LinearLayout,
@@ -94,6 +95,20 @@ internal fun MessageItemView.buildMessageItemViewHierarchy(
         LinearLayout.LayoutParams.WRAP_CONTENT,
         1f
     ))
+
+    val inlineTimeView = TextView(context).apply {
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+        maxLines = 1
+        ellipsize = TextUtils.TruncateAt.END
+        visibility = View.GONE
+    }
+    mainRow.addView(inlineTimeView, LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+        gravity = Gravity.TOP
+        marginStart = (INLINE_MESSAGE_TIME_MARGIN_START_DP * density).toInt()
+    })
 
     val leftAvatarView = Avatar(context).apply {
         setSize(Avatar.AvatarSize.S)
@@ -279,6 +294,7 @@ internal fun MessageItemView.buildMessageItemViewHierarchy(
         timeView = timeView,
         checkBox = checkBox,
         contentRow = contentRow,
+        inlineTimeView = inlineTimeView,
         leftAvatarView = leftAvatarView,
         rightAvatarView = rightAvatarView,
         middleColumn = middleColumn,

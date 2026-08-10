@@ -39,7 +39,6 @@ class FaceMessageRenderer : MessageRenderer {
         colors: ColorTokens
     ) {
         val imageView = view as ImageView
-        EmojiManager.initialize(view.context)
         val payload = message.messagePayload as? FaceMessagePayload
         val emoji = FaceMessageResourceResolver.resolve(
             faceName = payload?.faceData,

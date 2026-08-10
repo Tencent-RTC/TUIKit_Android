@@ -9,6 +9,7 @@ import io.trtc.tuikit.atomicxcore.api.message.MessageSenderInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageStatus
 import io.trtc.tuikit.atomicxcore.api.message.MessageType
 import io.trtc.tuikit.atomicxcore.api.message.VideoMessagePayload
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,11 +51,11 @@ internal object AlbumPickerProcessingMessageStore {
         conversationID: String,
         progress: Int
     ): MessageInfo {
-        val isGroup = conversationID.startsWith(GROUP_CONVERSATION_PREFIX)
+        val isGroup = ConversationIDUtil.isGroup(conversationID)
         val targetId = if (isGroup) {
-            conversationID.removePrefix(GROUP_CONVERSATION_PREFIX)
+            ConversationIDUtil.groupId(conversationID)
         } else {
-            conversationID.removePrefix(C2C_CONVERSATION_PREFIX)
+            conversationID.removePrefix(ConversationIDUtil.C2C_PREFIX)
         }
         val loginUserInfo = LoginStore.shared.loginState.loginUserInfo.value
         return MessageInfo(
@@ -94,6 +95,4 @@ internal object AlbumPickerProcessingMessageStore {
     }
 
     private const val PROCESSING_MESSAGE_ID_PREFIX = "album_picker_processing_"
-    private const val C2C_CONVERSATION_PREFIX = "c2c_"
-    private const val GROUP_CONVERSATION_PREFIX = "group_"
 }

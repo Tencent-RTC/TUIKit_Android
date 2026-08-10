@@ -19,6 +19,9 @@
     <string name="demo_chat_setting_contact_info">联系人信息</string>
     <string name="demo_chat_setting_group_info">群组信息</string>
     <string name="demo_message_input_hint">输入消息…</string>
+    <string name="demo_chat_custom_message_menu_title">自定义消息</string>
+    <string name="demo_chat_custom_message_content">欢迎加入云通信IM大家庭！</string>
+    <string name="demo_chat_custom_message_view_details">查看详情</string>
 
     <string name="demo_start_chat">发起单聊</string>
     <string name="demo_create_group">创建群聊</string>
@@ -27,6 +30,7 @@
     <string name="demo_chat_header_back">返回</string>
     <string name="demo_chat_header_more">更多</string>
     <string name="demo_chat_header_cancel">取消</string>
+    <string name="demo_chat_typing_indicator">对方正在输入…</string>
     <string name="demo_clear_all_unread_success">已清空全部未读消息</string>
     <string name="demo_group_event_kicked">您已被踢出群: %1$s</string>
     <string name="demo_group_event_dismissed">您所在的群%1$s已解散</string>
@@ -73,12 +77,15 @@
     <string name="demo_settings_allow_type_need_confirm">需要验证</string>
 
     <string name="demo_login_failed">登录失败：%1$s</string>
+    <string name="demo_login_network_error">网络异常，请重试</string>
+    <string name="demo_chat_security_warning">请勿轻信汇款、中奖等信息，谨慎对待陌生电话，避免上当受骗。遇到可疑情况请及时反馈。</string>
+    <string name="demo_chat_security_warning_click_to_report">点此举报</string>
     <string name="demo_report">举报</string>
     <string name="demo_open_browser_failed">未找到可打开链接的应用</string>
     <string name="demo_close">关闭</string>
 
     <string name="demo_about_confirm">确定</string>
-
+    <string name="demo_customer_service_summary">[客服消息]请及时查看</string>
     <string name="demo_voice_message_settings">语音消息设置</string>
     <string name="demo_voice_clone">音色克隆</string>
     <string name="demo_voice_select">音色选择</string>

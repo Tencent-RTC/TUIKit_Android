@@ -1,27 +1,26 @@
 package io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.contactlist.config.ChatContactListConfig
+import io.trtc.tuikit.chat.uikit.components.contactlist.config.ContactListConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.contactlist.model.ContactCustomItem
+import io.trtc.tuikit.chat.uikit.components.contactlist.model.ContactListItemIDs
+import io.trtc.tuikit.chat.uikit.components.contactlist.model.filterContactListDefaults
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
 import io.trtc.tuikit.atomicxcore.api.contact.ContactStore
 import io.trtc.tuikit.atomicxcore.api.group.GroupStore
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
-data class DefaultContactItem(
-    val id: String,
-    val titleResID: Int = 0,
-    val iconResID: Int = 0,
-    val badgeCount: StateFlow<Int>,
-    val onClick: () -> Unit = {}
-)
-
 class ContactListViewModel(
     val contactStore: ContactStore,
-    val groupStore: GroupStore
+    val groupStore: GroupStore,
 ) : ViewModel() {
 
     private val contactState = contactStore.state
@@ -33,13 +32,20 @@ class ContactListViewModel(
     val friendList: StateFlow<List<ContactInfo>> = contactState.friendList.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
+        initialValue = emptyList(),
     )
+
+    private val _initialLoadFinished = MutableStateFlow(false)
+    val initialLoadFinished: StateFlow<Boolean> = _initialLoadFinished
 
     init {
         contactStore.loadFriends(object : CompletionHandler {
-            override fun onSuccess() {}
-            override fun onFailure(code: Int, desc: String) {}
+            override fun onSuccess() {
+                _initialLoadFinished.value = true
+            }
+            override fun onFailure(code: Int, desc: String) {
+                _initialLoadFinished.value = true
+            }
         })
         contactStore.loadFriendApplications(object : CompletionHandler {
             override fun onSuccess() {}
@@ -52,47 +58,49 @@ class ContactListViewModel(
     }
 
     fun getDefaultItems(
+        config: ContactListConfigProtocol = ChatContactListConfig(),
         onNavigateToFriendApplications: () -> Unit = {},
         onNavigateToGroupApplications: () -> Unit = {},
         onNavigateToMyGroup: () -> Unit = {},
-        onNavigateToBlacklist: () -> Unit = {}
-    ): List<DefaultContactItem> {
-        return listOf(
-            DefaultContactItem(
-                id = "new_contacts_applications",
+        onNavigateToBlacklist: () -> Unit = {},
+    ): List<ContactCustomItem> {
+        val candidates = listOf(
+            ContactCustomItem(
+                ID = ContactListItemIDs.NEW_CONTACTS,
                 titleResID = R.string.contact_list_new_contacts,
                 iconResID = R.drawable.contact_list_ic_new_contacts,
                 badgeCount = friendApplicationCount,
-                onClick = onNavigateToFriendApplications
+                onClick = onNavigateToFriendApplications,
             ),
-            DefaultContactItem(
-                id = "new_group_applications",
+            ContactCustomItem(
+                ID = ContactListItemIDs.GROUP_APPLICATIONS,
                 titleResID = R.string.contact_list_new_group_applications,
                 iconResID = R.drawable.contact_list_ic_group_notification,
                 badgeCount = groupApplicationCount,
-                onClick = onNavigateToGroupApplications
+                onClick = onNavigateToGroupApplications,
             ),
-            DefaultContactItem(
-                id = "my_group",
+            ContactCustomItem(
+                ID = ContactListItemIDs.MY_GROUPS,
                 titleResID = R.string.contact_list_my_group,
                 iconResID = R.drawable.contact_list_ic_my_group,
-                badgeCount = kotlinx.coroutines.flow.MutableStateFlow(0),
-                onClick = onNavigateToMyGroup
+                badgeCount = MutableStateFlow(0),
+                onClick = onNavigateToMyGroup,
             ),
-            DefaultContactItem(
-                id = "blacklist",
+            ContactCustomItem(
+                ID = ContactListItemIDs.BLACKLIST,
                 titleResID = R.string.contact_list_blacklist,
                 iconResID = R.drawable.contact_list_ic_blacklist,
-                badgeCount = kotlinx.coroutines.flow.MutableStateFlow(0),
-                onClick = onNavigateToBlacklist
-            )
+                badgeCount = MutableStateFlow(0),
+                onClick = onNavigateToBlacklist,
+            ),
         )
+        return filterContactListDefaults(config, candidates)
     }
 }
 
 class ContactListViewModelFactory(
     private val contactStore: ContactStore = ContactStore.shared,
-    private val groupStore: GroupStore = GroupStore.shared
+    private val groupStore: GroupStore = GroupStore.shared,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -3,6 +3,7 @@ import android.content.Context
 import android.graphics.Typeface
 import android.text.TextUtils
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -48,6 +49,12 @@ class MergeMessageRenderer : MessageRenderer {
         const val TAG_ABSTRACT_PREFIX = "merge_abstract_"
     }
 
+    private fun TextView.applyLocaleTextAlignment() {
+        textDirection = View.TEXT_DIRECTION_LOCALE
+        textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+        gravity = Gravity.START
+    }
+
     override val renderConfig: MessageRenderConfig
         get() = MessageRenderConfig(
             useDefaultBubble = false,
@@ -58,6 +65,7 @@ class MergeMessageRenderer : MessageRenderer {
         val density = context.resources.displayMetrics.density
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
+            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
             setPadding(
                 (PADDING_HORIZONTAL_DP * density).toInt(),
                 (PADDING_TOP_DP * density).toInt(),
@@ -75,6 +83,7 @@ class MergeMessageRenderer : MessageRenderer {
             typeface = Typeface.DEFAULT
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
+            applyLocaleTextAlignment()
             tag = TAG_TITLE
         }
         container.addView(
@@ -90,6 +99,7 @@ class MergeMessageRenderer : MessageRenderer {
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, ABSTRACT_FONT_SIZE_SP)
                 maxLines = 1
                 ellipsize = TextUtils.TruncateAt.END
+                applyLocaleTextAlignment()
                 tag = "$TAG_ABSTRACT_PREFIX$index"
                 visibility = View.GONE
             }
@@ -121,6 +131,7 @@ class MergeMessageRenderer : MessageRenderer {
 
         val footerView = TextView(context).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, FOOTER_FONT_SIZE_SP)
+            applyLocaleTextAlignment()
             tag = TAG_FOOTER
         }
         container.addView(
@@ -154,7 +165,15 @@ class MergeMessageRenderer : MessageRenderer {
             val abstractView = view.findViewWithTag<TextView>("$TAG_ABSTRACT_PREFIX$index")
             if (index < abstractList.size) {
                 abstractView.visibility = View.VISIBLE
-                abstractView.text = EmojiSpanHelper.replaceEmojiKeysWithNames(abstractList[index])
+                val rawAbstract = abstractList[index]
+                val bindToken = "${message.msgID.orEmpty()}|abstract|$index|$rawAbstract"
+                abstractView.setTag(R.id.emoji_span_bind_token_tag, bindToken)
+                abstractView.text = EmojiSpanHelper.replaceEmojiKeysWithNames(rawAbstract)
+                EmojiSpanHelper.applyEmojiSpans(view.context, rawAbstract, abstractView.textSize, abstractView, matchNames = true) { spanned ->
+                    if (abstractView.getTag(R.id.emoji_span_bind_token_tag) == bindToken) {
+                        abstractView.text = spanned
+                    }
+                }
                 abstractView.setTextColor(colors.textColorSecondary)
             } else {
                 abstractView.visibility = View.GONE

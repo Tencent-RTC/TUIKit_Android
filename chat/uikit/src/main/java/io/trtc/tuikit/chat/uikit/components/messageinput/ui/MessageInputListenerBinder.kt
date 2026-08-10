@@ -26,6 +26,7 @@ internal object MessageInputListenerBinder {
         inputContainer: LinearLayout,
         coordinatorProvider: () -> InputCoordinator,
         viewModelProvider: () -> MessageInputViewModel?,
+        isLongPressToTalkEnabled: () -> Boolean,
         sendCurrentText: () -> Unit,
         showVoiceTranscriptionDraft: (audioPath: String, audioDurationSecond: Int, text: String?) -> Unit,
         logDebug: (String) -> Unit
@@ -142,7 +143,7 @@ internal object MessageInputListenerBinder {
             editText = editText,
             inputContainer = inputContainer,
             btnPressToTalk = btnPressToTalk,
-            isAudioRecorderEnabled = { btnAudioRecord.visibility == View.VISIBLE },
+            isLongPressToTalkEnabled = isLongPressToTalkEnabled,
             hasInputText = { editText.text?.isNotEmpty() == true },
             coordinatorProvider = coordinatorProvider,
             logDebug = logDebug,
@@ -162,7 +163,7 @@ internal object MessageInputListenerBinder {
         private val editText: AtomicEditText,
         private val inputContainer: LinearLayout,
         private val btnPressToTalk: AudioRecorderView,
-        private val isAudioRecorderEnabled: () -> Boolean,
+        private val isLongPressToTalkEnabled: () -> Boolean,
         private val hasInputText: () -> Boolean,
         private val coordinatorProvider: () -> InputCoordinator,
         private val logDebug: (String) -> Unit,
@@ -258,7 +259,7 @@ internal object MessageInputListenerBinder {
             return MessageInputLongPressRecordingPolicy.shouldArmRecording(
                 inputMode = state.inputMode,
                 surface = state.surface,
-                isAudioRecorderEnabled = isAudioRecorderEnabled(),
+                isLongPressToTalkEnabled = isLongPressToTalkEnabled(),
                 hasInputText = hasInputText(),
             )
         }

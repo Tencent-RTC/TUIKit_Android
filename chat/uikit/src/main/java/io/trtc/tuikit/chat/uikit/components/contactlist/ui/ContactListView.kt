@@ -15,12 +15,17 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.displayName
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.findContactListViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.displayName
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.contactlist.config.ChatContactListConfig
+import io.trtc.tuikit.chat.uikit.components.contactlist.config.ContactListConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.contactlist.model.ContactCustomItem
+import io.trtc.tuikit.chat.uikit.components.contactlist.model.ContactCustomItemContext
+import io.trtc.tuikit.chat.uikit.components.contactlist.model.buildContactListItems
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.matchesSearchQuery
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.ContactListViewModel
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.ContactListViewModelFactory
-import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.DefaultContactItem
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.uikit.components.widgets.azorderedlist.AZOrderedListItem
@@ -51,15 +56,21 @@ class ContactListView @JvmOverloads constructor(
         private const val BADGE_TEXT_SIZE_SP = 11f
         private const val DIVIDER_HEIGHT_DP = 0.5f
         private const val DIVIDER_LEFT_MARGIN_DP = 70f
+        private const val EMPTY_ILLUSTRATION_WIDTH_DP = 88f
+        private const val EMPTY_TEXT_SIZE_SP = 14f
+        private const val EMPTY_TEXT_TOP_MARGIN_DP = 14f
     }
 
     private val azOrderedList: AtomicAZOrderedList
     private val appBarLayout: AppBarLayout
+    private val emptyView: LinearLayout
+    private val emptyTextView: TextView
     private lateinit var viewModel: ContactListViewModel
     private lateinit var searchBarView: ContactListSearchBarView
     private var viewScope: CoroutineScope? = null
     private var searchQuery: String = ""
     private var allContacts: List<ContactInfo> = emptyList()
+    private var initialLoadFinished = false
     private val viewModelKey = "${ContactListViewModel::class.java.name}:${System.identityHashCode(this)}"
 
     private var onContactClick: ((ContactInfo) -> Unit)? = null
@@ -68,6 +79,7 @@ class ContactListView @JvmOverloads constructor(
 
     private var headerView: LinearLayout? = null
     private val defaultItemViews = mutableMapOf<String, DefaultItemViewHolder>()
+    private var headerItems: List<ContactCustomItem> = emptyList()
 
     init {
         layoutDirection = LAYOUT_DIRECTION_LOCALE
@@ -126,22 +138,71 @@ class ContactListView @JvmOverloads constructor(
         }
         coordinatorLayout.addView(azOrderedList, listParams)
 
+        val dm = resources.displayMetrics
+        emptyTextView = TextView(context).apply {
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, EMPTY_TEXT_SIZE_SP)
+            setText(R.string.uikit_empty_content)
+            setTextColor(getColors().textColorTertiary)
+        }
+        emptyView = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            layoutDirection = LAYOUT_DIRECTION_LOCALE
+            visibility = GONE
+
+            val illustrationView = ImageView(context).apply {
+                setImageResource(R.drawable.uikit_empty_illustration)
+                adjustViewBounds = true
+                layoutParams = LinearLayout.LayoutParams(
+                    dp2px(EMPTY_ILLUSTRATION_WIDTH_DP, dm).toInt(),
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+            addView(illustrationView)
+
+            val textParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = dp2px(EMPTY_TEXT_TOP_MARGIN_DP, dm).toInt()
+            }
+            addView(emptyTextView, textParams)
+        }
+        coordinatorLayout.addView(
+            emptyView,
+            CoordinatorLayout.LayoutParams(
+                CoordinatorLayout.LayoutParams.WRAP_CONTENT,
+                CoordinatorLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER
+                behavior = AppBarLayout.ScrollingViewBehavior()
+            }
+        )
+
         addView(coordinatorLayout)
         setBackgroundColor(getColors().bgColorOperate)
     }
 
+    @JvmOverloads
     fun setup(
+        config: ContactListConfigProtocol = ChatContactListConfig(),
         onContactClick: ((ContactInfo) -> Unit)? = null,
         onGroupClick: ((ContactInfo) -> Unit)? = null
     ) {
         this.onContactClick = onContactClick
         this.onGroupClick = onGroupClick
 
+        appBarLayout.visibility = if (config.showSearchBar) View.VISIBLE else View.GONE
+        if (!config.showSearchBar) {
+            searchQuery = ""
+            searchBarView.hideKeyboard()
+        }
+
         val contactStore = ContactStore.shared
         val groupStore = GroupStore.shared
         cleanupBinding()
 
-        val owner = context.findContactListViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("ContactListView requires a ViewModelStoreOwner host context.")
         viewModel = ViewModelProvider(
             owner,
@@ -149,6 +210,7 @@ class ContactListView @JvmOverloads constructor(
         ).get(viewModelKey, ContactListViewModel::class.java)
 
         val defaultItems = viewModel.getDefaultItems(
+            config = config,
             onNavigateToFriendApplications = {
                 FriendApplicationDialog(context, contactStore).show()
             },
@@ -166,9 +228,14 @@ class ContactListView @JvmOverloads constructor(
                 }.show()
             }
         )
+        this.headerItems = buildContactListItems(
+            itemContext = ContactCustomItemContext(context),
+            defaults = defaultItems,
+            customizer = config.itemCustomizer,
+        )
 
         defaultItemViews.clear()
-        headerView = buildHeaderView(defaultItems)
+        headerView = buildHeaderView(this.headerItems)
         azOrderedList.setHeaderView(headerView)
         headerView?.setOnTouchListener { _, _ ->
             searchBarView.hideKeyboard()
@@ -210,14 +277,17 @@ class ContactListView @JvmOverloads constructor(
         }
 
         scope.launch {
-            viewModel.friendApplicationCount.collectLatest { count ->
-                updateBadge("new_contacts_applications", count)
+            viewModel.initialLoadFinished.collectLatest { finished ->
+                initialLoadFinished = finished
+                renderFriendList()
             }
         }
 
-        scope.launch {
-            viewModel.groupApplicationCount.collectLatest { count ->
-                updateBadge("new_group_applications", count)
+        headerItems.forEach { item ->
+            scope.launch {
+                item.badgeCount.collectLatest { count ->
+                    updateBadge(item.ID, count)
+                }
             }
         }
 
@@ -226,6 +296,7 @@ class ContactListView @JvmOverloads constructor(
                 val colors = it.currentTheme.tokens.color
                 setBackgroundColor(colors.bgColorOperate)
                 appBarLayout.setBackgroundColor(colors.bgColorOperate)
+                emptyTextView.setTextColor(colors.textColorTertiary)
                 searchBarView.applyTheme()
                 refreshHeaderColors(colors)
             }
@@ -237,6 +308,7 @@ class ContactListView @JvmOverloads constructor(
         viewScope = null
         headerView?.let { azOrderedList.setHeaderView(null) }
         headerView = null
+        headerItems = emptyList()
         defaultItemViews.clear()
     }
 
@@ -285,6 +357,11 @@ class ContactListView @JvmOverloads constructor(
     private fun renderFriendList() {
         val isSearching = searchQuery.isNotBlank()
         headerView?.visibility = if (isSearching) View.GONE else View.VISIBLE
+        emptyView.visibility = if (!isSearching && initialLoadFinished && allContacts.isEmpty()) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
 
         val filteredContacts = allContacts.filter { contact ->
             contact.matchesSearchQuery(searchQuery)
@@ -301,7 +378,7 @@ class ContactListView @JvmOverloads constructor(
         )
     }
 
-    private fun buildHeaderView(items: List<DefaultContactItem>): LinearLayout {
+    private fun buildHeaderView(items: List<ContactCustomItem>): LinearLayout {
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             layoutDirection = LAYOUT_DIRECTION_LOCALE
@@ -310,7 +387,7 @@ class ContactListView @JvmOverloads constructor(
 
         items.forEachIndexed { index, item ->
             val holder = createDefaultItemView(item)
-            defaultItemViews[item.id] = holder
+            defaultItemViews[item.ID] = holder
             container.addView(holder.itemContainer)
 
             if (index < items.size - 1) {
@@ -321,7 +398,7 @@ class ContactListView @JvmOverloads constructor(
         return container
     }
 
-    private fun createDefaultItemView(item: DefaultContactItem): DefaultItemViewHolder {
+    private fun createDefaultItemView(item: ContactCustomItem): DefaultItemViewHolder {
         val dm = resources.displayMetrics
         val colors = getColors()
         val itemHeightPx = dp2px(DEFAULT_ITEM_HEIGHT_DP, dm).toInt()
@@ -359,19 +436,26 @@ class ContactListView @JvmOverloads constructor(
                 setImageDrawable(ContextCompat.getDrawable(context, item.iconResID)?.apply {
                     isAutoMirrored = true
                 })
+            } else {
+                visibility = GONE
             }
         }
         rowView.addView(iconView)
 
         val iconTextSpacer = View(context).apply {
             layoutParams = LinearLayout.LayoutParams(iconTextSpacingPx, 1)
+            if (item.iconResID == 0) {
+                visibility = GONE
+            }
         }
         rowView.addView(iconTextSpacer)
 
         val titleView = TextView(context).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, DEFAULT_ITEM_TITLE_SIZE_SP)
             setTextColor(colors.textColorPrimary)
-            text = context.getString(item.titleResID)
+            text = item.title.ifEmpty {
+                if (item.titleResID != 0) context.getString(item.titleResID) else ""
+            }
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START
             textDirection = View.TEXT_DIRECTION_LOCALE
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
@@ -414,8 +498,8 @@ class ContactListView @JvmOverloads constructor(
         }
     }
 
-    private fun updateBadge(itemId: String, count: Int) {
-        val holder = defaultItemViews[itemId] ?: return
+    private fun updateBadge(itemID: String, count: Int) {
+        val holder = defaultItemViews[itemID] ?: return
         if (count > 0) {
             holder.badgeView.visibility = VISIBLE
             holder.badgeView.count = count

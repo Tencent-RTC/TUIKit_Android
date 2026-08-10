@@ -12,5 +12,4 @@
     <string name="conversation_list_draft_prefix">[草稿]</string>
     <string name="conversation_list_at_all_prefix">[@所有人]</string>
     <string name="conversation_list_at_me_prefix">[有人@我]</string>
-    <string name="conversation_list_violation_message">[違規消息]</string>
 </resources>
