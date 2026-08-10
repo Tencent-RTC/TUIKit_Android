@@ -450,7 +450,7 @@ class SelfDetailActivity : BaseActivity() {
                 textAlignment = View.TEXT_ALIGNMENT_VIEW_END
                 val padStart = (16f * density).toInt()
                 val padEnd = (8f * density).toInt()
-                setPadding(padStart, 0, padEnd, 0)
+                setPaddingRelative(padStart, 0, padEnd, 0)
             }
             row.addView(
                 tvValue,

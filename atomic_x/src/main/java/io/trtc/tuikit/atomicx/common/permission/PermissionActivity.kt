@@ -21,6 +21,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import io.trtc.tuikit.atomicx.R
 import io.trtc.tuikit.atomicx.common.event.EventManager
 import io.trtc.tuikit.atomicx.common.permission.PermissionRequester.Companion.PERMISSION_NOTIFY_EVENT_KEY
@@ -185,6 +187,26 @@ class PermissionActivity : Activity() {
         rationaleTitleTv = findViewById(R.id.permission_reason_title)
         rationaleDescriptionTv = findViewById(R.id.permission_reason)
         permissionIconIv = findViewById(R.id.permission_icon)
+        applyRationaleTopInset()
+    }
+
+    /**
+     * Pin the rationale to just below the status bar / display cutout so it is not hidden
+     * behind the system permission dialog. Falls back to the layout's paddingTop when the
+     * inset is unavailable (e.g. not dispatched on some translucent windows).
+     */
+    private fun applyRationaleTopInset() {
+        val rootView = findViewById<View>(R.id.tuicore_permission_layout) ?: return
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+            val topInset = insets.getInsets(
+                WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout()
+            ).top
+            if (topInset > 0) {
+                view.setPadding(view.paddingLeft, topInset, view.paddingRight, view.paddingBottom)
+            }
+            insets
+        }
+        ViewCompat.requestApplyInsets(rootView)
     }
 
     /**
@@ -198,11 +220,16 @@ class PermissionActivity : Activity() {
         }
         rationaleTitleTv.text = requestData?.title
         rationaleDescriptionTv.text = requestData?.description
-        permissionIconIv.setBackgroundResource(requestData?.permissionIconId ?: 0)
-
         rationaleTitleTv.visibility = View.VISIBLE
         rationaleDescriptionTv.visibility = View.VISIBLE
-        permissionIconIv.visibility = View.VISIBLE
+
+        val iconId = requestData?.permissionIconId ?: 0
+        if (iconId != 0) {
+            permissionIconIv.setBackgroundResource(iconId)
+            permissionIconIv.visibility = View.VISIBLE
+        } else {
+            permissionIconIv.visibility = View.GONE
+        }
     }
 
     private fun hidePermissionRationale() {

@@ -19,7 +19,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.graphics.ColorUtils
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageUIAction
+import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
@@ -31,7 +31,7 @@ internal class AuxiliaryTextLongPressPopup(
     private val anchorView: View,
     private val messageListView: View,
     private val message: MessageInfo,
-    actions: List<MessageUIAction>
+    actions: List<MessageCustomAction>
 ) {
 
     companion object {
@@ -55,9 +55,9 @@ internal class AuxiliaryTextLongPressPopup(
 
     private val popupActions = actions.map { action ->
         PopupAction(
-            title = action.name,
-            dangerousAction = action.dangerousAction,
-            iconResId = action.icon,
+            title = action.title,
+            dangerousAction = action.dangerous,
+            iconResId = action.iconResID,
             onClick = action.action
         )
     }
@@ -231,6 +231,8 @@ internal class AuxiliaryTextLongPressPopup(
                     if (action.iconResId != 0) {
                         setImageResource(action.iconResId)
                         imageTintList = ColorStateList.valueOf(iconTint)
+                    } else {
+                        visibility = View.GONE
                     }
                 },
                 LinearLayout.LayoutParams(ICON_SIZE_DP.dp, ICON_SIZE_DP.dp).apply {

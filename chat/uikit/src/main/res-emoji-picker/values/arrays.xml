@@ -131,6 +131,16 @@
         <item>[TUIEmoji_Like]</item>
     </string-array>
 
+    <string-array name="emoji_picker_chinese_element_key_array">
+        <item>[TUIEmoji_Rich]</item>
+        <item>[TUIEmoji_Bless]</item>
+        <item>[TUIEmoji_Fortune]</item>
+        <item>[TUIEmoji_Convinced]</item>
+        <item>[TUIEmoji_Prohibit]</item>
+        <item>[TUIEmoji_666]</item>
+        <item>[TUIEmoji_857]</item>
+    </string-array>
+
     <string-array name="emoji_picker_name_array">
         <item>@string/emoji_picker_smile</item>
         <item>@string/emoji_picker_expect</item>

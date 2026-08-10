@@ -203,12 +203,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp" />
 
-            <Button
+            <TextView
                 android:id="@+id/demo_btnLogin"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:layout_marginTop="48dp"
+                android:clickable="true"
                 android:enabled="false"
+                android:focusable="true"
+                android:gravity="center"
                 android:paddingStart="18dp"
                 android:paddingEnd="18dp"
                 android:stateListAnimator="@null"

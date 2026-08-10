@@ -10,12 +10,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import io.trtc.tuikit.chat.uikit.components.emojipicker.model.Emoji
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 object EmojiSpanHelper {
 
-    private const val EMOJI_KEY_PREFIX = "[TUIEmoji_"
     private const val TEXT_REPLACEMENT_CACHE_SIZE = 200
     private val textReplacementCache = object : LruCache<String, String>(TEXT_REPLACEMENT_CACHE_SIZE) {}
 
@@ -30,8 +30,6 @@ object EmojiSpanHelper {
             onResult(text)
             return
         }
-
-        EmojiManager.initialize(context)
 
         val emojiSize = (textSizePx * 1.5f).toInt()
         val spannable = SpannableStringBuilder(text)
@@ -107,17 +105,138 @@ object EmojiSpanHelper {
         }
     }
 
+    fun applyEmojiSpans(
+        context: Context,
+        text: CharSequence,
+        textSizePx: Float,
+        requestView: View? = null,
+        matchNames: Boolean = false,
+        onResult: (CharSequence) -> Unit
+    ) {
+        if (text.isEmpty()) {
+            onResult(text)
+            return
+        }
+
+        val matchTargets = collectEmojiMatchTargets(text.toString(), matchNames)
+        if (matchTargets.isEmpty()) {
+            onResult(text)
+            return
+        }
+
+        val emojiSize = (textSizePx * 1.5f).toInt()
+        val spannable = SpannableStringBuilder(text)
+
+        val pendingLoads = mutableListOf<PendingEmojiSpan>()
+
+        for ((matchText, emoji) in matchTargets) {
+            var startIndex = spannable.indexOf(matchText)
+            while (startIndex != -1) {
+                val endIndex = startIndex + matchText.length
+                val cachedDrawable = EmojiManager.getCachedEmojiDrawable(emoji.key)
+                if (cachedDrawable != null) {
+                    cachedDrawable.setBounds(0, 0, emojiSize, emojiSize)
+                    val imageSpan = CenterImageSpan(cachedDrawable)
+                    spannable.setSpan(
+                        imageSpan,
+                        startIndex,
+                        endIndex,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                } else {
+                    pendingLoads.add(PendingEmojiSpan(startIndex, endIndex, matchText, emoji))
+                }
+                startIndex = spannable.indexOf(matchText, endIndex)
+            }
+        }
+
+        if (pendingLoads.isEmpty()) {
+            onResult(spannable)
+            return
+        }
+
+        val failedLoads = mutableListOf<Triple<Int, Int, String>>()
+        val remaining = AtomicInteger(pendingLoads.size)
+        for (pending in pendingLoads) {
+            val (start, end, matchText, emoji) = pending
+            glideWith(context, requestView)
+                .asDrawable()
+                .load(emoji.emojiUrl)
+                .into(object : CustomTarget<Drawable>() {
+                    private val completed = AtomicBoolean(false)
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        transition: Transition<in Drawable>?
+                    ) {
+                        if (start >= 0 && end <= spannable.length &&
+                            spannable.substring(start, end) == matchText
+                        ) {
+                            val spanDrawable = resource.newDrawableForSpan()
+                            spanDrawable.setBounds(0, 0, emojiSize, emojiSize)
+                            spannable.setSpan(
+                                CenterImageSpan(spanDrawable),
+                                start,
+                                end,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+                        completePendingLoadWithNameFallback(remaining, completed, spannable, failedLoads, onResult)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        addKeyFailureFallback(failedLoads, pending)
+                        completePendingLoadWithNameFallback(remaining, completed, spannable, failedLoads, onResult)
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        addKeyFailureFallback(failedLoads, pending)
+                        completePendingLoadWithNameFallback(remaining, completed, spannable, failedLoads, onResult)
+                    }
+                })
+        }
+    }
+
+    private data class PendingEmojiSpan(
+        val start: Int,
+        val end: Int,
+        val matchText: String,
+        val emoji: Emoji
+    )
+
+    private fun collectEmojiMatchTargets(text: String, matchNames: Boolean): List<Pair<String, Emoji>> {
+        val targets = mutableListOf<Pair<String, Emoji>>()
+        EmojiManager.sortedLittleEmojiKeyList.forEach { key ->
+            if (text.contains(key)) {
+                EmojiManager.findEmojiByKey(key)?.let { emoji -> targets.add(key to emoji) }
+            }
+        }
+        if (matchNames) {
+            EmojiManager.sortedLittleEmojiNameList.forEach { name ->
+                if (text.contains(name)) {
+                    EmojiManager.findEmojiByName(name)?.let { emoji -> targets.add(name to emoji) }
+                }
+            }
+        }
+        return targets.sortedByDescending { it.first.length }
+    }
+
+    private fun addKeyFailureFallback(
+        failedLoads: MutableList<Triple<Int, Int, String>>,
+        pending: PendingEmojiSpan
+    ) {
+        if (pending.matchText == pending.emoji.key) {
+            failedLoads.add(Triple(pending.start, pending.end, pending.emoji.emojiName))
+        }
+    }
+
     fun processEditTextEmoji(editText: EditText) {
         val content = editText.text ?: return
         if (content.isEmpty()) return
 
-        val context = editText.context
-        EmojiManager.initialize(context)
-
         val textSizePx = editText.textSize
         val emojiSize = (textSizePx * 1.5f).toInt()
         val spannable = content
-        val emojiKeys = EmojiManager.littleEmojiKeyList
         val sortedKeys = EmojiManager.sortedLittleEmojiKeyList
 
         val existingSpans = spannable.getSpans(0, spannable.length, CenterImageSpan::class.java)
@@ -131,7 +250,7 @@ object EmojiSpanHelper {
             val end = spannable.getSpanEnd(span)
             if (start >= 0 && end <= spannable.length) {
                 val spanText = spannable.substring(start, end)
-                if (emojiKeys.contains(spanText)) {
+                if (sortedKeys.contains(spanText)) {
                     existingSpanRanges.add(start to end)
                 } else {
                     invalidSpans.add(span)
@@ -191,7 +310,7 @@ object EmojiSpanHelper {
         val cacheKey = "${EmojiManager.emojiIndexVersion}:$text"
         textReplacementCache.get(cacheKey)?.let { return it }
 
-        if (!text.contains(EMOJI_KEY_PREFIX) && !EmojiManager.containsEmojiKey(text)) {
+        if (!EmojiManager.containsEmojiKey(text)) {
             textReplacementCache.put(cacheKey, text)
             return text
         }
@@ -276,6 +395,31 @@ object EmojiSpanHelper {
     ) {
         if (completed.compareAndSet(false, true) && remaining.decrementAndGet() == 0) {
             onResult(spannable)
+        }
+    }
+
+    private fun completePendingLoadWithNameFallback(
+        remaining: AtomicInteger,
+        completed: AtomicBoolean,
+        spannable: SpannableStringBuilder,
+        failedLoads: MutableList<Triple<Int, Int, String>>,
+        onResult: (CharSequence) -> Unit
+    ) {
+        if (completed.compareAndSet(false, true) && remaining.decrementAndGet() == 0) {
+            replaceFailedLoadsWithNames(spannable, failedLoads)
+            onResult(spannable)
+        }
+    }
+
+    private fun replaceFailedLoadsWithNames(
+        spannable: SpannableStringBuilder,
+        failedLoads: MutableList<Triple<Int, Int, String>>
+    ) {
+        failedLoads.sortByDescending { it.first }
+        for ((start, end, name) in failedLoads) {
+            if (start >= 0 && end <= spannable.length && start < end) {
+                spannable.replace(start, end, name)
+            }
         }
     }
 

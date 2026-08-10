@@ -1,4 +1,8 @@
 <resources>
+    <string name="demo_chat_custom_message_menu_title">커스텀 메시지</string>
+    <string name="demo_chat_typing_indicator">입력 중…</string>
+    <string name="demo_chat_custom_message_content">클라우드 커뮤니케이션 IM 패밀리에 오신 것을 환영합니다!</string>
+    <string name="demo_chat_custom_message_view_details">자세히 보기</string>
     <string name="demo_voice_message_settings">음성 메시지 설정</string>
     <string name="demo_voice_clone">음색 복제</string>
     <string name="demo_voice_select">음색 선택</string>

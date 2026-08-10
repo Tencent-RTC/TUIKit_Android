@@ -1,6 +1,7 @@
 .cursor/
 *.iml
 .gradle
+.idea
 .kotlin
 /local.properties
 /.idea/caches
@@ -11,6 +12,7 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 /build
+app/build
 /captures
 .externalNativeBuild
 .cxx

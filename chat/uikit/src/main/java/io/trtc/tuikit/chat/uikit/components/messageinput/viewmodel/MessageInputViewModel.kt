@@ -22,6 +22,8 @@ import io.trtc.tuikit.chat.uikit.components.ai.AiMediaProcessManager
 import io.trtc.tuikit.chat.uikit.components.ai.tts.TtsPlaybackHelper
 import io.trtc.tuikit.chat.uikit.components.ai.tts.TtsTextSanitizer
 import io.trtc.tuikit.chat.uikit.components.ai.tts.VoiceMessageConfig
+import io.trtc.tuikit.chat.uikit.components.common.AtomicCallEventPublisher
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.MessageOfflinePushInfoFactory
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
@@ -31,8 +33,7 @@ import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInput
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
 import io.trtc.tuikit.chat.uikit.components.messageinput.model.MentionInfo
-import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.GroupMemberPickerDialog
-import io.trtc.tuikit.chat.uikit.components.common.AtomicCallEventPublisher
+import io.trtc.tuikit.chat.uikit.components.messageinput.ui.GroupMemberPickerDialog
 import io.trtc.tuikit.chat.uikit.components.messageinput.utils.VideoFrameExtractor
 import io.trtc.tuikit.chat.uikit.components.videorecorder.RecordMode
 import io.trtc.tuikit.chat.uikit.components.videorecorder.VideoRecordListener
@@ -113,9 +114,12 @@ class MessageInputViewModel(
         }
     }
 
-    fun getActions(context: Context): List<MessageInputMenuAction> {
+    fun getActions(
+        context: Context,
+        config: MessageInputConfigProtocol = messageInputConfig,
+    ): List<MessageInputMenuAction> {
         return MessageInputMenuActionFactory(
-            config = messageInputConfig,
+            config = config,
             callbacks = MessageInputMenuActionCallbacks(
                 onPickMedia = { pickMediaAndSend(context) },
                 onCaptureImage = { captureImageAndSend(context) },
@@ -323,6 +327,33 @@ class MessageInputViewModel(
         })
     }
 
+    fun sendFaceMessage(
+        context: Context?,
+        faceIndex: Int,
+        faceData: String,
+        quotedMessage: MessageInfo? = null,
+        onSuccess: (() -> Unit)? = null
+    ) {
+        if (faceData.isEmpty()) {
+            return
+        }
+        val payload = SendMessagePayload.FaceSendMessagePayload(index = faceIndex, data = faceData)
+        val option = createSendMessageOption(
+            context = context,
+            payload = payload,
+            quotedMessage = quotedMessage
+        )
+        messageInputStore.sendMessage(payload, option, object : CompletionHandler {
+            override fun onSuccess() {
+                onSuccess?.invoke()
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                context?.let { showSendFailed(it) }
+            }
+        })
+    }
+
     fun sendImageMessage(context: Context, filePath: String) {
         viewModelScope.launch(Dispatchers.IO) {
             if (!MessageInputSendGuards.isReadableFilePath(filePath)) {
@@ -461,23 +492,9 @@ class MessageInputViewModel(
         showGroupCallMemberPicker(context, groupId, mediaType)
     }
 
-    private fun c2cTargetUserId(): String? {
-        if (!conversationID.startsWith(C2C_CONVERSATION_PREFIX)) {
-            return null
-        }
-        return conversationID
-            .removePrefix(C2C_CONVERSATION_PREFIX)
-            .takeIf { it.isNotEmpty() }
-    }
+    private fun c2cTargetUserId(): String? = ConversationIDUtil.userIdOrNull(conversationID)
 
-    private fun groupTargetId(): String? {
-        if (!conversationID.startsWith(GROUP_CONVERSATION_PREFIX)) {
-            return null
-        }
-        return conversationID
-            .removePrefix(GROUP_CONVERSATION_PREFIX)
-            .takeIf { it.isNotEmpty() }
-    }
+    private fun groupTargetId(): String? = ConversationIDUtil.groupIdOrNull(conversationID)
 
     private fun showGroupCallMemberPicker(context: Context, groupId: String, mediaType: String) {
         val groupMemberStore = GroupMemberStore.create(groupId)
@@ -734,8 +751,8 @@ class MessageInputViewModel(
     }
 
     private fun createOfflinePushInfo(context: Context?, payload: SendMessagePayload): OfflinePushInfo {
-        val isGroup = conversationID.startsWith("group_")
-        val groupId = if (isGroup) conversationID.removePrefix("group_") else ""
+        val isGroup = ConversationIDUtil.isGroup(conversationID)
+        val groupId = ConversationIDUtil.groupId(conversationID)
 
         val loginUserInfo = LoginStore.shared.loginState.loginUserInfo.value
         val selfUserId = loginUserInfo?.userID.orEmpty()
@@ -763,21 +780,22 @@ class MessageInputViewModel(
         val content = when (payload) {
             is SendMessagePayload.TextSendMessagePayload -> EmojiSpanHelper.replaceEmojiKeysWithNames(payload.text)
             is SendMessagePayload.ImageSendMessagePayload -> actualContext.getString(
-                R.string.message_list_message_type_image
+                R.string.message_input_message_type_image
             )
             is SendMessagePayload.VideoSendMessagePayload -> actualContext.getString(
-                R.string.message_list_message_type_video
+                R.string.message_input_message_type_video
             )
             is SendMessagePayload.FileSendMessagePayload -> actualContext.getString(
-                R.string.message_list_message_type_file
+                R.string.message_input_message_type_file
             )
             is SendMessagePayload.AudioSendMessagePayload -> actualContext.getString(
-                R.string.message_list_message_type_voice
+                R.string.message_input_message_type_voice
             )
             is SendMessagePayload.FaceSendMessagePayload -> actualContext.getString(
-                R.string.message_list_message_type_animate_emoji
+                R.string.message_input_message_type_animate_emoji
             )
             is SendMessagePayload.CustomSendMessagePayload -> payload.description
+            else -> ""
         } ?: ""
         return MessageOfflinePushInfoFactory.trimDescription(content)
     }
@@ -874,8 +892,6 @@ class MessageInputViewModel(
 
     companion object {
         private const val TAG = "MessageInputViewModel"
-        private const val C2C_CONVERSATION_PREFIX = "c2c_"
-        private const val GROUP_CONVERSATION_PREFIX = "group_"
         private const val CALL_MEMBER_LIMIT = 9
         private const val DOCUMENTS_DIR = "documents"
         private const val CAPTURE_DIRECTORY_NAME = "message_input_capture"

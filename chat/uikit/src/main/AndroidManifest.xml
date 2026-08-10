@@ -23,37 +23,39 @@
         <activity
             android:name=".components.filepicker.impl.FilePickerBridgeActivity"
             android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@style/Chat_UIKit_Theme.Translucent" />
 
         <activity
             android:name=".components.messageinput.utils.MessageInputAlbumPickerActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AlbumPicker" />
+            android:theme="@style/Chat_UIKit_Theme.AlbumPicker" />
 
         <activity
             android:name=".components.videoplayer.ui.VideoPlayerActivity"
             android:exported="false"
-            android:theme="@style/video_player_theme_fullscreen" />
+            android:theme="@style/Chat_UIKit_Theme.FullscreenMedia" />
 
         <activity
             android:name=".components.videorecorder.view.VideoRecorderBridgeActivity"
             android:exported="false"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@style/Chat_UIKit_Theme.Translucent" />
 
         <activity
             android:name=".components.videorecorder.view.VideoRecorderActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme.FullscreenMedia" />
 
         <activity
             android:name=".components.messagelist.ui.merged.MergedMessageDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
 
         <activity
             android:name=".components.imageviewer.ui.ImageViewerActivity"
             android:exported="false"
-            android:theme="@style/video_player_theme_fullscreen" />
+            android:theme="@style/Chat_UIKit_Theme.FullscreenMedia" />
     </application>
 
 </manifest>

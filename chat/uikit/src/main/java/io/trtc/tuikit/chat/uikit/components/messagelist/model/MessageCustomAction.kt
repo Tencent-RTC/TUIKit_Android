@@ -1,66 +1,32 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.model
+
 import android.content.Context
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
+import io.trtc.tuikit.chat.uikit.components.common.uicustom.CustomItem
+import io.trtc.tuikit.chat.uikit.components.common.uicustom.EditorContext
 
-class MessageCustomAction(
-    val title: String,
-    val iconResID: Int,
-    val action: (MessageInfo) -> Unit,
-    val order: Int = 1000,
-    val dangerousAction: Boolean = false
-) {
-    constructor(
-        title: String,
-        iconResID: Int,
-        action: (MessageInfo) -> Unit
-    ) : this(
-        title = title,
-        iconResID = iconResID,
-        action = action,
-        order = 1000,
-        dangerousAction = false
-    )
+object MessageActionIDs {
+    const val MULTI_SELECT = "message.multiSelect"
+    const val FORWARD = "message.forward"
+    const val QUOTE = "message.quote"
+    const val COPY = "message.copy"
+    const val RECALL = "message.recall"
+    const val DELETE = "message.delete"
+    const val CONVERT_TO_TEXT = "message.convertToText"
+    const val TRANSLATE = "message.translate"
+    const val LISTEN_FROM_HERE = "message.listenFromHere"
 }
+
+data class MessageCustomAction(
+    override val ID: String,
+    val title: String = "",
+    val iconResID: Int = 0,
+    val action: (MessageInfo) -> Unit = {},
+    val dangerous: Boolean = false,
+) : CustomItem
 
 data class MessageCustomActionContext(
-    val context: Context,
+    override val androidContext: Context,
     val conversationID: String,
-    val message: MessageInfo
-)
-
-fun interface MessageCustomActionProvider {
-    fun getActions(context: MessageCustomActionContext): List<MessageCustomAction>
-}
-
-internal data class MessageLongPressAction(
-    val title: String,
-    val dangerousAction: Boolean,
-    val iconResID: Int,
-    val order: Int,
-    val action: (MessageInfo) -> Unit
-)
-
-internal fun mergeMessageLongPressActions(
-    defaultActions: List<MessageUIAction>,
-    customActions: List<MessageCustomAction>
-): List<MessageLongPressAction> {
-    val defaultActionItems = defaultActions.map {
-        MessageLongPressAction(
-            title = it.name,
-            dangerousAction = it.dangerousAction,
-            iconResID = it.icon,
-            order = it.order,
-            action = it.action
-        )
-    }
-    val customActionItems = customActions.map {
-        MessageLongPressAction(
-            title = it.title,
-            dangerousAction = it.dangerousAction,
-            iconResID = it.iconResID,
-            order = it.order,
-            action = it.action
-        )
-    }
-    return (defaultActionItems + customActionItems).sortedBy { it.order }
-}
+    val message: MessageInfo,
+): EditorContext

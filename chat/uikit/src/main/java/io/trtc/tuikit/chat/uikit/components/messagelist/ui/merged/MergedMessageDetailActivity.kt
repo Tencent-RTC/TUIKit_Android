@@ -85,13 +85,27 @@ class MergedMessageDetailActivity : AppCompatActivity() {
     private lateinit var messageListStore: MessageListStore
     private var scope: CoroutineScope? = null
     private var locateCoordinator: MessageListLocateCoordinator? = null
+    private val mergedMessageSource = MutableStateFlow<List<MessageInfo>>(emptyList())
 
-    private val config: MessageListConfigProtocol = ChatMessageListConfig(
-        _alignment = MessageAlignment.LEFT
-    )
-    private val rendererResolver = MessageRendererResolver(
-        customRules = (config as? ChatMessageListConfig)?.customRenderRules.orEmpty()
-    )
+    private val config: MessageListConfigProtocol by lazy {
+        ChatMessageListConfig(
+            alignment = resolveMergedDetailAlignment()
+        )
+    }
+    private val rendererResolver by lazy {
+        MessageRendererResolver(
+            customRules = (config as? ChatMessageListConfig)?.customRenderRules.orEmpty()
+        )
+    }
+
+    private fun resolveMergedDetailAlignment(): MessageAlignment {
+        return if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            MessageAlignment.RIGHT
+        } else {
+            MessageAlignment.LEFT
+        }
+    }
+
     private val themeStore by lazy { ThemeStore.shared(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -168,6 +182,7 @@ class MergedMessageDetailActivity : AppCompatActivity() {
             enableMessageInteraction = false,
             enableQuoteNavigation = true,
             showMessageReadReceipt = false,
+            showInlineMessageTime = true,
             resolver = rendererResolver
         )
 
@@ -191,7 +206,6 @@ class MergedMessageDetailActivity : AppCompatActivity() {
             reverseSource = false,
             shouldDisplayMessage = ::shouldDisplayMessage
         )
-        val mergedMessageSource = MutableStateFlow<List<MessageInfo>>(emptyList())
         val mergedMessageList = mergedMessageSource.map { list ->
             displayMapper.map(list)
         }.stateIn(
@@ -271,16 +285,36 @@ class MergedMessageDetailActivity : AppCompatActivity() {
         val messages = if (::adapter.isInitialized) adapter.currentList else emptyList()
         val targetMessageId = MessageQuoteLocatePolicy.findLoadedTargetMessageId(quoteInfo, messages)
         if (targetMessageId == null) {
-            showQuotedOriginalUnreachableToast()
+            if (isFilteredQuoteTarget(quoteInfo)) {
+                showQuotedOriginalFilteredToast()
+            } else {
+                showQuotedOriginalUnreachableToast()
+            }
             return
         }
         locateCoordinator?.requestLocateMessage(targetMessageId)
+    }
+
+    private fun isFilteredQuoteTarget(quoteInfo: MessageQuoteInfo): Boolean {
+        val rawMessages = mergedMessageSource.value
+        val target = rawMessages.firstOrNull { quoteInfo.msgID.isNotBlank() && it.msgID == quoteInfo.msgID }
+            ?: rawMessages.firstOrNull { quoteInfo.sequence > 0 && it.sequence == quoteInfo.sequence }
+            ?: return false
+        return !shouldDisplayMessage(target)
     }
 
     private fun showQuotedOriginalUnreachableToast() {
         AtomicToast.show(
             this,
             getString(R.string.message_list_quote_original_unreachable),
+            style = AtomicToast.Style.INFO
+        )
+    }
+
+    private fun showQuotedOriginalFilteredToast() {
+        AtomicToast.show(
+            this,
+            getString(R.string.message_list_quote_original_filtered),
             style = AtomicToast.Style.INFO
         )
     }
@@ -301,6 +335,9 @@ class MergedMessageDetailActivity : AppCompatActivity() {
             if (callModel?.isExcludeFromHistory == true) {
                 return false
             }
+        }
+        if (config.messageExclusionMatchers.any { it.matches(message) }) {
+            return false
         }
         return true
     }

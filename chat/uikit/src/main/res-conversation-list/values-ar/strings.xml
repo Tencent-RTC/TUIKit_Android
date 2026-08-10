@@ -12,5 +12,4 @@
     <string name="conversation_list_draft_prefix">[مسودة]</string>
     <string name="conversation_list_at_all_prefix">[@الجميع]</string>
     <string name="conversation_list_at_me_prefix">[@أنا]</string>
-    <string name="conversation_list_violation_message">[رسالة مخالفة]</string>
 </resources>

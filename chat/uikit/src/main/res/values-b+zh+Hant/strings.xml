@@ -27,4 +27,7 @@
     <string name="uikit_chat_permission_mic_dialog_alert">在設置-應用-%s-權限中開啟麥克風權限，以正常使用語音消息、攝像、音視頻通話和音色克隆功能</string>
     <string name="uikit_chat_permission_camera_dialog_alert">在設置-應用-%s-權限中開啟相機權限，以正常使用拍照、攝像和視頻通話功能</string>
     <string name="uikit_chat_permission_storage_dialog_alert">在設置-應用-%s-權限中開啟存儲權限，以正常使用保存照片和視頻功能</string>
+    <string name="uikit_copied">已複製</string>
+    <string name="uikit_back">返回</string>
+    <string name="uikit_empty_content">暫無內容</string>
 </resources>

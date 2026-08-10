@@ -65,7 +65,7 @@ class AtomicEditText @JvmOverloads constructor(
         }
 
         var deletedLength = 1
-        for (emojiKey in EmojiManager.littleEmojiKeyList) {
+        for (emojiKey in EmojiManager.sortedLittleEmojiKeyList) {
             if (cursorPosition >= emojiKey.length &&
                 currentText.substring(cursorPosition - emojiKey.length, cursorPosition) == emojiKey
             ) {

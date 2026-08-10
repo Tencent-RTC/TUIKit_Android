@@ -2,6 +2,7 @@ package io.trtc.tuikit.chat.uikit.components.messageinput.ui
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import io.trtc.tuikit.chat.uikit.components.messageinput.model.MentionInfo
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.InputCoordinator
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.PanelEvent
 import io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel.MessageInputViewModel
@@ -19,7 +20,7 @@ internal class MessageInputMentionController(
         val eventType = event["event"] as? String
         if (source != MESSAGE_LIST_SOURCE || eventType != USER_LONG_PRESS_EVENT) return false
 
-        val isGroupChat = viewModelProvider()?.conversationID?.startsWith("group_") == true
+        val isGroupChat = viewModelProvider()?.conversationID?.let { ConversationIDUtil.isGroup(it) } == true
         if (!isGroupChat) return true
         val userID = event["userID"] as? String ?: return true
         val message = event["message"] as? MessageInfo
@@ -31,7 +32,7 @@ internal class MessageInputMentionController(
 
     fun showMentionMemberDialog() {
         val conversationID = viewModelProvider()?.conversationID ?: return
-        val groupID = conversationID.removePrefix("group_")
+        val groupID = ConversationIDUtil.groupIdOrNull(conversationID) ?: return
         val activity = context as? FragmentActivity ?: return
 
         coordinatorProvider().dispatch(PanelEvent.RequestCollapse)

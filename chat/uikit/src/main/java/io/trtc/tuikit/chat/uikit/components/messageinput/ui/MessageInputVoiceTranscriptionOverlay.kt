@@ -30,6 +30,7 @@ import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.ai.tts.VoiceMessageConfig
+import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils
 import io.trtc.tuikit.chat.uikit.components.messageinput.keyboard.KeyboardInsetsUtil
 import io.trtc.tuikit.chat.uikit.components.messageinput.keyboard.LegacyKeyboardHeightProbe
 import io.trtc.tuikit.atomicx.theme.ThemeStore
@@ -176,6 +177,10 @@ internal class MessageInputVoiceTranscriptionOverlay(
     }
 
     private fun buildLayout() {
+        val hostDirection = ViewCompat.getLayoutDirection(anchorView)
+        rootView.layoutDirection = hostDirection
+        bubbleView.layoutDirection = hostDirection
+        chipRow.layoutDirection = hostDirection
         rootView.addView(
             backgroundView,
             FrameLayout.LayoutParams(
@@ -192,8 +197,12 @@ internal class MessageInputVoiceTranscriptionOverlay(
             keyboardHeight = 0,
             showChipRow = state == TranscriptionState.TEXT,
         )
-        val bubbleLp = FrameLayout.LayoutParams((330 * density).toInt(), bubbleHeightPx)
-        bubbleLp.leftMargin = scaleX(16)
+        val bubbleLp = FrameLayout.LayoutParams(
+            (330 * density).toInt(),
+            bubbleHeightPx,
+            Gravity.TOP or Gravity.START,
+        )
+        bubbleLp.marginStart = scaleX(16)
         bubbleLp.topMargin = initialLayout.bubbleTop
         bubbleLayoutParams = bubbleLp
         rootView.addView(bubbleView, bubbleLp)
@@ -210,7 +219,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
         editText.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         editText.background = null
         editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-        editText.setPadding((16 * density).toInt(), 0, (16 * density).toInt(), 0)
+        editText.setPaddingRelative((16 * density).toInt(), 0, (16 * density).toInt(), 0)
         val editLp = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             bubbleContentHeightPx(),
@@ -223,7 +232,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
             (20 * density).toInt(),
             Gravity.START or Gravity.TOP,
         )
-        dotsLp.leftMargin = (20 * density).toInt()
+        dotsLp.marginStart = (20 * density).toInt()
         dotsLp.topMargin = ((bubbleContentHeightPx() - dotsLp.height) / 2).coerceAtLeast(0)
         bubbleView.addView(loadingDotsView, dotsLp)
         bindBubbleText(text)
@@ -232,8 +241,9 @@ internal class MessageInputVoiceTranscriptionOverlay(
         val chipRowLp = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.WRAP_CONTENT,
             FrameLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.TOP or Gravity.START,
         )
-        chipRowLp.leftMargin = scaleX(16)
+        chipRowLp.marginStart = scaleX(16)
         chipRowLp.topMargin = initialLayout.chipRowTop
         chipRowLayoutParams = chipRowLp
         rootView.addView(chipRow, chipRowLp)
@@ -281,8 +291,8 @@ internal class MessageInputVoiceTranscriptionOverlay(
             (40 * density).toInt(),
             Gravity.TOP,
         )
-        waveformLp.leftMargin = scaleX(16)
-        waveformLp.rightMargin = scaleX(16)
+        waveformLp.marginStart = scaleX(16)
+        waveformLp.marginEnd = scaleX(16)
         waveformLp.topMargin = initialLayout.waveformTop
         waveformLayoutParams = waveformLp
         waveformView.setDurationSecond(audioDurationSecond)
@@ -294,7 +304,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
         icon: ImageView,
         iconRes: Int,
         sizeDp: Int,
-        leftDp: Int,
+        startDp: Int,
         topPx: Int,
     ): FrameLayout.LayoutParams {
         icon.setImageResource(iconRes)
@@ -304,8 +314,12 @@ internal class MessageInputVoiceTranscriptionOverlay(
             icon,
             FrameLayout.LayoutParams((20 * density).toInt(), (20 * density).toInt(), Gravity.CENTER)
         )
-        val lp = FrameLayout.LayoutParams((sizeDp * density).toInt(), (sizeDp * density).toInt())
-        lp.leftMargin = scaleX(leftDp)
+        val lp = FrameLayout.LayoutParams(
+            (sizeDp * density).toInt(),
+            (sizeDp * density).toInt(),
+            Gravity.TOP or Gravity.START,
+        )
+        lp.marginStart = scaleX(startDp)
         lp.topMargin = topPx
         rootView.addView(view, lp)
         return lp
@@ -315,14 +329,18 @@ internal class MessageInputVoiceTranscriptionOverlay(
         view: TextView,
         label: String,
         sizeDp: Int,
-        leftDp: Int,
+        startDp: Int,
         topPx: Int,
     ): FrameLayout.LayoutParams {
         view.gravity = Gravity.CENTER
         view.text = label
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (sizeDp >= 80) 16f else 24f)
-        val lp = FrameLayout.LayoutParams((sizeDp * density).toInt(), (sizeDp * density).toInt())
-        lp.leftMargin = scaleX(leftDp)
+        val lp = FrameLayout.LayoutParams(
+            (sizeDp * density).toInt(),
+            (sizeDp * density).toInt(),
+            Gravity.TOP or Gravity.START,
+        )
+        lp.marginStart = scaleX(startDp)
         lp.topMargin = topPx
         rootView.addView(view, lp)
         return lp
@@ -332,8 +350,9 @@ internal class MessageInputVoiceTranscriptionOverlay(
         view.gravity = Gravity.CENTER
         view.text = label
         view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-        val lp = FrameLayout.LayoutParams((96 * density).toInt(), (20 * density).toInt())
-        lp.leftMargin = scaleX(centerXDp) - (48 * density).toInt()
+        val labelWidth = (96 * density).toInt()
+        val lp = FrameLayout.LayoutParams(labelWidth, (20 * density).toInt(), Gravity.TOP or Gravity.START)
+        lp.marginStart = scaleX(centerXDp) - labelWidth / 2
         lp.topMargin = topPx
         rootView.addView(view, lp)
         return lp
@@ -445,7 +464,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
         chip.gravity = Gravity.CENTER
         chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
         chip.setTextColor(if (enabled) c.textColorPrimary else c.textColorDisable)
-        chip.setPadding(dp(12), dp(6), dp(12), dp(6))
+        chip.setPaddingRelative(dp(12), dp(6), dp(12), dp(6))
         chip.background = GradientDrawable().apply {
             cornerRadius = 12f * density
             setColor(c.buttonColorSecondaryDefault)
@@ -454,7 +473,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
         )
-        lp.rightMargin = dp(8)
+        lp.marginEnd = dp(8)
         chip.layoutParams = lp
         chip.isEnabled = enabled
         if (enabled && onClick != null) {
@@ -594,6 +613,9 @@ internal class MessageInputVoiceTranscriptionOverlay(
         languagePopupWindow?.let { if (it.isShowing) it.dismiss() }
         languagePopupWindow = popupWindow
 
+        val hostDirection = rootView.layoutDirection
+        contentView.layoutDirection = hostDirection
+
         val maskView = View(context).apply {
             setBackgroundColor(c.bgColorMask)
             setOnClickListener { popupWindow.dismiss() }
@@ -608,6 +630,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
 
         val panelBackgroundColor = c.bgColorOperate
         val panel = LinearLayout(context).apply {
+            layoutDirection = hostDirection
             orientation = LinearLayout.VERTICAL
             background = GradientDrawable().apply {
                 cornerRadii = floatArrayOf(
@@ -635,7 +658,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
             includeFontPadding = false
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             setTextColor(c.textColorSecondary)
-            setPadding(0, dp(16), 0, dp(16))
+            setPaddingRelative(0, dp(16), 0, dp(16))
         }
         panel.addView(
             titleView,
@@ -656,7 +679,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
                 includeFontPadding = false
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
                 setTextColor(if (isSelected) c.textColorLink else c.textColorPrimary)
-                setPadding(dp(16), dp(14), dp(16), dp(14))
+                setPaddingRelative(dp(16), dp(14), dp(16), dp(14))
                 setOnClickListener {
                     popupWindow.dismiss()
                     onPicked(option.code)
@@ -862,12 +885,23 @@ internal class MessageInputVoiceTranscriptionOverlay(
     // The bubble uses a fixed density-based width while the send button is
     // positioned proportionally via scaleX, so the pointer must be derived from
     // the button's actual center to stay aligned across screen widths.
+    // Positions use marginStart + Gravity.START so RTL mirrors automatically;
+    // arrow offset is converted into bubble-local coordinates.
     private fun alignBubbleArrowToSendButton() {
-        val sendButtonLeft = sendTextButtonLayoutParams?.leftMargin ?: scaleX(262)
+        val sendButtonStart = sendTextButtonLayoutParams?.marginStart ?: scaleX(262)
         val sendButtonWidth = sendTextButtonLayoutParams?.width ?: dp(80)
-        val bubbleLeft = bubbleLayoutParams?.leftMargin ?: scaleX(16)
-        val sendButtonCenterX = sendButtonLeft + sendButtonWidth / 2f
-        bubbleView.setArrowCenterX(sendButtonCenterX - bubbleLeft)
+        val bubbleStart = bubbleLayoutParams?.marginStart ?: scaleX(16)
+        val bubbleWidth = bubbleLayoutParams?.width ?: (330 * density).toInt()
+        val arrowCenterX = if (isRtl()) {
+            bubbleStart + bubbleWidth - sendButtonStart - sendButtonWidth / 2f
+        } else {
+            sendButtonStart + sendButtonWidth / 2f - bubbleStart
+        }
+        bubbleView.setArrowCenterX(arrowCenterX)
+    }
+
+    private fun isRtl(): Boolean {
+        return rootView.layoutDirection == View.LAYOUT_DIRECTION_RTL
     }
 
     private fun updateLoadingDotsPosition() {
@@ -982,8 +1016,11 @@ private class TranscriptionBubbleView(context: Context) : FrameLayout(context) {
         val halfArrowWidth = 12f * density
         path.reset()
         path.addRoundRect(RectF(0f, 0f, width.toFloat(), bodyBottom), radius, radius, Path.Direction.CW)
-        val centerX = (arrowCenterX ?: (width - 64f * density))
-            .coerceIn(radius + halfArrowWidth, width - radius - halfArrowWidth)
+        val centerX = (arrowCenterX ?: if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            64f * density
+        } else {
+            width - 64f * density
+        }).coerceIn(radius + halfArrowWidth, width - radius - halfArrowWidth)
         path.moveTo(centerX - halfArrowWidth, bodyBottom)
         path.lineTo(centerX, height.toFloat())
         path.lineTo(centerX + halfArrowWidth, bodyBottom)
@@ -1076,8 +1113,7 @@ private class OverlayWaveformBarView(context: Context) : View(context) {
     }
 
     fun setDurationSecond(durationSecond: Int) {
-        val seconds = durationSecond.coerceAtLeast(0)
-        durationText = String.format("%02d:%02d", seconds / 60, seconds % 60)
+        durationText = ChatDateTimeUtils.formatDurationSeconds(durationSecond.toLong())
         invalidate()
     }
 
@@ -1115,6 +1151,14 @@ private class OverlayWaveformBarView(context: Context) : View(context) {
             canvas.drawCircle(startX + i * gap, centerY, dotRadius, dotPaint)
         }
         dotPaint.alpha = 255
-        canvas.drawText(durationText, width - 16f * density, centerY - (durationPaint.descent() + durationPaint.ascent()) / 2f, durationPaint)
+        val textY = centerY - (durationPaint.descent() + durationPaint.ascent()) / 2f
+        val padding = 16f * density
+        if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            durationPaint.textAlign = Paint.Align.LEFT
+            canvas.drawText(durationText, padding, textY, durationPaint)
+        } else {
+            durationPaint.textAlign = Paint.Align.RIGHT
+            canvas.drawText(durationText, width - padding, textY, durationPaint)
+        }
     }
 }

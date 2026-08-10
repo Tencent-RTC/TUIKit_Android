@@ -11,7 +11,6 @@
     <string name="contact_list_refused">已拒絕</string>
     <string name="contact_list_agreed">已同意</string>
     <string name="contact_list_friend_count">%d位聯絡人</string>
-    <string name="contact_list_back">返回</string>
     <string name="contact_list_agree">同意</string>
     <string name="contact_list_refuse">拒絕</string>
     <string name="contact_list_friend_application">好友申請</string>
@@ -79,4 +78,6 @@
     <string name="contact_list_community_id_edit_format_tips">社群 ID 前綴必須為 @TGS#_！</string>
     <string name="contact_list_group_id_edit_format_tips">群組 ID 前綴不能為 @TGS#！</string>
     <string name="contact_list_confirm_selection">確定(%1$d)</string>
+    <string name="contact_list_cannot_found_group">未找到相關群組</string>
+    <string name="contact_list_cannot_found_blacklist_user">未找到相關黑名單用戶</string>
 </resources>

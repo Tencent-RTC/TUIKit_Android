@@ -1,11 +1,13 @@
 package io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel
+
 import android.content.Context
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.uicustom.CustomEditor
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputConfigProtocol
-import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputMenuActionConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputActionCustomizer
+import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputActionIDs
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuActionContext
-import io.trtc.tuikit.chat.uikit.components.messageinput.data.mergeMessageInputMenuActions
 
 internal data class MessageInputMenuActionCallbacks(
     val onPickMedia: () -> Unit = {},
@@ -38,85 +40,115 @@ internal data class MessageInputMenuActionLabels(
     }
 }
 
+internal data class MessageInputMenuActionIcons(
+    val album: Int,
+    val takePhoto: Int,
+    val recordVideo: Int,
+    val file: Int,
+    val videoCall: Int,
+    val audioCall: Int,
+) {
+    companion object {
+        fun defaults(): MessageInputMenuActionIcons {
+            return MessageInputMenuActionIcons(
+                album = R.drawable.message_input_menu_album_icon,
+                takePhoto = R.drawable.message_input_menu_camera_icon,
+                recordVideo = R.drawable.message_input_menu_record_icon,
+                file = R.drawable.message_input_menu_file_icon,
+                videoCall = R.drawable.message_input_menu_video_call_icon,
+                audioCall = R.drawable.message_input_menu_audio_call_icon,
+            )
+        }
+    }
+}
+
+internal fun buildDefaultMessageInputMenuActions(
+    isShowPhotoTaker: Boolean,
+    isShowVideoCall: Boolean,
+    isShowAudioCall: Boolean,
+    labels: MessageInputMenuActionLabels,
+    callbacks: MessageInputMenuActionCallbacks,
+    icons: MessageInputMenuActionIcons = MessageInputMenuActionIcons.defaults(),
+): List<MessageInputMenuAction> {
+    val actions = mutableListOf<MessageInputMenuAction>()
+    actions += MessageInputMenuAction(
+        ID = MessageInputActionIDs.ALBUM,
+        title = labels.album,
+        iconResID = icons.album,
+        onClick = callbacks.onPickMedia,
+    )
+    if (isShowPhotoTaker) {
+        actions += MessageInputMenuAction(
+            ID = MessageInputActionIDs.TAKE_PHOTO,
+            title = labels.takePhoto,
+            iconResID = icons.takePhoto,
+            onClick = callbacks.onCaptureImage,
+        )
+        actions += MessageInputMenuAction(
+            ID = MessageInputActionIDs.RECORD_VIDEO,
+            title = labels.recordVideo,
+            iconResID = icons.recordVideo,
+            onClick = callbacks.onRecordVideo,
+        )
+    }
+    actions += MessageInputMenuAction(
+        ID = MessageInputActionIDs.FILE,
+        title = labels.file,
+        iconResID = icons.file,
+        onClick = callbacks.onPickFile,
+    )
+    if (isShowVideoCall) {
+        actions += MessageInputMenuAction(
+            ID = MessageInputActionIDs.VIDEO_CALL,
+            title = labels.videoCall,
+            iconResID = icons.videoCall,
+            onClick = callbacks.onStartVideoCall,
+        )
+    }
+    if (isShowAudioCall) {
+        actions += MessageInputMenuAction(
+            ID = MessageInputActionIDs.AUDIO_CALL,
+            title = labels.audioCall,
+            iconResID = icons.audioCall,
+            onClick = callbacks.onStartAudioCall,
+        )
+    }
+    return actions
+}
+
+internal fun applyMessageInputActionCustomizer(
+    actionContext: MessageInputMenuActionContext,
+    defaults: List<MessageInputMenuAction>,
+    customizer: MessageInputActionCustomizer?,
+): List<MessageInputMenuAction> {
+    if (customizer == null) {
+        return defaults
+    }
+    val editor = CustomEditor(actionContext, defaults)
+    customizer.customize(editor)
+    return editor.build()
+}
+
 internal class MessageInputMenuActionFactory(
     private val config: MessageInputConfigProtocol,
     private val callbacks: MessageInputMenuActionCallbacks
 ) {
     fun create(context: Context, conversationID: String): List<MessageInputMenuAction> {
         val labels = MessageInputMenuActionLabels.from(context)
-        return create(labels, context, conversationID)
-    }
-
-    fun create(
-        labels: MessageInputMenuActionLabels,
-        context: Context?,
-        conversationID: String
-    ): List<MessageInputMenuAction> {
-        val actions = mutableListOf<MessageInputMenuAction>()
-        actions += MessageInputMenuAction().apply {
-            title = labels.album
-            iconResID = R.drawable.message_input_menu_album_icon
-            order = ACTION_ORDER_ALBUM
-            onClick = callbacks.onPickMedia
-        }
-        if (config.isShowPhotoTaker) {
-            actions += MessageInputMenuAction().apply {
-                title = labels.takePhoto
-                iconResID = R.drawable.message_input_menu_camera_icon
-                order = ACTION_ORDER_TAKE_PHOTO
-                onClick = callbacks.onCaptureImage
-            }
-            actions += MessageInputMenuAction().apply {
-                title = labels.recordVideo
-                iconResID = R.drawable.message_input_menu_record_icon
-                order = ACTION_ORDER_RECORD_VIDEO
-                onClick = callbacks.onRecordVideo
-            }
-        }
-        actions += MessageInputMenuAction().apply {
-            title = labels.file
-            iconResID = R.drawable.message_input_menu_file_icon
-            order = ACTION_ORDER_FILE
-            onClick = callbacks.onPickFile
-        }
-        if (config.isShowVideoCall) {
-            actions += MessageInputMenuAction().apply {
-                title = labels.videoCall
-                iconResID = R.drawable.message_input_menu_video_call_icon
-                order = ACTION_ORDER_VIDEO_CALL
-                onClick = callbacks.onStartVideoCall
-            }
-        }
-        if (config.isShowAudioCall) {
-            actions += MessageInputMenuAction().apply {
-                title = labels.audioCall
-                iconResID = R.drawable.message_input_menu_audio_call_icon
-                order = ACTION_ORDER_AUDIO_CALL
-                onClick = callbacks.onStartAudioCall
-            }
-        }
-        val customActions = if (context == null) {
-            emptyList()
-        } else {
-            (config as? MessageInputMenuActionConfigProtocol)
-                ?.customMenuActionProvider
-                ?.getActions(
-                    MessageInputMenuActionContext(
-                        context = context,
-                        conversationID = conversationID
-                    )
-                )
-                .orEmpty()
-        }
-        return mergeMessageInputMenuActions(actions, customActions)
-    }
-
-    private companion object {
-        const val ACTION_ORDER_ALBUM = 100
-        const val ACTION_ORDER_TAKE_PHOTO = 200
-        const val ACTION_ORDER_RECORD_VIDEO = 300
-        const val ACTION_ORDER_FILE = 400
-        const val ACTION_ORDER_VIDEO_CALL = 500
-        const val ACTION_ORDER_AUDIO_CALL = 600
+        val defaults = buildDefaultMessageInputMenuActions(
+            isShowPhotoTaker = config.isShowPhotoTaker,
+            isShowVideoCall = config.isShowVideoCall,
+            isShowAudioCall = config.isShowAudioCall,
+            labels = labels,
+            callbacks = callbacks,
+        )
+        return applyMessageInputActionCustomizer(
+            actionContext = MessageInputMenuActionContext(
+                androidContext = context,
+                conversationID = conversationID,
+            ),
+            defaults = defaults,
+            customizer = config.actionCustomizer,
+        )
     }
 }

@@ -27,4 +27,7 @@
     <string name="uikit_chat_permission_mic_dialog_alert">Allow microphone access in Settings->Apps->%s to use voice messages, video cameras, audio and video calls, and voice cloning as normal</string>
     <string name="uikit_chat_permission_camera_dialog_alert">Allow camera access in Settings->Apps->%s to use the photo, video and video calling functions as normal</string>
     <string name="uikit_chat_permission_storage_dialog_alert">Allow storage access in Settings->Apps->%s to use the function of saving photos and videos normally</string>
+    <string name="uikit_copied">Copied</string>
+    <string name="uikit_back">Back</string>
+    <string name="uikit_empty_content">No content</string>
 </resources>

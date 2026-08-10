@@ -76,6 +76,11 @@ class TUIEventBus private constructor() {
         }
     }
 
+    fun hasSubscriber(event: String, key: String?): Boolean {
+        val eventKey = buildEventKey(event, key)
+        return observerMap[eventKey]?.isNotEmpty() == true
+    }
+
     fun publish(event: String, key: String?, params: PublishParams? = null) {
         val eventKey = buildEventKey(event, key)
 

@@ -3,8 +3,9 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
-import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiManager
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
+import io.trtc.tuikit.chat.uikit.components.emojipicker.model.Emoji
+import io.trtc.tuikit.chat.uikit.components.emojipicker.model.EmojiGroup
 import io.trtc.tuikit.chat.uikit.components.emojipicker.ui.EmojiPickerView
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.PanelState
@@ -77,14 +78,18 @@ internal class MessageInputPanelContentController private constructor(
             panelContainer: FrameLayout,
             editText: AtomicEditText,
             currentPanel: () -> PanelState?,
-            onSendClick: () -> Unit
+            onSendClick: () -> Unit,
+            onCustomEmojiClick: (EmojiGroup, Emoji) -> Unit = { _, _ -> }
         ): MessageInputPanelContentController {
-            EmojiManager.initialize(context)
             val picker = EmojiPickerView(context)
             picker.setup(
-                onEmojiClick = { _, emoji ->
-                    editText.insertText(emoji.key)
-                    EmojiSpanHelper.processEditTextEmoji(editText)
+                onEmojiClick = { group, emoji ->
+                    if (group.isLittleEmoji) {
+                        editText.insertText(emoji.key)
+                        EmojiSpanHelper.processEditTextEmoji(editText)
+                    } else {
+                        onCustomEmojiClick(group, emoji)
+                    }
                 },
                 onSendClick = onSendClick,
                 onDeleteClick = { editText.deleteAtCursor() }

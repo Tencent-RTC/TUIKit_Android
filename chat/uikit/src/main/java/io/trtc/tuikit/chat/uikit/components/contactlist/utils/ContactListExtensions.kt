@@ -1,17 +1,11 @@
 package io.trtc.tuikit.chat.uikit.components.contactlist.utils
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
-import io.trtc.tuikit.atomicxcore.api.contact.FriendApplicationInfo
 import io.trtc.tuikit.atomicxcore.api.group.GroupApplicationHandledResult
 import io.trtc.tuikit.atomicxcore.api.group.GroupApplicationHandledStatus
 import io.trtc.tuikit.atomicxcore.api.group.GroupApplicationInfo
 import io.trtc.tuikit.atomicxcore.api.group.GroupApplicationType
-import io.trtc.tuikit.atomicxcore.api.login.UserProfile
-
-val ContactInfo.displayName
-    get() = friendRemark?.takeIf { it.isNotEmpty() }
-        ?: nickname?.takeIf { it.isNotEmpty() }
-        ?: userID
 
 fun ContactInfo.matchesSearchQuery(query: String): Boolean {
     val keyword = query.trim()
@@ -25,13 +19,6 @@ fun ContactInfo.matchesSearchQuery(query: String): Boolean {
             value.contains(keyword, ignoreCase = true)
         }
 }
-
-val FriendApplicationInfo.displayName
-    get() = title ?: userID
-
-val UserProfile.displayName
-    get() = nickname?.takeIf { it.isNotEmpty() }
-        ?: userID
 
 val GroupApplicationInfo.fromUserDisplayName
     get() = when {

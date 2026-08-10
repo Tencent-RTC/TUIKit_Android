@@ -3,9 +3,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.trtc.tuikit.chat.uikit.components.chatsetting.utils.ChatSettingBackgroundStore
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.EventBus
-import io.trtc.tuikit.chat.uikit.components.messagelist.background.ChatBackgroundChangedEvent
-import io.trtc.tuikit.chat.uikit.components.messagelist.background.MmkvChatBackgroundStore
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
 import io.trtc.tuikit.atomicxcore.api.contact.ContactStore
@@ -51,8 +51,8 @@ class GroupChatSettingViewModel(
     private val _groupStoreState = _groupStore.state
     private val _conversationListStore: ConversationListStore = ConversationListStore.create()
 
-    val conversationID = "group_$groupID"
-    private val chatBackgroundStore = MmkvChatBackgroundStore(context.applicationContext)
+    val conversationID = ConversationIDUtil.fromGroup(groupID)
+    private val chatBackgroundStore = ChatSettingBackgroundStore(context.applicationContext)
     private val _chatBackgroundImageUri = MutableStateFlow(chatBackgroundStore.getImageUri(conversationID))
     val chatBackgroundImageUri: StateFlow<String?> = _chatBackgroundImageUri.asStateFlow()
 
@@ -352,13 +352,28 @@ class GroupChatSettingViewModel(
     fun setChatBackground(imageUri: String?) {
         chatBackgroundStore.setImageUri(conversationID, imageUri)
         _chatBackgroundImageUri.value = chatBackgroundStore.getImageUri(conversationID)
-        EventBus.post(ChatBackgroundChangedEvent(conversationID))
+        postChatBackgroundChangedEvent()
     }
 
     fun clearChatBackground() {
         chatBackgroundStore.clearImageUri(conversationID)
         _chatBackgroundImageUri.value = null
-        EventBus.post(ChatBackgroundChangedEvent(conversationID))
+        postChatBackgroundChangedEvent()
+    }
+
+    private fun postChatBackgroundChangedEvent() {
+        EventBus.post(
+            mapOf(
+                "source" to EVENT_SOURCE,
+                "event" to EVENT_CHAT_BACKGROUND_CHANGED,
+                "conversationID" to conversationID
+            )
+        )
+    }
+
+    private companion object {
+        const val EVENT_SOURCE = "ChatSetting"
+        const val EVENT_CHAT_BACKGROUND_CHANGED = "onChatBackgroundChanged"
     }
 
     fun changeOwner(newOwnerID: String) {

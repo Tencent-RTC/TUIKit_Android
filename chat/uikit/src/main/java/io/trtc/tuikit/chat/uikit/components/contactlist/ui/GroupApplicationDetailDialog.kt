@@ -13,6 +13,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
+import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.canHandle
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.fromUserDisplayName
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.getStatusText
@@ -24,8 +25,6 @@ import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.uikit.components.widgets.Avatar
 import io.trtc.tuikit.chat.uikit.components.widgets.Avatar.AvatarContent
 import io.trtc.tuikit.atomicxcore.api.group.GroupApplicationInfo
-import java.text.DateFormat
-import java.util.Date
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -449,7 +448,6 @@ internal class GroupApplicationDetailDialog(
             return context.getString(R.string.contact_list_no_content)
         }
         val timeInMillis = if (timestamp > 1_000_000_000_000L) timestamp else timestamp * 1000L
-        val formatter = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
-        return formatter.format(Date(timeInMillis))
+        return ChatDateTimeUtils.formatFullDateTime(timeInMillis)
     }
 }

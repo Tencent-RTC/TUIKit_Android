@@ -7,6 +7,44 @@
 
     <include layout="@layout/demo_widget_chat_header" />
 
+    <LinearLayout
+        android:id="@+id/demo_chatSecurityBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFE8D5"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="17dp"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/demo_securityWarningIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:contentDescription="@null"
+            android:src="@drawable/demo_ic_security_warning" />
+
+        <TextView
+            android:id="@+id/demo_securityWarningText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="7dp"
+            android:textColor="#A02800"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/demo_securityWarningClose"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:contentDescription="@string/demo_close"
+            android:padding="3dp"
+            android:paddingTop="0dp"
+            android:src="@drawable/demo_ic_security_close" />
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/demo_chatPageContainer"
         android:layout_width="match_parent"

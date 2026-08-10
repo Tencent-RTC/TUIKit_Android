@@ -2,7 +2,6 @@ package io.trtc.tuikit.chat.demo.login
 
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.content.res.Configuration
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
@@ -28,6 +27,7 @@ import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.chat.app.R
 import io.trtc.tuikit.chat.demo.common.AppConstants
 import io.trtc.tuikit.chat.demo.common.BaseActivity
+import io.trtc.tuikit.chat.demo.customerservice.CustomerServiceManager
 import io.trtc.tuikit.chat.demo.main.MainActivity
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionItem
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionSheet
@@ -108,6 +108,7 @@ abstract class BaseLoginActivity : BaseActivity() {
             object : CompletionHandler {
                 override fun onSuccess() {
                     initCall(sdkAppId, userId, userSig)
+                    CustomerServiceManager.initAndStart(this@BaseLoginActivity, sdkAppId, userId, userSig)
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER, userId)
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_TYPE, loginType)
                     if (token != null) {
@@ -203,13 +204,8 @@ abstract class BaseLoginActivity : BaseActivity() {
         )
         ActionSheet.show(this, options) { selected ->
             val mode = selected.value as Int
-            MMKV.defaultMMKV().encode(AppConstants.KEY_THEME_MODE, mode)
             when (mode) {
-                AppConstants.THEME_MODE_SYSTEM -> {
-                    val isNight = (resources.configuration.uiMode and
-                        Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-                    themeStore.setTheme(if (isNight) Theme.darkTheme(this) else Theme.lightTheme(this))
-                }
+                AppConstants.THEME_MODE_SYSTEM -> themeStore.setTheme(Theme.systemTheme(this))
                 AppConstants.THEME_MODE_LIGHT -> themeStore.setTheme(Theme.lightTheme(this))
                 AppConstants.THEME_MODE_DARK -> themeStore.setTheme(Theme.darkTheme(this))
             }
@@ -230,12 +226,10 @@ abstract class BaseLoginActivity : BaseActivity() {
     }
 
     private fun updateThemeSwitcherLabel() {
-        val savedThemeMode = MMKV.defaultMMKV()
-            .decodeInt(AppConstants.KEY_THEME_MODE, AppConstants.THEME_MODE_SYSTEM)
-        tvThemeValue.text = when (savedThemeMode) {
-            AppConstants.THEME_MODE_LIGHT -> getString(R.string.demo_settings_theme_light)
-            AppConstants.THEME_MODE_DARK -> getString(R.string.demo_settings_theme_dark)
-            else -> getString(R.string.demo_settings_theme_system)
+        tvThemeValue.text = when (themeStore.themeState.value.currentTheme.id) {
+            "dark" -> getString(R.string.demo_settings_theme_dark)
+            Theme.SYSTEM_THEME_ID -> getString(R.string.demo_settings_theme_system)
+            else -> getString(R.string.demo_settings_theme_light)
         }
     }
 

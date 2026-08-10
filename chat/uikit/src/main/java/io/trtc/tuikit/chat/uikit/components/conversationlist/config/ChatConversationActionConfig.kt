@@ -1,7 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.conversationlist.config
+
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.config.ConversationAction
-import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationCustomActionProvider
 
 interface ConversationActionConfigProtocol {
     val isSupportDelete: Boolean
@@ -9,21 +9,32 @@ interface ConversationActionConfigProtocol {
     val isSupportPin: Boolean
     val isSupportMarkUnread: Boolean
     val isSupportClearHistory: Boolean
+    val actionCustomizer: ConversationActionCustomizer?
+        get() = null
 }
 
-interface ConversationCustomActionConfigProtocol {
-    val customActionProvider: ConversationCustomActionProvider?
-}
+class ChatConversationActionConfig : ConversationActionConfigProtocol {
 
-class ChatConversationActionConfig(
-    private var _isSupportDelete: Boolean? = null,
-    private var _isSupportMute: Boolean? = null,
-    private var _isSupportPin: Boolean? = null,
-    private var _isSupportMarkUnread: Boolean? = null,
+    private var _isSupportDelete: Boolean? = null
+    private var _isSupportMute: Boolean? = null
+    private var _isSupportPin: Boolean? = null
+    private var _isSupportMarkUnread: Boolean? = null
     private var _isSupportClearHistory: Boolean? = null
-) : ConversationActionConfigProtocol, ConversationCustomActionConfigProtocol {
+    private var _actionCustomizer: ConversationActionCustomizer? = null
 
-    private var _customActionProvider: ConversationCustomActionProvider? = null
+    constructor(
+        isSupportDelete: Boolean? = null,
+        isSupportMute: Boolean? = null,
+        isSupportPin: Boolean? = null,
+        isSupportMarkUnread: Boolean? = null,
+        isSupportClearHistory: Boolean? = null
+    ) {
+        this._isSupportDelete = isSupportDelete
+        this._isSupportMute = isSupportMute
+        this._isSupportPin = isSupportPin
+        this._isSupportMarkUnread = isSupportMarkUnread
+        this._isSupportClearHistory = isSupportClearHistory
+    }
 
     override var isSupportDelete: Boolean
         get() = _isSupportDelete
@@ -60,11 +71,12 @@ class ChatConversationActionConfig(
             _isSupportClearHistory = value
         }
 
-    override val customActionProvider: ConversationCustomActionProvider?
-        get() = _customActionProvider
+    override val actionCustomizer: ConversationActionCustomizer?
+        get() = _actionCustomizer
 
-    fun setCustomActionProvider(provider: ConversationCustomActionProvider?): ChatConversationActionConfig {
-        _customActionProvider = provider
-        return this
+    fun customizeActions(block: ConversationActionEditor.() -> Unit): ChatConversationActionConfig = apply {
+        _actionCustomizer = ConversationActionCustomizer { editor ->
+            editor.block()
+        }
     }
 }

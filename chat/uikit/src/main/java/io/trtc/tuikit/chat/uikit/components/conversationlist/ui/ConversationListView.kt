@@ -28,13 +28,12 @@ import io.trtc.tuikit.chat.uikit.components.conversationlist.adapter.Conversatio
 import io.trtc.tuikit.chat.uikit.components.conversationlist.adapter.ConversationListAdapter
 import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ChatConversationActionConfig
 import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ConversationActionConfigProtocol
-import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ConversationCustomActionConfigProtocol
-import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationCustomAction
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationCustomActionContext
-import io.trtc.tuikit.chat.uikit.components.conversationlist.model.mergeConversationLongPressActions
-import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.findConversationListViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.conversationlist.model.resolveConversationActionTitle
 import io.trtc.tuikit.chat.uikit.components.conversationlist.viewmodel.ConversationListViewModel
 import io.trtc.tuikit.chat.uikit.components.conversationlist.viewmodel.ConversationListViewModelFactory
+import io.trtc.tuikit.chat.uikit.components.conversationlist.viewmodel.applyConversationActionCustomizer
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.conversation.ConversationInfo
@@ -44,6 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class ConversationListView @JvmOverloads constructor(
@@ -53,6 +53,8 @@ class ConversationListView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val recyclerView: RecyclerView
+    private val emptyView: LinearLayout
+    private val emptyTextView: TextView
     private lateinit var adapter: ConversationListAdapter
     private lateinit var viewModel: ConversationListViewModel
     private var viewScope: CoroutineScope? = null
@@ -63,7 +65,6 @@ class ConversationListView @JvmOverloads constructor(
     private val viewModelKey = "${ConversationListViewModel::class.java.name}:${System.identityHashCode(this)}"
 
     private var onConversationClick: (ConversationInfo) -> Unit = {}
-    private var customActions: List<ConversationCustomAction> = emptyList()
 
     private var config: ConversationActionConfigProtocol = ChatConversationActionConfig()
     private val themeStore = ThemeStore.shared(context)
@@ -74,6 +75,8 @@ class ConversationListView @JvmOverloads constructor(
         layoutDirection = View.LAYOUT_DIRECTION_LOCALE
         LayoutInflater.from(context).inflate(R.layout.conversation_list_view, this, true)
         recyclerView = findViewById(R.id.conversation_list_recycler_view)
+        emptyView = findViewById(R.id.conversation_list_empty_view)
+        emptyTextView = findViewById(R.id.conversation_list_empty_text)
         recyclerView.layoutDirection = View.LAYOUT_DIRECTION_LOCALE
         recyclerView.layoutManager = LinearLayoutManager(context)
         (recyclerView.itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)
@@ -83,16 +86,14 @@ class ConversationListView @JvmOverloads constructor(
     @JvmOverloads
     fun setup(
         config: ConversationActionConfigProtocol = ChatConversationActionConfig(),
-        customActions: List<ConversationCustomAction> = emptyList(),
         onConversationClick: (ConversationInfo) -> Unit = {}
     ) {
         this.config = config
-        this.customActions = customActions
         this.onConversationClick = onConversationClick
 
         cleanupBinding()
 
-        val owner = context.findConversationListViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("ConversationListView requires a ViewModelStoreOwner host context.")
         viewModel = ViewModelProvider(
             owner,
@@ -162,11 +163,20 @@ class ConversationListView @JvmOverloads constructor(
         viewScope = scope
 
         scope.launch {
-            viewModel.conversationList.collectLatest { list ->
-                currentPopup?.dismissImmediately()
-                pendingAnchorToTop = isFirstItemFullyVisible()
-                adapter.submitList(list)
-            }
+            combine(
+                viewModel.conversationList,
+                viewModel.initialLoadFinished
+            ) { list, initialLoadFinished -> list to initialLoadFinished }
+                .collectLatest { (list, initialLoadFinished) ->
+                    currentPopup?.dismissImmediately()
+                    pendingAnchorToTop = isFirstItemFullyVisible()
+                    adapter.submitList(list)
+                    emptyView.visibility = if (initialLoadFinished && list.isEmpty()) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
+                }
         }
 
         scope.launch {
@@ -174,6 +184,7 @@ class ConversationListView @JvmOverloads constructor(
                 val colors = it.currentTheme.tokens.color
                 currentPopup?.dismissImmediately()
                 setBackgroundColor(colors.bgColorTopBar)
+                emptyTextView.setTextColor(colors.textColorTertiary)
                 adapter.notifyThemeChanged()
                 recyclerView.invalidateItemDecorations()
             }
@@ -243,20 +254,20 @@ class ConversationListView @JvmOverloads constructor(
     private fun showPopupMenu(conversation: ConversationInfo, anchorView: View) {
         val colors = themeStore.themeState.value.currentTheme.tokens.color
 
-        val customProviderActions = (config as? ConversationCustomActionConfigProtocol)
-            ?.customActionProvider
-            ?.getActions(
-                ConversationCustomActionContext(
-                    context = context,
-                    conversation = conversation
-                )
-            )
-            .orEmpty()
-        val allActions = mergeConversationLongPressActions(
-            defaultActions = viewModel.getActions(conversation),
-            customActions = customActions + customProviderActions
+        val defaults = viewModel.getDefaultActions(conversation)
+        val allActions = applyConversationActionCustomizer(
+            actionContext = ConversationCustomActionContext(
+                androidContext = context,
+                conversation = conversation,
+            ),
+            defaults = defaults,
+            customizer = config.actionCustomizer,
         ).map { action ->
-            val title = action.title.ifEmpty { context.getString(action.titleResID) }
+            val title = resolveConversationActionTitle(
+                title = action.title,
+                titleResID = action.titleResID,
+                getString = { resID -> context.getString(resID) },
+            )
             Triple(
                 title,
                 action.dangerous,

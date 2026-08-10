@@ -1,12 +1,11 @@
 package io.trtc.tuikit.chat.uikit.components.search.ui
 import android.content.Context
-import android.content.ContextWrapper
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.search.viewmodel.SearchAllViewModel
 import io.trtc.tuikit.chat.uikit.components.search.viewmodel.SearchContactViewModel
 import io.trtc.tuikit.chat.uikit.components.search.viewmodel.SearchGroupViewModel
@@ -226,19 +225,8 @@ class SearchView @JvmOverloads constructor(
     }
 
     private inline fun <reified VM : ViewModel> searchViewModel(): VM {
-        val owner = findViewModelStoreOwner(context)
+        val owner = context.findViewModelStoreOwner()
             ?: error("SearchView requires a ViewModelStoreOwner host context.")
         return ViewModelProvider(owner)[VM::class.java]
-    }
-
-    private fun findViewModelStoreOwner(context: Context): ViewModelStoreOwner? {
-        var current: Context? = context
-        while (current is ContextWrapper) {
-            if (current is ViewModelStoreOwner) {
-                return current
-            }
-            current = current.baseContext
-        }
-        return current as? ViewModelStoreOwner
     }
 }

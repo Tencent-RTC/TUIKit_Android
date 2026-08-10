@@ -4,8 +4,9 @@ data class EmojiGroup(
     val name: String,
     val desc: String = "",
     val emojiGroupIconUrl: Any,
-    var emojis: List<Emoji>,
+    val emojis: List<Emoji>,
     val isLittleEmoji: Boolean = false,
+    val supportReaction: Boolean = isLittleEmoji,
 )
 
 open class Emoji(

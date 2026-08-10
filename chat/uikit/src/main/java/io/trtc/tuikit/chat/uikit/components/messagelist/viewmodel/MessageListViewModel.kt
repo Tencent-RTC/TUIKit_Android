@@ -8,9 +8,12 @@ import com.tencent.imsdk.v2.V2TIMUserFullInfo
 import com.tencent.imsdk.v2.V2TIMValueCallback
 import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.EventBus
+import io.trtc.tuikit.chat.uikit.components.messagelist.typing.TypingMessageProtocol
 import io.trtc.tuikit.chat.uikit.components.common.MessageOfflinePushInfoFactory
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
+import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel.AlbumPickerProcessingMessageStore
 import io.trtc.tuikit.chat.uikit.components.messageinput.model.MentionInfo
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
@@ -20,7 +23,9 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.listen.ListenPlanResourc
 import io.trtc.tuikit.chat.uikit.components.messagelist.listen.ListenPlaybackState
 import io.trtc.tuikit.chat.uikit.components.messagelist.listen.buildListenPlan
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.LoadingState
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageUIAction
+import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
+import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListActionCallbacks
+import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListActionFactory
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageQuoteLocatePolicy
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.CallMessageDisplayPolicy
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.AuxiliaryTextVisibilityStore
@@ -69,6 +74,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -97,7 +103,11 @@ class MessageListViewModel(
     private val conversationListStore = ConversationListStore.create()
     val conversationListState = conversationListStore.state
     val messageListState = messageListStore.state
-    val messageEvent = messageListStore.messageEventFlow
+    val messageEvent = messageListStore.messageEventFlow.filter { event ->
+        when (event) {
+            is MessageEvent.OnReceiveNewMessage -> !TypingMessageProtocol.isTypingMessage(event.message)
+        }
+    }
     private val messageInputStore = MessageInputStore.create(conversationID)
     private val messageSummaryFormatter = MessageListMessageSummaryFormatter(messageListConfig)
     private val visibilityPolicy = MessageListVisibilityPolicy(messageListConfig)
@@ -255,6 +265,7 @@ class MessageListViewModel(
     }
 
     private fun shouldDisplayMessage(message: MessageInfo): Boolean {
+        if (TypingMessageProtocol.isTypingMessage(message)) return false
         return visibilityPolicy.shouldDisplay(message)
     }
 
@@ -313,6 +324,14 @@ class MessageListViewModel(
             ),
             completion
         )
+    }
+
+    internal fun findFilteredQuoteTargetId(quoteInfo: MessageQuoteInfo): String? {
+        val rawMessages = messageListState.messageList.value
+        val target = rawMessages.firstOrNull { quoteInfo.msgID.isNotBlank() && it.msgID == quoteInfo.msgID }
+            ?: rawMessages.firstOrNull { quoteInfo.sequence > 0 && it.sequence == quoteInfo.sequence }
+            ?: return null
+        return target.msgID.takeIf { !visibilityPolicy.shouldDisplay(target) }
     }
 
     fun loadMessagesAroundMessage(
@@ -379,9 +398,13 @@ class MessageListViewModel(
         return timeGroupingPolicy.timeStringForMessageAt(index, messageList.value)
     }
 
-    fun getActions(context: Context, messageInfo: MessageInfo): List<MessageUIAction> {
+    fun getActions(
+        context: Context,
+        messageInfo: MessageInfo,
+        config: MessageListConfigProtocol = messageListConfig,
+    ): List<MessageCustomAction> {
         return MessageListActionFactory(
-            config = messageListConfig,
+            config = config,
             latestMessageProvider = { message ->
                 messageList.value.find { it.msgID == message.msgID } ?: message
             },
@@ -394,7 +417,7 @@ class MessageListViewModel(
                 onQuoteMessage = ::quoteMessage,
                 onListenFromHere = ::startListenFromHere
             )
-        ).create(context, messageInfo)
+        ).createDefaults(context, messageInfo)
     }
 
     fun startListenFromHere(message: MessageInfo) {
@@ -429,7 +452,7 @@ class MessageListViewModel(
     }
 
     private fun isGroupChat(conversationID: String): Boolean {
-        return conversationID.startsWith("group_")
+        return ConversationIDUtil.isGroup(conversationID)
     }
 
     private fun quoteMessage(message: MessageInfo, summary: String) {
@@ -775,7 +798,7 @@ class MessageListViewModel(
         clipboard.setPrimaryClip(android.content.ClipData.newPlainText("ASR Text", asrText))
         AtomicToast.show(
             context,
-            context.getString(R.string.message_list_copied),
+            context.getString(R.string.uikit_copied),
             style = AtomicToast.Style.WARNING
         )
     }
@@ -931,7 +954,7 @@ class MessageListViewModel(
         clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Translated Text", translatedText))
         AtomicToast.show(
             context,
-            context.getString(R.string.message_list_copied),
+            context.getString(R.string.uikit_copied),
             style = AtomicToast.Style.WARNING
         )
     }
@@ -1011,7 +1034,7 @@ class MessageListViewModel(
             return null
         }
         val appContext = ContextProvider.getApplicationContext()
-        val allMembersText = appContext?.getString(R.string.message_input_mention_all) ?: "All"
+        val allMembersText = appContext?.getString(R.string.message_list_mention_all) ?: "All"
         val regularUserIDs = atUserList
             .filter { it != MentionInfo.AT_ALL_USER_ID }
             .distinct()
@@ -1141,7 +1164,9 @@ class MessageListViewModel(
 
     private fun getMessageAbstractText(message: MessageInfo): String {
         val appContext = ContextProvider.getApplicationContext() ?: return ""
-        return messageSummaryFormatter.format(appContext, message, conversationID)
+        return EmojiSpanHelper.replaceEmojiKeysWithNames(
+            messageSummaryFormatter.format(appContext, message, conversationID)
+        )
     }
 
     private fun getLocalizedString(resId: Int, vararg formatArgs: Any): String {
@@ -1154,7 +1179,7 @@ class MessageListViewModel(
     }
 
     private fun isGroupConversation(conversationID: String): Boolean {
-        return conversationID.startsWith("group_")
+        return ConversationIDUtil.isGroup(conversationID)
     }
 
     private fun createOfflinePushInfoForConversation(conversationID: String, message: MessageInfo): OfflinePushInfo {
@@ -1163,7 +1188,7 @@ class MessageListViewModel(
         val selfName = loginUserInfo?.nickname ?: selfUserId
 
         val isGroup = isGroupConversation(conversationID)
-        val groupId = if (isGroup) conversationID.removePrefix("group_") else ""
+        val groupId = ConversationIDUtil.groupId(conversationID)
 
         val chatName = if (conversationID == this.conversationID) {
             conversationListState.conversationList.value
@@ -1194,7 +1219,7 @@ class MessageListViewModel(
         val selfUserId = loginUserInfo?.userID.orEmpty()
         val title = loginUserInfo?.nickname ?: selfUserId
         val isGroup = isGroupConversation(conversationID)
-        val groupId = if (isGroup) conversationID.removePrefix("group_") else ""
+        val groupId = ConversationIDUtil.groupId(conversationID)
 
         return MessageOfflinePushInfoFactory.create(
             title = title,

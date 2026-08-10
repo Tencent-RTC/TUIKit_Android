@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.findContactListViewModelStoreOwner
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.displayName
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.FriendApplicationSubViewModel
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.FriendApplicationSubViewModelFactory
 import io.trtc.tuikit.atomicx.theme.ThemeStore
@@ -39,7 +39,7 @@ internal class FriendApplicationDialog(
 ) : ContactSubPageDialog(context) {
 
     private val viewModel: FriendApplicationSubViewModel by lazy {
-        val owner = context.findContactListViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("FriendApplicationDialog requires a ViewModelStoreOwner host context.")
         val key = "${FriendApplicationSubViewModel::class.java.name}:${System.identityHashCode(this)}"
         ViewModelProvider(owner, FriendApplicationSubViewModelFactory(contactStore))

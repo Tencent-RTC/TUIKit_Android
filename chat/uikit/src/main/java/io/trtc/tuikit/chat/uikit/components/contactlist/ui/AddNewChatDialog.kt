@@ -1,8 +1,6 @@
 package io.trtc.tuikit.chat.uikit.components.contactlist.ui
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -19,7 +17,6 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -29,16 +26,16 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.WindowThemeUtil
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
+import io.trtc.tuikit.chat.uikit.components.common.WindowThemeUtil
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addchat.ContactSelectionStateMerger
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addchat.CreateGroupSubmissionPolicy
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addchat.GroupAvatarSelectorView
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addchat.GroupTypeSelectionStepView
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addchat.SelectedContactsBottomBar
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.addchat.SelectedMembersPreviewView
-import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.displayName
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.findContactListViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.displayName
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.matchesSearchQuery
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.AddNewChatViewModel
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.AddNewChatViewModelFactory
@@ -49,6 +46,7 @@ import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.uikit.components.userpicker.model.UserPickerData
 import io.trtc.tuikit.chat.uikit.components.userpicker.ui.UserPickerView
+import io.trtc.tuikit.chat.uikit.components.widgets.DialogNavBar
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
 import io.trtc.tuikit.atomicxcore.api.contact.ContactStore
 import io.trtc.tuikit.atomicxcore.api.group.GroupStore
@@ -68,7 +66,7 @@ internal class AddNewChatDialog(
 ) : Dialog(context, android.R.style.Theme_NoTitleBar) {
 
     private val viewModel: AddNewChatViewModel by lazy {
-        val owner = context.findContactListViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("AddNewChatDialog requires a ViewModelStoreOwner host context.")
         val key = "${AddNewChatViewModel::class.java.name}:${System.identityHashCode(this)}"
         ViewModelProvider(owner, AddNewChatViewModelFactory(contactStore, groupStore))
@@ -77,10 +75,8 @@ internal class AddNewChatDialog(
     private var dialogScope: CoroutineScope? = null
 
     private lateinit var rootLayout: LinearLayout
-    private lateinit var navBar: FrameLayout
+    private lateinit var navBar: DialogNavBar
     private lateinit var divider: View
-    private lateinit var headerTitle: TextView
-    private lateinit var backIconView: ImageView
     private lateinit var contentContainer: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,54 +93,15 @@ internal class AddNewChatDialog(
             fitsSystemWindows = true
         }
 
-        val navBarHeight = dp2px(56f, dm).toInt()
-        val navBarHPad = dp2px(16f, dm).toInt()
-        navBar = FrameLayout(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, navBarHeight
+        navBar = DialogNavBar.create(
+            context,
+            DialogNavBar.Config(
+                mode = DialogNavBar.Mode.BackTitle,
+                colors = colors,
+                onLeadingClick = { handleBack() },
+                leadingContentDescription = context.getString(R.string.uikit_back)
             )
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            setPadding(navBarHPad, 0, navBarHPad, 0)
-            setBackgroundColor(colors.bgColorOperate)
-        }
-
-        val backRow = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.START or Gravity.CENTER_VERTICAL
-            )
-            contentDescription = context.getString(R.string.contact_list_back)
-        }
-
-        val iconSize = dp2px(16f, dm).toInt()
-        backIconView = ImageView(context).apply {
-            layoutParams = LinearLayout.LayoutParams(iconSize, iconSize)
-            setImageResource(R.drawable.uikit_ic_back)
-            imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
-            scaleType = ImageView.ScaleType.CENTER_INSIDE
-        }
-        backRow.addView(backIconView)
-        backRow.setOnClickListener { handleBack() }
-        navBar.addView(backRow)
-        backRow.expandTouchTarget()
-
-        headerTitle = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            setTextColor(colors.textColorPrimary)
-            setTypeface(typeface, Typeface.BOLD)
-            gravity = Gravity.CENTER
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER
-            )
-        }
-        navBar.addView(headerTitle)
-
+        )
         rootLayout.addView(navBar)
 
         divider = View(context).apply {
@@ -271,11 +228,13 @@ internal class AddNewChatDialog(
         currentDisplayedStep = GroupFlowStep.CONTACT_SELECTION
         contentContainer.removeAllViews()
 
-        headerTitle.text = if (chatType == ChatType.GROUP) {
-            context.getString(R.string.contact_list_create_group)
-        } else {
-            context.getString(R.string.contact_list_create_c2c)
-        }
+        navBar.setTitle(
+            if (chatType == ChatType.GROUP) {
+                context.getString(R.string.contact_list_create_group)
+            } else {
+                context.getString(R.string.contact_list_create_c2c)
+            }
+        )
 
         applyWindowTheme()
 
@@ -369,7 +328,7 @@ internal class AddNewChatDialog(
         picker.setOnSelectedChangedListener<ContactInfo> { selectedItems ->
             if (chatType == ChatType.SINGLE) {
                 if (selectedItems.isNotEmpty()) {
-                    onCreateChat?.invoke("c2c_${selectedItems.first().key}")
+                    onCreateChat?.invoke(ConversationIDUtil.fromUser(selectedItems.first().key))
                     dismiss()
                 }
             } else {
@@ -460,7 +419,7 @@ internal class AddNewChatDialog(
             viewModel.generateGroupName(state.selectedContacts)
         }
 
-        headerTitle.text = context.getString(R.string.contact_list_create_group)
+        navBar.setTitle(context.getString(R.string.contact_list_create_group))
         applyWindowTheme()
 
         val rootContainer = LinearLayout(context).apply {
@@ -667,7 +626,7 @@ internal class AddNewChatDialog(
         val currentType = viewModel.currentSelectedGroupType.value
         val groupTypes = AddNewChatViewModel.getGroupTypeOptionList()
 
-        headerTitle.text = context.getString(R.string.contact_list_group_type_select_text)
+        navBar.setTitle(context.getString(R.string.contact_list_group_type_select_text))
         applyWindowTheme()
 
         contentContainer.addView(
@@ -787,16 +746,10 @@ internal class AddNewChatDialog(
             rootLayout.setBackgroundColor(colors.bgColorOperate)
         }
         if (::navBar.isInitialized) {
-            navBar.setBackgroundColor(colors.bgColorOperate)
+            navBar.applyColors(colors)
         }
         if (::divider.isInitialized) {
             divider.setBackgroundColor(colors.strokeColorSecondary)
-        }
-        if (::headerTitle.isInitialized) {
-            headerTitle.setTextColor(colors.textColorPrimary)
-        }
-        if (::backIconView.isInitialized) {
-            backIconView.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
         }
         window?.let { WindowThemeUtil.applyDialogSystemBarStyle(it, colors) }
     }

@@ -4,21 +4,26 @@
     android:autoMirrored="true"
     android:viewportWidth="42"
     android:viewportHeight="42">
-    <path
-        android:pathData="M21,42 Q29.6985,42 35.8492,35.8492 Q42,29.6985 42,21 Q42,12.3015 35.8492,6.1508 Q29.6985,0 21,0 Q12.3015,0 6.1508,6.1508 Q0,12.3015 0,21 Q0,29.6985 6.1508,35.8492 Q12.3015,42 21,42 Z M33.0208,8.9792 Q38,13.9584 38,21 Q38,28.0416 33.0208,33.0208 Q28.0416,38 21,38 Q13.9584,38 8.9792,33.0208 Q4,28.0416 4,21 Q4,13.9584 8.9792,8.9792 Q13.9584,4 21,4 Q28.0416,4 33.0208,8.9792 Z"
-        android:fillColor="#000000"
-        android:fillAlpha="0.55"
-        android:fillType="evenOdd" />
     <group
-        android:scaleX="1"
-        android:scaleY="-1"
-        android:rotation="45"
-        android:translateX="9.68629"
-        android:translateY="24">
+        android:rotation="180"
+        android:pivotX="21"
+        android:pivotY="21">
         <path
-            android:pathData="M1,0 C0.4477,0 0,0.4477 0,1 L0,15 C0,15.5523 0.4477,16 1,16 L15,16 C15.5523,16 16,15.5523 16,15 L16,13 C16,12.4477 15.5523,12 15,12 L4,12 L4,1 C4,0.4477 3.5523,0 3,0 L1,0 Z"
+            android:pathData="M21,42 Q29.6985,42 35.8492,35.8492 Q42,29.6985 42,21 Q42,12.3015 35.8492,6.1508 Q29.6985,0 21,0 Q12.3015,0 6.1508,6.1508 Q0,12.3015 0,21 Q0,29.6985 6.1508,35.8492 Q12.3015,42 21,42 Z M33.0208,8.9792 Q38,13.9584 38,21 Q38,28.0416 33.0208,33.0208 Q28.0416,38 21,38 Q13.9584,38 8.9792,33.0208 Q4,28.0416 4,21 Q4,13.9584 8.9792,8.9792 Q13.9584,4 21,4 Q28.0416,4 33.0208,8.9792 Z"
             android:fillColor="#000000"
             android:fillAlpha="0.55"
             android:fillType="evenOdd" />
+        <group
+            android:scaleX="1"
+            android:scaleY="-1"
+            android:rotation="45"
+            android:translateX="9.68629"
+            android:translateY="24">
+            <path
+                android:pathData="M1,0 C0.4477,0 0,0.4477 0,1 L0,15 C0,15.5523 0.4477,16 1,16 L15,16 C15.5523,16 16,15.5523 16,15 L16,13 C16,12.4477 15.5523,12 15,12 L4,12 L4,1 C4,0.4477 3.5523,0 3,0 L1,0 Z"
+                android:fillColor="#000000"
+                android:fillAlpha="0.55"
+                android:fillType="evenOdd" />
+        </group>
     </group>
 </vector>

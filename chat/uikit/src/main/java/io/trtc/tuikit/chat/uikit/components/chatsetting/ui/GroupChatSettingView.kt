@@ -17,7 +17,7 @@ import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.groupchatsetting.Grou
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.groupchatsetting.GroupChatSettingHeaderSection
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.groupchatsetting.GroupChatSettingRowsController
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.groupchatsetting.createGroupChatSettingUiState
-import io.trtc.tuikit.chat.uikit.components.chatsetting.utils.findViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupChatSettingViewModel
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupChatSettingViewModelFactory
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.getGroupAvatarUrls
@@ -407,7 +407,7 @@ class GroupChatSettingView @JvmOverloads constructor(
         val vm = viewModel ?: return
         val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager ?: return
         clipboardManager.setPrimaryClip(ClipData.newPlainText(vm.groupID, vm.groupID))
-        Toast.makeText(context, context.getString(R.string.message_list_copied), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.uikit_copied), Toast.LENGTH_SHORT).show()
     }
 
     private fun showJoinMethodActionSheet(viewModel: GroupChatSettingViewModel) {

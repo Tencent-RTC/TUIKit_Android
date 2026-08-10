@@ -8,9 +8,12 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Space
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.onEvent
+import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiManager
+import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messageinput.keyboard.KeyboardBridge
@@ -26,7 +29,7 @@ import io.trtc.tuikit.chat.uikit.components.messageinput.state.PanelEvent
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.PanelHeightProvider
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.PanelState
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.QuoteInfo
-import io.trtc.tuikit.chat.uikit.components.messageinput.utils.findMessageInputViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel.AUDIO_MIN_RECORD_TIME
 import io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel.MessageInputViewModel
 import io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel.MessageInputViewModelFactory
@@ -50,6 +53,7 @@ class MessageInputView @JvmOverloads constructor(
     private var viewScope: CoroutineScope? = null
     private var viewModel: MessageInputViewModel? = null
     private var draftCollectorJob: kotlinx.coroutines.Job? = null
+    private var typingStatusSender: ((Boolean) -> Unit)? = null
 
     private var keyboardBridge: KeyboardBridge? = null
     private val softInputModeGuard = WindowSoftInputModeGuard()
@@ -87,6 +91,8 @@ class MessageInputView @JvmOverloads constructor(
     private lateinit var btnEmojiIcon: ImageView
     private lateinit var btnAudioRecord: FrameLayout
     private lateinit var btnAudioRecordIcon: ImageView
+    private lateinit var spaceAfterAudioRecord: Space
+    private lateinit var spaceAfterEmoji: Space
     private lateinit var btnSend: FrameLayout
     private lateinit var btnSendIcon: ImageView
     private lateinit var btnPressToTalk: AudioRecorderView
@@ -112,9 +118,11 @@ class MessageInputView @JvmOverloads constructor(
 
     fun setup(
         conversationID: String,
-        config: MessageInputConfigProtocol = ChatMessageInputConfig()
+        config: MessageInputConfigProtocol = ChatMessageInputConfig(),
+        typingStatusSender: ((Boolean) -> Unit)? = null
     ) {
         this.config = config
+        this.typingStatusSender = typingStatusSender
         viewModel?.let { oldVm ->
             saveDraftIfNeeded(oldVm)
         }
@@ -140,7 +148,7 @@ class MessageInputView @JvmOverloads constructor(
 
     private fun createBusinessViewModel(conversationID: String): MessageInputViewModel {
         val store = MessageInputStore.create(conversationID)
-        val owner = context.findMessageInputViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("MessageInputView requires a ViewModelStoreOwner host context.")
         val viewModelKey = "${MessageInputViewModel::class.java.name}:${System.identityHashCode(this)}:$conversationID"
         return ViewModelProvider(
@@ -314,11 +322,20 @@ class MessageInputView @JvmOverloads constructor(
     private fun renderQuotePreview(quoteInfo: QuoteInfo?) {
         if (quoteInfo == null) {
             quoteContainer.visibility = View.GONE
+            quoteSummaryView.setTag(R.id.emoji_span_bind_token_tag, null)
             quoteSummaryView.text = ""
             return
         }
         quoteContainer.visibility = View.VISIBLE
-        quoteSummaryView.text = buildQuoteSummaryText(quoteInfo)
+        val rawText = buildQuoteSummaryText(quoteInfo)
+        val bindToken = "quote|${quoteInfo.messageId}|${quoteSummaryView.textSize}"
+        quoteSummaryView.setTag(R.id.emoji_span_bind_token_tag, bindToken)
+        quoteSummaryView.text = EmojiSpanHelper.replaceEmojiKeysWithNames(rawText)
+        EmojiSpanHelper.applyEmojiSpans(context, rawText, quoteSummaryView.textSize, quoteSummaryView) { spanned ->
+            if (quoteSummaryView.getTag(R.id.emoji_span_bind_token_tag) == bindToken) {
+                quoteSummaryView.text = spanned
+            }
+        }
     }
 
     private fun buildQuoteSummaryText(quoteInfo: QuoteInfo): String {
@@ -454,7 +471,12 @@ class MessageInputView @JvmOverloads constructor(
             surface = state.surface,
             keyboardHeight = state.keyboardHeight
         )
-        val nextHint = if (shouldHideHint) "" else context.getString(R.string.message_input_edit_text_hint)
+        val hintRes = if (config.enableLongPressToTalk) {
+            R.string.message_input_edit_text_hint
+        } else {
+            R.string.message_input_edit_text_hint_text_only
+        }
+        val nextHint = if (shouldHideHint) "" else context.getString(hintRes)
         if (editText.hint?.toString().orEmpty() != nextHint) {
             editText.hint = nextHint
             editText.requestLayout()
@@ -493,6 +515,8 @@ class MessageInputView @JvmOverloads constructor(
         btnEmojiIcon = findViewById(R.id.message_input_btn_emoji_icon)
         btnAudioRecord = findViewById(R.id.message_input_btn_audio_record)
         btnAudioRecordIcon = findViewById(R.id.message_input_btn_audio_record_icon)
+        spaceAfterAudioRecord = findViewById(R.id.message_input_space_after_audio_record)
+        spaceAfterEmoji = findViewById(R.id.message_input_space_after_emoji)
         btnSend = findViewById(R.id.message_input_btn_send)
         btnSendIcon = findViewById(R.id.message_input_btn_send_icon)
         btnPressToTalk = findViewById<AudioRecorderView>(R.id.message_input_btn_press_to_talk).apply {
@@ -513,6 +537,7 @@ class MessageInputView @JvmOverloads constructor(
             updateSendButtonVisibility = { state -> updateSendButtonVisibility(state) },
             clearQuote = { coordinator.dispatch(OverlayEvent.ClearQuote) },
             onMentionTrigger = { mentionController.showMentionMemberDialog() },
+            onTypingContentChanged = { isTyping -> typingStatusSender?.invoke(isTyping) },
             initialInputText = previousInputText
         )
         mentionController = MessageInputMentionController(
@@ -531,7 +556,11 @@ class MessageInputView @JvmOverloads constructor(
             panelContainer = panelContainer,
             editText = editText,
             currentPanel = { lastRenderedState?.panel },
-            onSendClick = { textController.sendCurrentText(onSubmitted = ::handleTextSubmitted) }
+            onSendClick = { textController.sendCurrentText(onSubmitted = ::handleTextSubmitted) },
+            onCustomEmojiClick = { group, emoji ->
+                val faceIndex = EmojiManager.emojiGroupList.indexOfFirst { it.id == group.id }
+                textController.sendFaceMessage(faceIndex.coerceAtLeast(0), emoji.key)
+            }
         )
     }
 
@@ -546,6 +575,7 @@ class MessageInputView @JvmOverloads constructor(
             inputContainer = inputContainer,
             coordinatorProvider = { coordinator },
             viewModelProvider = { viewModel },
+            isLongPressToTalkEnabled = { config.enableLongPressToTalk },
             sendCurrentText = { textController.sendCurrentText(onSubmitted = ::handleTextSubmitted) },
             showVoiceTranscriptionDraft = { audioPath, duration, text ->
                 showVoiceTranscriptionDraft(audioPath, duration, text)
@@ -695,7 +725,7 @@ class MessageInputView @JvmOverloads constructor(
 
     private fun refreshMorePanelActions() {
         val vm = viewModel ?: return
-        val actions = vm.getActions(context)
+        val actions = vm.getActions(context, config)
         panelContentController.refreshMorePanelActions(actions)
     }
 
@@ -703,10 +733,14 @@ class MessageInputView @JvmOverloads constructor(
         if (!hasBoundViews) return
         btnMore.visibility = if (config.isShowMore) View.VISIBLE else View.GONE
         btnAudioRecord.visibility = if (config.isShowAudioRecorder) View.VISIBLE else View.GONE
+        btnEmoji.visibility = if (config.isShowEmoji) View.VISIBLE else View.GONE
+        spaceAfterAudioRecord.visibility = btnAudioRecord.visibility
+        spaceAfterEmoji.visibility = btnEmoji.visibility
         btnPressToTalk.config = btnPressToTalk.config.copy(
             minDurationMs = AUDIO_MIN_RECORD_TIME,
             maxDurationMs = config.audioMaxRecordDurationMs.coerceAtLeast(AUDIO_MIN_RECORD_TIME)
         )
+        lastRenderedState?.let { updateInputHintVisibility(it) }
     }
 
     private fun updateColors(colors: ColorTokens) {

@@ -5,13 +5,12 @@ import androidx.annotation.DrawableRes
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.config.MessageAction
 import io.trtc.tuikit.chat.uikit.components.config.MessageAlignment
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActionProvider
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageCellRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageContentRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageMatcher
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderRule
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageSummaryProvider
-import io.trtc.tuikit.chat.uikit.components.messagelist.utils.jsonData2Dictionary
+import io.trtc.tuikit.chat.uikit.components.common.jsonData2Dictionary
 import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageType
@@ -43,6 +42,18 @@ interface MessageListConfigProtocol {
     val isSupportForward: Boolean
     val isSupportReaction: Boolean
     val isSupportQuote: Boolean
+    val isSupportConvertToText: Boolean
+    val isSupportTranslate: Boolean
+    val isSupportListenFromHere: Boolean
+
+    val enableTyping: Boolean
+        get() = true
+
+    val messageExclusionMatchers: List<MessageMatcher>
+        get() = emptyList()
+
+    val actionCustomizer: MessageActionCustomizer?
+        get() = null
 }
 
 sealed class MessageListBackground {
@@ -233,41 +244,107 @@ private fun MessageBubbleSize?.mergeWith(override: MessageBubbleSize?): MessageB
     )
 }
 
-interface MessageListCustomActionConfigProtocol {
-    val customActionProvider: MessageCustomActionProvider?
-}
+class ChatMessageListConfig : MessageListConfigProtocol {
 
-class ChatMessageListConfig(
-    private var _alignment: MessageAlignment? = null,
-    private var _isShowTimeMessage: Boolean? = null,
-    private var _isShowLeftAvatar: Boolean? = null,
-    private var _isShowLeftNickname: Boolean? = null,
-    private var _isShowRightAvatar: Boolean? = null,
-    private var _isShowRightNickname: Boolean? = null,
-    private var _cellSpacing: Int? = null,
-    private var _isShowSystemMessage: Boolean? = null,
-    private var _isShowUnsupportMessage: Boolean? = null,
-    private var _horizontalPadding: Int? = null,
-    private var _avatarSpacing: Int? = null,
-    private var _isShowReadReceipt: Boolean? = null,
-    private var _isSupportCopy: Boolean? = null,
-    private var _isSupportDelete: Boolean? = null,
-    private var _isSupportRecall: Boolean? = null,
-    private var _isSupportMultiSelect: Boolean? = null,
-    private var _isSupportForward: Boolean? = null,
-    private var _isSupportReaction: Boolean? = null,
-    private var _isSupportQuote: Boolean? = null,
-    private var _background: MessageListBackground? = null,
-    private var _defaultBubbleAppearance: MessageBubbleAppearance? = null,
-    private var _ownBubbleAppearance: MessageBubbleAppearance? = null,
-    private var _incomingBubbleAppearance: MessageBubbleAppearance? = null,
-    private var _leftBubbleAppearance: MessageBubbleAppearance? = null,
+    private var _alignment: MessageAlignment? = null
+    private var _isShowTimeMessage: Boolean? = null
+    private var _isShowLeftAvatar: Boolean? = null
+    private var _isShowLeftNickname: Boolean? = null
+    private var _isShowRightAvatar: Boolean? = null
+    private var _isShowRightNickname: Boolean? = null
+    private var _cellSpacing: Int? = null
+    private var _isShowSystemMessage: Boolean? = null
+    private var _isShowUnsupportMessage: Boolean? = null
+    private var _horizontalPadding: Int? = null
+    private var _avatarSpacing: Int? = null
+    private var _isShowReadReceipt: Boolean? = null
+    private var _isSupportCopy: Boolean? = null
+    private var _isSupportDelete: Boolean? = null
+    private var _isSupportRecall: Boolean? = null
+    private var _isSupportMultiSelect: Boolean? = null
+    private var _isSupportForward: Boolean? = null
+    private var _isSupportReaction: Boolean? = null
+    private var _isSupportQuote: Boolean? = null
+    private var _isSupportConvertToText: Boolean? = null
+    private var _isSupportTranslate: Boolean? = null
+    private var _isSupportListenFromHere: Boolean? = null
+    private var _enableTyping: Boolean? = null
+    private var _background: MessageListBackground? = null
+    private var _defaultBubbleAppearance: MessageBubbleAppearance? = null
+    private var _ownBubbleAppearance: MessageBubbleAppearance? = null
+    private var _incomingBubbleAppearance: MessageBubbleAppearance? = null
+    private var _leftBubbleAppearance: MessageBubbleAppearance? = null
     private var _rightBubbleAppearance: MessageBubbleAppearance? = null
-) : MessageListConfigProtocol, MessageListCustomActionConfigProtocol {
+    private var _actionCustomizer: MessageActionCustomizer? = null
 
-    private var _customActionProvider: MessageCustomActionProvider? = null
+    constructor(
+        alignment: MessageAlignment? = null,
+        isShowTimeMessage: Boolean? = null,
+        isShowLeftAvatar: Boolean? = null,
+        isShowLeftNickname: Boolean? = null,
+        isShowRightAvatar: Boolean? = null,
+        isShowRightNickname: Boolean? = null,
+        cellSpacing: Int? = null,
+        isShowSystemMessage: Boolean? = null,
+        isShowUnsupportMessage: Boolean? = null,
+        horizontalPadding: Int? = null,
+        avatarSpacing: Int? = null,
+        isShowReadReceipt: Boolean? = null,
+        isSupportCopy: Boolean? = null,
+        isSupportDelete: Boolean? = null,
+        isSupportRecall: Boolean? = null,
+        isSupportMultiSelect: Boolean? = null,
+        isSupportForward: Boolean? = null,
+        isSupportReaction: Boolean? = null,
+        isSupportQuote: Boolean? = null,
+        isSupportConvertToText: Boolean? = null,
+        isSupportTranslate: Boolean? = null,
+        isSupportListenFromHere: Boolean? = null,
+        enableTyping: Boolean? = null,
+        background: MessageListBackground? = null,
+        defaultBubbleAppearance: MessageBubbleAppearance? = null,
+        ownBubbleAppearance: MessageBubbleAppearance? = null,
+        incomingBubbleAppearance: MessageBubbleAppearance? = null,
+        leftBubbleAppearance: MessageBubbleAppearance? = null,
+        rightBubbleAppearance: MessageBubbleAppearance? = null
+    ) {
+        this._alignment = alignment
+        this._isShowTimeMessage = isShowTimeMessage
+        this._isShowLeftAvatar = isShowLeftAvatar
+        this._isShowLeftNickname = isShowLeftNickname
+        this._isShowRightAvatar = isShowRightAvatar
+        this._isShowRightNickname = isShowRightNickname
+        this._cellSpacing = cellSpacing
+        this._isShowSystemMessage = isShowSystemMessage
+        this._isShowUnsupportMessage = isShowUnsupportMessage
+        this._horizontalPadding = horizontalPadding
+        this._avatarSpacing = avatarSpacing
+        this._isShowReadReceipt = isShowReadReceipt
+        this._isSupportCopy = isSupportCopy
+        this._isSupportDelete = isSupportDelete
+        this._isSupportRecall = isSupportRecall
+        this._isSupportMultiSelect = isSupportMultiSelect
+        this._isSupportForward = isSupportForward
+        this._isSupportReaction = isSupportReaction
+        this._isSupportQuote = isSupportQuote
+        this._isSupportConvertToText = isSupportConvertToText
+        this._isSupportTranslate = isSupportTranslate
+        this._isSupportListenFromHere = isSupportListenFromHere
+        this._enableTyping = enableTyping
+        this._background = background
+        this._defaultBubbleAppearance = defaultBubbleAppearance
+        this._ownBubbleAppearance = ownBubbleAppearance
+        this._incomingBubbleAppearance = incomingBubbleAppearance
+        this._leftBubbleAppearance = leftBubbleAppearance
+        this._rightBubbleAppearance = rightBubbleAppearance
+    }
 
     private val _customRenderRules = mutableListOf<MessageRenderRule>()
+
+    private val _messageExclusionMatchers = mutableListOf<MessageMatcher>()
+
+    override val messageExclusionMatchers: List<MessageMatcher>
+        get() = _messageExclusionMatchers.toList()
 
     internal val customRenderRules: List<MessageRenderRule>
         get() = _customRenderRules.toList()
@@ -426,12 +503,42 @@ class ChatMessageListConfig(
             _isSupportQuote = value
         }
 
-    override val customActionProvider: MessageCustomActionProvider?
-        get() = _customActionProvider
+    override var isSupportConvertToText: Boolean
+        get() = _isSupportConvertToText ?: true
+        set(value) {
+            _isSupportConvertToText = value
+        }
 
-    fun setCustomActionProvider(provider: MessageCustomActionProvider?): ChatMessageListConfig {
-        _customActionProvider = provider
+    override var isSupportTranslate: Boolean
+        get() = _isSupportTranslate ?: true
+        set(value) {
+            _isSupportTranslate = value
+        }
+
+    override var isSupportListenFromHere: Boolean
+        get() = _isSupportListenFromHere ?: true
+        set(value) {
+            _isSupportListenFromHere = value
+        }
+
+    override val actionCustomizer: MessageActionCustomizer?
+        get() = _actionCustomizer
+
+    override var enableTyping: Boolean
+        get() = _enableTyping ?: true
+        set(value) {
+            _enableTyping = value
+        }
+
+    fun setEnableTyping(enable: Boolean): ChatMessageListConfig {
+        _enableTyping = enable
         return this
+    }
+
+    fun customizeActions(block: MessageActionEditor.() -> Unit): ChatMessageListConfig = apply {
+        _actionCustomizer = MessageActionCustomizer { editor ->
+            editor.block()
+        }
     }
 
     fun setBackgroundImage(uri: Any): ChatMessageListConfig {
@@ -602,6 +709,25 @@ class ChatMessageListConfig(
                 priority = priority
             )
         )
+        return this
+    }
+
+    fun addMessageExclusion(matcher: MessageMatcher): ChatMessageListConfig {
+        _messageExclusionMatchers.add(matcher)
+        return this
+    }
+
+    fun excludeMessagesByType(vararg types: MessageType): ChatMessageListConfig {
+        val excludedTypes = types.toSet()
+        return addMessageExclusion { message -> message.messageType in excludedTypes }
+    }
+
+    fun excludeCustomMessagesByBusinessID(businessID: String): ChatMessageListConfig {
+        return addMessageExclusion(businessIDMatcher(businessID))
+    }
+
+    fun clearMessageExclusions(): ChatMessageListConfig {
+        _messageExclusionMatchers.clear()
         return this
     }
 

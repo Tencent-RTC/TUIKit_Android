@@ -1,9 +1,11 @@
 package io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel
+
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
+import io.trtc.tuikit.chat.uikit.components.common.FileUtil
 import java.io.File
 import java.io.IOException
 
@@ -62,20 +64,7 @@ internal class MessageInputAttachmentFileResolver {
         }
     }
 
-    fun getFileName(context: Context, uri: Uri): String? {
-        val mimeType = context.contentResolver.getType(uri)
-        if (mimeType == null) {
-            return getFileName(uri.toString())
-        }
-        val cursor = context.contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (nameIndex >= 0 && it.moveToFirst()) {
-                return it.getString(nameIndex)
-            }
-        }
-        return null
-    }
+    fun getFileName(context: Context, uri: Uri): String? = FileUtil.getFileName(context, uri)
 
     fun getFileName(filePath: String?): String? {
         if (filePath == null) {
@@ -90,17 +79,7 @@ internal class MessageInputAttachmentFileResolver {
         return if (file.exists()) file.length() else 0
     }
 
-    fun getFileExtensionFromUrl(url: String): String {
-        if (url.isEmpty()) {
-            return ""
-        }
-        val dotPos = url.lastIndexOf('.')
-        return if (dotPos > 0) {
-            url.substring(dotPos + 1).lowercase()
-        } else {
-            ""
-        }
-    }
+    fun getFileExtensionFromUrl(url: String): String = FileUtil.getFileExtensionFromUrl(url)
 
     private fun getRealFilePath(context: Context, uri: Uri?): String? {
         if (uri == null) {

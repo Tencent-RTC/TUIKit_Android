@@ -5,7 +5,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -26,7 +25,7 @@ class LocalLoginActivity : BaseLoginActivity() {
     private lateinit var tvUserIdLabel: TextView
     private lateinit var editUserId: EditText
     private lateinit var editDivider: View
-    private lateinit var btnLogin: Button
+    private lateinit var btnLogin: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

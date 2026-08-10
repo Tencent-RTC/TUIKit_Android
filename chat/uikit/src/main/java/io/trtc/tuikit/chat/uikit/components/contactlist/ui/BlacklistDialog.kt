@@ -21,8 +21,8 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.displayName
-import io.trtc.tuikit.chat.uikit.components.contactlist.utils.findContactListViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.displayName
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.contactlist.utils.matchesSearchQuery
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.BlacklistSubViewModel
 import io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel.BlacklistSubViewModelFactory
@@ -47,7 +47,7 @@ internal class BlacklistDialog(
 ) : ContactSubPageDialog(context) {
 
     private val viewModel: BlacklistSubViewModel by lazy {
-        val owner = context.findContactListViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("BlacklistDialog requires a ViewModelStoreOwner host context.")
         val key = "${BlacklistSubViewModel::class.java.name}:${System.identityHashCode(this)}"
         ViewModelProvider(owner, BlacklistSubViewModelFactory(contactStore))
@@ -196,7 +196,7 @@ internal class BlacklistDialog(
                 if (searchQuery.isBlank()) {
                     R.string.contact_list_no_blacklist_users
                 } else {
-                    R.string.search_cannot_found_blacklist_user
+                    R.string.contact_list_cannot_found_blacklist_user
                 }
             )
             azOrderedList.visibility = View.GONE

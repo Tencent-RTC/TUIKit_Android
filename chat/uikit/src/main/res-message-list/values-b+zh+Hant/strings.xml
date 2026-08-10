@@ -42,6 +42,7 @@
     <string name="message_list_quote_sender_format">%1$s：</string>
     <string name="message_list_quote_accessibility_format">引用 %1$s：%2$s</string>
     <string name="message_list_quote_original_unreachable">無法定位到原消息</string>
+    <string name="message_list_quote_original_filtered">原訊息未顯示</string>
     <string name="message_list_message_tips_mute">被禁言</string>
     <string name="message_list_message_tips_unmute">解除禁言</string>
     <string name="message_list_message_tips_group_pin_message">"%1$s" 置頂了一則訊息</string>
@@ -114,8 +115,6 @@
     <string name="message_list_menu_convert_to_text">轉文字</string>
     <string name="message_list_menu_hide">隱藏</string>
     <string name="message_list_convert_to_text_failed">轉換失敗</string>
-    <string name="message_list_copied">已複製</string>
-
     <string name="message_list_menu_translate">翻譯</string>
     <string name="message_list_translate_failed">翻譯失敗</string>
     <string name="message_list_translate_default_tips">由騰訊雲 IM 提供翻譯支援</string>
@@ -147,4 +146,7 @@
     <string name="message_list_join_group_call">加入</string>
     <string name="message_list_join_group_call_users">%d 人正在通話中</string>
     <string name="message_list_time_yesterday">昨天</string>
+    <string name="message_list_mention_all">所有人</string>
+    <string name="message_list_violation_message">[違規消息]</string>
+    <string name="message_list_user_count_suffix">等%1$d人</string>
 </resources>

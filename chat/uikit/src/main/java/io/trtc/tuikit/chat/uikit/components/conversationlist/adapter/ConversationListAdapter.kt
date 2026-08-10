@@ -22,11 +22,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.ChatTimeUtil
+import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.isUnread
 import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.needShowBadge
 import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.needShowNotReceiveIcon
-import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiManager
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.MessageListMessageSummaryFormatter
 import io.trtc.tuikit.atomicx.theme.ThemeStore
@@ -63,10 +63,6 @@ class ConversationListAdapter(
     private val themeStore = ThemeStore.shared(context)
     private val colors: ColorTokens get() = themeStore.themeState.value.currentTheme.tokens.color
     private val summaryFormatter = MessageListMessageSummaryFormatter()
-
-    init {
-        EmojiManager.initialize(context)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConversationViewHolder {
         val itemView = ConversationItemLayout(parent.context)
@@ -310,7 +306,7 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         bindAvatarBadge(conversation)
 
         titleView.text = conversation.title ?: conversation.conversationID
-        timeView.text = ChatTimeUtil.getTimeFormatText(conversation.lastMessage?.timestamp)
+        timeView.text = ChatDateTimeUtils.formatConversationListTime(conversation.lastMessage?.timestamp)
 
         bindTheme(conversation, colors, context, summaryFormatter)
     }
@@ -326,7 +322,18 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         )
         titleView.setTextColor(colors.textColorPrimary)
         subtitleView.setTextColor(colors.textColorSecondary)
-        subtitleView.text = buildSubtitle(conversation, colors, context, summaryFormatter)
+        val rawSubtitle = buildSubtitle(conversation, colors, context, summaryFormatter)
+        val fallbackSubtitle = buildSubtitle(
+            conversation, colors, context, summaryFormatter, EmojiSpanHelper::replaceEmojiKeysWithNames
+        )
+        val bindToken = "${conversation.conversationID}|${conversation.lastMessage?.msgID.orEmpty()}|$rawSubtitle|${subtitleView.textSize}"
+        subtitleView.setTag(R.id.emoji_span_bind_token_tag, bindToken)
+        subtitleView.text = fallbackSubtitle
+        EmojiSpanHelper.applyEmojiSpans(context, rawSubtitle, subtitleView.textSize, subtitleView) { spanned ->
+            if (subtitleView.getTag(R.id.emoji_span_bind_token_tag) == bindToken) {
+                subtitleView.text = spanned
+            }
+        }
         timeView.setTextColor(colors.textColorSecondary)
         bindMuteIcon(conversation, colors)
         bindSendStatus(conversation, colors)
@@ -378,7 +385,8 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         conversation: ConversationInfo,
         colors: ColorTokens,
         context: Context,
-        summaryFormatter: MessageListMessageSummaryFormatter
+        summaryFormatter: MessageListMessageSummaryFormatter,
+        transform: (String) -> String = { it }
     ): CharSequence {
         val atTagText = buildAtTagText(conversation, context)
         val draft = conversation.draft
@@ -388,11 +396,11 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
                 appendErrorText(colors, atTagText)
                 appendErrorText(colors, draftPrefix)
                 append(" ")
-                append(EmojiSpanHelper.replaceEmojiKeysWithNames(draft))
+                append(transform(draft))
             }
         }
 
-        val defaultSubtitle = getMessageAbstract(conversation, context, summaryFormatter)
+        val defaultSubtitle = transform(getMessageAbstract(conversation, context, summaryFormatter))
         if (atTagText.isNotEmpty()) {
             return SpannableStringBuilder().apply {
                 appendErrorText(colors, atTagText)
@@ -437,7 +445,7 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
 
     private fun buildAtTagText(conversation: ConversationInfo, context: Context): String {
         if (conversation.unreadCount <= 0) return ""
-        if (!conversation.conversationID.startsWith("group_")) return ""
+        if (!ConversationIDUtil.isGroup(conversation.conversationID)) return ""
 
         val groupAtInfoList = conversation.groupAtInfoList ?: return ""
         if (groupAtInfoList.isEmpty()) return ""

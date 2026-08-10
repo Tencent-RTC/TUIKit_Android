@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
@@ -338,7 +339,7 @@ private fun getC2CCallDisplayString(
         CallProtocolType.HANGUP -> {
             context.getString(
                 R.string.message_list_call_duration_format,
-                formatCallDuration(callModel.duration)
+                ChatDateTimeUtils.formatCallDuration(callModel.duration)
             )
         }
 
@@ -438,11 +439,4 @@ private fun getGroupCallDisplayString(
 
         else -> context.getString(R.string.message_list_call_invalid_command)
     }
-}
-
-private fun formatCallDuration(seconds: Int): String {
-    val safeSeconds = seconds.coerceAtLeast(0)
-    val minute = safeSeconds / 60
-    val second = safeSeconds % 60
-    return String.format("%02d:%02d", minute, second)
 }

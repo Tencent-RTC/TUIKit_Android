@@ -1,7 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.utils
 import android.content.Context
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
+import io.trtc.tuikit.chat.uikit.components.common.jsonData2Dictionary
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageMatcher
@@ -99,7 +99,7 @@ class MessageListMessageSummaryFormatter(
     ): String {
         RecalledMessageDisplayPolicy.format(context, message)?.let { return it }
         if (message.status == MessageStatus.VIOLATION) {
-            return context.getString(R.string.conversation_list_violation_message)
+            return context.getString(R.string.message_list_violation_message)
         }
         resolveCustomSummary(context, message, conversationID)?.let { return it }
         return formatBuiltInMessage(context, message)
@@ -130,10 +130,7 @@ class MessageListMessageSummaryFormatter(
 
     private fun formatBuiltInMessage(context: Context, message: MessageInfo): String {
         return when (val payload = message.messagePayload) {
-            is TextMessagePayload -> {
-                val rawText = payload.text
-                EmojiSpanHelper.replaceEmojiKeysWithNames(rawText)
-            }
+            is TextMessagePayload -> payload.text
             is ImageMessagePayload -> context.getString(R.string.message_list_message_type_image)
             is AudioMessagePayload -> {
                 val voiceLabel = context.getString(R.string.message_list_message_type_voice)

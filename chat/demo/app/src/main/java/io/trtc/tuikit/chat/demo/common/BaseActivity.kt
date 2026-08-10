@@ -1,7 +1,6 @@
 package io.trtc.tuikit.chat.demo.common
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,8 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.tencent.mmkv.MMKV
-import io.trtc.tuikit.atomicx.theme.Theme
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.login.LoginStatus
@@ -70,21 +67,6 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onStop()
         themeScope?.cancel()
         themeScope = null
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        val themeMode = MMKV.defaultMMKV().decodeInt(
-            AppConstants.KEY_THEME_MODE,
-            AppConstants.THEME_MODE_SYSTEM
-        )
-        if (themeMode == AppConstants.THEME_MODE_SYSTEM) {
-            val isNight = (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-                Configuration.UI_MODE_NIGHT_YES
-            themeStore.setTheme(
-                if (isNight) Theme.darkTheme(this) else Theme.lightTheme(this)
-            )
-        }
     }
 
     protected open fun appearanceLightStatusBarsOverride(): Boolean? = null

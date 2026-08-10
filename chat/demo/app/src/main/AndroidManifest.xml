@@ -15,6 +15,7 @@
         <activity
             android:name="io.trtc.tuikit.chat.demo.login.LocalLoginActivity"
             android:exported="true"
+            android:theme="@style/Chat_UIKit_Theme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,40 +26,45 @@
         <activity
             android:name="io.trtc.tuikit.chat.demo.main.MainActivity"
             android:exported="true"
+            android:theme="@style/Chat_UIKit_Theme"
             android:windowSoftInputMode="adjustNothing" />
 
         <activity
             android:name="io.trtc.tuikit.chat.demo.chat.ChatActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
 
         <activity
             android:name="io.trtc.tuikit.chat.demo.chat.ChatSettingActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
 
         <activity
             android:name="io.trtc.tuikit.chat.demo.settings.SelfDetailActivity"
-            android:exported="false" />
-
-
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
 
         <activity
             android:name="io.trtc.tuikit.chat.demo.settings.VoiceMessageSettingActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
 
         <activity
             android:name="io.trtc.tuikit.chat.demo.settings.VoiceCloneActivity"
             android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name="io.trtc.tuikit.chat.demo.settings.VoiceSelectActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
 
         <activity
             android:name="io.trtc.tuikit.chat.demo.search.SearchActivity"
             android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme"
             android:windowSoftInputMode="adjustNothing" />
-
 
     </application>
 </manifest>

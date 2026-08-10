@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="search_search_text">Search</string>
     <string name="search_category_contact">Users</string>
     <string name="search_category_group">Group Chats</string>
     <string name="search_category_chat_record">Chat History</string>
@@ -12,7 +11,6 @@
     <string name="search_cannot_found_chat_record">No related chat records found</string>
     <string name="search_cannot_found_contact">No related contacts found</string>
     <string name="search_cannot_found_group">No related groups found</string>
-    <string name="search_cannot_found_blacklist_user">No related blacklisted users found</string>
     <string name="search_group_id">Group ID</string>
     <string name="search_include_member">Includes member %s</string>
 </resources>

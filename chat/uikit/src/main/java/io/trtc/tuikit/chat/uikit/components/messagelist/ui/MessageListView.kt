@@ -11,25 +11,23 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.EventBus
 import io.trtc.tuikit.chat.uikit.components.common.onEvent
-import io.trtc.tuikit.chat.uikit.components.messagelist.background.ChatBackgroundChangedEvent
 import io.trtc.tuikit.chat.uikit.components.messagelist.background.MessageListBackgroundView
 import io.trtc.tuikit.chat.uikit.components.messagelist.background.MmkvChatBackgroundStore
 import io.trtc.tuikit.chat.uikit.components.messagelist.adapter.MessageListAdapter
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListBackground
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
-import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListCustomActionConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.listen.ListenPlaybackBar
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActionContext
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageUIAction
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.forward.ForwardTargetSelectorDialog
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListAlignmentController
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListBoundaryPagingPolicy
@@ -38,15 +36,15 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListLoc
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListLayoutManager
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.popups.AuxiliaryTextLongPressPopup
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.popups.MessageLongPressPopup
-import io.trtc.tuikit.chat.uikit.components.messagelist.ui.popups.withDeleteConfirmation
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.reactions.ReactionDetailDialog
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.reactions.ReactionEmojiPickerDialog
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.readreceipts.MessageListReadReceiptController
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.readreceipts.MessageReadReceiptDialog
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.selection.MessageListSelectionController
-import io.trtc.tuikit.chat.uikit.components.messagelist.utils.findMessageListViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListViewModel
 import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListViewModelFactory
+import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.composeMessageLongPressActions
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
@@ -72,7 +70,6 @@ class MessageListView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private companion object {
-        const val GROUP_CONVERSATION_PREFIX = "group_"
         const val MENTION_LOCATE_MAX_LOAD_COUNT = 20
     }
 
@@ -80,7 +77,7 @@ class MessageListView @JvmOverloads constructor(
     private val recyclerView: RecyclerView
     private val loadingOlderView: ProgressBar
     private val loadingNewerView: ProgressBar
-    private val floatingEntryCard: MaterialCardView
+    private val floatingEntryCard: CardView
     private val floatingEntryIconView: ImageView
     private val floatingEntryTextView: TextView
     private val joinCallBannerContainer: FrameLayout
@@ -91,27 +88,7 @@ class MessageListView @JvmOverloads constructor(
     private var viewScope: CoroutineScope? = null
     private var isAdapterDataObserverRegistered = false
     private val alignmentController: MessageListAlignmentController
-    private val adapterDataObserver = object : RecyclerView.AdapterDataObserver() {
-        override fun onChanged() {
-            alignmentController.requestAlignment()
-        }
-
-        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-            alignmentController.requestAlignment()
-        }
-
-        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-            alignmentController.requestAlignment()
-        }
-
-        override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
-            alignmentController.requestAlignment()
-        }
-
-        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
-            alignmentController.requestAlignment()
-        }
-    }
+    private val adapterDataObserver: RecyclerView.AdapterDataObserver
 
     private var onMultiSelectStateChanged: (Boolean) -> Unit = {}
     private var onUserClick: (String) -> Unit = {}
@@ -129,64 +106,10 @@ class MessageListView @JvmOverloads constructor(
     private var config: MessageListConfigProtocol = ChatMessageListConfig()
     private val themeStore = ThemeStore.shared(context)
     private val chatBackgroundStore by lazy { MmkvChatBackgroundStore(context) }
-    private val joinCallBannerController by lazy {
-        MessageListJoinCallBannerController(context, joinCallBannerContainer)
-    }
-    private val locateCoordinator by lazy {
-        MessageListLocateCoordinator(
-            recyclerView = recyclerView,
-            adapterProvider = { if (::adapter.isInitialized) adapter else null }
-        )
-    }
-    private val readReceiptController by lazy {
-        MessageListReadReceiptController(
-            recyclerView = recyclerView,
-            adapterProvider = { if (::adapter.isInitialized) adapter else null },
-            messagesProvider = { if (::viewModel.isInitialized) viewModel.messageList.value else emptyList() },
-            isAttachedToWindowProvider = { isAttachedToWindow },
-            onVisibleMessagesRead = { visibleMessages ->
-                if (::viewModel.isInitialized) {
-                    val markedMessageIds = viewModel.markVisibleCallMessagesRead(visibleMessages)
-                    if (markedMessageIds.isNotEmpty()) {
-                        postRefreshMessages(markedMessageIds)
-                    }
-                    viewModel.sendReadReceipts(visibleMessages)
-                }
-            }
-        )
-    }
-    private val selectionController by lazy {
-        MessageListSelectionController(
-            context = context,
-            container = multiSelectBarContainer,
-            selectedMessagesProvider = {
-                if (::viewModel.isInitialized) viewModel.selectedMessages.value else emptySet()
-            },
-            onDeleteSelectedMessages = {
-                if (::viewModel.isInitialized) {
-                    viewModel.deleteSelectedMessages()
-                }
-            },
-            onExitMultiSelectMode = {
-                if (::viewModel.isInitialized) {
-                    viewModel.exitMultiSelectMode()
-                }
-            },
-            onForwardSelectedMessages = { selectedMessages, forwardType ->
-                viewModel.forwardType = forwardType
-                showForwardTargetSelector(
-                    onConfirm = { conversationIDs ->
-                        performMessageForward(
-                            messages = selectedMessages,
-                            conversationIDs = conversationIDs,
-                            exitMultiSelect = true
-                        )
-                    },
-                    onDismiss = {}
-                )
-            }
-        )
-    }
+    private val joinCallBannerController: MessageListJoinCallBannerController
+    private val locateCoordinator: MessageListLocateCoordinator
+    private val readReceiptController: MessageListReadReceiptController
+    private val selectionController: MessageListSelectionController
     private val floatingEntryStateController = MessageListFloatingEntryStateController()
     private val boundaryPagingPolicy = MessageListBoundaryPagingPolicy()
     private var isUserScrollSession = false
@@ -218,6 +141,77 @@ class MessageListView @JvmOverloads constructor(
             themeStore.themeState.value.currentTheme.tokens.color.bgColorOperate
         )
         alignmentController = MessageListAlignmentController(recyclerView)
+        adapterDataObserver = object : RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                alignmentController.requestAlignment()
+            }
+
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                alignmentController.requestAlignment()
+            }
+
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                alignmentController.requestAlignment()
+            }
+
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+                alignmentController.requestAlignment()
+            }
+
+            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+                alignmentController.requestAlignment()
+            }
+        }
+        joinCallBannerController = MessageListJoinCallBannerController(context, joinCallBannerContainer)
+        locateCoordinator = MessageListLocateCoordinator(
+            recyclerView = recyclerView,
+            adapterProvider = { if (::adapter.isInitialized) adapter else null }
+        )
+        readReceiptController = MessageListReadReceiptController(
+            recyclerView = recyclerView,
+            adapterProvider = { if (::adapter.isInitialized) adapter else null },
+            messagesProvider = { if (::viewModel.isInitialized) viewModel.messageList.value else emptyList() },
+            isAttachedToWindowProvider = { isAttachedToWindow },
+            onVisibleMessagesRead = { visibleMessages ->
+                if (::viewModel.isInitialized) {
+                    val markedMessageIds = viewModel.markVisibleCallMessagesRead(visibleMessages)
+                    if (markedMessageIds.isNotEmpty()) {
+                        postRefreshMessages(markedMessageIds)
+                    }
+                    viewModel.sendReadReceipts(visibleMessages)
+                }
+            }
+        )
+        selectionController = MessageListSelectionController(
+            context = context,
+            container = multiSelectBarContainer,
+            selectedMessagesProvider = {
+                if (::viewModel.isInitialized) viewModel.selectedMessages.value else emptySet()
+            },
+            onDeleteSelectedMessages = {
+                if (::viewModel.isInitialized) {
+                    viewModel.deleteSelectedMessages()
+                }
+            },
+            onExitMultiSelectMode = {
+                if (::viewModel.isInitialized) {
+                    viewModel.exitMultiSelectMode()
+                }
+            },
+            onForwardSelectedMessages = { selectedMessages, forwardType ->
+                viewModel.forwardType = forwardType
+                showForwardTargetSelector(
+                    onConfirm = { conversationIDs ->
+                        performMessageForward(
+                            messages = selectedMessages,
+                            conversationIDs = conversationIDs,
+                            exitMultiSelect = true
+                        )
+                    },
+                    onDismiss = {}
+                )
+            }
+        )
         applyFloatingEntryLayout()
         applyFloatingEntryTheme()
         floatingEntryCard.setOnClickListener {
@@ -257,7 +251,6 @@ class MessageListView @JvmOverloads constructor(
     fun setup(
         conversationID: String,
         config: MessageListConfigProtocol = ChatMessageListConfig(),
-        customActions: List<MessageCustomAction> = emptyList(),
         locateMessage: MessageInfo? = null,
         onMultiSelectStateChanged: (Boolean) -> Unit = {},
         onUserClick: (String) -> Unit = {}
@@ -278,7 +271,7 @@ class MessageListView @JvmOverloads constructor(
         cleanupBinding()
 
         val messageListStore = MessageListStore.create(conversationID)
-        val owner = context.findMessageListViewModelStoreOwner()
+        val owner = context.findViewModelStoreOwner()
             ?: error("MessageListView requires a ViewModelStoreOwner host context.")
         val viewModelKey = buildViewModelKey(conversationID, locateMessage)
         viewModel = ViewModelProvider(
@@ -294,14 +287,14 @@ class MessageListView @JvmOverloads constructor(
         val resolver = MessageRendererResolver(
             customRules = (config as? ChatMessageListConfig)?.customRenderRules.orEmpty()
         )
-        val renderActions = createMessageRenderActions(customActions)
+        val renderActions = createMessageRenderActions()
 
         adapter = MessageListAdapter(
             context = context,
             viewModel = viewModel,
             config = config,
             onItemLongClick = { message, anchorView ->
-                showLongPressMenu(message, anchorView, customActions)
+                showLongPressMenu(message, anchorView)
             },
             onAuxiliaryTextLongClick = { message, anchorView, actions ->
                 showAuxiliaryTextLongPressMenu(message, anchorView, actions)
@@ -613,11 +606,11 @@ class MessageListView @JvmOverloads constructor(
                     handleBackToLatestClick()
                 }
             }
-        }
-
-        scope.onEvent<ChatBackgroundChangedEvent> { event ->
-            if (event.conversationID == currentConversationID && config.background == null) {
-                applyMessageListBackground()
+            if (source == "ChatSetting" && eventType == "onChatBackgroundChanged") {
+                val conversationID = event["conversationID"] as? String
+                if (conversationID == currentConversationID && config.background == null) {
+                    applyMessageListBackground()
+                }
             }
         }
     }
@@ -674,7 +667,7 @@ class MessageListView @JvmOverloads constructor(
     }
 
     private fun requestInitialMentionEntry(conversationID: String) {
-        if (!conversationID.startsWith(GROUP_CONVERSATION_PREFIX)) {
+        if (!ConversationIDUtil.isGroup(conversationID)) {
             return
         }
         viewModel.fetchConversationInfo { conversationInfo ->
@@ -927,6 +920,10 @@ class MessageListView @JvmOverloads constructor(
             navigateToQuotedMessage(messageId, sourceMessage)
             return
         }
+        if (viewModel.findFilteredQuoteTargetId(quoteInfo) != null) {
+            showQuotedOriginalFilteredToast()
+            return
+        }
         if (!MessageQuoteLocatePolicy.shouldLoadAround(quoteInfo, messages)) {
             return
         }
@@ -934,6 +931,10 @@ class MessageListView @JvmOverloads constructor(
             quoteInfo = quoteInfo,
             completion = object : CompletionHandler {
                 override fun onSuccess() {
+                    if (viewModel.findFilteredQuoteTargetId(quoteInfo) != null) {
+                        showQuotedOriginalFilteredToast()
+                        return
+                    }
                     val targetMessageId = MessageQuoteLocatePolicy.findLoadedTargetMessageId(
                         quoteInfo = quoteInfo,
                         messages = viewModel.messageList.value
@@ -952,6 +953,14 @@ class MessageListView @JvmOverloads constructor(
         AtomicToast.show(
             context,
             context.getString(R.string.message_list_quote_original_unreachable),
+            style = AtomicToast.Style.INFO
+        )
+    }
+
+    private fun showQuotedOriginalFilteredToast() {
+        AtomicToast.show(
+            context,
+            context.getString(R.string.message_list_quote_original_filtered),
             style = AtomicToast.Style.INFO
         )
     }
@@ -984,8 +993,6 @@ class MessageListView @JvmOverloads constructor(
         val contentColor = colors.textColorLink
         floatingEntryCard.radius = dpToPx(MessageListFloatingEntryStyle.CORNER_RADIUS_DP.toFloat()).toFloat()
         floatingEntryCard.cardElevation = dpToPx(MessageListFloatingEntryStyle.ELEVATION_DP.toFloat()).toFloat()
-        floatingEntryCard.strokeWidth = dpToPx(MessageListFloatingEntryStyle.STROKE_WIDTH_DP.toFloat())
-        floatingEntryCard.strokeColor = colors.strokeColorPrimary
         floatingEntryCard.setCardBackgroundColor(colors.floatingColorDefault)
         floatingEntryTextView.setTextColor(contentColor)
         floatingEntryIconView.imageTintList = ColorStateList.valueOf(contentColor)
@@ -1164,9 +1171,7 @@ class MessageListView @JvmOverloads constructor(
         )
     }
 
-    private fun createMessageRenderActions(
-        customActions: List<MessageCustomAction>
-    ): MessageRenderActions {
+    private fun createMessageRenderActions(): MessageRenderActions {
         return object : MessageRenderActions {
             override fun openImageViewer(message: MessageInfo) {
                 viewModel.showImage(context, message)
@@ -1185,32 +1190,28 @@ class MessageListView @JvmOverloads constructor(
             }
 
             override fun showLongPressMenu(message: MessageInfo, anchorView: View) {
-                this@MessageListView.showLongPressMenu(message, anchorView, customActions)
+                this@MessageListView.showLongPressMenu(message, anchorView)
             }
         }
     }
 
     private fun showLongPressMenu(
         message: MessageInfo,
-        anchorView: View,
-        customActions: List<MessageCustomAction>
+        anchorView: View
     ) {
-        val actions = viewModel.getActions(context, message)
-            .withDeleteConfirmation(context.getString(R.string.message_list_menu_delete)) { _, onConfirm ->
+        val actions = composeMessageLongPressActions(
+            actionContext = MessageCustomActionContext(
+                androidContext = context,
+                conversationID = viewModel.conversationID,
+                message = message,
+            ),
+            defaults = viewModel.getActions(context, message, config),
+            customizer = config.actionCustomizer,
+            onDeleteRequested = { _, onConfirm ->
                 showDeleteMessagesConfirmDialog(onConfirm)
-            }
-        val providerActions = (config as? MessageListCustomActionConfigProtocol)
-            ?.customActionProvider
-            ?.getActions(
-                MessageCustomActionContext(
-                    context = context,
-                    conversationID = viewModel.conversationID,
-                    message = message
-                )
-            )
-            .orEmpty()
-        val allCustomActions = customActions + providerActions
-        if (actions.isEmpty() && allCustomActions.isEmpty()) {
+            },
+        )
+        if (actions.isEmpty()) {
             return
         }
 
@@ -1221,15 +1222,14 @@ class MessageListView @JvmOverloads constructor(
             message = message,
             viewModel = viewModel,
             config = config,
-            actions = actions,
-            customActions = allCustomActions
+            actions = actions
         ).show()
     }
 
     private fun showAuxiliaryTextLongPressMenu(
         message: MessageInfo,
         anchorView: View,
-        actions: List<MessageUIAction>
+        actions: List<MessageCustomAction>
     ) {
         if (actions.isEmpty()) {
             return

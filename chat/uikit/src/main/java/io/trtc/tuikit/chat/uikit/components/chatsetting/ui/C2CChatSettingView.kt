@@ -15,7 +15,7 @@ import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingAction
 import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionStyle
 import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingCustomAction
 import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingScene
-import io.trtc.tuikit.chat.uikit.components.chatsetting.utils.findViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.C2CChatSettingViewModel
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.C2CChatSettingViewModelFactory
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px

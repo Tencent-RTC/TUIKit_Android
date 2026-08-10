@@ -76,7 +76,6 @@ class ReactionDetailDialog(
             setGravity(Gravity.BOTTOM)
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, halfScreenHeight)
         }
-        EmojiManager.initialize(context)
         observeReactionUsers()
         selectFirstReaction()
     }

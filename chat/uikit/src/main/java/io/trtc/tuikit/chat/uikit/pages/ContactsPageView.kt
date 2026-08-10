@@ -1,8 +1,11 @@
 package io.trtc.tuikit.chat.uikit.pages
+
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import io.trtc.tuikit.chat.uikit.components.contactlist.config.ChatContactListConfig
+import io.trtc.tuikit.chat.uikit.components.contactlist.config.ContactListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.ContactListView
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -25,11 +28,6 @@ class ContactsPageView @JvmOverloads constructor(
 
     private val themeStore = ThemeStore.shared(context)
     private var viewScope: CoroutineScope? = null
-
-    private var onContactClick: ((ContactInfo) -> Unit)? = null
-    private var onGroupClick: ((ContactInfo) -> Unit)? = null
-    var onAddFriendClick: (() -> Unit)? = null
-    var onAddGroupClick: (() -> Unit)? = null
 
     init {
         orientation = VERTICAL
@@ -64,27 +62,20 @@ class ContactsPageView @JvmOverloads constructor(
         setBackgroundColor(colors.bgColorOperate)
     }
 
-    fun setHeaderTitle(title: String) {
-        pageHeader.setTitle(title)
-    }
-
-    fun setHeaderRightAction(view: View) {
-        pageHeader.setEditContent(view)
-    }
-
+    @JvmOverloads
     fun setup(
+        config: ContactListConfigProtocol = ChatContactListConfig(),
+        headerTitle: String? = null,
+        headerRightAction: View? = null,
         onContactClick: ((ContactInfo) -> Unit)? = null,
         onGroupClick: ((ContactInfo) -> Unit)? = null
     ) {
-        this.onContactClick = onContactClick
-        this.onGroupClick = onGroupClick
+        headerTitle?.let { pageHeader.setTitle(it) }
+        headerRightAction?.let { pageHeader.setEditContent(it) }
         contactListView.setup(
-            onContactClick = { contactInfo ->
-                this.onContactClick?.invoke(contactInfo)
-            },
-            onGroupClick = { contactInfo ->
-                this.onGroupClick?.invoke(contactInfo)
-            }
+            config = config,
+            onContactClick = onContactClick,
+            onGroupClick = onGroupClick
         )
     }
 }

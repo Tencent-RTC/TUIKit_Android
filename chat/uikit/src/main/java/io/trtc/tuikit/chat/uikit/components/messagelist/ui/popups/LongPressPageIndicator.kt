@@ -42,7 +42,7 @@ internal class LongPressPageIndicator(
                     dot,
                     LinearLayout.LayoutParams(dotSize, dotSize).apply {
                         if (i > 0) {
-                            leftMargin = spacing
+                            marginStart = spacing
                         }
                     }
                 )

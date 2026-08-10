@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/message_list_merged_root"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layoutDirection="locale">
 
     <LinearLayout
         android:id="@+id/message_list_merged_top_bar"
@@ -20,7 +21,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@drawable/uikit_ic_back"
-            android:contentDescription="@string/contact_list_back"
+            android:contentDescription="@string/uikit_back"
             android:scaleType="centerInside" />
 
         <TextView

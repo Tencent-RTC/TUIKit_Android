@@ -1,11 +1,3 @@
 <resources>
-    <style name="video_player_theme_fullscreen" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
-    </style>
+    <style name="video_player_theme_fullscreen" parent="Chat_UIKit_Theme.FullscreenMedia" />
 </resources>

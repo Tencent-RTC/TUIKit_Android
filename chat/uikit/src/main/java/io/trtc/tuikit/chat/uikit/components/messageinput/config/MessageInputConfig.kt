@@ -1,5 +1,4 @@
 package io.trtc.tuikit.chat.uikit.components.messageinput.config
-import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuActionProvider
 
 interface MessageInputConfigProtocol {
     val isShowAudioRecorder: Boolean
@@ -7,25 +6,28 @@ interface MessageInputConfigProtocol {
     val isShowAudioCall: Boolean
     val isShowVideoCall: Boolean
     val isShowMore: Boolean
+    val isShowEmoji: Boolean
     val enableMention: Boolean
+    val enableLongPressToTalk: Boolean
+        get() = true
     val audioMaxRecordDurationMs: Int
         get() = 60 * 1000
+    val actionCustomizer: MessageInputActionCustomizer?
+        get() = null
 }
 
-interface MessageInputMenuActionConfigProtocol {
-    val customMenuActionProvider: MessageInputMenuActionProvider?
-}
-
-class ChatMessageInputConfig : MessageInputConfigProtocol, MessageInputMenuActionConfigProtocol {
+class ChatMessageInputConfig : MessageInputConfigProtocol {
 
     private var _isShowAudioRecorder: Boolean? = null
     private var _isShowPhotoTaker: Boolean? = null
     private var _isShowAudioCall: Boolean? = null
     private var _isShowVideoCall: Boolean? = null
     private var _isShowMore: Boolean? = null
+    private var _isShowEmoji: Boolean? = null
     private var _enableMention: Boolean? = null
+    private var _enableLongPressToTalk: Boolean? = null
     private var _audioMaxRecordDurationMs: Int? = null
-    private var _customMenuActionProvider: MessageInputMenuActionProvider? = null
+    private var _actionCustomizer: MessageInputActionCustomizer? = null
 
     constructor(
         isShowAudioRecorder: Boolean? = null,
@@ -34,7 +36,9 @@ class ChatMessageInputConfig : MessageInputConfigProtocol, MessageInputMenuActio
         isShowVideoCall: Boolean? = null,
         isShowMore: Boolean? = null,
         enableMention: Boolean? = null,
-        audioMaxRecordDurationMs: Int? = null
+        enableLongPressToTalk: Boolean? = null,
+        audioMaxRecordDurationMs: Int? = null,
+        isShowEmoji: Boolean? = null
     ) {
         this._isShowAudioRecorder = isShowAudioRecorder
         this._isShowPhotoTaker = isShowPhotoTaker
@@ -42,7 +46,9 @@ class ChatMessageInputConfig : MessageInputConfigProtocol, MessageInputMenuActio
         this._isShowVideoCall = isShowVideoCall
         this._isShowMore = isShowMore
         this._enableMention = enableMention
+        this._enableLongPressToTalk = enableLongPressToTalk
         this._audioMaxRecordDurationMs = audioMaxRecordDurationMs
+        this._isShowEmoji = isShowEmoji
     }
 
     override var isShowAudioRecorder: Boolean
@@ -75,10 +81,22 @@ class ChatMessageInputConfig : MessageInputConfigProtocol, MessageInputMenuActio
             _isShowMore = value
         }
 
+    override var isShowEmoji: Boolean
+        get() = _isShowEmoji ?: true
+        set(value) {
+            _isShowEmoji = value
+        }
+
     override var enableMention: Boolean
         get() = _enableMention ?: true
         set(value) {
             _enableMention = value
+        }
+
+    override var enableLongPressToTalk: Boolean
+        get() = _enableLongPressToTalk ?: true
+        set(value) {
+            _enableLongPressToTalk = value
         }
 
     override var audioMaxRecordDurationMs: Int
@@ -87,11 +105,12 @@ class ChatMessageInputConfig : MessageInputConfigProtocol, MessageInputMenuActio
             _audioMaxRecordDurationMs = value
         }
 
-    override val customMenuActionProvider: MessageInputMenuActionProvider?
-        get() = _customMenuActionProvider
+    override val actionCustomizer: MessageInputActionCustomizer?
+        get() = _actionCustomizer
 
-    fun setCustomMenuActionProvider(provider: MessageInputMenuActionProvider?): ChatMessageInputConfig {
-        _customMenuActionProvider = provider
-        return this
+    fun customizeActions(block: MessageInputActionEditor.() -> Unit): ChatMessageInputConfig = apply {
+        _actionCustomizer = MessageInputActionCustomizer { editor ->
+            editor.block()
+        }
     }
 }

@@ -6,8 +6,10 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
-import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageUIAction
+import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageCellRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderActions
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderContext
@@ -26,7 +28,7 @@ class MessageListAdapter internal constructor(
     private val config: MessageListConfigProtocol,
     private val onItemLongClick: (MessageInfo, View) -> Unit = { _, _ -> },
     private val onAuxiliaryTextLongClick:
-    (message: MessageInfo, anchorView: View, actions: List<MessageUIAction>) -> Unit =
+    (message: MessageInfo, anchorView: View, actions: List<MessageCustomAction>) -> Unit =
         { _, _, _ -> },
     private val onUserClick: (String) -> Unit = {},
     private val onUserLongClick: (MessageInfo, String) -> Unit = { _, _ -> },
@@ -34,6 +36,7 @@ class MessageListAdapter internal constructor(
     private val enableMessageInteraction: Boolean = true,
     private val enableQuoteNavigation: Boolean = true,
     private val showMessageReadReceipt: Boolean = true,
+    private val showInlineMessageTime: Boolean = false,
     private val resolver: MessageRendererResolver = MessageRendererResolver(emptyList()),
     private val renderActions: MessageRenderActions = NoOpMessageRenderActions
 ) : ListAdapter<MessageInfo, RecyclerView.ViewHolder>(DIFF) {
@@ -42,6 +45,9 @@ class MessageListAdapter internal constructor(
     private val colors: ColorTokens
         get() = themeStore.themeState.value.currentTheme.tokens.color
     private val density = context.resources.displayMetrics.density
+    private val yesterdayLabel by lazy {
+        context.getString(R.string.message_list_time_yesterday)
+    }
     private var highlightedMessageId: String? = null
     private var attachedRecyclerView: RecyclerView? = null
 
@@ -172,12 +178,12 @@ class MessageListAdapter internal constructor(
 
     inner class MessageViewHolder(
         rootView: View,
-        private val itemView: MessageItemView,
+        private val messageItemView: MessageItemView,
         private val multiSelectOverlay: View
     ) : RecyclerView.ViewHolder(rootView) {
 
         fun triggerHighlightAnimation(message: MessageInfo) {
-            itemView.flashHighlight(
+            messageItemView.flashHighlight(
                 message = message,
                 colors = this@MessageListAdapter.colors,
                 onHighlightConsumed = { consumedMessageId ->
@@ -191,9 +197,17 @@ class MessageListAdapter internal constructor(
             val isMultiSelectMode = viewModel.isMultiSelectMode.value
             val selectedMessages = viewModel.selectedMessages.value
             val timeString = viewModel.getMessageTimeString(position)
+            val inlineTimeString = if (showInlineMessageTime) {
+                ChatDateTimeUtils.formatMessageListTime(
+                    timestampMs = message.timestamp?.times(1000),
+                    yesterdayLabel = yesterdayLabel
+                )
+            } else {
+                null
+            }
             val resolvedRenderer = resolver.resolve(message)
 
-            itemView.bind(
+            messageItemView.bind(
                 message = message,
                 resolvedRenderer = resolvedRenderer,
                 colors = colors,
@@ -232,7 +246,8 @@ class MessageListAdapter internal constructor(
                 },
                 enableMessageInteraction = enableMessageInteraction,
                 enableQuoteNavigation = enableQuoteNavigation,
-                showMessageReadReceipt = showMessageReadReceipt
+                showMessageReadReceipt = showMessageReadReceipt,
+                inlineTimeString = inlineTimeString
             )
 
             if (isMultiSelectMode && enableMessageInteraction) {
@@ -247,7 +262,7 @@ class MessageListAdapter internal constructor(
         }
 
         fun recycle() {
-            itemView.recycle()
+            messageItemView.recycle()
         }
     }
 

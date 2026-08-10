@@ -195,6 +195,11 @@
             </LinearLayout>
 
             <View
+                android:id="@+id/demo_spacer4"
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
+
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1" />

@@ -18,7 +18,7 @@ pluginManagement {
             when (requested.id.id) {
                 "com.android.application",
                 "com.android.library" -> useVersion(androidGradlePluginVersion)
-                "org.jetbrains.kotlin.android" -> useVersion("2.0.21")
+                "org.jetbrains.kotlin.android" -> useVersion("1.9.0")
             }
         }
     }

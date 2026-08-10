@@ -8,10 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -188,7 +188,7 @@ public class PreviewCommonCtrlView extends RelativeLayout {
     }
 
     private void initSendBtn() {
-        Button button = mRootView.findViewById(R.id.video_recorder_send_btn);
+        TextView button = mRootView.findViewById(R.id.video_recorder_send_btn);
         button.setBackground(
                 VideoRecorderResourceUtils.getDrawable(mContext, R.drawable.video_recorder_edit_send_button,
                         VideoRecorderConfigInternal.getInstance().getThemeColor()));

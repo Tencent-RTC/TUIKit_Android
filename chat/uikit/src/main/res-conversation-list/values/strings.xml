@@ -12,5 +12,4 @@
     <string name="conversation_list_draft_prefix">[Draft]</string>
     <string name="conversation_list_at_all_prefix">[@All]</string>
     <string name="conversation_list_at_me_prefix">[@Me]</string>
-    <string name="conversation_list_violation_message">[Violation message]</string>
 </resources>

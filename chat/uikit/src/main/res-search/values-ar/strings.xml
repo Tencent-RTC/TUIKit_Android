@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="search_search_text">بحث</string>
     <string name="search_category_contact">المستخدمون</string>
     <string name="search_category_group">الدردشات الجماعية</string>
     <string name="search_category_chat_record">سجل المحادثة</string>
@@ -12,7 +11,6 @@
     <string name="search_cannot_found_chat_record">لم يتم العثور على سجلات محادثة ذات صلة</string>
     <string name="search_cannot_found_contact">لم يتم العثور على جهات اتصال ذات صلة</string>
     <string name="search_cannot_found_group">لم يتم العثور على مجموعات ذات صلة</string>
-    <string name="search_cannot_found_blacklist_user">لم يتم العثور على مستخدمين ذوي صلة في القائمة السوداء</string>
     <string name="search_group_id">معرف المجموعة</string>
     <string name="search_include_member">يتضمن عضو %s</string>
 </resources>

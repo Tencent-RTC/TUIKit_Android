@@ -18,25 +18,6 @@ internal object AtomicCallEventPublisher {
     private const val KEY_CALL_ID = "callId"
     private const val DEFAULT_TIMEOUT_SECONDS = 30
 
-    // CallKit declares these components in its manifest. Manifest-declared component classes survive
-    // R8/ProGuard without being renamed or stripped, so reflecting on the class names stays reliable
-    // even when the host app obfuscates CallKit. Any one resolving means CallKit is integrated.
-    private val CALLKIT_COMPONENT_CLASSES = listOf(
-        "com.tencent.qcloud.tuikit.tuicallkit.manager.bridge.Initializer",
-        "com.tencent.qcloud.tuikit.tuicallkit.view.CallMainActivity",
-        "com.tencent.qcloud.tuikit.tuicallkit.view.component.incomingbanner.IncomingCallReceiver"
-    )
-
-    private val isCallKitIntegrated: Boolean by lazy {
-        val classLoader = AtomicCallEventPublisher::class.java.classLoader
-        CALLKIT_COMPONENT_CLASSES.any { className ->
-            runCatching {
-                Class.forName(className, false, classLoader)
-                true
-            }.getOrDefault(false)
-        }
-    }
-
     fun publishStartCall(
         participantIds: List<String>,
         mediaType: String,
@@ -53,8 +34,10 @@ internal object AtomicCallEventPublisher {
         if (!chatGroupId.isNullOrEmpty()) {
             data[KEY_CHAT_GROUP_ID] = chatGroupId
         }
-        // Skip reporting when the host app has not integrated CallKit.
-        if (isCallKitIntegrated) {
+        // CallKit subscribes to the start-call event once integrated, so a live
+        // subscriber means the host app has CallKit. Unlike reflection on class
+        // names, this survives R8/ProGuard obfuscation.
+        if (TUIEventBus.shared.hasSubscriber(EVENT_START_CALL, null)) {
             DataReport.reportInteractionMetrics(InteractionMetrics.CHAT_INVOKE_CALL)
         }
         TUIEventBus.shared.publish(

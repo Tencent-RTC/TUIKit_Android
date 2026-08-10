@@ -5,7 +5,6 @@ import io.trtc.tuikit.chat.demo.common.AppConstants
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
@@ -14,14 +13,14 @@ import com.tencent.mmkv.MMKV
 import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionConfig
 import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionStyle
 import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingCustomAction
-import io.trtc.tuikit.chat.uikit.components.config.AppBuilder
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.app.R
-import io.trtc.tuikit.atomicx.theme.Theme
-import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicxcore.api.login.LoginListener
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
+import io.trtc.tuikit.chat.demo.customerservice.CustomerServiceManager
 import io.trtc.tuikit.chat.demo.login.LocalLoginActivity
+import io.trtc.tuikit.chat.uikit.components.messagelist.utils.MessageListMessageSummaryRegistry
 
 class Application : Application() {
 
@@ -38,7 +37,6 @@ class Application : Application() {
     override fun onCreate() {
         super.onCreate()
         MMKV.initialize(this)
-        AppBuilder.loadConfig(this)
 
         applyLanguageFromSettings()
 
@@ -46,8 +44,9 @@ class Application : Application() {
             AppBuilderConfig.enableReadReceipt = it
         }
 
-        applyThemeFromSettings()
         registerChatSettingExtensions()
+        CustomLinkMessageManager.registerMessageSummary()
+        CustomerServiceManager.registerSummary()
         LoginStore.shared.addLoginListener(loginListener)
     }
 
@@ -84,24 +83,6 @@ class Application : Application() {
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        val themeMode = MMKV.defaultMMKV().decodeInt(AppConstants.KEY_THEME_MODE, AppConstants.THEME_MODE_SYSTEM)
-        if (themeMode == AppConstants.THEME_MODE_SYSTEM) {
-            applySystemTheme(newConfig)
-        }
-    }
-
-    private fun applyThemeFromSettings() {
-        val themeMode = MMKV.defaultMMKV().decodeInt(AppConstants.KEY_THEME_MODE, AppConstants.THEME_MODE_SYSTEM)
-        val themeStore = ThemeStore.shared(this)
-        when (themeMode) {
-            AppConstants.THEME_MODE_LIGHT -> themeStore.setTheme(Theme.lightTheme(this))
-            AppConstants.THEME_MODE_DARK -> themeStore.setTheme(Theme.darkTheme(this))
-            else -> applySystemTheme(resources.configuration)
-        }
-    }
-
     private fun applyLanguageFromSettings() {
         val languageTag = MMKV.defaultMMKV().decodeString(AppConstants.KEY_APP_LANGUAGE, "").orEmpty()
         val targetLocales = if (languageTag.isBlank()) {
@@ -114,13 +95,4 @@ class Application : Application() {
         }
     }
 
-    private fun applySystemTheme(config: Configuration) {
-        val isNight = (config.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
-        ThemeStore.shared(this).setTheme(
-            if (isNight) Theme.darkTheme(this) else Theme.lightTheme(this)
-        )
-    }
-
 }
-

@@ -5,10 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import io.trtc.tuikit.chat.uikit.R;
 import io.trtc.tuikit.chat.uikit.components.videorecorder.utils.VideoRecorderResourceUtils;
 import java.util.Objects;
@@ -38,13 +36,12 @@ public class VideoRecorderAuthorizationPrompter {
             prompterTv.setText(R.string.video_recorder_authorization_prompter_no_liteav_sdk);
         }
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, R.style.video_recorder_authorization_prompter_dialog)
+        AlertDialog dialog = new AlertDialog.Builder(context, R.style.video_recorder_authorization_prompter_dialog)
                 .setView(dialogView)
                 .setPositiveButton(VideoRecorderResourceUtils.getString(R.string.video_recorder_confirm), null)
-                .setOnDismissListener(dialog -> {
-                });
-
-        AlertDialog dialog = builder.create();
+                .setOnDismissListener(dialogInterface -> {
+                })
+                .create();
 
         Window window = dialog.getWindow();
         if (window != null) {
@@ -59,7 +56,7 @@ public class VideoRecorderAuthorizationPrompter {
 
         dialog.show();
 
-        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        TextView positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         if (positiveButton != null) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) positiveButton.getLayoutParams();
             params.setMarginStart(VideoRecorderResourceUtils.dip2px(context, 24));

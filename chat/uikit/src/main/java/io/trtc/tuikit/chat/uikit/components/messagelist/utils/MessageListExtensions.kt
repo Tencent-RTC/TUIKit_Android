@@ -1,7 +1,8 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.utils
 import android.content.Context
-import com.google.gson.Gson
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.displayName
+import io.trtc.tuikit.chat.uikit.components.common.jsonData2Dictionary
 import io.trtc.tuikit.atomicxcore.api.group.GroupInviteOption
 import io.trtc.tuikit.atomicxcore.api.group.GroupJoinOption
 import io.trtc.tuikit.atomicxcore.api.group.GroupMember
@@ -81,19 +82,6 @@ val MessageInfo.senderDisplayName: String
         ?: from.nickname?.takeIf { it.isNotBlank() }
         ?: from.userID
 
-fun jsonData2Dictionary(json: String?): Map<String, String>? {
-    if (json.isNullOrBlank()) {
-        return null
-    }
-    val map = runCatching {
-        Gson().fromJson(json, Map::class.java)
-    }.getOrNull() ?: return null
-    return map.mapNotNull { (key, value) ->
-        val stringKey = key as? String ?: return@mapNotNull null
-        stringKey to value.toString()
-    }.toMap()
-}
-
 fun getCreateGroupDisplayString(context: Context, message: MessageInfo): String {
     val customData = (message.messagePayload as? CustomMessagePayload)?.customData
     val customInfo = jsonData2Dictionary(customData)
@@ -110,23 +98,23 @@ fun getSystemInfoDisplayString(context: Context, groupTips: List<GroupTipsInfo>?
     return when (tips) {
         is GroupTipsInfo.JoinGroup -> context.getString(
             R.string.message_list_message_tips_join_group_format,
-            tips.joinMember.displayName()
+            tips.joinMember.displayName
         )
 
         is GroupTipsInfo.InviteToGroup -> context.getString(
             R.string.message_list_message_tips_invite_join_group_format,
-            tips.inviter.displayName(),
+            tips.inviter.displayName,
             tips.invitees.joinDisplayNames()
         )
 
         is GroupTipsInfo.QuitGroup -> context.getString(
             R.string.message_list_message_tips_leave_group_format,
-            tips.quitMember.displayName()
+            tips.quitMember.displayName
         )
 
         is GroupTipsInfo.KickedFromGroup -> context.getString(
             R.string.message_list_message_tips_kickoff_group_format,
-            tips.opUser.displayName(),
+            tips.opUser.displayName,
             tips.kickedMembers.joinDisplayNames()
         )
 
@@ -142,13 +130,13 @@ fun getSystemInfoDisplayString(context: Context, groupTips: List<GroupTipsInfo>?
 
         is GroupTipsInfo.ChangeGroupName -> context.getString(
             R.string.message_list_message_tips_edit_group_name_format,
-            tips.opUser.displayName(),
+            tips.opUser.displayName,
             tips.groupName
         )
 
         is GroupTipsInfo.ChangeGroupAvatar -> context.getString(
             R.string.message_list_message_tips_edit_group_avatar_format,
-            tips.opUser.displayName()
+            tips.opUser.displayName
         )
 
         is GroupTipsInfo.ChangeGroupNotification -> {
@@ -156,12 +144,12 @@ fun getSystemInfoDisplayString(context: Context, groupTips: List<GroupTipsInfo>?
             if (text.isBlank()) {
                 context.getString(
                     R.string.message_list_message_tips_delete_group_announce_format,
-                    tips.opUser.displayName()
+                    tips.opUser.displayName
                 )
             } else {
                 context.getString(
                     R.string.message_list_message_tips_edit_group_announce_format,
-                    tips.opUser.displayName(),
+                    tips.opUser.displayName,
                     text
                 )
             }
@@ -169,13 +157,13 @@ fun getSystemInfoDisplayString(context: Context, groupTips: List<GroupTipsInfo>?
 
         is GroupTipsInfo.ChangeGroupIntroduction -> context.getString(
             R.string.message_list_message_tips_edit_group_intro_format,
-            tips.opUser.displayName(),
+            tips.opUser.displayName,
             tips.groupIntroduction
         )
 
         is GroupTipsInfo.ChangeGroupOwner -> context.getString(
             R.string.message_list_message_tips_edit_group_owner_format,
-            tips.opUser.displayName(),
+            tips.opUser.displayName,
             tips.groupOwner
         )
 
@@ -185,18 +173,18 @@ fun getSystemInfoDisplayString(context: Context, groupTips: List<GroupTipsInfo>?
             } else {
                 R.string.message_list_unmute_all_format
             }
-            context.getString(resId, tips.opUser.displayName())
+            context.getString(resId, tips.opUser.displayName)
         }
 
         is GroupTipsInfo.ChangeJoinGroupApproval -> context.getString(
             R.string.message_list_message_tips_edit_group_add_opt_format,
-            tips.opUser.displayName(),
+            tips.opUser.displayName,
             tips.groupJoinOption.displayText(context)
         )
 
         is GroupTipsInfo.ChangeInviteToGroupApproval -> context.getString(
             R.string.message_list_message_tips_edit_group_invite_opt_format,
-            tips.opUser.displayName(),
+            tips.opUser.displayName,
             tips.groupInviteOption.displayText(context)
         )
 
@@ -211,27 +199,20 @@ fun getSystemInfoDisplayString(context: Context, groupTips: List<GroupTipsInfo>?
 
         is GroupTipsInfo.PinGroupMessage -> context.getString(
             R.string.message_list_message_tips_group_pin_message,
-            tips.opUser.displayName()
+            tips.opUser.displayName
         )
 
         is GroupTipsInfo.UnpinGroupMessage -> context.getString(
             R.string.message_list_message_tips_group_unpin_message,
-            tips.opUser.displayName()
+            tips.opUser.displayName
         )
 
         GroupTipsInfo.Unknown -> ""
     }
 }
 
-private fun GroupMember.displayName(): String {
-    return nameCard?.takeIf { it.isNotBlank() }
-        ?: friendRemark?.takeIf { it.isNotBlank() }
-        ?: nickname?.takeIf { it.isNotBlank() }
-        ?: userID
-}
-
 private fun List<GroupMember>.joinDisplayNames(): String {
-    return joinToString(separator = ", ") { it.displayName() }
+    return joinToString(separator = ", ") { it.displayName }
 }
 
 private fun GroupJoinOption.displayText(context: Context): String {

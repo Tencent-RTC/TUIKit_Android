@@ -1,5 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.search.ui
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.LayerDrawable
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -10,8 +12,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.search.utils.HighlightSegment
 import io.trtc.tuikit.chat.uikit.components.search.utils.HighlightUtils
+import io.trtc.tuikit.chat.uikit.components.common.displayName
 import io.trtc.tuikit.chat.uikit.components.search.utils.displayName
 import io.trtc.tuikit.chat.uikit.components.search.utils.getMessageAbstract
 import io.trtc.tuikit.chat.uikit.components.search.utils.userAvatarURL
@@ -146,7 +150,7 @@ class GlobalSearchPage(
 
     private fun applyTheme() {
         val colors = themeStore.themeState.value.currentTheme.tokens.color
-        setBackgroundColor(colors.bgColorOperate)
+        setBackgroundColor(colors.bgColorDefault)
         searchBar.applyTheme()
     }
 
@@ -259,6 +263,12 @@ private class CategoryHeaderView(context: Context) : LinearLayout(context) {
     init {
         orientation = HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
+        layoutParams = RecyclerView.LayoutParams(
+            RecyclerView.LayoutParams.MATCH_PARENT,
+            RecyclerView.LayoutParams.WRAP_CONTENT
+        ).apply {
+            topMargin = dpToPx(1)
+        }
         val dp20 = dpToPx(20)
         setPadding(dp20, dpToPx(10), dp20, dpToPx(2))
 
@@ -270,6 +280,7 @@ private class CategoryHeaderView(context: Context) : LinearLayout(context) {
 
     fun bind(category: SearchCategory, context: Context) {
         val colors = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
+        setBackgroundColor(colors.bgColorOperate)
         titleText.setTextColor(colors.textColorSecondary)
         titleText.text = when (category.type) {
             SearchType.FRIEND -> context.getString(R.string.search_category_contact)
@@ -295,6 +306,10 @@ private class CategoryMoreView(context: Context) : LinearLayout(context) {
     init {
         orientation = HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
+        layoutParams = RecyclerView.LayoutParams(
+            RecyclerView.LayoutParams.MATCH_PARENT,
+            RecyclerView.LayoutParams.WRAP_CONTENT
+        )
         val dp20 = dpToPx(20)
         setPadding(dp20, dpToPx(10), dp20, dpToPx(10))
 
@@ -306,6 +321,7 @@ private class CategoryMoreView(context: Context) : LinearLayout(context) {
 
     fun bind(searchType: SearchType, context: Context, onClick: () -> Unit) {
         val colors = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
+        setBackgroundColor(colors.bgColorOperate)
         moreText.setTextColor(colors.textColorLink)
         moreText.text = when (searchType) {
             SearchType.FRIEND -> context.getString(R.string.search_view_more_contacts)
@@ -337,10 +353,10 @@ class SearchResultItemView(context: Context) : LinearLayout(context) {
         gravity = Gravity.CENTER_VERTICAL
         val dp20 = dpToPx(20)
         val dp6 = dpToPx(6)
-        setPadding(dp20, dp6, dp20, dp6)
+        setPadding(dp20, dp6, dp20, dp6 + dpToPx(3))
         layoutParams = RecyclerView.LayoutParams(
             RecyclerView.LayoutParams.MATCH_PARENT,
-            dpToPx(58)
+            dpToPx(61)
         )
 
         avatar = Avatar(context)
@@ -356,16 +372,25 @@ class SearchResultItemView(context: Context) : LinearLayout(context) {
         addView(textContainer)
 
         titleText = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             isSingleLine = true
         }
         textContainer.addView(titleText)
 
         subtitleText = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             isSingleLine = true
         }
         textContainer.addView(subtitleText)
+    }
+
+    private fun applyRowBackground(colors: io.trtc.tuikit.atomicx.theme.tokens.ColorTokens) {
+        val divider = ColorDrawable(colors.strokeColorPrimary)
+        background = LayerDrawable(arrayOf(ColorDrawable(colors.bgColorOperate), divider)).apply {
+            setLayerGravity(1, Gravity.BOTTOM or Gravity.FILL_HORIZONTAL)
+            setLayerSize(1, -1, 1)
+            setLayerInset(1, dpToPx(20), 0, dpToPx(20), dpToPx(3))
+        }
     }
 
     fun bindContact(
@@ -374,6 +399,7 @@ class SearchResultItemView(context: Context) : LinearLayout(context) {
         colors: io.trtc.tuikit.atomicx.theme.tokens.ColorTokens,
         onClick: () -> Unit
     ) {
+        applyRowBackground(colors)
         avatar.setContent(Avatar.AvatarContent.Image(contact.userAvatarURL, contact.displayName))
         titleText.text = HighlightUtils.highlight(
             contact.displayName,
@@ -387,7 +413,7 @@ class SearchResultItemView(context: Context) : LinearLayout(context) {
                 HighlightSegment(contact.userID, keywords)
             ),
             colors.textColorLink,
-            colors.textColorSecondary
+            colors.textColorTertiary
         )
         setOnClickListener { onClick() }
     }
@@ -399,6 +425,7 @@ class SearchResultItemView(context: Context) : LinearLayout(context) {
         context: Context,
         onClick: () -> Unit
     ) {
+        applyRowBackground(colors)
         avatar.setContent(Avatar.AvatarContent.Image(group.groupAvatarURL, group.displayName))
         titleText.text = HighlightUtils.highlight(
             group.displayName,
@@ -412,7 +439,7 @@ class SearchResultItemView(context: Context) : LinearLayout(context) {
                 HighlightSegment(group.groupID, keywords)
             ),
             colors.textColorLink,
-            colors.textColorSecondary
+            colors.textColorTertiary
         )
         setOnClickListener { onClick() }
     }
@@ -424,6 +451,7 @@ class SearchResultItemView(context: Context) : LinearLayout(context) {
         context: Context,
         onClick: () -> Unit
     ) {
+        applyRowBackground(colors)
         avatar.setContent(Avatar.AvatarContent.Image(message.conversationAvatarURL, message.displayName))
         titleText.text = HighlightUtils.highlight(
             message.displayName,
@@ -432,19 +460,33 @@ class SearchResultItemView(context: Context) : LinearLayout(context) {
             colors.textColorPrimary
         )
         if (message.messageCount > 1) {
+            subtitleText.setTag(R.id.emoji_span_bind_token_tag, null)
             subtitleText.text = context.getString(
                 R.string.search_related_chat_record_count,
                 message.messageCount
             )
-            subtitleText.setTextColor(colors.textColorSecondary)
+            subtitleText.setTextColor(colors.textColorTertiary)
         } else {
-            val messageAbstract = message.messageList.firstOrNull()?.getMessageAbstract(context) ?: ""
+            val firstMessage = message.messageList.firstOrNull()
+            val rawAbstract = firstMessage?.getMessageAbstract(context) ?: ""
+            val bindToken = "${message.conversationID}|$keywords|$rawAbstract|${subtitleText.textSize}"
+            subtitleText.setTag(R.id.emoji_span_bind_token_tag, bindToken)
             subtitleText.text = HighlightUtils.highlight(
-                messageAbstract,
+                EmojiSpanHelper.replaceEmojiKeysWithNames(rawAbstract),
                 keywords,
                 colors.textColorLink,
-                colors.textColorSecondary
+                colors.textColorTertiary
             )
+            EmojiSpanHelper.applyEmojiSpans(
+                context,
+                HighlightUtils.highlight(rawAbstract, keywords, colors.textColorLink, colors.textColorTertiary),
+                subtitleText.textSize,
+                subtitleText
+            ) { spanned ->
+                if (subtitleText.getTag(R.id.emoji_span_bind_token_tag) == bindToken) {
+                    subtitleText.text = spanned
+                }
+            }
         }
         setOnClickListener { onClick() }
     }

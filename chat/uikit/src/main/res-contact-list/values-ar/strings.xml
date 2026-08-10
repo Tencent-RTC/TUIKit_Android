@@ -11,7 +11,6 @@
     <string name="contact_list_refused">\u200Fمرفوض\u200F</string>
     <string name="contact_list_agreed">\u200Fموافق عليه\u200F</string>
     <string name="contact_list_friend_count">\u200F%d جهة اتصال\u200F</string>
-    <string name="contact_list_back">\u200Fرجوع\u200F</string>
     <string name="contact_list_agree">\u200Fموافق\u200F</string>
     <string name="contact_list_refuse">\u200Fرفض\u200F</string>
     <string name="contact_list_friend_application">\u200Fطلبات الصداقة\u200F</string>
@@ -79,4 +78,6 @@
     <string name="contact_list_community_id_edit_format_tips">\u200Fيجب أن تبدأ بادئة معرف المجتمع بـ @TGS#_!\u200F</string>
     <string name="contact_list_group_id_edit_format_tips">\u200Fلا يمكن أن تبدأ بادئة معرف المجموعة بـ @TGS#!\u200F</string>
     <string name="contact_list_confirm_selection">\u200Fتأكيد(%1$d)\u200F</string>
+    <string name="contact_list_cannot_found_group">لم يتم العثور على مجموعات ذات صلة</string>
+    <string name="contact_list_cannot_found_blacklist_user">لم يتم العثور على مستخدمين ذوي صلة في القائمة السوداء</string>
 </resources>

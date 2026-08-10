@@ -19,6 +19,9 @@
     <string name="demo_chat_setting_contact_info">معلومات جهة الاتصال</string>
     <string name="demo_chat_setting_group_info">معلومات المجموعة</string>
     <string name="demo_message_input_hint">اكتب رسالة…</string>
+    <string name="demo_chat_custom_message_menu_title">رسالة مخصصة</string>
+    <string name="demo_chat_custom_message_content">مرحبًا بانضمامك إلى عائلة Cloud Communication IM!</string>
+    <string name="demo_chat_custom_message_view_details">عرض التفاصيل</string>
 
     <string name="demo_start_chat">بدء دردشة</string>
     <string name="demo_create_group">إنشاء مجموعة</string>
@@ -27,6 +30,7 @@
     <string name="demo_chat_header_back">رجوع</string>
     <string name="demo_chat_header_more">المزيد</string>
     <string name="demo_chat_header_cancel">إلغاء</string>
+    <string name="demo_chat_typing_indicator">يكتب الآن…</string>
     <string name="demo_clear_all_unread_success">تم مسح كل الرسائل غير المقروءة</string>
     <string name="demo_group_event_kicked">تم طردك من المجموعة: %1$s</string>
     <string name="demo_group_event_dismissed">مجموعتك %1$s تم حلها</string>
@@ -73,12 +77,15 @@
     <string name="demo_settings_allow_type_need_confirm">تتطلب التحقق</string>
 
     <string name="demo_login_failed">فشل تسجيل الدخول: %1$s</string>
+    <string name="demo_login_network_error">خطأ في الشبكة، يرجى المحاولة مرة أخرى</string>
+    <string name="demo_chat_security_warning">لا تصدق بسهولة في التحويلات المصرفية والفوز بالجوائز وغيرها من المعلومات. كن حذرا عند التعامل مع مكالمات هاتفية غير معروفة لتجنب الوقوع في الخداع. يرجى الإبلاغ عن أي حالات مشبوهة في الوقت المناسب.</string>
+    <string name="demo_chat_security_warning_click_to_report">الإبلاغ عن ذلك هنا</string>
     <string name="demo_report">إبلاغ</string>
     <string name="demo_open_browser_failed">لا يوجد تطبيق لفتح الرابط</string>
     <string name="demo_close">إغلاق</string>
 
     <string name="demo_about_confirm">موافق</string>
-
+    <string name="demo_customer_service_summary">[خدمة العملاء] يرجى التحقق في الوقت المناسب</string>
     <string name="demo_voice_message_settings">إعدادات الرسائل الصوتية</string>
     <string name="demo_voice_clone">استنساخ الصوت</string>
     <string name="demo_voice_select">اختيار الصوت</string>

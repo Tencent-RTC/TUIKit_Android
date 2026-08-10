@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
+import androidx.cardview.widget.CardView
 import com.google.gson.Gson
 import com.tencent.imsdk.v2.V2TIMGroupListener
 import com.tencent.imsdk.v2.V2TIMManager
@@ -28,6 +28,7 @@ import com.tencent.imsdk.v2.V2TIMUserFullInfo
 import com.tencent.imsdk.v2.V2TIMValueCallback
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.AtomicCallEventPublisher
+import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.chat.uikit.components.widgets.Avatar
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
@@ -50,9 +51,7 @@ internal class MessageListJoinCallBannerController(
     }
 
     fun bind(conversationID: String) {
-        val groupId = conversationID.takeIf { it.startsWith(GROUP_CONVERSATION_PREFIX) }
-            ?.removePrefix(GROUP_CONVERSATION_PREFIX)
-            ?.takeIf { it.isNotEmpty() }
+        val groupId = ConversationIDUtil.groupIdOrNull(conversationID)
         if (groupId == currentGroupId) {
             return
         }
@@ -163,7 +162,7 @@ internal class MessageListJoinCallBannerController(
 
 private class MessageListJoinCallBannerView(context: Context) : LinearLayout(context) {
     private val themeColors = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
-    private val card: MaterialCardView
+    private val card: CardView
     private val cardContent: LinearLayout
     private val headerRow: LinearLayout
     private val hintView: TextView
@@ -182,11 +181,10 @@ private class MessageListJoinCallBannerView(context: Context) : LinearLayout(con
         orientation = VERTICAL
         setPadding(10.dp, 6.dp, 10.dp, 8.dp)
 
-        card = MaterialCardView(context).apply {
+        card = CardView(context).apply {
             radius = 12.dp.toFloat()
             cardElevation = 4.dp.toFloat()
             maxCardElevation = 4.dp.toFloat()
-            strokeWidth = 0
             setCardBackgroundColor(themeColors.bgColorOperate)
             useCompatPadding = true
             preventCornerOverlap = true
@@ -573,7 +571,6 @@ private class ChevronView(context: Context) : View(context) {
     }
 }
 
-private const val GROUP_CONVERSATION_PREFIX = "group_"
 private const val KEY_GROUP_ATTRIBUTE = "inner_attr_kit_info"
 private const val AVATAR_SIZE_DP = 52
 private const val AVATAR_SPACING_DP = 14
