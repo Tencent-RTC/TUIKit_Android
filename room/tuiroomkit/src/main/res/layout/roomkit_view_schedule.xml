@@ -7,7 +7,7 @@
     android:background="@color/roomkit_color_bg_home"
     tools:ignore="UnusedAttribute">
 
-    <com.trtc.uikit.roomkit.base.ui.widget.RoomTopBar
+    <com.trtc.uikit.roomkit.base.ui.RoomTopBar
         android:id="@+id/top_bar_schedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

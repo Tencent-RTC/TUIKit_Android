@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application>
         <activity
@@ -48,14 +49,27 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".RoomScheduleActivity"
+            android:name=".view.schedule.RoomScheduleActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".RoomScheduledDetailActivity"
+            android:name=".view.schedule.RoomScheduledDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.invitation.RoomInvitationReceivedActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <provider
+            android:name=".RoomInitializer"
+            android:authorities="${applicationId}.RoomCallInitializer"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

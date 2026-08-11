@@ -58,8 +58,6 @@
     <color name="roomkit_color_ai_minutes_timestamp">#FF8F8F94</color>
     <color name="roomkit_color_ai_minutes_item_bg">#FFF2F5FA</color>
     <color name="roomkit_color_ai_setting_shadow">#26000000</color>
-
-    <!-- Scheduled -->
     <color name="roomkit_color_blue">#006CFF</color>
     <color name="roomkit_color_divider">#E7ECF6</color>
     <color name="roomkit_color_drag_indicator">#E0E0E0</color>
@@ -71,6 +69,7 @@
     <color name="roomkit_color_attendee_unselected_stroke">#C5CCDB</color>
     <color name="roomkit_color_g5">#8F9AB2</color>
     <color name="roomkit_color_bg_home">#F8F9FB</color>
+    <color name="roomkit_color_scheduled_room_not_started">#FF643D</color>
     <color name="roomkit_color_scheduled_room_date_text">#969EB4</color>
     <color name="roomkit_color_enter_scheduled_room_bg">#F0F3FA</color>
     <color name="roomkit_color_cancel_scheduled_room_bg">#FAF0F0</color>
@@ -78,4 +77,7 @@
     <color name="roomkit_color_scheduled_action_red">#ED414D</color>
     <color name="roomkit_color_scheduled_title">#2B2E38</color>
     <color name="roomkit_color_scheduled_description">#B22B2E38</color>
+    <color name="roomkit_color_text_hint_search">#636A7E</color>
+    <color name="roomkit_color_invitation_background">#373A43</color>
+    <color name="roomkit_color_invitation_accept_track">#1AFFFFFF</color>
 </resources>

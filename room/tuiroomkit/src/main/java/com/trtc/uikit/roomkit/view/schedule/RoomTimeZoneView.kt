@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.trtc.uikit.roomkit.R
-import com.trtc.uikit.roomkit.base.ui.widget.RoomTopBar
+import com.trtc.uikit.roomkit.base.ui.RoomTopBar
 import java.util.Locale
 import java.util.TimeZone
 

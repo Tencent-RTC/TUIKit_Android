@@ -60,6 +60,12 @@ class StandardRoomView @JvmOverloads constructor(
     private var lastHasScreenShare = false
     private var cachedVisibleRange: PagedVideoLayoutManager.VisibleRange? = null
 
+    var onOrientationSwitchClick: (() -> Unit)? = null
+        set(value) {
+            field = value
+            if (::adapter.isInitialized) adapter.onOrientationSwitchClick = value
+        }
+
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_standard_room_view, this)
         calculateItemSize()
@@ -138,6 +144,7 @@ class StandardRoomView @JvmOverloads constructor(
                 }
             }
         })
+        adapter.onOrientationSwitchClick = onOrientationSwitchClick
     }
 
     private fun updateVisibleItems() {

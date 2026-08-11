@@ -78,6 +78,7 @@ class RoomMainActivity : FullScreenActivity() {
 
     @Suppress("MissingSuperCall")
     override fun onBackPressed() {
+        if (roomMainView?.handleBackPressed() == true) return
     }
 
     private fun applySystemBarStyle(orientation: Int) {

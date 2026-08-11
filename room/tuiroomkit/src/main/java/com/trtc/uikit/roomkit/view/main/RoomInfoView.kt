@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import androidx.core.view.isVisible
 
 /**
  * Room information view displaying room details with copy-to-clipboard functionality.
@@ -32,6 +33,9 @@ class RoomInfoView @JvmOverloads constructor(
     private val tvRoomOwner: TextView by lazy { findViewById(R.id.tv_room_owner) }
     private val tvRoomID: TextView by lazy { findViewById(R.id.tv_room_ID) }
     private val btnCopyRoomID: LinearLayout by lazy { findViewById(R.id.btn_copy_room_ID) }
+    private val llPasswordRow: LinearLayout by lazy { findViewById(R.id.ll_password_row) }
+    private val tvRoomPassword: TextView by lazy { findViewById(R.id.tv_room_password) }
+    private val btnCopyPassword: LinearLayout by lazy { findViewById(R.id.btn_copy_password) }
     private val btnCopyInvitationLink: AppCompatButton by lazy { findViewById(R.id.btn_copy_invitation_link) }
 
     private var roomStore = RoomStore.shared()
@@ -69,12 +73,28 @@ class RoomInfoView @JvmOverloads constructor(
         tvRoomName.text = roomInfo.getDisplayName()
         tvRoomOwner.text = roomInfo.roomOwner.getDisplayName()
         tvRoomID.text = roomInfo.roomID
+        val password = roomInfo.password.orEmpty()
+        if (password.isNotEmpty()) {
+            llPasswordRow.visibility = VISIBLE
+            tvRoomPassword.text = password
+        } else {
+            llPasswordRow.visibility = GONE
+        }
     }
 
     private fun setupListeners() {
         btnCopyRoomID.setOnClickListener {
             copyToClipboard(tvRoomID.text.toString())
             AtomicToast.show(context, context.getString(R.string.roomkit_toast_room_id_copied), AtomicToast.Style.INFO)
+        }
+
+        btnCopyPassword.setOnClickListener {
+            copyToClipboard(tvRoomPassword.text.toString())
+            AtomicToast.show(
+                context,
+                context.getString(R.string.roomkit_toast_room_password_copied),
+                AtomicToast.Style.INFO
+            )
         }
 
         btnCopyInvitationLink.setOnClickListener {
@@ -89,10 +109,13 @@ class RoomInfoView @JvmOverloads constructor(
     }
 
     private fun generateInvitationText(): String {
-        return """
-            ${context.getString(R.string.roomkit_room_name)}: ${tvRoomName.text}
-            ${context.getString(R.string.roomkit_room_id)}: ${tvRoomID.text}
-        """.trimIndent()
+        val lines = mutableListOf<String>()
+        lines += "${context.getString(R.string.roomkit_room_name)}: ${tvRoomName.text}"
+        lines += "${context.getString(R.string.roomkit_room_id)}: ${tvRoomID.text}"
+        if (llPasswordRow.isVisible) {
+            lines += "${context.getString(R.string.roomkit_room_password_title)}: ${tvRoomPassword.text}"
+        }
+        return lines.joinToString("\n")
     }
 
     private fun copyToClipboard(text: String) {

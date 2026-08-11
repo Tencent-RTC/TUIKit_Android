@@ -1,13 +1,19 @@
 package com.trtc.uikit.roomkit.view.main.participantlist
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.TextView
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabLayout
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
@@ -16,9 +22,13 @@ import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView.OnParticipantActionListener
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.DeviceType
+import io.trtc.tuikit.atomicxcore.api.room.CallUserToRoomCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
+import io.trtc.tuikit.atomicxcore.api.room.RoomCallResult
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
@@ -36,18 +46,38 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
 
     private val logger = RoomKitLogger.getLogger("RoomParticipantListView")
 
+    companion object {
+        private const val TAB_INDEX_JOINED = 0
+        private const val TAB_INDEX_PENDING = 1
+    }
+
     private var subscribeStateJob: Job? = null
 
-    private val tvTitle: TextView by lazy { findViewById(R.id.tv_title) }
+    private val tabLayout: TabLayout by lazy { findViewById(R.id.tab_layout) }
+    private val etSearch: EditText by lazy { findViewById(R.id.et_search) }
     private val rvParticipants: RecyclerView by lazy { findViewById(R.id.rv_participants) }
+    private val rvPending: RecyclerView by lazy { findViewById(R.id.rv_pending) }
+    private val llBottomActions: LinearLayout by lazy { findViewById(R.id.ll_bottom_actions) }
     private val btnMuteAll: AppCompatButton by lazy { findViewById(R.id.btn_mute_all) }
     private val btnDisableAllVideo: AppCompatButton by lazy { findViewById(R.id.btn_disable_all_video) }
+    private val btnCallAll: AppCompatButton by lazy { findViewById(R.id.btn_call_all) }
+    private lateinit var joinedTab: TabLayout.Tab
+    private lateinit var pendingTab: TabLayout.Tab
 
-    private val adapter = ParticipantListAdapter(RoomType.STANDARD)
+    private val joinedAdapter = ParticipantListAdapter(RoomType.STANDARD)
+    private val pendingAdapter = PendingParticipantListAdapter()
+
     private var participantStore: RoomParticipantStore? = null
     private var roomStore: RoomStore? = null
     private var participantManagerDialog: RoomPopupDialog? = null
     private var participantManagerView: ParticipantManagerView? = null
+
+    // Full lists kept locally so that search only filters the display, not the source or tab counts.
+    private var allJoined: List<RoomParticipant> = emptyList()
+    private var allPending: List<RoomParticipant> = emptyList()
+    private var searchKeyword: String = ""
+    private var currentTab: Int = TAB_INDEX_JOINED
+    private var localRole: ParticipantRole = ParticipantRole.GENERAL_USER
 
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_view_standard_room_participant_list_view, this)
@@ -56,6 +86,7 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
 
     public override fun init(roomID: String) {
         super.init(roomID)
+        pendingAdapter.setRoomID(roomID)
     }
 
     override fun initStore(roomID: String) {
@@ -69,14 +100,26 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
         subscribeStateJob = CoroutineScope(Dispatchers.Main).launch {
             launch {
                 participantStore.state.participantList.collect { participants ->
-                    updateParticipantList(participants)
+                    allJoined = participants
+                    applyJoinedFilter()
+                    updateTabView()
+                }
+            }
+
+            launch {
+                participantStore.state.pendingParticipantList.collect { participants ->
+                    allPending = participants
+                    applyPendingFilter()
+                    updateTabView()
+                    updateControlButtonsVisibility()
                 }
             }
 
             launch {
                 participantStore.state.localParticipant.collect { localParticipant ->
                     localParticipant?.let {
-                        updateControlButtonsVisibility(it.role)
+                        localRole = it.role
+                        updateControlButtonsVisibility()
                     }
                 }
             }
@@ -86,7 +129,6 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
                     roomInfo?.let {
                         updateMuteAllButton(it.isAllMicrophoneDisabled)
                         updateDisableAllVideoButton(it.isAllCameraDisabled)
-                        updateParticipantCount(it.participantCount)
                     }
                 }
             }
@@ -101,11 +143,65 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
     }
 
     private fun initView() {
-        rvParticipants.layoutManager = LinearLayoutManager(context)
-        rvParticipants.adapter = adapter
+        joinedTab = tabLayout.newTab()
+        pendingTab = tabLayout.newTab()
+        tabLayout.addTab(joinedTab)
+        tabLayout.addTab(pendingTab)
+        updateTabView()
 
-        adapter.setOnItemClickListener { participant ->
+        rvParticipants.layoutManager = LinearLayoutManager(context)
+        rvParticipants.adapter = joinedAdapter
+
+        rvPending.layoutManager = LinearLayoutManager(context)
+        rvPending.adapter = pendingAdapter
+
+        rvParticipants.visibility = VISIBLE
+        rvPending.visibility = GONE
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                currentTab = tab.position
+                when (tab.position) {
+                    TAB_INDEX_JOINED -> {
+                        rvParticipants.visibility = VISIBLE
+                        rvPending.visibility = GONE
+                    }
+
+                    TAB_INDEX_PENDING -> {
+                        rvParticipants.visibility = GONE
+                        rvPending.visibility = VISIBLE
+                    }
+                }
+                updateControlButtonsVisibility()
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
+        joinedAdapter.setOnItemClickListener { participant ->
             showParticipantActionDialog(participant)
+        }
+
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchKeyword = s?.toString()?.trim().orEmpty()
+                applyJoinedFilter()
+                applyPendingFilter()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        etSearch.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                hideSoftKeyboard()
+                true
+            } else {
+                false
+            }
         }
 
         btnMuteAll.setOnClickListener {
@@ -115,16 +211,42 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
         btnDisableAllVideo.setOnClickListener {
             handleDisableAllVideoClick()
         }
+
+        btnCallAll.setOnClickListener {
+            handleCallAllClick()
+        }
     }
 
-    private fun updateParticipantList(participants: List<RoomParticipant>) {
-        adapter.updateData(participants)
+    private fun updateTabView() {
+        joinedTab.text = context.getString(R.string.roomkit_tab_joined, allJoined.size.toString())
+        pendingTab.text = context.getString(R.string.roomkit_tab_pending, allPending.size.toString())
     }
 
-    private fun updateControlButtonsVisibility(role: ParticipantRole) {
-        val shouldShowControls = role == ParticipantRole.OWNER || role == ParticipantRole.ADMIN
-        btnMuteAll.visibility = if (shouldShowControls) VISIBLE else GONE
-        btnDisableAllVideo.visibility = if (shouldShowControls) VISIBLE else GONE
+    private fun applyJoinedFilter() {
+        joinedAdapter.updateData(filterByKeyword(allJoined))
+    }
+
+    private fun applyPendingFilter() {
+        pendingAdapter.updateData(filterByKeyword(allPending))
+    }
+
+    private fun filterByKeyword(source: List<RoomParticipant>): List<RoomParticipant> {
+        if (searchKeyword.isEmpty()) {
+            return source
+        }
+        val kw = searchKeyword.lowercase()
+        return source.filter {
+            it.userName.lowercase().contains(kw) || it.userID.lowercase().contains(kw)
+        }
+    }
+
+    private fun updateControlButtonsVisibility() {
+        val shouldShowControls = (localRole == ParticipantRole.OWNER || localRole == ParticipantRole.ADMIN)
+        val isJoinedTab = currentTab == TAB_INDEX_JOINED
+        llBottomActions.visibility = if (shouldShowControls && isJoinedTab) VISIBLE else GONE
+        // Call-all is available to all roles on the pending tab, but only when there is someone to call.
+        val isPendingTab = !isJoinedTab
+        btnCallAll.visibility = if (isPendingTab && allPending.isNotEmpty()) VISIBLE else GONE
     }
 
     private fun showParticipantActionDialog(participant: RoomParticipant) {
@@ -137,11 +259,15 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
 
         if (participantManagerDialog == null) {
             participantManagerView = ParticipantManagerView(context).apply {
-                init(roomID, RoomType.STANDARD, object : OnParticipantActionListener {
-                    override fun onDismiss() {
-                        participantManagerDialog?.dismiss()
+                init(
+                    roomID,
+                    RoomType.STANDARD,
+                    object : OnParticipantActionListener {
+                        override fun onDismiss() {
+                            participantManagerDialog?.dismiss()
+                        }
                     }
-                })
+                )
             }
             participantManagerDialog = RoomPopupDialog(context).apply {
                 participantManagerView?.let {
@@ -171,10 +297,6 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
             btnDisableAllVideo.text = context.getString(R.string.roomkit_disable_all_video)
             btnDisableAllVideo.setTextColor(ContextCompat.getColor(context, R.color.roomkit_color_text_grey))
         }
-    }
-
-    private fun updateParticipantCount(count: Int) {
-        tvTitle.text = context.getString(R.string.roomkit_member_count, count.toString())
     }
 
     private fun handleMuteAllClick() {
@@ -289,5 +411,39 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
                 ErrorLocalized.showError(context, code)
             }
         })
+    }
+
+    private fun handleCallAllClick() {
+        if (roomID.isEmpty()) {
+            logger.warn("handleCallAllClick skipped: roomID empty")
+            return
+        }
+        val inviteeIds = allPending.map { it.userID }.filter { it.isNotEmpty() }
+        if (inviteeIds.isEmpty()) {
+            logger.info("handleCallAllClick skipped: no pending participants to call")
+            return
+        }
+        logger.info("Call all pending participants: count=${inviteeIds.size}")
+        RoomStore.shared().callUserToRoom(
+            roomID,
+            inviteeIds,
+            60,
+            "",
+            object : CallUserToRoomCompletionHandler {
+                override fun onSuccess(result: Map<String, RoomCallResult>) {
+                    logger.info("Call all success: $result")
+                }
+
+                override fun onFailure(code: Int, desc: String) {
+                    logger.error("Call all failed: code=$code, desc=$desc")
+                    ErrorLocalized.showError(context, code)
+                }
+            }
+        )
+    }
+
+    private fun hideSoftKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 }

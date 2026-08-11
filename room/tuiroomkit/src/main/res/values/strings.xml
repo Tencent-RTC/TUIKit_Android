@@ -26,7 +26,7 @@
     <string name="roomkit_mute_all_audio">Mute all</string>
     <string name="roomkit_unmute_all_audio">Unmute all</string>
     <string name="roomkit_more">More</string>
-    <string name="roomkit_search_members">Search members</string>
+    <string name="roomkit_search_members">Search participants</string>
     <string name="roomkit_invite">Invite</string>
     <string name="roomkit_role_owner">Owner</string>
     <string name="roomkit_role_admin">Administrator</string>
@@ -373,4 +373,22 @@
     <string name="roomkit_minimum_duration_is_fifteen_minutes">The minimum room duration is 15 minutes.</string>
     <string name="roomkit_scheduled_status_running">In progress</string>
     <string name="roomkit_scheduled_status_not_started">Not started</string>
+    <string name="roomkit_room_host">Host:</string>
+    <string name="roomkit_invitation_participant">Participant:</string>
+    <string name="roomkit_invite_you_to_join_room">%s invites you to join the room</string>
+    <string name="roomkit_invitation_room_meta">Host: %1$s  |  Participant: %2$s</string>
+    <string name="roomkit_add_user">Add members</string>
+    <string name="roomkit_share_room">Share room</string>
+    <string name="roomkit_invite_success">Invitations sent, waiting for members to join</string>
+    <string name="roomkit_chat_not_available">Chat is not available yet</string>
+    <string name="roomkit_item_expand">Expand</string>
+    <string name="roomkit_item_close">Collapse</string>
+    <string name="roomkit_call">Call</string>
+    <string name="roomkit_calling">Calling…</string>
+    <string name="roomkit_call_everyone">Call everyone</string>
+    <string name="roomkit_not_join_for_now">Not entered yet</string>
+    <string name="roomkit_tab_joined">Entered(%s)</string>
+    <string name="roomkit_tab_pending">Not entered(%s)</string>
+    <string name="roomkit_join_now">Join now</string>
+    <string name="roomkit_do_not_enter_for_now">Do not enter for now</string>
 </resources>

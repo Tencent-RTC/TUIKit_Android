@@ -1,227 +1,271 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
-    android:paddingTop="10dp"
-    android:paddingBottom="26dp">
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
 
-    <LinearLayout
-        android:id="@+id/ll_participants"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/roomkit_bg_bottom_button"
-        android:gravity="center"
-        android:minWidth="52dp"
-        android:minHeight="52dp"
-        android:orientation="vertical"
-        android:paddingStart="5dp"
-        android:paddingTop="7dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="7dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ll_microphone"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <RelativeLayout
+        android:id="@+id/ll_root"
+        android:layout_width="360dp"
+        android:layout_height="140dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/roomkit_bg_bottom_button">
 
-        <ImageView
-            android:id="@+id/iv_participants"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/roomkit_ic_participants"
-            tools:ignore="ContentDescription" />
+        <LinearLayout
+            android:id="@+id/ll_extension_bar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="60dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="9dp"
+            android:visibility="invisible"
+            tools:ignore="RtlSymmetry">
 
-        <TextView
-            android:id="@+id/tv_participants"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:maxLines="1"
-            android:textColor="@color/roomkit_color_text_control"
-            android:textSize="10sp" />
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_invite"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="@drawable/roomkit_bg_bottom_button"
+                android:gravity="center"
+                android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/ll_microphone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/roomkit_bg_bottom_button"
-        android:gravity="center"
-        android:minWidth="52dp"
-        android:minHeight="52dp"
-        android:orientation="vertical"
-        android:paddingStart="5dp"
-        android:paddingTop="7dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="7dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ll_camera"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toEndOf="@id/ll_participants"
-        app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:id="@+id/iv_invite"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/roomkit_ic_invite"
+                    tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/iv_microphone"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/roomkit_ic_microphone_off"
-            tools:ignore="ContentDescription" />
+                <TextView
+                    android:id="@+id/tv_invite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/roomkit_invite"
+                    android:textColor="@color/roomkit_color_text_control"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_microphone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/roomkit_mute"
-            android:textColor="@color/roomkit_color_text_control"
-            android:textSize="10sp" />
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_ai_tool"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/roomkit_bg_bottom_button"
+                android:gravity="center"
+                android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/ll_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/roomkit_bg_bottom_button"
-        android:gravity="center"
-        android:minWidth="52dp"
-        android:minHeight="52dp"
-        android:orientation="vertical"
-        android:paddingStart="5dp"
-        android:paddingTop="7dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="7dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ll_screen_share"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toEndOf="@id/ll_microphone"
-        app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:id="@+id/iv_ai_tool"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/roomkit_ic_ai_tools"
+                    tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/iv_camera"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/roomkit_ic_camera_off"
-            tools:ignore="ContentDescription" />
+                <TextView
+                    android:id="@+id/tv_ai_tool"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/roomkit_transcription_ai_tools"
+                    android:textColor="@color/roomkit_color_text_control"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_camera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/roomkit_start_video"
-            android:textColor="@color/roomkit_color_text_control"
-            android:textSize="10sp" />
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_recording"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/roomkit_bg_bottom_button"
+                android:gravity="center"
+                android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/ll_screen_share"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/roomkit_bg_bottom_button"
-        android:gravity="center"
-        android:minWidth="52dp"
-        android:minHeight="52dp"
-        android:orientation="vertical"
-        android:paddingStart="5dp"
-        android:paddingTop="7dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="7dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ll_ai_tool"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toEndOf="@id/ll_camera"
-        app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:id="@+id/iv_recording"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/roomkit_ic_recording"
+                    tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/iv_screen_share"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/roomkit_ic_share"
-            tools:ignore="ContentDescription" />
+                <TextView
+                    android:id="@+id/tv_recording"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/roomkit_cloud_record"
+                    android:textColor="@color/roomkit_color_text_control"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_screen_share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/roomkit_start_screen_share"
-            android:textColor="@color/roomkit_color_text_control"
-            android:textSize="10sp" />
-    </LinearLayout>
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_ai_tool"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/roomkit_bg_bottom_button"
-        android:gravity="center"
-        android:minHeight="52dp"
-        android:minWidth="52dp"
-        android:orientation="vertical"
-        android:paddingStart="5dp"
-        android:paddingTop="7dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="7dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ll_recording"
-        app:layout_constraintStart_toEndOf="@id/ll_screen_share"
-        app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:id="@+id/ll_main_bar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="9dp"
+            tools:ignore="RtlSymmetry">
 
-        <ImageView
-            android:id="@+id/iv_ai_tool"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/roomkit_ic_ai_tools"
-            tools:ignore="ContentDescription" />
+            <LinearLayout
+                android:id="@+id/ll_main_buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tv_ai_tool"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/roomkit_transcription_ai_tools"
-            android:textColor="@color/roomkit_color_text_control"
-            android:textSize="10sp" />
-    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_participants"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/roomkit_bg_bottom_button"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/ll_recording"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/roomkit_bg_bottom_button"
-        android:gravity="center"
-        android:minHeight="52dp"
-        android:minWidth="52dp"
-        android:orientation="vertical"
-        android:paddingStart="5dp"
-        android:paddingTop="7dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="7dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ll_ai_tool"
-        app:layout_constraintTop_toTopOf="parent">
+                    <ImageView
+                        android:id="@+id/iv_participants"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/roomkit_ic_participants"
+                        tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/iv_recording"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/roomkit_ic_recording"
-            tools:ignore="ContentDescription" />
+                    <TextView
+                        android:id="@+id/tv_participants"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="1"
+                        android:textColor="@color/roomkit_color_text_control"
+                        android:textSize="10sp" />
+                </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_recording"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/roomkit_cloud_record"
-            android:textColor="@color/roomkit_color_text_control"
-            android:textSize="10sp" />
-    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_microphone"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/roomkit_bg_bottom_button"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                    <ImageView
+                        android:id="@+id/iv_microphone"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/roomkit_ic_microphone_off"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/tv_microphone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/roomkit_mute"
+                        android:textColor="@color/roomkit_color_text_control"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_camera"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/roomkit_bg_bottom_button"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_camera"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/roomkit_ic_camera_off"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/tv_camera"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/roomkit_start_video"
+                        android:textColor="@color/roomkit_color_text_control"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_screen_share"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/roomkit_bg_bottom_button"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_screen_share"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/roomkit_ic_share"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/tv_screen_share"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/roomkit_start_screen_share"
+                        android:textColor="@color/roomkit_color_text_control"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <com.trtc.uikit.roomkit.view.chat.ChatButton
+                    android:id="@+id/chat_button"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp" />
+
+                <LinearLayout
+                    android:id="@+id/ll_expand"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/roomkit_bg_expand_button"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_expand"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/roomkit_ic_expand"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/tv_expand"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/roomkit_item_expand"
+                        android:textColor="@color/roomkit_color_text_control"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

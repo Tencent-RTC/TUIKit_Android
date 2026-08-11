@@ -14,6 +14,7 @@ import io.trtc.tuikit.atomicxcore.api.room.RoomType
  */
 interface RoomBottomBarViewListener {
     fun onAIToolsButtonTapped()
+    fun onChatButtonTapped()
 }
 
 /**

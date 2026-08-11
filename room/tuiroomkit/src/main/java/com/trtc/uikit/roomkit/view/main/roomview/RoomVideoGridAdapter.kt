@@ -23,6 +23,7 @@ import io.trtc.tuikit.atomicxcore.api.view.VideoStreamType
  * Manages video stream items and their corresponding ViewHolders in room view
  */
 class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStreamViewHolder>() {
+    var onOrientationSwitchClick: (() -> Unit)? = null
 
     companion object {
         const val VIEW_TYPE_SCREEN_SHARE = 1
@@ -97,7 +98,7 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoStreamViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.roomkit_item_room_video_grid, parent, false)
-        return VideoStreamViewHolder(itemView, viewType == VIEW_TYPE_SCREEN_SHARE)
+        return VideoStreamViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: VideoStreamViewHolder, position: Int) {
@@ -129,12 +130,12 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
      *   Layer 3: Speaking border - Visual indicator for speaking state
      *   Layer 4: Name overlay - User name and status information
      *
-     * @param itemView The item view
-     * @param isScreenShare Whether this ViewHolder displays screen share content
+     * The stream type (SCREEN/CAMERA) is set via [setStreamType] when binding,
+     * not in the constructor — it controls the overlay's orientation switch
+     * button visibility and avatar behavior.
      */
     inner class VideoStreamViewHolder(
-        itemView: View,
-        private val isScreenShare: Boolean
+        itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
         // Layer 1: Bottom layer - video rendering
@@ -146,14 +147,21 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
         // Layer 3: Speaking state border
         private val speakingBorder: View = itemView.findViewById(R.id.view_speaking_border)
 
-        // Layer 4: User name and status information
+        // Layer 4: User name, status information, and orientation switch button
         private val nameOverlay: RoomVideoNameOverlayView = itemView.findViewById(R.id.video_name_overlay)
 
         // Track current stream to detect stream changes
         private var currentStreamId: String? = null
+        private var streamType: VideoStreamType = VideoStreamType.CAMERA
 
         init {
             setupRoundedCorners()
+            nameOverlay.setOrientationSwitchClickListener(onOrientationSwitchClick)
+        }
+
+        fun setStreamType(streamType: VideoStreamType) {
+            this.streamType = streamType
+            nameOverlay.setStreamType(streamType)
         }
 
         /**
@@ -177,6 +185,7 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
          * @param streamItem The video stream item to bind
          */
         fun bind(streamItem: VideoStreamItem) {
+            setStreamType(streamItem.streamType)
             val isStreamChanged = currentStreamId != streamItem.uniqueId
 
             if (isStreamChanged) {
@@ -206,7 +215,7 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
          */
         private fun updateAvatarVisibility(participant: RoomParticipant) {
             // Screen share never shows avatar
-            if (isScreenShare) {
+            if (streamType == VideoStreamType.SCREEN) {
                 avatarPlaceholder.visibility = View.GONE
                 return
             }

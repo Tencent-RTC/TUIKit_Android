@@ -26,7 +26,7 @@
     <string name="roomkit_mute_all_audio">全体静音</string>
     <string name="roomkit_unmute_all_audio">解除全体静音</string>
     <string name="roomkit_more">更多</string>
-    <string name="roomkit_search_members">搜索成员</string>
+    <string name="roomkit_search_members">搜索参会成员</string>
     <string name="roomkit_invite">邀请</string>
     <string name="roomkit_role_owner">房主</string>
     <string name="roomkit_role_admin">管理员</string>
@@ -373,4 +373,22 @@
     <string name="roomkit_minimum_duration_is_fifteen_minutes">房间时长最短15分钟</string>
     <string name="roomkit_scheduled_status_running">进行中</string>
     <string name="roomkit_scheduled_status_not_started">未开始</string>
+    <string name="roomkit_room_host">主持人：</string>
+    <string name="roomkit_invitation_participant">参会人：</string>
+    <string name="roomkit_invite_you_to_join_room">%s 邀请你加入会议</string>
+    <string name="roomkit_invitation_room_meta">主持人：%1$s  |  参会人：%2$s</string>
+    <string name="roomkit_add_user">添加成员</string>
+    <string name="roomkit_share_room">分享房间</string>
+    <string name="roomkit_invite_success">邀请信息已发出，等待成员加入</string>
+    <string name="roomkit_chat_not_available">聊天功能暂未开放</string>
+    <string name="roomkit_item_expand">展开</string>
+    <string name="roomkit_item_close">收起</string>
+    <string name="roomkit_call">呼叫</string>
+    <string name="roomkit_calling">呼叫中…</string>
+    <string name="roomkit_call_everyone">呼叫所有人</string>
+    <string name="roomkit_not_join_for_now">暂未进入</string>
+    <string name="roomkit_tab_joined">已进房(%s)</string>
+    <string name="roomkit_tab_pending">未进入(%s)</string>
+    <string name="roomkit_join_now">立即加入</string>
+    <string name="roomkit_do_not_enter_for_now">暂不进入</string>
 </resources>

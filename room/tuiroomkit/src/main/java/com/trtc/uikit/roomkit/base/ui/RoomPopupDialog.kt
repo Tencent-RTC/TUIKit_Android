@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -62,6 +63,14 @@ open class RoomPopupDialog : BottomSheetDialog {
             container.addView(view)
         }
         return this
+    }
+
+    override fun dismiss() {
+        window?.decorView?.let { decorView ->
+            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.hideSoftInputFromWindow(decorView.windowToken, 0)
+        }
+        super.dismiss()
     }
 
     override fun onStart() {

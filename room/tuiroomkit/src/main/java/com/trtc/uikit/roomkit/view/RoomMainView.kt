@@ -9,15 +9,13 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.ImageView
+import android.view.View
 import androidx.core.content.ContextCompat
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.aitranscription.AIMinutesActivity
 import com.trtc.uikit.roomkit.aitranscription.AITranscriptionSettingActivity
 import com.trtc.uikit.roomkit.aitranscription.repository.AITranscriberRepository
 import com.trtc.uikit.roomkit.aitranscription.subtitleview.AISubtitleView
-import com.trtc.uikit.roomkit.barrage.BarrageInputView
-import com.trtc.uikit.roomkit.barrage.BarrageStreamView
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.event.RoomEventNotifier
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
@@ -30,6 +28,9 @@ import com.trtc.uikit.roomkit.base.ui.BaseView
 import com.trtc.uikit.roomkit.base.ui.EnterRoomPasswordDialog
 import com.trtc.uikit.roomkit.base.ui.RoomActionSheetDialog
 import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
+import com.trtc.uikit.roomkit.view.barrage.BarrageInputView
+import com.trtc.uikit.roomkit.view.barrage.BarrageStreamView
+import com.trtc.uikit.roomkit.view.chat.ChatView
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarView
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarViewListener
@@ -104,13 +105,14 @@ class RoomMainView @JvmOverloads constructor(
 
     private val topBarView: RoomTopBarView by lazy { findViewById(R.id.room_top_bar) }
     private val roomView: RoomView by lazy { findViewById(R.id.room_view) }
+    private val bottomArea: View by lazy { findViewById(R.id.room_bottom_area) }
     private val bottomBarView: RoomBottomBarView by lazy { findViewById(R.id.room_bottom_bar) }
     private val aiSubtitleView: AISubtitleView by lazy { findViewById(R.id.ai_subtitle_view) }
+    private val chatView: ChatView by lazy { findViewById(R.id.chat_view) }
     private val barrageInputView: BarrageInputView by lazy { findViewById(R.id.barrage_input_view) }
     private val barrageStreamView: BarrageStreamView by lazy { findViewById(R.id.barrage_stream_view) }
     private val screenShareOverlayView: ScreenShareOverlayView by lazy { findViewById(R.id.screen_share_overlay_view) }
     private val recordingFloatingView: RoomRecordingFloatingView by lazy { findViewById(R.id.recording_floating_view) }
-    private val orientationSwitchButton: ImageView by lazy { findViewById(R.id.orientation_switch_button) }
     private var currentScreenSharerID: String? = null
 
     private var roomType = RoomType.STANDARD
@@ -123,6 +125,7 @@ class RoomMainView @JvmOverloads constructor(
     private var localUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID
     private var connectConfig: ConnectConfig? = null
     private var recordingNoticeDialog: RoomAlertDialog? = null
+    private var enableAiSubtitleView = false
 
     private lateinit var repository: AITranscriberRepository
 
@@ -330,10 +333,12 @@ class RoomMainView @JvmOverloads constructor(
         ParticipantManagerView.bindRepository(repository) { hideAISubtitleView() }
         super.init(roomID)
         roomView.init(roomID, roomType)
+        roomView.onOrientationSwitchClick = { switchOrientation() }
         topBarView.init(roomID, roomType)
         bottomBarView.init(roomID, roomType)
         recordingFloatingView.init(roomID, roomType)
         bottomBarView.listener = this
+        chatView.init(roomID)
         if (roomType == RoomType.WEBINAR) {
             barrageInputView.init(roomID)
             barrageStreamView.init(roomID)
@@ -344,9 +349,6 @@ class RoomMainView @JvmOverloads constructor(
             barrageStreamView.visibility = GONE
         }
         RoomDataReporter.reportComponent()
-        orientationSwitchButton.setOnClickListener {
-            switchOrientation()
-        }
         updateOrientationVisibility(resources.configuration.orientation)
         when (behavior) {
             is RoomBehavior.Create -> createRoom(roomID, behavior.options)
@@ -740,9 +742,17 @@ class RoomMainView @JvmOverloads constructor(
 
     private fun updateOrientationVisibility(orientation: Int) {
         val isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE
-        topBarView.visibility = if (isLandscape) GONE else VISIBLE
-        bottomBarView.visibility = if (isLandscape) GONE else VISIBLE
-        if (isLandscape) aiSubtitleView.visibility = GONE
+        if (isLandscape) {
+            topBarView.visibility = GONE
+            bottomBarView.visibility = GONE
+            bottomArea.visibility = GONE
+            aiSubtitleView.visibility = GONE
+        } else {
+            topBarView.visibility = VISIBLE
+            bottomBarView.visibility = VISIBLE
+            bottomArea.visibility = VISIBLE
+            aiSubtitleView.visibility = if (enableAiSubtitleView) VISIBLE else GONE
+        }
         if (roomType == RoomType.WEBINAR) {
             barrageInputView.visibility = if (isLandscape) GONE else VISIBLE
             barrageStreamView.visibility = if (isLandscape) GONE else VISIBLE
@@ -752,20 +762,6 @@ class RoomMainView @JvmOverloads constructor(
             roomStore.state.currentRoom.value?.recordingInfo?.status == RecordingStatus.RECORDING -> VISIBLE
             else -> GONE
         }
-        updateOrientationSwitchButtonVisibility(orientation)
-    }
-
-    private fun updateOrientationSwitchButtonVisibility(
-        orientation: Int = resources.configuration.orientation
-    ) {
-        val hasRemoteSharer = currentScreenSharerID != null && currentScreenSharerID != localUserID
-        val shouldShow = roomType != RoomType.WEBINAR && hasRemoteSharer
-        orientationSwitchButton.visibility = if (shouldShow) VISIBLE else GONE
-        val isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE
-        orientationSwitchButton.setImageResource(
-            if (isLandscape) R.drawable.roomkit_ic_switch_portrait_button
-            else R.drawable.roomkit_ic_switch_landscape_button
-        )
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -793,7 +789,6 @@ class RoomMainView @JvmOverloads constructor(
             return
         }
         currentScreenSharerID = newSharerID
-        updateOrientationSwitchButtonVisibility()
         if (newSharerID.isNullOrEmpty()) {
             forcePortraitIfLandscape()
         }
@@ -801,6 +796,10 @@ class RoomMainView @JvmOverloads constructor(
 
     fun isAISubtitleVisible(): Boolean {
         return aiSubtitleView.visibility == VISIBLE
+    }
+
+    fun handleBackPressed(): Boolean {
+        return chatView.handleBackPressed()
     }
 
     fun showAISubtitleView() {
@@ -811,13 +810,20 @@ class RoomMainView @JvmOverloads constructor(
             val intent = Intent(context, AITranscriptionSettingActivity::class.java)
             context.startActivity(intent)
         }
+        enableAiSubtitleView = true
     }
 
     fun hideAISubtitleView() {
         aiSubtitleView.visibility = GONE
+        enableAiSubtitleView = false
     }
 
     // MARK: - RoomBottomBarViewListener
+
+    override fun onChatButtonTapped() {
+        logger.info("onChatButtonTapped")
+        chatView.show()
+    }
 
     override fun onAIToolsButtonTapped() {
         val isSubtitleVisible = isAISubtitleVisible()
@@ -828,6 +834,7 @@ class RoomMainView @JvmOverloads constructor(
                 context.getString(R.string.roomkit_transcription_close_subtitle),
                 false,
                 R.drawable.roomkit_ic_ai_subtitle,
+                24f,
                 ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
                 14f
             ) {
@@ -838,6 +845,7 @@ class RoomMainView @JvmOverloads constructor(
                 context.getString(R.string.roomkit_transcription_open_subtitle),
                 false,
                 R.drawable.roomkit_ic_ai_subtitle,
+                24f,
                 ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
                 14f
             ) {
@@ -852,6 +860,7 @@ class RoomMainView @JvmOverloads constructor(
             context.getString(R.string.roomkit_transcription_open_minutes),
             false,
             R.drawable.roomkit_ic_ai_minutes,
+            24f,
             ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
             14f
         ) {

@@ -98,6 +98,12 @@ class RoomActionSheetDialog private constructor(
         if (action.iconRes != 0) {
             iconView.setImageResource(action.iconRes)
             iconView.visibility = View.VISIBLE
+            val targetIconSizeDp = if (action.iconSizeDp > 0f) action.iconSizeDp else 24f
+            val sizePx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, targetIconSizeDp, context.resources.displayMetrics
+            ).toInt()
+            iconView.layoutParams.width = sizePx
+            iconView.layoutParams.height = sizePx
             container.gravity = Gravity.CENTER_VERTICAL
         } else {
             iconView.visibility = View.GONE
@@ -155,6 +161,7 @@ class RoomActionSheetDialog private constructor(
         val text: String,
         val isWarning: Boolean,
         @DrawableRes val iconRes: Int,
+        val iconSizeDp: Float,
         @ColorInt val textColor: Int?,
         val textSizeSp: Float,
         val onClick: (() -> Unit)?
@@ -186,11 +193,12 @@ class RoomActionSheetDialog private constructor(
             @StringRes textResId: Int,
             isWarning: Boolean = false,
             @DrawableRes iconRes: Int = 0,
+            iconSizeDp: Float = 24f,
             @ColorInt textColor: Int? = null,
             textSizeSp: Float = 18f,
             onClick: (() -> Unit)? = null
         ): Builder {
-            actions.add(ActionItem(context.getString(textResId), isWarning, iconRes, textColor, textSizeSp, onClick))
+            actions.add(ActionItem(context.getString(textResId), isWarning, iconRes, iconSizeDp, textColor, textSizeSp, onClick))
             return this
         }
 
@@ -198,11 +206,12 @@ class RoomActionSheetDialog private constructor(
             text: String,
             isWarning: Boolean = false,
             @DrawableRes iconRes: Int = 0,
+            iconSizeDp: Float = 24f,
             @ColorInt textColor: Int? = null,
             textSizeSp: Float = 18f,
             onClick: (() -> Unit)? = null
         ): Builder {
-            actions.add(ActionItem(text, isWarning, iconRes, textColor, textSizeSp, onClick))
+            actions.add(ActionItem(text, isWarning, iconRes, iconSizeDp, textColor, textSizeSp, onClick))
             return this
         }
 

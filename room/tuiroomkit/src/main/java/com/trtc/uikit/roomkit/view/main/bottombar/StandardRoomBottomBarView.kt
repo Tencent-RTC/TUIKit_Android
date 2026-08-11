@@ -4,28 +4,37 @@ import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.operator.DeviceOperator
 import com.trtc.uikit.roomkit.base.ui.BaseView
+import com.trtc.uikit.roomkit.base.ui.ExpandableBarAnimator
+import com.trtc.uikit.roomkit.base.ui.RoomActionSheetDialog
 import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
+import com.trtc.uikit.roomkit.base.ui.contactpicker.ContactPickerDialog
 import com.trtc.uikit.roomkit.view.main.RoomBottomBarViewListener
 import com.trtc.uikit.roomkit.view.main.RoomParticipantListView
+import com.trtc.uikit.roomkit.view.main.ShareRoomView
+import com.trtc.uikit.roomkit.view.chat.ChatButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
+import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
+import io.trtc.tuikit.atomicxcore.api.room.CallUserToRoomCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RecordingStatus
+import io.trtc.tuikit.atomicxcore.api.room.RoomCallResult
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomType
-import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -63,11 +72,23 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
     private val llScreenShare: LinearLayout by lazy { findViewById(R.id.ll_screen_share) }
     private val ivScreenShare: ImageView by lazy { findViewById(R.id.iv_screen_share) }
 
+    private val llInvite: LinearLayout by lazy { findViewById(R.id.ll_invite) }
+
+    private val chatButton: ChatButton by lazy { findViewById(R.id.chat_button) }
+
     private val llAiTool: LinearLayout by lazy { findViewById(R.id.ll_ai_tool) }
 
     private val llRecording: LinearLayout by lazy { findViewById(R.id.ll_recording) }
     private val ivRecording: ImageView by lazy { findViewById(R.id.iv_recording) }
     private val tvRecording: TextView by lazy { findViewById(R.id.tv_recording) }
+
+    private val llRoot: View by lazy { findViewById(R.id.ll_root) }
+    private val llMainBar: LinearLayout by lazy { findViewById(R.id.ll_main_bar) }
+    private val llExtensionBar: LinearLayout by lazy { findViewById(R.id.ll_extension_bar) }
+    private val llExpand: LinearLayout by lazy { findViewById(R.id.ll_expand) }
+    private val ivExpand: ImageView by lazy { findViewById(R.id.iv_expand) }
+    private val tvExpand: TextView by lazy { findViewById(R.id.tv_expand) }
+    private var barAnimator: ExpandableBarAnimator? = null
 
     private var isRecording = false
     private var recordingConfirmDialog: RoomAlertDialog? = null
@@ -76,6 +97,8 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
     private val roomStore = RoomStore.shared()
 
     private var roomParticipantListViewDialog: RoomPopupDialog? = null
+    private var shareRoomDialog: RoomPopupDialog? = null
+    private var inviteDialog: RoomActionSheetDialog? = null
     private var currentRoomID: String? = null
 
     init {
@@ -85,6 +108,8 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
     public override fun init(roomID: String) {
         initView()
         super.init(roomID)
+        chatButton.init(roomID)
+        chatButton.onClick = { handleChatClick() }
     }
 
     override fun initStore(roomID: String) {
@@ -125,8 +150,10 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
 
             launch {
                 combine(
-                    participantStore.state.localParticipant.map { it?.screenShareStatus ?: DeviceStatus.OFF }.distinctUntilChanged(),
-                    participantStore.state.localParticipant.map { it?.role ?: ParticipantRole.GENERAL_USER }.distinctUntilChanged(),
+                    participantStore.state.localParticipant.map { it?.screenShareStatus ?: DeviceStatus.OFF }
+                        .distinctUntilChanged(),
+                    participantStore.state.localParticipant.map { it?.role ?: ParticipantRole.GENERAL_USER }
+                        .distinctUntilChanged(),
                     roomStore.state.currentRoom.map { it?.isAllScreenShareDisabled ?: false }.distinctUntilChanged()
                 ) { screenStatus, userRole, isAllScreenShareDisabled ->
                     Triple(screenStatus, userRole, isAllScreenShareDisabled)
@@ -155,6 +182,12 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
         scope.cancel()
         roomParticipantListViewDialog?.dismiss()
         roomParticipantListViewDialog = null
+        shareRoomDialog?.dismiss()
+        shareRoomDialog = null
+        inviteDialog?.dismiss()
+        inviteDialog = null
+        barAnimator?.cancel()
+        barAnimator = null
         dismissRecordingConfirmDialog()
     }
 
@@ -163,8 +196,11 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
         llMicrophone.setOnClickListener { handleMicrophoneClick() }
         llCamera.setOnClickListener { handleCameraClick() }
         llScreenShare.setOnClickListener { handleScreenShareClick() }
+        llInvite.setOnClickListener { handleInviteClick() }
         llAiTool.setOnClickListener { handleAiToolClick() }
         llRecording.setOnClickListener { handleRecordingClick() }
+        llExpand.setOnClickListener { handleExpandClick() }
+        llRoot.background?.alpha = 0
     }
 
     private fun updateParticipantCount(count: Int) {
@@ -332,6 +368,94 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
         requestScreenShareTip { deviceOperator.startScreenShare() }
     }
 
+    private fun handleInviteClick() {
+        logger.info("handleInviteClick")
+        val roomID = currentRoomID ?: return
+        val textColor = ContextCompat.getColor(context, R.color.roomkit_color_text_light)
+        if (inviteDialog == null) {
+            inviteDialog = RoomActionSheetDialog.Builder(context)
+                .addAction(
+                    R.string.roomkit_add_user,
+                    iconRes = R.drawable.roomkit_ic_add_user,
+                    iconSizeDp = 18f,
+                    textColor = textColor,
+                    textSizeSp = 14f
+                ) { showAddUserDialog(roomID) }
+                .addAction(
+                    R.string.roomkit_share_room,
+                    iconRes = R.drawable.roomkit_ic_share_room,
+                    iconSizeDp = 18f,
+                    textColor = textColor,
+                    textSizeSp = 14f
+                ) { showShareRoomDialog(roomID) }.build()
+        }
+        inviteDialog?.show()
+    }
+
+    private fun showAddUserDialog(roomID: String) {
+        ContactPickerDialog(
+            context = context,
+            initialSelectedIds = emptyList()
+        ) { selectedIds ->
+            if (selectedIds.isEmpty()) return@ContactPickerDialog
+            logger.info("Inviting users: count=${selectedIds.size}")
+            RoomStore.shared().callUserToRoom(
+                roomID,
+                selectedIds,
+                60,
+                "",
+                object : CallUserToRoomCompletionHandler {
+                    override fun onSuccess(result: Map<String, RoomCallResult>) {
+                        logger.info("callUserToRoom success: $result")
+                        AtomicToast.show(context, context.getString(R.string.roomkit_invite_success), Style.SUCCESS)
+                    }
+
+                    override fun onFailure(code: Int, desc: String) {
+                        logger.error("callUserToRoom failed: code=$code, desc=$desc")
+                        ErrorLocalized.showError(context, code)
+                    }
+                }
+            )
+        }.show()
+    }
+
+    private fun showShareRoomDialog(roomID: String) {
+        if (shareRoomDialog == null) {
+            val view = ShareRoomView(context).apply { init(roomID) }
+            shareRoomDialog = RoomPopupDialog(context).apply { setView(view) }
+        }
+        shareRoomDialog?.show()
+    }
+
+    private fun handleChatClick() {
+        logger.info("handleChatClick")
+        chatButton.clearUnreadCount()
+        listener?.onChatButtonTapped()
+    }
+
+    private fun handleExpandClick() {
+        getOrCreateBarAnimator().toggle()
+    }
+
+    private fun getOrCreateBarAnimator(): ExpandableBarAnimator {
+        return barAnimator ?: ExpandableBarAnimator(
+            rootView = llRoot,
+            mainBar = llMainBar,
+            extensionBar = llExtensionBar,
+        ).apply {
+            onToggleStart = { expand ->
+                llExpand.isClickable = false
+                ivExpand.setImageResource(if (expand) R.drawable.roomkit_ic_close else R.drawable.roomkit_ic_expand)
+                tvExpand.text =
+                    context.getString(if (expand) R.string.roomkit_item_close else R.string.roomkit_item_expand)
+            }
+            onToggleEnd = { expand ->
+                llExpand.isClickable = true
+            }
+            barAnimator = this
+        }
+    }
+
     /**
      * Check if screen share is banned and show appropriate dialog.
      * If banned, show forbidden dialog; otherwise, show share tip dialog.
@@ -354,7 +478,8 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
             .setNegativeButton(R.string.roomkit_cancel)
             .setPositiveButton(R.string.roomkit_contact_us) {
                 try {
-                    val intent = Intent(Intent.ACTION_VIEW, "https://im.cloud.tencent.com/s/cWSPGIIM62CC/cFUPGIIM62CF".toUri())
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, "https://im.cloud.tencent.com/s/cWSPGIIM62CC/cFUPGIIM62CF".toUri())
                     context.startActivity(intent)
                 } catch (e: Exception) {
                     e.printStackTrace()
