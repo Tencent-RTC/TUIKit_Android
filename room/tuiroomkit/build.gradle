@@ -48,6 +48,7 @@ dependencies {
     api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
 
     api project(':atomic_x')
+    api project(':chatuikit')
 
     api 'com.google.android.material:material:1.12.0'
     

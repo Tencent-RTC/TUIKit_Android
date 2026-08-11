@@ -10,6 +10,7 @@ import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 /**
  * Start-time picker (BottomSheet with three WheelPicker columns).
@@ -20,6 +21,7 @@ import java.util.Locale
 class RoomStartTimePickerDialog(
     private val context: Context,
     private val initialTimeMillis: Long,
+    private val timeZone: TimeZone = TimeZone.getDefault(),
     private val onConfirm: (Long) -> Unit
 ) {
 
@@ -38,7 +40,7 @@ class RoomStartTimePickerDialog(
     private val minutes: List<String> = (0..MINUTE_MAX step MINUTE_STEP)
         .map { String.format(Locale.getDefault(), TIME_FORMAT, it) }
 
-    private val today: Calendar = Calendar.getInstance().apply {
+    private val today: Calendar = Calendar.getInstance(timeZone).apply {
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.MINUTE, 0)
         set(Calendar.SECOND, 0)
@@ -64,7 +66,7 @@ class RoomStartTimePickerDialog(
         wpMinute.setData(minutes)
 
         // Snap the initial minute down to the 5-minute grid.
-        val initial = Calendar.getInstance().apply { timeInMillis = initialTimeMillis }
+        val initial = Calendar.getInstance(timeZone).apply { timeInMillis = initialTimeMillis }
         val initDateIndex = dateIndexOf(initial).coerceAtLeast(0)
         val initHour = initial.get(Calendar.HOUR_OF_DAY)
         val initMinute = (initial.get(Calendar.MINUTE) / MINUTE_STEP) * MINUTE_STEP
@@ -143,7 +145,9 @@ class RoomStartTimePickerDialog(
             Calendar.SATURDAY -> R.string.roomkit_saturday_text
             else -> R.string.roomkit_sunday_text
         }
-        val formatter = SimpleDateFormat(context.getString(R.string.roomkit_date_pattern), Locale.getDefault())
+        val formatter = SimpleDateFormat(context.getString(R.string.roomkit_date_pattern), Locale.getDefault()).apply {
+            this.timeZone = this@RoomStartTimePickerDialog.timeZone
+        }
         return "${formatter.format(cal.time)} ${context.getString(weekdayRes)}"
     }
 }

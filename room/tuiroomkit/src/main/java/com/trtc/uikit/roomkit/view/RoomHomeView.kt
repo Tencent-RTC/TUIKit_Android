@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.RoomCreateActivity
 import com.trtc.uikit.roomkit.RoomJoinActivity
-import com.trtc.uikit.roomkit.RoomScheduleActivity
-import com.trtc.uikit.roomkit.RoomScheduledDetailActivity
+import com.trtc.uikit.roomkit.view.schedule.RoomScheduleActivity
+import com.trtc.uikit.roomkit.view.schedule.RoomScheduledDetailActivity
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="56dp"
     android:background="?android:attr/selectableItemBackground"
     android:gravity="center"
     android:orientation="horizontal"
@@ -15,7 +16,7 @@
         android:id="@+id/iv_action_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="15dp"
         android:visibility="gone"
         tools:ignore="ContentDescription" />
 

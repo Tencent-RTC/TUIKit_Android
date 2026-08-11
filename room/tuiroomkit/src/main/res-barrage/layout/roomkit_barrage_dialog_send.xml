@@ -23,7 +23,7 @@
 
             android:scaleType="centerCrop">
 
-            <com.trtc.uikit.roomkit.barrage.view.EmojiEditText
+            <com.trtc.uikit.roomkit.view.barrage.EmojiEditText
                 android:id="@+id/et_input_message"
                 android:layout_width="0dp"
                 android:layout_height="32dp"

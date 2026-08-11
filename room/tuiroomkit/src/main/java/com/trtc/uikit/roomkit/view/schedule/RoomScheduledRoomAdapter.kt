@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.RoomMainActivity
@@ -41,7 +42,7 @@ class RoomScheduledRoomAdapter(
     fun setDataList(rooms: List<RoomInfo>) {
         items.clear()
         val sorted = rooms.sortedBy { it.scheduledStartTime }
-        val grouped = sorted.groupBy { room -> getDateHeader(room.scheduledStartTime) }
+        val grouped = sorted.groupBy { room -> getDateHeader(room.scheduledStartTime * 1000L) }
         for ((header, roomList) in grouped) {
             items.add(Item.Header(header))
             items.addAll(roomList.map { Item.Room(it) })
@@ -98,7 +99,6 @@ class RoomScheduledRoomAdapter(
         private val tvRoomId: TextView = itemView.findViewById(R.id.tv_room_id)
         private val tvRoomTime: TextView = itemView.findViewById(R.id.tv_room_time)
         private val tvRoomStatus: TextView = itemView.findViewById(R.id.tv_room_status)
-        private val divideStatusLine: View = itemView.findViewById(R.id.divide_status_line)
         private val llEnterRoom: LinearLayout = itemView.findViewById(R.id.ll_enter_scheduled_room)
         private var roomInfo: RoomInfo? = null
 
@@ -117,18 +117,16 @@ class RoomScheduledRoomAdapter(
             tvRoomId.text = addSpacesEveryThreeChars(info.roomID)
             tvRoomTime.text = itemView.context.getString(
                 R.string.roomkit_scheduled_room_time_range,
-                formatTime(info.scheduledStartTime),
-                formatTime(info.scheduledEndTime)
+                formatTime(info.scheduledStartTime * 1000L),
+                formatTime(info.scheduledEndTime * 1000L)
             )
 
-            // Only show the status tag and its leading divider when the room is running.
             if (info.roomStatus == RoomStatus.RUNNING) {
-                divideStatusLine.visibility = View.VISIBLE
-                tvRoomStatus.visibility = View.VISIBLE
-                tvRoomStatus.text = itemView.context.getString(R.string.roomkit_room_running)
+                tvRoomStatus.text = itemView.context.getString(R.string.roomkit_scheduled_status_running)
+                tvRoomStatus.setTextColor(ContextCompat.getColor(itemView.context, R.color.roomkit_color_button_primary))
             } else {
-                divideStatusLine.visibility = View.GONE
-                tvRoomStatus.visibility = View.GONE
+                tvRoomStatus.text = itemView.context.getString(R.string.roomkit_scheduled_status_not_started)
+                tvRoomStatus.setTextColor(ContextCompat.getColor(itemView.context, R.color.roomkit_color_scheduled_room_not_started))
             }
         }
 

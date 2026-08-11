@@ -15,6 +15,9 @@ project(':tuiroomkit').projectDir = file("${clientUikitPath}/room/tuiroomkit")
 include ':tuilivekit'
 project(':tuilivekit').projectDir = file("${clientUikitPath}/live/tuilivekit")
 
+include ':chatuikit'
+project(':chatuikit').projectDir = file("${clientUikitPath}/chat/uikit")
+
 include ':atomic_x'
 project(':atomic_x').projectDir = file("${clientUikitPath}/atomic_x")
 // ---------------- client_uikit end ----------------

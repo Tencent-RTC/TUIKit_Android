@@ -84,8 +84,7 @@
             android:id="@+id/divide_status_line"
             android:layout_width="1dp"
             android:layout_height="10dp"
-            android:background="@color/roomkit_color_scheduled_room_date_text"
-            android:visibility="gone" />
+            android:background="@color/roomkit_color_scheduled_room_date_text" />
 
         <TextView
             android:id="@+id/tv_room_status"
@@ -94,7 +93,6 @@
             android:paddingStart="8dp"
             android:textColor="@color/roomkit_color_button_primary"
             android:textSize="14sp"
-            android:visibility="gone"
             tools:text="Running" />
     </LinearLayout>
 

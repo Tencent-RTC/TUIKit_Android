@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.view.View
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.extension.getDisplayName
@@ -57,7 +56,7 @@ class RoomScheduleInfoDialog(private val context: Context) {
         tvRoomId.text = addSpacesEveryThreeChars(roomID)
 
         val timeText = ScheduleDateFormatter.formatDateTimeRange(
-            context, roomInfo.scheduledStartTime, roomInfo.scheduledEndTime
+            context, roomInfo.scheduledStartTime * 1000L, roomInfo.scheduledEndTime * 1000L
         )
         tvRoomTime.text = timeText
 

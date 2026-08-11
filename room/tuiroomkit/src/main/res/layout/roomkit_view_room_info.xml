@@ -97,6 +97,65 @@
                 android:text="@string/roomkit_copy"
                 android:textColor="@color/roomkit_color_text_grey"
                 android:textSize="12sp" />
+            </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_password_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="@string/roomkit_room_password_title"
+            android:textColor="@color/roomkit_color_room_info_label"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_room_password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/roomkit_color_white"
+            android:textSize="14sp"
+            tools:text="123456" />
+
+        <LinearLayout
+            android:id="@+id/btn_copy_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/roomkit_bg_copy_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:importantForAccessibility="no"
+                android:scaleType="centerInside"
+                android:src="@drawable/roomkit_ic_copy" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/roomkit_copy"
+                android:textColor="@color/roomkit_color_text_grey"
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 

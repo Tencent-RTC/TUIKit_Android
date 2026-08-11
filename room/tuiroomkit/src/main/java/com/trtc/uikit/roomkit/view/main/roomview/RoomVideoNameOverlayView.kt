@@ -1,8 +1,10 @@
 package com.trtc.uikit.roomkit.view.main.roomview
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,10 +13,8 @@ import com.trtc.uikit.roomkit.base.extension.getDisplayName
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
+import io.trtc.tuikit.atomicxcore.api.view.VideoStreamType
 
-/**
- * Overlay view displaying participant name, role icon, and microphone status on video items.
- */
 class RoomVideoNameOverlayView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -24,6 +24,7 @@ class RoomVideoNameOverlayView @JvmOverloads constructor(
     private val ivUserAvatar: ImageView by lazy { findViewById(R.id.iv_user_manager) }
     private val tvUserName: TextView by lazy { findViewById(R.id.tv_user_name) }
     private val ivMicStatus: ImageView by lazy { findViewById(R.id.iv_mic_status) }
+    private val btnOrientationSwitch: ImageView by lazy { findViewById(R.id.btn_orientation_switch) }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_view_video_name_overlay, this)
@@ -38,6 +39,30 @@ class RoomVideoNameOverlayView @JvmOverloads constructor(
         } else {
             ivMicStatus.setImageResource(R.drawable.roomkit_ic_microphone_off)
         }
+    }
+
+    fun setStreamType(streamType: VideoStreamType) {
+        btnOrientationSwitch.visibility =
+            if (streamType == VideoStreamType.SCREEN) VISIBLE else GONE
+        updateOrientationIcon()
+    }
+
+    fun setOrientationSwitchClickListener(listener: (() -> Unit)?) {
+        btnOrientationSwitch.setOnClickListener { listener?.invoke() }
+    }
+
+    private fun updateOrientationIcon() {
+        if (btnOrientationSwitch.visibility != VISIBLE) return
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        btnOrientationSwitch.setImageResource(
+            if (isLandscape) R.drawable.roomkit_ic_switch_portrait_button
+            else R.drawable.roomkit_ic_switch_landscape_button
+        )
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateOrientationIcon()
     }
 
     private fun updateRoleIcon(role: ParticipantRole) {

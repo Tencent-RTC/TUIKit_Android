@@ -5,6 +5,7 @@ import com.trtc.uikit.roomkit.R
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 /**
  * Locale-aware date/time formatter.
@@ -17,33 +18,40 @@ internal object ScheduleDateFormatter {
     private const val DATE_TIME_FORMAT = "%d%s%02d%s%02d%s %02d:%02d"
     private const val DATE_ONLY_FORMAT = "%d%s%02d%s%02d%s"
 
-    fun formatDateTime(context: Context, timestampMillis: Long): String {
-        val calendar = Calendar.getInstance().apply { time = Date(timestampMillis) }
-        val yearUnit = context.getString(R.string.roomkit_year_text)
-        val monthUnit = context.getString(R.string.roomkit_month_text)
-        val dayUnit = context.getString(R.string.roomkit_day_text)
+    private fun unitText(context: Context, resId: Int): String = context.getString(resId)
+    private fun yearUnit(context: Context) = unitText(context, R.string.roomkit_year_text)
+    private fun monthUnit(context: Context) = unitText(context, R.string.roomkit_month_text)
+    private fun dayUnit(context: Context) = unitText(context, R.string.roomkit_day_text)
+
+    fun formatDateTime(
+        context: Context,
+        timestampMillis: Long,
+        timeZone: TimeZone = TimeZone.getDefault()
+    ): String {
+        val calendar = Calendar.getInstance(timeZone).apply { time = Date(timestampMillis) }
         return String.format(
             Locale.getDefault(),
             DATE_TIME_FORMAT,
-            calendar.get(Calendar.YEAR), yearUnit,
-            calendar.get(Calendar.MONTH) + 1, monthUnit,
-            calendar.get(Calendar.DAY_OF_MONTH), dayUnit,
+            calendar.get(Calendar.YEAR), yearUnit(context),
+            calendar.get(Calendar.MONTH) + 1, monthUnit(context),
+            calendar.get(Calendar.DAY_OF_MONTH), dayUnit(context),
             calendar.get(Calendar.HOUR_OF_DAY),
             calendar.get(Calendar.MINUTE)
         )
     }
 
-    fun formatDate(context: Context, timestampMillis: Long): String {
-        val calendar = Calendar.getInstance().apply { time = Date(timestampMillis) }
-        val yearUnit = context.getString(R.string.roomkit_year_text)
-        val monthUnit = context.getString(R.string.roomkit_month_text)
-        val dayUnit = context.getString(R.string.roomkit_day_text)
+    fun formatDate(
+        context: Context,
+        timestampMillis: Long,
+        timeZone: TimeZone = TimeZone.getDefault()
+    ): String {
+        val calendar = Calendar.getInstance(timeZone).apply { time = Date(timestampMillis) }
         return String.format(
             Locale.getDefault(),
             DATE_ONLY_FORMAT,
-            calendar.get(Calendar.YEAR), yearUnit,
-            calendar.get(Calendar.MONTH) + 1, monthUnit,
-            calendar.get(Calendar.DAY_OF_MONTH), dayUnit
+            calendar.get(Calendar.YEAR), yearUnit(context),
+            calendar.get(Calendar.MONTH) + 1, monthUnit(context),
+            calendar.get(Calendar.DAY_OF_MONTH), dayUnit(context)
         )
     }
 
@@ -51,8 +59,13 @@ internal object ScheduleDateFormatter {
      * Formats a conference time range. When start and end fall on the same day the end value shows
      * only hh:mm; when they span days a "(Next Day)" marker is added.
      */
-    fun formatDateTimeRange(context: Context, startMillis: Long, endMillis: Long): String {
-        val calendar = Calendar.getInstance().apply { time = Date(startMillis) }
+    fun formatDateTimeRange(
+        context: Context,
+        startMillis: Long,
+        endMillis: Long,
+        timeZone: TimeZone = TimeZone.getDefault()
+    ): String {
+        val calendar = Calendar.getInstance(timeZone).apply { time = Date(startMillis) }
         val startYear = calendar.get(Calendar.YEAR)
         val startMonth = calendar.get(Calendar.MONTH) + 1
         val startDay = calendar.get(Calendar.DAY_OF_MONTH)
@@ -64,7 +77,7 @@ internal object ScheduleDateFormatter {
         val endHour = calendar.get(Calendar.HOUR_OF_DAY)
         val endMinute = calendar.get(Calendar.MINUTE)
 
-        val startTimeText = formatDateTime(context, startMillis)
+        val startTimeText = formatDateTime(context, startMillis, timeZone)
         val patternRes = if (startYear == endYear && startMonth == endMonth && startDay == endDay) {
             R.string.roomkit_format_conference_time
         } else {

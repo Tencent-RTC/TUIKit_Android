@@ -26,7 +26,7 @@
     <string name="roomkit_mute_all_audio">كتم صوت الجميع</string>
     <string name="roomkit_unmute_all_audio">إلغاء كتم صوت الجميع</string>
     <string name="roomkit_more">المزيد</string>
-    <string name="roomkit_search_members">البحث عن أعضاء</string>
+    <string name="roomkit_search_members">البحث عن المشاركين</string>
     <string name="roomkit_invite">دعوة</string>
     <string name="roomkit_role_owner">المالك</string>
     <string name="roomkit_role_admin">المسؤول</string>
@@ -373,4 +373,22 @@
     <string name="roomkit_minimum_duration_is_fifteen_minutes">الحد الأدنى لمدة الغرفة هو 15 دقيقة.</string>
     <string name="roomkit_scheduled_status_running">قيد التقدم</string>
     <string name="roomkit_scheduled_status_not_started">لم يبدأ</string>
+    <string name="roomkit_room_host">المضيف:</string>
+    <string name="roomkit_invitation_participant">المشارك:</string>
+    <string name="roomkit_invite_you_to_join_room">يدعوك %s للانضمام إلى الغرفة</string>
+    <string name="roomkit_invitation_room_meta">المضيف: %1$s  |  المشارك: %2$s</string>
+    <string name="roomkit_add_user">إضافة أعضاء</string>
+    <string name="roomkit_share_room">مشاركة الغرفة</string>
+    <string name="roomkit_invite_success">تم إرسال الدعوات، في انتظار انضمام الأعضاء</string>
+    <string name="roomkit_chat_not_available">ميزة الدردشة غير متاحة بعد</string>
+    <string name="roomkit_item_expand">توسيع</string>
+    <string name="roomkit_item_close">طي</string>
+    <string name="roomkit_call">اتصال</string>
+    <string name="roomkit_calling">جارٍ الاتصال…</string>
+    <string name="roomkit_call_everyone">اتصال بالجميع</string>
+    <string name="roomkit_not_join_for_now">لم يدخل بعد</string>
+    <string name="roomkit_tab_joined">دخل (%s)</string>
+    <string name="roomkit_tab_pending">لم يدخل (%s)</string>
+    <string name="roomkit_join_now">انضم الآن</string>
+    <string name="roomkit_do_not_enter_for_now">لا تدخل الآن</string>
 </resources>

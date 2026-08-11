@@ -7,7 +7,7 @@
     android:background="@color/roomkit_color_background"
     android:orientation="vertical">
 
-    <com.trtc.uikit.roomkit.base.ui.widget.RoomTopBar
+    <com.trtc.uikit.roomkit.base.ui.RoomTopBar
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
