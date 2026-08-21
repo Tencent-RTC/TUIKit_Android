@@ -3,7 +3,7 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.ui.reactions.MessageReac
 import kotlin.math.roundToInt
 
 internal object LongPressDimens {
-    const val COLUMNS = 4
+    const val COLUMNS = 5
     const val MAX_ROWS = 2
     const val PAGE_SIZE = COLUMNS * MAX_ROWS
 
@@ -25,19 +25,19 @@ internal object LongPressDimens {
         return pageIndicatorDotSize(density) + pageIndicatorVerticalPadding(density) * 2
     }
 
-    fun popupItemCellWidth(density: Float): Int = 56.dp(density)
+    fun popupItemCellWidth(density: Float): Int = 44.dp(density)
 
-    fun popupItemCellHeight(density: Float): Int = 64.dp(density)
+    fun popupItemCellHeight(density: Float): Int = 56.dp(density)
 
-    fun popupPageVerticalPadding(density: Float): Int = 8.dp(density) * 2
+    fun popupPageVerticalPadding(density: Float): Int = 4.dp(density) * 2
 
-    fun popupDividerHeight(density: Float): Int = 1 + 4.dp(density) * 2
+    fun popupDividerHeight(): Int = 1
 
     fun popupPageHeight(rowCount: Int, density: Float): Int {
         val safeRowCount = rowCount.coerceAtLeast(1)
         return popupPageVerticalPadding(density) +
             popupItemCellHeight(density) * safeRowCount +
-            popupDividerHeight(density) * (safeRowCount - 1)
+            popupDividerHeight() * (safeRowCount - 1)
     }
 
     fun popupPagerVerticalPadding(): Int = 0
@@ -47,29 +47,32 @@ internal object LongPressDimens {
     }
 
     fun popupCardWidth(columnCount: Int, density: Float): Int {
-        return popupItemCellWidth(density) * columnCount + 8.dp(density) * 2
+        return popupItemCellWidth(density) * columnCount + 4.dp(density) * 2
     }
 
-    fun cardWidthForColumns(
-        columnCount: Int,
-        density: Float,
-        quickPickerRowWidth: Int
-    ): Int {
-        return if (columnCount >= COLUMNS) {
-            maxOf(popupCardWidth(COLUMNS, density), quickPickerRowWidth)
-        } else {
-            popupCardWidth(columnCount, density)
-        }
+    fun cardWidthForColumns(columnCount: Int, density: Float): Int {
+        return popupCardWidth(columnCount, density)
     }
 
-    fun emojiPanelHorizontalPadding(density: Float): Int = 8.dp(density)
+    fun emojiPanelHorizontalPadding(density: Float): Int = 12.dp(density)
 
-    fun emojiPanelVerticalPadding(density: Float): Int = 8.dp(density)
+    fun emojiPanelTopPadding(density: Float): Int = 12.dp(density)
 
-    fun emojiCellSize(density: Float): Int = 32.dp(density)
+    fun emojiPanelHeaderHeight(density: Float): Int = 14.dp(density)
+
+    fun emojiPanelHeaderGap(density: Float): Int = 8.dp(density)
+
+    fun emojiPanelBottomPadding(density: Float): Int = 8.dp(density)
+
+    fun emojiPanelCollapseIconSize(density: Float): Int = 14.dp(density)
+
+    fun emojiRowDividerHeight(density: Float): Int = 1 + 3.dp(density) * 2
+
+    fun emojiCellSize(density: Float): Int = 34.dp(density)
 
     fun emojiPanelPageHeight(density: Float): Int {
-        return emojiCellSize(density) * MessageReactionPanelPolicy.ROWS
+        return emojiCellSize(density) * MessageReactionPanelPolicy.ROWS +
+            emojiRowDividerHeight(density)
     }
 
     fun emojiPanelContentWidth(density: Float): Int {

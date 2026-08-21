@@ -27,6 +27,7 @@ import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.chat.app.R
 import io.trtc.tuikit.chat.demo.common.AppConstants
 import io.trtc.tuikit.chat.demo.common.BaseActivity
+import io.trtc.tuikit.chat.demo.common.WelcomeMessageSender
 import io.trtc.tuikit.chat.demo.customerservice.CustomerServiceManager
 import io.trtc.tuikit.chat.demo.main.MainActivity
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionItem
@@ -109,6 +110,7 @@ abstract class BaseLoginActivity : BaseActivity() {
                 override fun onSuccess() {
                     initCall(sdkAppId, userId, userSig)
                     CustomerServiceManager.initAndStart(this@BaseLoginActivity, sdkAppId, userId, userSig)
+                    WelcomeMessageSender.scheduleWelcomeMessage(this@BaseLoginActivity)
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER, userId)
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_TYPE, loginType)
                     if (token != null) {

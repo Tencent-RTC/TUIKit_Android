@@ -12,9 +12,10 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiManager
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
-import io.trtc.tuikit.chat.uikit.components.messagelist.ui.reactions.ReactionQuickPickerView
 import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListViewModel
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -35,7 +36,7 @@ internal class MessageLongPressPopup(
     private val colors: ColorTokens
         get() = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
 
-    private val allActions = toLongPressPopupActions(actions)
+    private val allActions = buildPopupActions(actions)
     private var popupWindow: PopupWindow? = null
 
     private var bubbleLayout: BubbleMenuLayout? = null
@@ -48,7 +49,6 @@ internal class MessageLongPressPopup(
     private var popupX: Int = 0
     private var popupY: Int = 0
 
-    private var quickPickerHeightPx: Int = 0
     private var menuSwitchHeightPx: Int = 0
     private var isEmojiExpanded: Boolean = false
     private var expandAnimator: ValueAnimator? = null
@@ -89,7 +89,7 @@ internal class MessageLongPressPopup(
         val visualGap = LongPressDimens.visualGap(density)
 
         val maxSwitchH = maxOf(menuSwitchHeightPx, emojiPanelTotalHeight())
-        val chromeH = quickPickerHeightPx + arrowHeightPx + shadowPadTop + shadowPadBottom
+        val chromeH = arrowHeightPx + shadowPadTop + shadowPadBottom
         val maxBubbleH = maxSwitchH + chromeH
 
         val position = LongPressPositionCalculator.calculate(
@@ -195,29 +195,35 @@ internal class MessageLongPressPopup(
         popupRoot = null
     }
 
-    private fun buildCard(): PopupCard {
-        val quickPicker = if (shouldShowQuickPicker()) {
-            ReactionQuickPickerView(context).apply {
-                bind(
-                    message = message,
-                    viewModel = viewModel,
-                    onHandled = { dismiss() },
-                    onToggleExpanded = { expanded -> handleExpandedToggle(expanded) }
-                )
-            }
-        } else {
-            null
+    private fun buildPopupActions(actions: List<MessageCustomAction>): List<LongPressPopupAction> {
+        val popupActions = toLongPressPopupActions(actions).toMutableList()
+        if (actions.isNotEmpty() &&
+            config.isSupportReaction &&
+            message.status == MessageStatus.SEND_SUCCESS &&
+            EmojiManager.reactionEmojiListForPicker().isNotEmpty()
+        ) {
+            popupActions += LongPressPopupAction(
+                title = context.getString(R.string.message_list_menu_reaction),
+                dangerousAction = false,
+                iconResId = R.drawable.message_list_menu_reaction_icon,
+                onClick = {},
+                isReactionEntry = true
+            )
         }
+        return popupActions
+    }
 
+    private fun buildCard(): PopupCard {
+        val hasReactionEntry = allActions.any { it.isReactionEntry }
         val menuContent = LongPressActionMenuBuilder(
             context = context,
             density = density,
             colors = colors,
             message = message,
             actions = allActions,
-            quickPickerRowWidth = ReactionQuickPickerView.measuredRowWidth(context),
-            onDismiss = ::dismiss
-        ).build(forceFullColumns = quickPicker != null)
+            onDismiss = ::dismiss,
+            onReactionEntry = { handleExpandedToggle(true) }
+        ).build(forceFullColumns = hasReactionEntry)
         menuView = menuContent.view
         val cardWidth = menuContent.width
 
@@ -244,17 +250,6 @@ internal class MessageLongPressPopup(
                 cardWidth,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            if (quickPicker != null) {
-                addView(
-                    quickPicker,
-                    LinearLayout.LayoutParams(
-                        quickPicker.measuredRowWidth(),
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        gravity = Gravity.CENTER_HORIZONTAL
-                    }
-                )
-            }
             addView(
                 switchArea,
                 LinearLayout.LayoutParams(
@@ -267,7 +262,6 @@ internal class MessageLongPressPopup(
             View.MeasureSpec.makeMeasureSpec(cardWidth, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         )
-        quickPickerHeightPx = quickPicker?.measuredHeight ?: 0
         menuSwitchHeightPx = menuContent.height
         return PopupCard(
             view = root,
@@ -344,11 +338,6 @@ internal class MessageLongPressPopup(
         return emojiPanelBuilder().totalHeight()
     }
 
-    private fun shouldShowQuickPicker(): Boolean {
-        return config.isSupportReaction &&
-            message.status == MessageStatus.SEND_SUCCESS
-    }
-
     private fun emojiPanelBuilder(): LongPressEmojiPanelBuilder {
         return LongPressEmojiPanelBuilder(
             context = context,
@@ -356,7 +345,12 @@ internal class MessageLongPressPopup(
             colors = colors,
             message = message,
             viewModel = viewModel,
-            onDismiss = ::dismiss
+            onDismiss = ::dismiss,
+            onCollapse = { handleExpandedToggle(false) },
+            onShowAllEmoji = {
+                dismiss()
+                viewModel.showEmojiPicker(message)
+            }
         )
     }
 

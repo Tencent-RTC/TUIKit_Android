@@ -1,10 +1,10 @@
 package io.trtc.tuikit.chat.uikit.components.widgets.azorderedlist
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
@@ -25,11 +25,10 @@ class AtomicIndexBar @JvmOverloads constructor(
 
     companion object {
         private const val LETTER_WIDTH_DP = 24f
+        private const val LETTER_HEIGHT_DP = 20f
         private const val HIGHLIGHTED_SIZE_DP = 20f
-        private const val NORMAL_SIZE_DP = 16f
-        private const val LETTER_SPACING_DP = 1f
-        private const val FONT_SIZE_SP = 10f
-        private const val VERTICAL_PADDING_DP = 8f
+        private const val FONT_SIZE_SP = 12f
+        private const val VERTICAL_PADDING_DP = 3f
     }
 
     private var letters: List<String> = emptyList()
@@ -45,10 +44,10 @@ class AtomicIndexBar @JvmOverloads constructor(
 
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
-        typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
 
-    private val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
 
@@ -68,14 +67,12 @@ class AtomicIndexBar @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val dm = resources.displayMetrics
         val widthPx = dp2px(LETTER_WIDTH_DP, dm).toInt()
-
+        val letterHeightPx = dp2px(LETTER_HEIGHT_DP, dm)
         val verticalPaddingPx = dp2px(VERTICAL_PADDING_DP, dm)
-        val spacingPx = dp2px(LETTER_SPACING_DP, dm)
-        val slotHeightPx = dp2px(NORMAL_SIZE_DP, dm)
         val contentHeight = if (letters.isEmpty()) {
             0f
         } else {
-            letters.size * slotHeightPx + (letters.size - 1) * spacingPx + verticalPaddingPx * 2
+            letters.size * letterHeightPx + verticalPaddingPx * 2
         }
 
         setMeasuredDimension(
@@ -91,11 +88,10 @@ class AtomicIndexBar @JvmOverloads constructor(
         val dm = resources.displayMetrics
         val colors = getColors()
 
+        val letterHeightPx = dp2px(LETTER_HEIGHT_DP, dm)
         val highlightedSizePx = dp2px(HIGHLIGHTED_SIZE_DP, dm)
-        val normalSizePx = dp2px(NORMAL_SIZE_DP, dm)
-        val spacingPx = dp2px(LETTER_SPACING_DP, dm)
         val verticalPaddingPx = dp2px(VERTICAL_PADDING_DP, dm)
-        val fontSizePx = dp2px(FONT_SIZE_SP, dm)
+        val fontSizePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE_SP, dm)
         val centerX = width / 2f
 
         var currentY = verticalPaddingPx
@@ -105,20 +101,19 @@ class AtomicIndexBar @JvmOverloads constructor(
             val isCurrent = !isDragging && currentLetter == letter
             val isHighlighted = isDraggedLetter || isCurrent
 
-            val slotHeight = normalSizePx
-            val centerY = currentY + slotHeight / 2
+            val centerY = currentY + letterHeightPx / 2
 
             if (isHighlighted) {
-                bgPaint.color = colors.textColorLink
-                canvas.drawCircle(centerX, centerY, highlightedSizePx / 2, bgPaint)
+                backgroundPaint.color = colors.textColorLink
+                canvas.drawCircle(centerX, centerY, highlightedSizePx / 2, backgroundPaint)
             }
 
             textPaint.textSize = fontSizePx
-            textPaint.color = if (isHighlighted) colors.textColorButton else colors.textColorLink
+            textPaint.color = if (isHighlighted) colors.textColorButton else colors.textColorSecondary
             val textY = centerY - (textPaint.descent() + textPaint.ascent()) / 2
             canvas.drawText(letter, centerX, textY, textPaint)
 
-            currentY += slotHeight + spacingPx
+            currentY += letterHeightPx
         }
     }
 
@@ -166,16 +161,11 @@ class AtomicIndexBar @JvmOverloads constructor(
     private fun getLetterFromY(y: Float): String? {
         if (letters.isEmpty() || height <= 0) return null
         val dm = resources.displayMetrics
+        val letterHeightPx = dp2px(LETTER_HEIGHT_DP, dm)
         val verticalPaddingPx = dp2px(VERTICAL_PADDING_DP, dm)
-        val spacingPx = dp2px(LETTER_SPACING_DP, dm)
-        val slotHeightPx = dp2px(NORMAL_SIZE_DP, dm)
-        val stepPx = slotHeightPx + spacingPx
-        if (stepPx <= 0f) return null
+        if (letterHeightPx <= 0f) return null
 
-        val relativeY = y - verticalPaddingPx
-        if (relativeY <= 0f) return letters.first()
-
-        val index = (relativeY / stepPx).toInt().coerceIn(0, letters.lastIndex)
+        val index = ((y - verticalPaddingPx) / letterHeightPx).toInt().coerceIn(0, letters.lastIndex)
         return letters[index]
     }
 

@@ -36,8 +36,9 @@ class SettingRowButton @JvmOverloads constructor(
         orientation = HORIZONTAL
         gravity = Gravity.CENTER
         layoutDirection = LAYOUT_DIRECTION_LOCALE
-        val verticalPadding = dp2px(14f, resources.displayMetrics).toInt()
+        val verticalPadding = dp2px(15f, resources.displayMetrics).toInt()
         setPadding(0, verticalPadding, 0, verticalPadding)
+        setMinimumHeight(dp2px(56f, resources.displayMetrics).toInt())
         isClickable = true
         isFocusable = true
 

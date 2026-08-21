@@ -6,7 +6,17 @@ import io.trtc.tuikit.chat.demo.common.AppConstants
 import io.trtc.tuikit.chat.demo.customerservice.CustomerServiceManager
 import io.trtc.tuikit.chat.demo.settings.SettingsPageView
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.Shader
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -16,11 +26,17 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.FragmentContainerView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.tencent.mmkv.MMKV
+import com.tencent.qcloud.tuikit.tuicallkit.view.component.recents.RecentCallsFragment
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.ContactFlowLauncher
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -31,6 +47,7 @@ import io.trtc.tuikit.atomicxcore.api.group.GetGroupInfoCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.group.GroupEvent
 import io.trtc.tuikit.atomicxcore.api.group.GroupInfo
 import io.trtc.tuikit.atomicxcore.api.group.GroupStore
+import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.chat.app.R
 import io.trtc.tuikit.chat.demo.chat.ChatActivity
 import io.trtc.tuikit.chat.demo.search.SearchActivity
@@ -52,10 +69,19 @@ private data class BottomTab(
     val tabId: Int,
     val root: LinearLayout,
     val icon: ImageView,
-    val text: TextView
+    val text: TextView,
+    val iconResId: Int,
+    val iconCutoutResId: Int = 0
 )
 
 private const val BADGE_CLEAR_DRAG_THRESHOLD_DP = 48
+private const val TAB_ICON_SIZE_DP = 24
+
+// Gradient handle positions of the selected tab icon, normalized to the icon canvas.
+private const val TAB_ICON_GRADIENT_LIGHT_X = 0.66f
+private const val TAB_ICON_GRADIENT_LIGHT_Y = -0.33f
+private const val TAB_ICON_GRADIENT_DARK_X = -0.24f
+private const val TAB_ICON_GRADIENT_DARK_Y = 0.6875f
 
 class MainActivity : BaseActivity() {
 
@@ -65,12 +91,14 @@ class MainActivity : BaseActivity() {
     private lateinit var messageUnreadBadge: AvatarBadgeView
     private lateinit var contactsUnreadBadge: AvatarBadgeView
     private lateinit var mainContainer: LinearLayout
-    private lateinit var tabDivider: View
+    private lateinit var allBottomTabs: List<BottomTab>
     private lateinit var bottomTabs: List<BottomTab>
 
     private var conversationsAddButton: ImageView? = null
     private var contactsAddButton: ImageView? = null
     private var selectedTabIndex = 0
+    private var currentTabId = R.id.demo_tab_messages
+    private val tabPageCache = mutableMapOf<Int, View>()
     private var isDraggingMessageBadge = false
     private var messageBadgeDragStartRawX = 0f
     private var messageBadgeDragStartRawY = 0f
@@ -99,27 +127,41 @@ class MainActivity : BaseActivity() {
         bottomNav = findViewById(R.id.demo_bottomNav)
         messageUnreadBadge = findViewById(R.id.demo_messageUnreadBadge)
         contactsUnreadBadge = findViewById(R.id.demo_contactsUnreadBadge)
-        tabDivider = findViewById(R.id.demo_tabDivider)
-        bottomTabs = listOf(
+        allBottomTabs = listOf(
             BottomTab(
                 tabId = R.id.demo_tab_messages,
                 root = findViewById(R.id.demo_tab_messages),
                 icon = findViewById(R.id.demo_tab_messages_icon),
-                text = findViewById(R.id.demo_tab_messages_text)
+                text = findViewById(R.id.demo_tab_messages_text),
+                iconResId = R.drawable.demo_ic_tab_messages,
+                iconCutoutResId = R.drawable.demo_ic_tab_messages_lines
+            ),
+            BottomTab(
+                tabId = R.id.demo_tab_calls,
+                root = findViewById(R.id.demo_tab_calls),
+                icon = findViewById(R.id.demo_tab_calls_icon),
+                text = findViewById(R.id.demo_tab_calls_text),
+                iconResId = R.drawable.demo_ic_tab_calls
             ),
             BottomTab(
                 tabId = R.id.demo_tab_contacts,
                 root = findViewById(R.id.demo_tab_contacts),
                 icon = findViewById(R.id.demo_tab_contacts_icon),
-                text = findViewById(R.id.demo_tab_contacts_text)
+                text = findViewById(R.id.demo_tab_contacts_text),
+                iconResId = R.drawable.demo_ic_tab_contacts
             ),
             BottomTab(
                 tabId = R.id.demo_tab_me,
                 root = findViewById(R.id.demo_tab_me),
                 icon = findViewById(R.id.demo_tab_me_icon),
-                text = findViewById(R.id.demo_tab_me_text)
+                text = findViewById(R.id.demo_tab_me_text),
+                iconResId = R.drawable.demo_ic_tab_me
             )
         )
+        val showCallsTab = MMKV.defaultMMKV().decodeBool(AppConstants.KEY_SHOW_CALLS_TAB, true)
+        bottomTabs = filterVisibleTabs(showCallsTab)
+        allBottomTabs.first { it.tabId == R.id.demo_tab_calls }.root.visibility =
+            if (showCallsTab) View.VISIBLE else View.GONE
 
         ViewCompat.setOnApplyWindowInsetsListener(mainContainer) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -183,9 +225,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun applyColors(colors: ColorTokens) {
-        mainContainer.setBackgroundColor(colors.bgColorOperate)
+        updateStatusBarAreaColor(colors)
         bottomNav.setBackgroundColor(colors.bgColorBottomBar)
-        tabDivider.setBackgroundColor(colors.strokeColorPrimary)
 
         conversationsAddButton?.setColorFilter(colors.textColorPrimary)
         contactsAddButton?.setColorFilter(colors.textColorPrimary)
@@ -200,32 +241,64 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupViewPager() {
-        val pages = listOf(
-            createConversationsPage(),
-            createContactsPage(),
-            createMePage()
-        )
-
-        viewPager.adapter = TabPagerAdapter(pages)
         viewPager.isUserInputEnabled = false
-        viewPager.offscreenPageLimit = pages.size
-
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 selectTab(position, updatePager = false)
             }
         })
+        rebuildPages()
+    }
+
+    private fun rebuildPages() {
+        val pages = bottomTabs.map { getOrCreatePage(it.tabId) }
+        viewPager.adapter = TabPagerAdapter(pages)
+        viewPager.offscreenPageLimit = pages.size
+        val targetIndex = bottomTabs.indexOfFirst { it.tabId == currentTabId }.coerceAtLeast(0)
+        viewPager.setCurrentItem(targetIndex, false)
+        selectTab(targetIndex, updatePager = false)
+    }
+
+    private fun getOrCreatePage(tabId: Int): View {
+        return tabPageCache.getOrPut(tabId) {
+            when (tabId) {
+                R.id.demo_tab_calls -> createCallsPage()
+                R.id.demo_tab_contacts -> createContactsPage()
+                R.id.demo_tab_me -> createMePage()
+                else -> createConversationsPage()
+            }
+        }
+    }
+
+    private fun filterVisibleTabs(showCalls: Boolean): List<BottomTab> {
+        return allBottomTabs.filter { it.tabId != R.id.demo_tab_calls || showCalls }
+    }
+
+    fun setCallsTabVisible(show: Boolean) {
+        val isVisible = bottomTabs.any { it.tabId == R.id.demo_tab_calls }
+        if (show == isVisible) {
+            return
+        }
+        allBottomTabs.first { it.tabId == R.id.demo_tab_calls }.root.visibility =
+            if (show) View.VISIBLE else View.GONE
+        bottomTabs = filterVisibleTabs(show)
+        bindTabClicks()
+        rebuildPages()
     }
 
     private fun setupBottomNav() {
+        bindTabClicks()
+        selectTab(bottomTabs.indexOfFirst { it.tabId == currentTabId }.coerceAtLeast(0), updatePager = false)
+        setupMessageBadgeDrag()
+        setupContactsBadgeLayout()
+    }
+
+    private fun bindTabClicks() {
         bottomTabs.forEachIndexed { index, tab ->
             tab.root.setOnClickListener {
                 selectTab(index, updatePager = true)
             }
         }
-        selectTab(0, updatePager = false)
-        setupMessageBadgeDrag()
-        setupContactsBadgeLayout()
     }
 
     private fun selectTab(index: Int, updatePager: Boolean) {
@@ -233,10 +306,49 @@ class MainActivity : BaseActivity() {
             return
         }
         selectedTabIndex = index
+        currentTabId = bottomTabs[index].tabId
         if (updatePager && viewPager.currentItem != index) {
             viewPager.setCurrentItem(index, false)
         }
-        updateSelectedTabColors(themeStore.themeState.value.currentTheme.tokens.color)
+        val colors = themeStore.themeState.value.currentTheme.tokens.color
+        updateSelectedTabColors(colors)
+        updateStatusBarAreaColor(colors)
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars =
+            appearanceLightStatusBarsOverride() ?: isColorLight(colors.bgColorOperate)
+    }
+
+    override fun appearanceLightStatusBarsOverride(): Boolean? {
+        if (::bottomTabs.isInitialized &&
+            bottomTabs.getOrNull(selectedTabIndex)?.tabId == R.id.demo_tab_calls
+        ) {
+            return true
+        }
+        return null
+    }
+
+    private fun updateStatusBarAreaColor(colors: ColorTokens) {
+        if (!::bottomTabs.isInitialized) {
+            return
+        }
+        val isCallsTab = bottomTabs.getOrNull(selectedTabIndex)?.tabId == R.id.demo_tab_calls
+        if (isCallsTab) {
+            mainContainer.setBackgroundColor(resolveCallsPageTopColor())
+        } else {
+            mainContainer.setBackgroundColor(colors.bgColorOperate)
+        }
+    }
+
+    private fun resolveCallsPageTopColor(): Int {
+        val typedValue = TypedValue()
+        if (theme.resolveAttribute(com.tencent.qcloud.tuicore.R.attr.core_header_start_color, typedValue, true)) {
+            if (typedValue.resourceId != 0) {
+                return ContextCompat.getColor(this, typedValue.resourceId)
+            }
+            if (typedValue.type in TypedValue.TYPE_FIRST_COLOR_INT..TypedValue.TYPE_LAST_COLOR_INT) {
+                return typedValue.data
+            }
+        }
+        return ContextCompat.getColor(this, com.tencent.qcloud.tuikit.tuicallkit.R.color.callkit_color_white)
     }
 
     private fun updateSelectedTabColors(colors: ColorTokens) {
@@ -244,14 +356,53 @@ class MainActivity : BaseActivity() {
             return
         }
         bottomTabs.forEachIndexed { index, tab ->
-            val color = if (index == selectedTabIndex) {
-                colors.textColorLink
-            } else {
-                colors.textColorSecondary
-            }
-            tab.icon.setColorFilter(color)
-            tab.text.setTextColor(color)
+            val selected = index == selectedTabIndex
+            tab.icon.setImageDrawable(renderTabIcon(tab, colors, selected))
+            tab.text.setTextColor(
+                if (selected) {
+                    colors.textColorLink
+                } else {
+                    colors.textColorTertiary
+                }
+            )
         }
+    }
+
+    private fun renderTabIcon(tab: BottomTab, colors: ColorTokens, selected: Boolean): Drawable {
+        val sizePx = TAB_ICON_SIZE_DP.dpToPx()
+        val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        ContextCompat.getDrawable(this, tab.iconResId)?.let { base ->
+            base.setBounds(0, 0, sizePx, sizePx)
+            base.draw(canvas)
+        }
+        val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+            if (selected) {
+                shader = LinearGradient(
+                    sizePx * TAB_ICON_GRADIENT_LIGHT_X,
+                    sizePx * TAB_ICON_GRADIENT_LIGHT_Y,
+                    sizePx * TAB_ICON_GRADIENT_DARK_X,
+                    sizePx * TAB_ICON_GRADIENT_DARK_Y,
+                    colors.bgColorBubbleOwn,
+                    colors.textColorLink,
+                    Shader.TileMode.CLAMP
+                )
+            } else {
+                color = colors.textColorTertiary
+            }
+        }
+        canvas.drawRect(0f, 0f, sizePx.toFloat(), sizePx.toFloat(), fillPaint)
+        if (tab.iconCutoutResId != 0) {
+            ContextCompat.getDrawable(this, tab.iconCutoutResId)?.let { cutout ->
+                val tinted = DrawableCompat.wrap(cutout)
+                tinted.setBounds(0, 0, sizePx, sizePx)
+                DrawableCompat.setTint(tinted, colors.bgColorBottomBar)
+                DrawableCompat.setTintMode(tinted, PorterDuff.Mode.SRC_IN)
+                tinted.draw(canvas)
+            }
+        }
+        return BitmapDrawable(resources, bitmap)
     }
 
     private fun setupMessageBadgeDrag() {
@@ -518,7 +669,7 @@ class MainActivity : BaseActivity() {
             badgeWidth = badgeW,
             badgeHeight = badgeH,
             horizontalOffsetPx = 0,
-            verticalOffsetPx = 0,
+            verticalOffsetPx = 4.dpToPx(),
             isRtl = isRtl
         )
         val existing = badgeView.layoutParams as? FrameLayout.LayoutParams
@@ -680,6 +831,40 @@ class MainActivity : BaseActivity() {
             }
         )
         return page
+    }
+
+    private fun createCallsPage(): View {
+        val container = FragmentContainerView(this).apply {
+            id = R.id.demo_calls_fragment_container
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        }
+        // The container lives inside a ViewPager2 page, so it is not part of the view
+        // hierarchy when onCreate/onStart run. Fragment transactions targeting it must
+        // wait until it is attached to the window, otherwise FragmentManager crashes
+        // with "No view found for id".
+        container.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(view: View) {
+                container.removeOnAttachStateChangeListener(this)
+                val fragmentManager = supportFragmentManager
+                val existing = fragmentManager.findFragmentById(container.id)
+                if (existing != null && existing.view?.parent === container) {
+                    return
+                }
+                // After recreation, FragmentManager restores the old fragment but its view
+                // is never attached to this new container, so replace it with a fresh one.
+                fragmentManager.beginTransaction().apply {
+                    existing?.let { remove(it) }
+                    add(container.id, RecentCallsFragment())
+                }.commit()
+            }
+
+            override fun onViewDetachedFromWindow(view: View) {
+            }
+        })
+        return container
     }
 
     private fun createMePage(): View {

@@ -1,21 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="16dp"
     android:height="16dp"
     android:viewportWidth="16"
     android:viewportHeight="16">
-    <path
-        android:fillColor="#00000000"
-        android:pathData="M2,3.5C2,2.672 2.672,2 3.5,2H12.5C13.328,2 14,2.672 14,3.5V9.5C14,10.328 13.328,11 12.5,11H9L6,14V11H3.5C2.672,11 2,10.328 2,9.5V3.5Z"
-        android:strokeColor="#1C66E5"
-        android:strokeWidth="1.5" />
-    <path
-        android:pathData="M5,5.5H11"
-        android:strokeColor="#1C66E5"
-        android:strokeLineCap="round"
-        android:strokeWidth="1.5" />
-    <path
-        android:pathData="M5,8H9"
-        android:strokeColor="#1C66E5"
-        android:strokeLineCap="round"
-        android:strokeWidth="1.5" />
+    <group
+        android:translateX="1.5"
+        android:translateY="2">
+        <path
+            android:fillColor="#FF000000"
+            android:fillType="evenOdd"
+            android:pathData="M6 12V0H7V12H6Z" />
+        <path
+            android:fillColor="#FF000000"
+            android:fillType="evenOdd"
+            android:pathData="M3 10V2.00001H4V10H3Z" />
+        <path
+            android:fillColor="#FF000000"
+            android:fillType="evenOdd"
+            android:pathData="M12 8.00001V4.00001H13V8.00001H12Z" />
+        <path
+            android:fillColor="#FF000000"
+            android:fillType="evenOdd"
+            android:pathData="M0 8.00001V4.00001H1V8.00001H0Z" />
+        <path
+            android:fillColor="#FF000000"
+            android:fillType="evenOdd"
+            android:pathData="M9 10V2.00001H10V10H9Z" />
+    </group>
 </vector>

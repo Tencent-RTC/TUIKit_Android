@@ -13,11 +13,15 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.EventBus
+import io.trtc.tuikit.chat.uikit.components.common.findLifecycleOwner
 import io.trtc.tuikit.chat.uikit.components.common.onEvent
 import io.trtc.tuikit.chat.uikit.components.messagelist.background.MessageListBackgroundView
 import io.trtc.tuikit.chat.uikit.components.messagelist.background.MmkvChatBackgroundStore
@@ -71,6 +75,7 @@ class MessageListView @JvmOverloads constructor(
 
     private companion object {
         const val MENTION_LOCATE_MAX_LOAD_COUNT = 20
+        const val UNREAD_CLEAR_DEBOUNCE_MS = 300L
     }
 
     private val backgroundView: MessageListBackgroundView
@@ -119,11 +124,24 @@ class MessageListView @JvmOverloads constructor(
     }
     private var scrollToLatestAfterReload = false
     private var currentConversationID: String? = null
+    private var hostLifecycleOwner: LifecycleOwner? = null
+    private var hostLifecycleObserver: DefaultLifecycleObserver? = null
+    private var isHostResumed = false
+    private var isResumedAndShown = false
+    private var hasPendingDebouncedUnreadClear = false
+    private val debounceClearUnreadRunnable = Runnable {
+        hasPendingDebouncedUnreadClear = false
+        if (isResumedAndShown && ::viewModel.isInitialized) {
+            viewModel.clearConversationUnreadCount()
+        }
+    }
 
     init {
+        layoutDirection = View.LAYOUT_DIRECTION_LOCALE
         LayoutInflater.from(context).inflate(R.layout.message_list_view, this, true)
         backgroundView = findViewById(R.id.message_list_background_view)
         recyclerView = findViewById(R.id.message_list_recycler_view)
+        recyclerView.layoutDirection = View.LAYOUT_DIRECTION_LOCALE
         loadingOlderView = findViewById(R.id.message_list_loading_older)
         loadingNewerView = findViewById(R.id.message_list_loading_newer)
         floatingEntryCard = findViewById(R.id.message_list_floating_entry_card)
@@ -323,6 +341,7 @@ class MessageListView @JvmOverloads constructor(
         requestInitialMentionEntry(conversationID)
 
         if (isAttachedToWindow) {
+            bindHostLifecycle()
             bindViewModel()
         }
     }
@@ -334,11 +353,28 @@ class MessageListView @JvmOverloads constructor(
             return
         }
         currentConversationID?.let { joinCallBannerController.bind(it) }
+        bindHostLifecycle()
         bindViewModel()
+    }
+
+    override fun onWindowVisibilityChanged(visibility: Int) {
+        super.onWindowVisibilityChanged(visibility)
+        refreshResumedAndShown()
+    }
+
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        super.onVisibilityChanged(changedView, visibility)
+        refreshResumedAndShown()
+    }
+
+    override fun onVisibilityAggregated(isVisible: Boolean) {
+        super.onVisibilityAggregated(isVisible)
+        refreshResumedAndShown()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        unbindHostLifecycle()
         alignmentController.detach()
         locateCoordinator.cancel()
         readReceiptController.cancel()
@@ -347,7 +383,6 @@ class MessageListView @JvmOverloads constructor(
         joinCallBannerController.release()
         if (::viewModel.isInitialized) {
             viewModel.stopListenFromHere()
-            viewModel.clearMessageReadCount()
         }
     }
 
@@ -363,7 +398,6 @@ class MessageListView @JvmOverloads constructor(
         }
 
         viewModel.initializeAudioPlayer()
-        viewModel.clearMessageReadCount()
 
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         viewScope = scope
@@ -468,7 +502,7 @@ class MessageListView @JvmOverloads constructor(
             viewModel.messageEvent.collect { event ->
                 when (event) {
                     is MessageEvent.OnReceiveNewMessage -> {
-                        viewModel.clearMessageReadCount()
+                        scheduleDebouncedUnreadClear()
                         val isLatestVisible = locateCoordinator.isLatestMessageCompletelyVisible()
                         if (isLatestVisible) {
                             locateCoordinator.requestScrollToLatestMessage(event.message.msgID)
@@ -616,6 +650,7 @@ class MessageListView @JvmOverloads constructor(
     }
 
     private fun cleanupBinding() {
+        unbindHostLifecycle()
         readReceiptController.cancel()
         locateCoordinator.cancel()
         clearSuppressedLatestAutoScroll()
@@ -632,6 +667,81 @@ class MessageListView @JvmOverloads constructor(
         }
         recyclerView.removeOnChildAttachStateChangeListener(locateCoordinator.childAttachStateChangeListener)
         joinCallBannerController.release()
+    }
+
+    private fun bindHostLifecycle() {
+        if (hostLifecycleObserver != null) {
+            return
+        }
+        val owner = findViewTreeLifecycleOwner() ?: context.findLifecycleOwner() ?: return
+        val observer = object : DefaultLifecycleObserver {
+            override fun onResume(owner: LifecycleOwner) {
+                isHostResumed = true
+                refreshResumedAndShown()
+            }
+
+            override fun onPause(owner: LifecycleOwner) {
+                isHostResumed = false
+                refreshResumedAndShown()
+            }
+        }
+        hostLifecycleOwner = owner
+        hostLifecycleObserver = observer
+        owner.lifecycle.addObserver(observer)
+        refreshResumedAndShown()
+    }
+
+    private fun unbindHostLifecycle() {
+        isHostResumed = false
+        refreshResumedAndShown()
+        val owner = hostLifecycleOwner
+        val observer = hostLifecycleObserver
+        hostLifecycleOwner = null
+        hostLifecycleObserver = null
+        if (owner != null && observer != null) {
+            owner.lifecycle.removeObserver(observer)
+        }
+        flushDebouncedUnreadClear()
+    }
+
+    private fun refreshResumedAndShown() {
+        val active = isHostResumed && isShown
+        if (active == isResumedAndShown) {
+            return
+        }
+        isResumedAndShown = active
+        if (active) {
+            cancelDebouncedUnreadClear()
+            if (::viewModel.isInitialized) {
+                viewModel.syncConversationAsRead()
+            }
+        } else {
+            flushDebouncedUnreadClear()
+        }
+    }
+
+    private fun scheduleDebouncedUnreadClear() {
+        if (!isResumedAndShown || !::viewModel.isInitialized) {
+            return
+        }
+        hasPendingDebouncedUnreadClear = true
+        removeCallbacks(debounceClearUnreadRunnable)
+        postDelayed(debounceClearUnreadRunnable, UNREAD_CLEAR_DEBOUNCE_MS)
+    }
+
+    private fun flushDebouncedUnreadClear() {
+        removeCallbacks(debounceClearUnreadRunnable)
+        if (!hasPendingDebouncedUnreadClear || !::viewModel.isInitialized) {
+            hasPendingDebouncedUnreadClear = false
+            return
+        }
+        hasPendingDebouncedUnreadClear = false
+        viewModel.clearConversationUnreadCount()
+    }
+
+    private fun cancelDebouncedUnreadClear() {
+        removeCallbacks(debounceClearUnreadRunnable)
+        hasPendingDebouncedUnreadClear = false
     }
 
     private fun clearSuppressedLatestAutoScroll() {

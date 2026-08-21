@@ -3,6 +3,7 @@ package io.trtc.tuikit.chat.demo.common
 object AppConstants {
 
     const val KEY_ENABLE_READ_RECEIPT = "enable_read_receipt"
+    const val KEY_SHOW_CALLS_TAB = "show_calls_tab"
     const val KEY_APP_LANGUAGE = "app_language"
     const val KEY_LOGIN_USER = "LoginUser"
     const val KEY_LOGIN_TOKEN = "LoginToken"

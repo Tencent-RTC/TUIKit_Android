@@ -1,8 +1,10 @@
 <resources>
     <string name="demo_app_name">Tencent Chat</string>
     <string name="demo_tab_messages">Messages</string>
+    <string name="demo_tab_calls">Calls</string>
     <string name="demo_tab_contacts">Contacts</string>
     <string name="demo_tab_me">Me</string>
+    <string name="demo_settings_show_calls">Show Recent Calls</string>
     <string name="demo_tab_settings">Settings</string>
     <string name="demo_login">Login</string>
     <string name="demo_input_user_id_tips">Please enter user ID</string>
@@ -40,6 +42,13 @@
     <string name="demo_login_expired">Your login has expired. Please log in again.</string>
 
     <string name="demo_settings_theme">Theme</string>
+    <string name="demo_settings_primary_color">Theme Color</string>
+    <string name="demo_settings_primary_color_title">Select Theme Color</string>
+    <string name="demo_settings_primary_color_hue">Hue</string>
+    <string name="demo_settings_primary_color_saturation">Saturation</string>
+    <string name="demo_settings_primary_color_brightness">Brightness</string>
+    <string name="demo_settings_primary_color_hex">Hex</string>
+    <string name="demo_settings_primary_color_reset">Reset</string>
     <string name="demo_settings_language">Language</string>
     <string name="demo_settings_current_language">English</string>
     <string name="demo_settings_add_rule">When adding me as a friend</string>
@@ -79,14 +88,57 @@
 
     <string name="demo_login_failed">Login failed: %1$s</string>
     <string name="demo_login_network_error">Network error, please try again</string>
+    <string name="demo_login_country_or_region_label">Country/Region</string>
+    <string name="demo_login_chinese_mainland">Chinese Mainland</string>
+    <string name="demo_login_phone_number_label">Mobile Number</string>
+    <string name="demo_login_input_phone_hint">Enter phone number</string>
+    <string name="demo_login_verification_code_label">Verification Code</string>
+    <string name="demo_login_input_verification_hint">Enter code</string>
+    <string name="demo_login_get_verification_code">Get Code</string>
+    <string name="demo_login_resend_seconds">%1$ds</string>
+    <string name="demo_login_input_phone">Please enter phone number</string>
+    <string name="demo_login_input_phone_code">Please enter phone number and code</string>
+    <string name="demo_login_send_verify_code">Verification code sent</string>
+    <string name="demo_login_switch_local">Developer Login</string>
+    <string name="demo_login_official_website">Visit Us</string>
+    <string name="demo_login_privacy_agree">Agree and Continue</string>
+    <string name="demo_login_privacy_refuse">Disagree and Exit</string>
+    <string name="demo_login_privacy_policy">\"Privacy Policy\"</string>
+    <string name="demo_login_privacy_policy_summary">\"Summary of Privacy Policy\"</string>
+    <string name="demo_login_user_agreement">\"User Agreement\"</string>
+    <string name="demo_login_self_information_collection">\"Personal Information Collected\"</string>
+    <string name="demo_login_third_part_shared">\"Information Shared with Third Parties\"</string>
+    <string name="demo_login_privacy_dialog_tips">Welcome to Tencent Cloud Instant Messaging. To protect your personal information, we have updated the \"Privacy Policy\", involving improving the specific contents and purposes of collecting user information, and adding third-party SDKs.\n\n Please carefully read the \"User Agreement\",\"Summary of Privacy Policy\",\"Privacy Policy\",\"Personal Information Collected\" and \"Information Shared with Third Parties\", and tap Agree and Continue to use our products and services if you agree to them.</string>
+    <string name="demo_area_code_title">Select Country/Region</string>
+    <string name="demo_area_code_search_hint">Search</string>
     <string name="demo_chat_security_warning">Do not easily believe in remittance, winning prizes, and other information. Be cautious when dealing with unknown phone calls to avoid being deceived. Please report any suspicious situations in a timely manner.</string>
     <string name="demo_chat_security_warning_click_to_report">Report here</string>
     <string name="demo_report">Report</string>
     <string name="demo_open_browser_failed">No app found to open the link</string>
     <string name="demo_close">Close</string>
 
+    <string name="demo_about_im">About Tencent Cloud Chat</string>
+    <string name="demo_about_sdk_version">SDK Version</string>
+    <string name="demo_about_privacy">Privacy Policy</string>
+    <string name="demo_about_user_agreement">User Agreement</string>
+    <string name="demo_about_statement">Disclaimer</string>
+    <string name="demo_about_statement_content">Tencent Cloud Chat APP (\"this product\") is a test product provided by Tencent Cloud, and Tencent Cloud enjoys the copyright and ownership of this product. This product is only used for functional experience and must not be used for any commercial purposes. In order to comply with the regulatory requirements of relevant departments, any pornography, abusive, violent, and politically related content is strictly prohibited during use.</string>
+    <string name="demo_about_self_information_collection">Personal Information Collected</string>
+    <string name="demo_about_third_part_shared">Information Shared with Third Parties</string>
+    <string name="demo_about_cancel_account">Cancel Account</string>
+    <string name="demo_about_contact_us">Contact us</string>
     <string name="demo_about_confirm">OK</string>
+    <string name="demo_about_cancel">Cancel</string>
+    <string name="demo_about_company" translatable="false">腾讯公司 版权所有</string>
+    <string name="demo_about_copyright" translatable="false">Copyright © 2020-2024 Tencent. All Rights Reserved.</string>
+    <string name="demo_about_icp_number" translatable="false">ICP备案号：粤B2-20090059-2674A &gt;</string>
+    <string name="demo_about_cancel_account_alert_tip">Are you sure you want to cancel this account?</string>
+    <string name="demo_about_cancel_account_tip">After canceling this account, you will be unable to use it, and related data will be permanently deleted. Current account: %1$s</string>
+    <string name="demo_about_cancel_account_error_msg">Cancellation failed. No token or mobile number associated with the current account is detected. Please log in with your mobile number.</string>
+    <string name="demo_about_cancel_account_local_hint">Account cancellation is not supported for accounts that logged in with a locally generated userSig. Please log in with your mobile number.</string>
+    <string name="demo_about_cancel_account_successful">Canceled</string>
     <string name="demo_customer_service_summary">[Customer Service] Please check in time</string>
+    <string name="demo_welcome_message">Welcome to Chat Demo! Send a message to try out the basic chat.\nTo add friends, go to the Contacts page and tap the plus button.\nTo make audio or video calls, tap the plus button below -> Voice Call/Video Call.</string>
     <string name="demo_voice_message_settings">Voice Message Settings</string>
     <string name="demo_voice_clone">Voice Clone</string>
     <string name="demo_voice_select">Voice Selection</string>

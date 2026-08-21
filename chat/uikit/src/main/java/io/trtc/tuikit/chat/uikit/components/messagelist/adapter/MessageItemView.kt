@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.RtlUtils
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageActionIDs
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
@@ -71,6 +72,7 @@ class MessageItemView(
     private var cachedContentDesignedWidth: Int = ViewGroup.LayoutParams.WRAP_CONTENT
 
     init {
+        layoutDirection = View.LAYOUT_DIRECTION_LOCALE
         val hierarchy = buildMessageItemViewHierarchy(config, density)
         timeView = hierarchy.timeView
         checkBox = hierarchy.checkBox
@@ -182,7 +184,7 @@ class MessageItemView(
         }
 
         val isSelf = message.isSentBySelf
-        val isRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL
+        val isRtl = RtlUtils.isLocaleRtl(context)
         val isLeftAligned = MessageStatusLayoutPolicy.isLeftAligned(config.alignment, isSelf, isRtl)
         val statusLayout = MessageStatusLayoutPolicy.resolve(isLeftAligned)
         val isGroupChat = message.conversationType == ConversationType.GROUP

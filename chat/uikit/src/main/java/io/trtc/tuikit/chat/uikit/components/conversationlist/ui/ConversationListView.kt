@@ -613,7 +613,7 @@ class ConversationDividerDecoration(
         val colors = themeStore.themeState.value.currentTheme.tokens.color
         paint.color = colors.strokeColorSecondary
 
-        val startInset = dp2px(context, 64f).toFloat()
+        val startInset = dp2px(context, 76f).toFloat()
         val lineHeight = dp2px(context, 0.5f).toFloat().coerceAtLeast(1f)
         val isRtl = parent.layoutDirection == View.LAYOUT_DIRECTION_RTL
         val adapterItemCount = parent.adapter?.itemCount ?: return

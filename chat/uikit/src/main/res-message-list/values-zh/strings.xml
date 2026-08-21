@@ -10,6 +10,7 @@
     <string name="message_list_menu_copy">复制</string>
     <string name="message_list_menu_recall">撤回</string>
     <string name="message_list_menu_delete">删除</string>
+    <string name="message_list_menu_reaction">贴表情</string>
     <string name="message_list_create_group">创建群组</string>
     <string name="message_list_create_community">创建社群</string>
     <string name="message_list_open_file_tips">选择要打开此文件的应用</string>
@@ -110,6 +111,8 @@
     </plurals>
 
     <string name="message_list_reaction_detail_title">表情回应</string>
+    <string name="message_list_reaction_recent_used">最近使用</string>
+    <string name="message_list_reaction_all_emojis">全部</string>
     <string name="message_list_reaction_tap_to_delete">点击删除</string>
 
     <string name="message_list_menu_convert_to_text">转文字</string>

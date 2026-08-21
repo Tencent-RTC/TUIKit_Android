@@ -50,7 +50,7 @@ dependencies {
     implementation("com.tencentcloud.desk:aideskcustomer:latest.release")
     implementation("com.tencent:mmkv:2.4.0")
     implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.appcompat:appcompat:1.7.+")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.activity:activity:1.8.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")

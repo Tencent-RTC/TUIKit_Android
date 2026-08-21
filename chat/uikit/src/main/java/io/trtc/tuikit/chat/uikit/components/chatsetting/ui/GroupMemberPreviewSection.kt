@@ -61,8 +61,12 @@ internal class GroupMemberPreviewSection @JvmOverloads constructor(
             orientation = VERTICAL
             layoutDirection = View.LAYOUT_DIRECTION_LOCALE
             val horizontalPadding = dp2px(16f, resources.displayMetrics).toInt()
-            val verticalPadding = dp2px(16f, resources.displayMetrics).toInt()
-            setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+            setPadding(
+                horizontalPadding,
+                dp2px(4f, resources.displayMetrics).toInt(),
+                horizontalPadding,
+                dp2px(16f, resources.displayMetrics).toInt()
+            )
         }
         row1 = createRow()
         row2 = createRow().apply {
@@ -172,7 +176,7 @@ internal class GroupMemberPreviewSection @JvmOverloads constructor(
     private fun createMemberItem(member: GroupMember): View {
         val colors = getColors()
         val dm = resources.displayMetrics
-        val itemWidth = dp2px(56f, dm).toInt()
+        val itemWidth = dp2px(40f, dm).toInt()
         val avatarSize = dp2px(40f, dm).toInt()
         val displayName = member.displayName
 
@@ -209,7 +213,7 @@ internal class GroupMemberPreviewSection @JvmOverloads constructor(
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.WRAP_CONTENT
                     ).apply {
-                        topMargin = dp2px(6f, dm).toInt()
+                        topMargin = dp2px(3f, dm).toInt()
                     }
                 }
             )
@@ -219,9 +223,9 @@ internal class GroupMemberPreviewSection @JvmOverloads constructor(
     private fun createActionItem(actionType: ActionType): View {
         val colors = getColors()
         val dm = resources.displayMetrics
-        val itemWidth = dp2px(56f, dm).toInt()
+        val itemWidth = dp2px(40f, dm).toInt()
         val iconSize = dp2px(40f, dm).toInt()
-        val iconCornerRadius = dp2px(8f, dm)
+        val iconCornerRadius = dp2px(4f, dm)
         val symbol = if (actionType == ACTION_ADD) "+" else "−"
 
         return LinearLayout(context).apply {
@@ -306,7 +310,7 @@ internal class GroupMemberPreviewSection @JvmOverloads constructor(
     }
 
     private companion object {
-        const val COLUMNS_PER_ROW = 5
+        const val COLUMNS_PER_ROW = 6
         const val MAX_ROWS = 2
         const val MAX_TOTAL_COUNT = COLUMNS_PER_ROW * MAX_ROWS
         val ACTION_ADD = ActionType.ADD

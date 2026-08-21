@@ -33,17 +33,17 @@
                 android:layoutDirection="locale"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
-                android:paddingVertical="10dp">
+                android:paddingVertical="12dp">
 
                 <io.trtc.tuikit.chat.uikit.components.widgets.Avatar
                     android:id="@+id/demo_userAvatar"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp" />
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -55,8 +55,7 @@
                         android:maxLines="1"
                         android:textAlignment="viewStart"
                         android:textDirection="locale"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
+                        android:textSize="18sp"
                         tools:text="Username" />
 
                     <TextView
@@ -65,7 +64,7 @@
                         android:layout_height="wrap_content"
                         android:textAlignment="viewStart"
                         android:textDirection="locale"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         tools:text="ID: user123" />
 
                     <TextView
@@ -76,7 +75,7 @@
                         android:maxLines="1"
                         android:textAlignment="viewStart"
                         android:textDirection="locale"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         tools:text="Status: Hello" />
                 </LinearLayout>
             </LinearLayout>
@@ -84,7 +83,7 @@
             <View
                 android:id="@+id/demo_spacer1"
                 android:layout_width="match_parent"
-                android:layout_height="12dp" />
+                android:layout_height="10dp" />
 
             <LinearLayout
                 android:id="@+id/demo_settingsGroup1"
@@ -94,6 +93,15 @@
 
                 <include
                     android:id="@+id/demo_itemTheme"
+                    layout="@layout/demo_item_settings_entry" />
+
+                <View
+                    android:id="@+id/demo_dividerThemeColor"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp" />
+
+                <include
+                    android:id="@+id/demo_itemPrimaryColor"
                     layout="@layout/demo_item_settings_entry" />
 
                 <View
@@ -109,7 +117,7 @@
             <View
                 android:id="@+id/demo_spacer2"
                 android:layout_width="match_parent"
-                android:layout_height="12dp" />
+                android:layout_height="10dp" />
 
             <LinearLayout
                 android:id="@+id/demo_settingsGroup2"
@@ -176,12 +184,42 @@
                 <include
                     android:id="@+id/demo_itemTranslateLanguage"
                     layout="@layout/demo_item_settings_entry" />
+
+                <View
+                    android:id="@+id/demo_divider4"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layoutDirection="locale"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
+                    <TextView
+                        android:id="@+id/demo_tvCallsTabTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:maxLines="1"
+                        android:textAlignment="viewStart"
+                        android:textDirection="locale"
+                        android:textSize="16sp" />
+
+                    <io.trtc.tuikit.chat.uikit.components.widgets.Switch
+                        android:id="@+id/demo_switchCallsTab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
             </LinearLayout>
 
             <View
                 android:id="@+id/demo_spacerVoice"
                 android:layout_width="match_parent"
-                android:layout_height="12dp" />
+                android:layout_height="10dp" />
 
             <LinearLayout
                 android:id="@+id/demo_settingsGroupVoice"
@@ -195,9 +233,13 @@
             </LinearLayout>
 
             <View
+                android:id="@+id/demo_spacer3"
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+            <View
                 android:id="@+id/demo_spacer4"
                 android:layout_width="match_parent"
-                android:layout_height="12dp" />
+                android:layout_height="10dp" />
 
             <View
                 android:layout_width="match_parent"

@@ -10,6 +10,7 @@
     <string name="message_list_menu_copy">Copy</string>
     <string name="message_list_menu_recall">Recall</string>
     <string name="message_list_menu_delete">Delete</string>
+    <string name="message_list_menu_reaction">React</string>
     <string name="message_list_create_group">Create Group</string>
     <string name="message_list_create_community">Create Community</string>
     <string name="message_list_open_file_tips">Select an app to open this file</string>
@@ -113,6 +114,8 @@
     </plurals>
 
     <string name="message_list_reaction_detail_title">Reactions</string>
+    <string name="message_list_reaction_recent_used">Recently Used</string>
+    <string name="message_list_reaction_all_emojis">All</string>
     <string name="message_list_reaction_tap_to_delete">Tap to remove</string>
 
     <string name="message_list_menu_convert_to_text">Convert to Text</string>

@@ -37,6 +37,8 @@ class DefaultMessageRenderer : MessageRenderer {
     ) {
         val textView = view as TextView
         textView.text = view.context.getString(R.string.message_list_unsupported_message)
-        textView.setTextColor(colors.textColorPrimary)
+        textView.setTextColor(
+            if (message.isSentBySelf) colors.textColorAntiPrimary else colors.textColorPrimary
+        )
     }
 }

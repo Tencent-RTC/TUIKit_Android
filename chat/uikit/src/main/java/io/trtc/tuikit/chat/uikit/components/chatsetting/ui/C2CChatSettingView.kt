@@ -150,8 +150,7 @@ class C2CChatSettingView @JvmOverloads constructor(
         }
 
         nicknameTextView = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
-            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             maxLines = 1
         }
         textInfoLayout.addView(nicknameTextView)
@@ -391,7 +390,7 @@ class C2CChatSettingView @JvmOverloads constructor(
                 dp2px(0.5f, resources.displayMetrics).toInt()
             )
             val colors = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
-            setBackgroundColor(colors.strokeColorSecondary)
+            setBackgroundColor(colors.strokeColorPrimary)
         }
         dividers.add(divider)
         parent.addView(divider)
@@ -485,10 +484,10 @@ class C2CChatSettingView @JvmOverloads constructor(
         contentLayout.setBackgroundColor(colors.bgColorTopBar)
         userInfoLayout.setBackgroundColor(colors.bgColorOperate)
         nicknameTextView.setTextColor(colors.textColorPrimary)
-        idTextView.setTextColor(colors.textColorSecondary)
-        signatureTextView.setTextColor(colors.textColorSecondary)
+        idTextView.setTextColor(colors.textColorTertiary)
+        signatureTextView.setTextColor(colors.textColorTertiary)
         spacers.forEach { it.setBackgroundColor(colors.bgColorTopBar) }
-        dividers.forEach { it.setBackgroundColor(colors.strokeColorSecondary) }
+        dividers.forEach { it.setBackgroundColor(colors.strokeColorPrimary) }
     }
 
     override fun onAttachedToWindow() {

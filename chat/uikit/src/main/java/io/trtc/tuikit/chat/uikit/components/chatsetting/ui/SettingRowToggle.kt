@@ -35,7 +35,7 @@ class SettingRowToggle @JvmOverloads constructor(
         gravity = Gravity.CENTER_VERTICAL
         layoutDirection = LAYOUT_DIRECTION_LOCALE
         val horizontalPadding = dp2px(16f, resources.displayMetrics).toInt()
-        val verticalPadding = dp2px(12f, resources.displayMetrics).toInt()
+        val verticalPadding = dp2px(10f, resources.displayMetrics).toInt()
         setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
 
         titleTextView = TextView(context).apply {
@@ -66,7 +66,7 @@ class SettingRowToggle @JvmOverloads constructor(
 
     private fun applyThemeColors(colors: ColorTokens) {
         setBackgroundColor(colors.bgColorOperate)
-        titleTextView.setTextColor(colors.textColorPrimary)
+        titleTextView.setTextColor(colors.textColorSecondary)
     }
 
     override fun onAttachedToWindow() {

@@ -107,7 +107,7 @@ class SelfDetailActivity : BaseActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = systemBars.top)
+            headerContainer.updatePadding(top = systemBars.top)
             scrollView.updatePadding(bottom = systemBars.bottom)
             insets
         }
@@ -219,7 +219,7 @@ class SelfDetailActivity : BaseActivity() {
             context = this,
             title = getString(R.string.demo_settings_self_detail_birthday),
             showArrow = true,
-            showDivider = true,
+            showDivider = false,
             onClick = { showBirthdayPicker() }
         )
 
@@ -237,13 +237,13 @@ class SelfDetailActivity : BaseActivity() {
         )
 
     private fun applyColors(colors: ColorTokens) {
-        rootContainer.setBackgroundColor(colors.bgColorOperate)
+        rootContainer.setBackgroundColor(colors.bgColorTopBar)
         headerContainer.setBackgroundColor(colors.bgColorOperate)
         tvTitle.setTextColor(colors.textColorPrimary)
         btnBack.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
         headerDivider.setBackgroundColor(colors.strokeColorPrimary)
 
-        contentColumn.setBackgroundColor(colors.bgColorOperate)
+        entryContainer.setBackgroundColor(colors.bgColorOperate)
         tvDisplayName.setTextColor(colors.textColorPrimary)
 
         accountItem.applyColors(colors)
@@ -422,6 +422,7 @@ class SelfDetailActivity : BaseActivity() {
                 val padH = (16f * density).toInt()
                 val padV = (12f * density).toInt()
                 setPadding(padH, padV, padH, padV)
+                minimumHeight = (48f * density).toInt()
                 if (onClick != null) {
                     isClickable = true
                     isFocusable = true
@@ -502,7 +503,7 @@ class SelfDetailActivity : BaseActivity() {
             tvTitle.setTextColor(colors.textColorSecondary)
             tvValue.setTextColor(colors.textColorPrimary)
             arrowView?.setColorFilter(colors.textColorTertiary)
-            divider?.setBackgroundColor(colors.strokeColorSecondary)
+            divider?.setBackgroundColor(colors.strokeColorPrimary)
             view.setBackgroundColor(colors.bgColorOperate)
         }
     }

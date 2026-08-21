@@ -50,12 +50,12 @@ class ContactListView @JvmOverloads constructor(
         private const val DEFAULT_ITEM_HEIGHT_DP = 60f
         private const val DEFAULT_ITEM_HORIZONTAL_PADDING_DP = 16f
         private const val DEFAULT_ITEM_ICON_SIZE_DP = 40f
-        private const val DEFAULT_ITEM_ICON_TEXT_SPACING_DP = 14f
-        private const val DEFAULT_ITEM_TITLE_SIZE_SP = 16f
+        private const val DEFAULT_ITEM_ICON_TEXT_SPACING_DP = 12f
+        private const val DEFAULT_ITEM_TITLE_SIZE_SP = 18f
         private const val BADGE_SIZE_DP = 18f
         private const val BADGE_TEXT_SIZE_SP = 11f
         private const val DIVIDER_HEIGHT_DP = 0.5f
-        private const val DIVIDER_LEFT_MARGIN_DP = 70f
+        private const val DIVIDER_LEFT_MARGIN_DP = 68f
         private const val EMPTY_ILLUSTRATION_WIDTH_DP = 88f
         private const val EMPTY_TEXT_SIZE_SP = 14f
         private const val EMPTY_TEXT_TOP_MARGIN_DP = 14f

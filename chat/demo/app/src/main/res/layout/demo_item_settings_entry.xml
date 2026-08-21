@@ -7,6 +7,7 @@
     android:focusable="true"
     android:gravity="center_vertical"
     android:layoutDirection="locale"
+    android:minHeight="48dp"
     android:orientation="horizontal"
     android:paddingHorizontal="16dp"
     android:paddingVertical="12dp">
@@ -21,19 +22,32 @@
         android:textSize="16sp"
         tools:text="Theme" />
 
-    <TextView
-        android:id="@+id/demo_tvSettingsValue"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_weight="1"
-        android:ellipsize="end"
-        android:gravity="end"
-        android:maxLines="1"
-        android:textAlignment="viewEnd"
-        android:textDirection="locale"
-        android:textSize="16sp"
-        tools:text="Follow System" />
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/demo_tvSettingsValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:ellipsize="end"
+            android:gravity="end"
+            android:maxLines="1"
+            android:textAlignment="viewEnd"
+            android:textDirection="locale"
+            android:textSize="16sp"
+            tools:text="Follow System" />
+
+        <View
+            android:id="@+id/demo_vSettingsColorPreview"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical|end"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/demo_ivArrow"

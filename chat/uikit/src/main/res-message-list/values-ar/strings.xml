@@ -10,6 +10,7 @@
     <string name="message_list_menu_copy">نسخ</string>
     <string name="message_list_menu_recall">سحب</string>
     <string name="message_list_menu_delete">حذف</string>
+    <string name="message_list_menu_reaction">تفاعل</string>
     <string name="message_list_create_group">إنشاء مجموعة</string>
     <string name="message_list_create_community">إنشاء مجتمع</string>
     <string name="message_list_open_file_tips">اختر تطبيقًا لفتح هذا الملف</string>
@@ -111,6 +112,8 @@
     </plurals>
 
     <string name="message_list_reaction_detail_title">التفاعلات</string>
+    <string name="message_list_reaction_recent_used">المستخدمة مؤخرًا</string>
+    <string name="message_list_reaction_all_emojis">الكل</string>
     <string name="message_list_reaction_tap_to_delete">انقر للإزالة</string>
 
     <string name="message_list_menu_convert_to_text">تحويل إلى نص</string>

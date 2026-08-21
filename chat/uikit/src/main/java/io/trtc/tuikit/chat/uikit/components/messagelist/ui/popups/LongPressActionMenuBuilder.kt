@@ -1,6 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.ui.popups
 import android.content.Context
 import android.content.res.ColorStateList
+import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -24,8 +25,8 @@ internal class LongPressActionMenuBuilder(
     private val colors: ColorTokens,
     private val message: MessageInfo,
     private val actions: List<LongPressPopupAction>,
-    private val quickPickerRowWidth: Int,
-    private val onDismiss: () -> Unit
+    private val onDismiss: () -> Unit,
+    private val onReactionEntry: () -> Unit
 ) {
 
     fun build(forceFullColumns: Boolean = false): LongPressPopupContent {
@@ -124,8 +125,7 @@ internal class LongPressActionMenuBuilder(
     private fun cardWidthForColumns(columnCount: Int): Int {
         return LongPressDimens.cardWidthForColumns(
             columnCount = columnCount,
-            density = density,
-            quickPickerRowWidth = quickPickerRowWidth
+            density = density
         )
     }
 
@@ -135,7 +135,7 @@ internal class LongPressActionMenuBuilder(
         val rows = items.chunked(columnCount)
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(8.dp, 8.dp, 8.dp, 8.dp)
+            setPadding(4.dp, 4.dp, 4.dp, 4.dp)
             rows.forEachIndexed { rowIndex, rowItems ->
                 addView(buildRow(rowItems, itemCellWidth, itemCellHeight, columnCount))
                 if (rowIndex < rows.lastIndex) {
@@ -169,38 +169,33 @@ internal class LongPressActionMenuBuilder(
     }
 
     private fun buildActionItem(action: LongPressPopupAction, cellHeight: Int): View {
-        val textColor = if (action.dangerousAction) {
-            colors.textColorError
-        } else {
-            colors.textColorSecondary
-        }
-        val iconTint = if (action.dangerousAction) {
-            colors.textColorError
-        } else {
-            colors.textColorPrimary
-        }
+        val itemColor = colors.textColorPrimary
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
             minimumHeight = cellHeight
-            setPadding(4.dp, 10.dp, 4.dp, 8.dp)
+            setPadding(0.dp, 12.dp, 0.dp, 0.dp)
             isClickable = true
             isFocusable = true
             background = LongPressDrawables.createActionItemRipple(colors, density)
             setOnClickListener {
-                onDismiss()
-                action.onClick(message)
+                if (action.isReactionEntry) {
+                    onReactionEntry()
+                } else {
+                    onDismiss()
+                    action.onClick(message)
+                }
             }
             addView(
                 ImageView(context).apply {
                     if (action.iconResId != 0) {
                         setImageResource(action.iconResId)
-                        imageTintList = ColorStateList.valueOf(iconTint)
+                        imageTintList = ColorStateList.valueOf(itemColor)
                     } else {
                         visibility = View.GONE
                     }
                 },
-                LinearLayout.LayoutParams(18.dp, 18.dp).apply {
+                LinearLayout.LayoutParams(16.dp, 16.dp).apply {
                     gravity = Gravity.CENTER_HORIZONTAL
                 }
             )
@@ -208,13 +203,14 @@ internal class LongPressActionMenuBuilder(
                 TextView(context).apply {
                     text = action.title
                     gravity = Gravity.CENTER
-                    setTextColor(textColor)
+                    setTextColor(itemColor)
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
-                    maxLines = 1
-                    setPadding(0, 5.dp, 0, 0)
+                    maxLines = 2
+                    ellipsize = TextUtils.TruncateAt.END
+                    setPadding(0, 4.dp, 0, 0)
                 },
                 LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply {
                     gravity = Gravity.CENTER_HORIZONTAL
@@ -236,8 +232,8 @@ internal class LongPressActionMenuBuilder(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 1
             ).apply {
-                topMargin = 4.dp
-                bottomMargin = 4.dp
+                marginStart = 8.dp
+                marginEnd = 8.dp
             }
         }
     }
@@ -278,7 +274,8 @@ internal data class LongPressPopupAction(
     val title: String,
     val dangerousAction: Boolean,
     @DrawableRes val iconResId: Int,
-    val onClick: (MessageInfo) -> Unit
+    val onClick: (MessageInfo) -> Unit,
+    val isReactionEntry: Boolean = false
 )
 
 internal data class LongPressPopupContent(

@@ -91,11 +91,12 @@ class ThemeStore private constructor(context: Context) {
 
     fun setTheme(theme: Theme) {
         themePersistUtil.setCurrentThemeId(theme.id)
-        if (theme.id == Theme.SYSTEM_THEME_ID) {
-            updateThemeState(resolveSystemTheme())
-        } else {
-            updateThemeState(theme)
+        val resolved = when (theme.id) {
+            Theme.SYSTEM_THEME_ID -> resolveSystemTheme()
+            Theme.DARK_THEME_ID -> applyPersistedPrimaryColor(theme, isDark = true)
+            else -> applyPersistedPrimaryColor(theme, isDark = false)
         }
+        updateThemeState(resolved)
     }
 
     fun setPrimaryColor(hexColor: String) {

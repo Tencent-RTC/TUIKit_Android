@@ -11,11 +11,6 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <View
-        android:id="@+id/demo_tabDivider"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp" />
-
     <FrameLayout
         android:id="@+id/demo_bottomNavContainer"
         android:layout_width="match_parent"
@@ -36,10 +31,10 @@
                 android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
-                android:gravity="center"
+                android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingTop="8dp"
+                android:paddingBottom="9dp">
 
                 <ImageView
                     android:id="@+id/demo_tab_messages_icon"
@@ -52,10 +47,39 @@
                     android:id="@+id/demo_tab_messages_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="1dp"
                     android:includeFontPadding="false"
                     android:text="@string/demo_tab_messages"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/demo_tab_calls"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="9dp">
+
+                <ImageView
+                    android:id="@+id/demo_tab_calls_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/demo_ic_tab_calls" />
+
+                <TextView
+                    android:id="@+id/demo_tab_calls_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/demo_tab_calls"
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -65,10 +89,10 @@
                 android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
-                android:gravity="center"
+                android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingTop="8dp"
+                android:paddingBottom="9dp">
 
                 <ImageView
                     android:id="@+id/demo_tab_contacts_icon"
@@ -81,10 +105,10 @@
                     android:id="@+id/demo_tab_contacts_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="1dp"
                     android:includeFontPadding="false"
                     android:text="@string/demo_tab_contacts"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -94,10 +118,10 @@
                 android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
-                android:gravity="center"
+                android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingTop="8dp"
+                android:paddingBottom="9dp">
 
                 <ImageView
                     android:id="@+id/demo_tab_me_icon"
@@ -110,10 +134,10 @@
                     android:id="@+id/demo_tab_me_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="1dp"
                     android:includeFontPadding="false"
                     android:text="@string/demo_tab_me"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
 

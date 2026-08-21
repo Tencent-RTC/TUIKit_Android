@@ -107,12 +107,12 @@ internal fun buildDefaultMessageActions(
     callbacks: MessageListActionCallbacks,
 ): List<MessageCustomAction> {
     val actions = mutableListOf<MessageCustomAction>()
-    if (capability.isSupportMultiSelect) {
+    if (capability.isSupportCopy) {
         actions += MessageCustomAction(
-            ID = MessageActionIDs.MULTI_SELECT,
-            title = labels.multiSelect,
-            iconResID = icons.multiSelect,
-            action = callbacks.onEnterMultiSelectMode,
+            ID = MessageActionIDs.COPY,
+            title = labels.copy,
+            iconResID = icons.copy,
+            action = callbacks.onCopyText,
         )
     }
     if (capability.isSupportForward) {
@@ -131,20 +131,12 @@ internal fun buildDefaultMessageActions(
             action = { message -> callbacks.onQuoteMessage(message, "") },
         )
     }
-    if (capability.isSupportCopy) {
+    if (capability.isSupportMultiSelect) {
         actions += MessageCustomAction(
-            ID = MessageActionIDs.COPY,
-            title = labels.copy,
-            iconResID = icons.copy,
-            action = callbacks.onCopyText,
-        )
-    }
-    if (capability.isSupportRecall) {
-        actions += MessageCustomAction(
-            ID = MessageActionIDs.RECALL,
-            title = labels.recall,
-            iconResID = icons.recall,
-            action = callbacks.onRecall,
+            ID = MessageActionIDs.MULTI_SELECT,
+            title = labels.multiSelect,
+            iconResID = icons.multiSelect,
+            action = callbacks.onEnterMultiSelectMode,
         )
     }
     if (capability.isSupportDelete) {
@@ -154,6 +146,14 @@ internal fun buildDefaultMessageActions(
             iconResID = icons.delete,
             dangerous = true,
             action = callbacks.onDelete,
+        )
+    }
+    if (capability.isSupportRecall) {
+        actions += MessageCustomAction(
+            ID = MessageActionIDs.RECALL,
+            title = labels.recall,
+            iconResID = icons.recall,
+            action = callbacks.onRecall,
         )
     }
     if (capability.showConvertToText) {
