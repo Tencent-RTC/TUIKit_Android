@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layoutDirection="locale">
 
     <io.trtc.tuikit.chat.uikit.components.messagelist.background.MessageListBackgroundView
         android:id="@+id/message_list_background_view"
@@ -41,6 +42,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
+        android:layoutDirection="locale"
         app:layout_constraintTop_toBottomOf="@+id/message_list_join_call_banner"
         app:layout_constraintBottom_toTopOf="@+id/message_list_multi_select_bar"
         app:layout_constraintStart_toStartOf="parent"

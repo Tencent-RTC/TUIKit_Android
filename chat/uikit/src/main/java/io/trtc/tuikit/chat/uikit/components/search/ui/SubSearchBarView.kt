@@ -24,7 +24,7 @@ class SubSearchBarView @JvmOverloads constructor(
                 paddingHorizontalDp = 16,
                 paddingVerticalDp = 10,
                 paddingBottomDp = 16,
-                inputCornerRadiusDp = 4,
+                inputCornerRadiusDp = 10,
                 searchIconMarginStartDp = 12,
                 inputTextPaddingStartDp = 30,
                 expandTouchTargets = true

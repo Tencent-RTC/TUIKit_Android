@@ -39,7 +39,7 @@ class UserPickerView @JvmOverloads constructor(
         private const val INDEX_BAR_END_PADDING_DP = 8f
         private const val INDEX_BAR_VERTICAL_PADDING_DP = 16f
         private const val HEADER_HORIZONTAL_PADDING_DP = 16f
-        private const val HEADER_VERTICAL_PADDING_DP = 8f
+        private const val HEADER_VERTICAL_PADDING_DP = 6f
         private const val HEADER_TEXT_SIZE_SP = 14f
         private const val CENTER_BUBBLE_SIZE_DP = 80f
         private const val CENTER_BUBBLE_TEXT_SIZE_SP = 28f

@@ -29,7 +29,7 @@ enum class SwitchSize(
 ) {
     S(26f, 16f, 12f, 2f, 10f),
     M(32f, 20f, 15f, 2.5f, 12f),
-    L(40f, 24f, 18f, 3f, 14f)
+    L(48f, 28f, 24f, 2f, 14f)
 }
 
 sealed class SwitchType {

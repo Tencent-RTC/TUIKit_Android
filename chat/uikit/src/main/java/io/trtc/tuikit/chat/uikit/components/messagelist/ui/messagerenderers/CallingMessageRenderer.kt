@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.AtomicCallEventPublisher
+import io.trtc.tuikit.chat.uikit.components.common.RtlUtils
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageModel
@@ -113,7 +114,7 @@ class CallingMessageRenderer : MessageRenderer {
             else -> 0
         }
 
-        val isRtl = CallMessageDisplayPolicy.isLocaleRtl(view.context)
+        val isRtl = RtlUtils.isLocaleRtl(view.context)
         if (iconRes != 0) {
             icon.visibility = View.VISIBLE
             icon.setImageResource(iconRes)
@@ -221,10 +222,6 @@ internal enum class CallMessageContentPart {
 }
 
 internal object CallMessageDisplayPolicy {
-    fun isLocaleRtl(context: Context): Boolean {
-        return context.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
-    }
-
     fun contentOrder(isSelf: Boolean, isRtl: Boolean = false): List<CallMessageContentPart> {
         return if (isSelf xor isRtl) {
             listOf(CallMessageContentPart.TEXT, CallMessageContentPart.ICON)

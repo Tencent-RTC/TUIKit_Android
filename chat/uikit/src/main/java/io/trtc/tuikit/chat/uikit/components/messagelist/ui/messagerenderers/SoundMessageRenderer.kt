@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.RtlUtils
 import io.trtc.tuikit.chat.uikit.components.config.MessageAlignment
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderer
@@ -57,10 +58,6 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
                 MessageAlignment.TWO_SIDED -> if (isRtl) !isSelf else isSelf
                 else -> if (isRtl) !isSelf else isSelf
             }
-        }
-
-        private fun isLocaleRtl(context: Context): Boolean {
-            return context.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
         }
     }
 
@@ -121,7 +118,7 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
         val isCurrentMessage = audioState.playingMessageId == message.msgID
         val isPlaying = isCurrentMessage && audioState.isPlaying
 
-        val isRtl = isLocaleRtl(view.context)
+        val isRtl = RtlUtils.isLocaleRtl(view.context)
         val shouldAlignEnd = shouldAlignContentEnd(
             alignment = config.alignment,
             isSelf = message.isSentBySelf,

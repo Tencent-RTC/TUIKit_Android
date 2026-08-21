@@ -2,6 +2,7 @@ package io.trtc.tuikit.chat.uikit.components.conversationlist.adapter
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -68,7 +69,7 @@ class ConversationListAdapter(
         val itemView = ConversationItemLayout(parent.context)
         itemView.layoutParams = RecyclerView.LayoutParams(
             RecyclerView.LayoutParams.MATCH_PARENT,
-            dp2px(parent.context, 64f)
+            dp2px(parent.context, 72f)
         )
         return ConversationViewHolder(itemView)
     }
@@ -175,14 +176,14 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         addView(contentRow)
 
         avatar = Avatar(context).apply {
-            setSize(Avatar.AvatarSize.M)
+            setSize(Avatar.AvatarSize.L)
         }
         contentRow.addView(avatar, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
         ))
 
         val spacer1 = View(context)
-        contentRow.addView(spacer1, LinearLayout.LayoutParams(dp2px(context, 8f), 0))
+        contentRow.addView(spacer1, LinearLayout.LayoutParams(dp2px(context, 12f), 0))
 
         val middleColumn = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -193,12 +194,8 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         contentRow.addView(middleColumn)
 
         titleView = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                typeface = Typeface.create(Typeface.DEFAULT, 600, false)
-            } else {
-                typeface = Typeface.DEFAULT_BOLD
-            }
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+            typeface = Typeface.DEFAULT
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START
             textDirection = View.TEXT_DIRECTION_LOCALE
             maxLines = 1
@@ -209,7 +206,7 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         ))
 
         val spacerTitle = View(context)
-        middleColumn.addView(spacerTitle, LinearLayout.LayoutParams(0, dp2px(context, 4f)))
+        middleColumn.addView(spacerTitle, LinearLayout.LayoutParams(0, dp2px(context, 2f)))
 
         val subtitleRow = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -241,7 +238,7 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         ).apply { marginEnd = dp2px(context, 4f) })
 
         subtitleView = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START
             textDirection = View.TEXT_DIRECTION_LOCALE
             maxLines = 1
@@ -256,13 +253,11 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         }
         contentRow.addView(spacerMiddle)
 
-        val rightColumn = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL
+        val rightColumn = FrameLayout(context).apply {
             layoutDirection = View.LAYOUT_DIRECTION_LOCALE
         }
         contentRow.addView(rightColumn, LinearLayout.LayoutParams(
-            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
+            LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT
         ))
 
         timeView = TextView(context).apply {
@@ -270,12 +265,9 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
             textAlignment = View.TEXT_ALIGNMENT_VIEW_END
             textDirection = View.TEXT_DIRECTION_LOCALE
         }
-        rightColumn.addView(timeView, LinearLayout.LayoutParams(
-            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT
-        ))
-
-        val spacerTimeToMute = View(context)
-        rightColumn.addView(spacerTimeToMute, LinearLayout.LayoutParams(0, dp2px(context, 4f)))
+        rightColumn.addView(timeView, FrameLayout.LayoutParams(
+            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.END
+        ).apply { topMargin = dp2px(context, 13f) })
 
         muteIcon = ImageView(context).apply {
             visibility = GONE
@@ -283,9 +275,9 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
                 isAutoMirrored = true
             })
         }
-        rightColumn.addView(muteIcon, LinearLayout.LayoutParams(
-            dp2px(context, 16f), dp2px(context, 16f)
-        ))
+        rightColumn.addView(muteIcon, FrameLayout.LayoutParams(
+            dp2px(context, 16f), dp2px(context, 16f), Gravity.BOTTOM or Gravity.END
+        ).apply { bottomMargin = dp2px(context, 13f) })
 
         foreground = highlightOverlay
     }
@@ -353,8 +345,8 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
 
     private fun bindMuteIcon(conversation: ConversationInfo, colors: ColorTokens) {
         if (conversation.needShowNotReceiveIcon) {
+            muteIcon.setColorFilter(colors.textColorDisable, PorterDuff.Mode.SRC_IN)
             muteIcon.visibility = VISIBLE
-            muteIcon.setColorFilter(colors.textColorSecondary)
         } else {
             muteIcon.visibility = GONE
         }

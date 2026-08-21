@@ -15,6 +15,7 @@ import io.trtc.tuikit.atomicx.common.imageloader.ImageOptions
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.message.MessageQuoteInfo
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.common.RtlUtils
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageListTouchTargetTags
 
@@ -185,7 +186,7 @@ internal class MessageQuoteBubbleView(context: Context) : MaxWidthLinearLayout(c
     }
 
     private fun applyContentAlignment(alignment: MessageQuoteBubbleContentAlignment) {
-        val gravityValue = alignment.toAbsoluteGravity(isLocaleRtl())
+        val gravityValue = alignment.toAbsoluteGravity(RtlUtils.isLocaleRtl(context))
         gravity = gravityValue
         applyLinearLayoutChildGravity(senderView, gravityValue)
         applyLinearLayoutChildGravity(contentView, gravityValue)
@@ -202,10 +203,6 @@ internal class MessageQuoteBubbleView(context: Context) : MaxWidthLinearLayout(c
         val params = view.layoutParams as? LayoutParams ?: return
         params.gravity = gravityValue
         view.layoutParams = params
-    }
-
-    private fun isLocaleRtl(): Boolean {
-        return resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
     }
 
     private fun createLabels(): MessageQuoteLabels {

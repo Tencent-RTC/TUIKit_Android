@@ -262,9 +262,9 @@ class GroupMemberListView(
                 setBackgroundColor(colors.bgColorOperate)
                 setPadding(
                     dp2px(16f, dm).toInt(),
-                    dp2px(12f, dm).toInt(),
+                    dp2px(10f, dm).toInt(),
                     dp2px(16f, dm).toInt(),
-                    dp2px(12f, dm).toInt()
+                    dp2px(10f, dm).toInt()
                 )
                 layoutParams = RecyclerView.LayoutParams(
                     RecyclerView.LayoutParams.MATCH_PARENT,
@@ -293,7 +293,7 @@ class GroupMemberListView(
             itemLayout.addView(textContainer)
 
             val nameText = TextView(context).apply {
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
                 setTextColor(colors.textColorPrimary)
                 maxLines = 1
                 ellipsize = TextUtils.TruncateAt.END

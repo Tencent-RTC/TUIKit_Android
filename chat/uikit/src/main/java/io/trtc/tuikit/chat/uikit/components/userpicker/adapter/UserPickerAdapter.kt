@@ -33,15 +33,15 @@ internal class UserPickerAdapter(
         private const val TYPE_USER_ITEM = 1
         private const val PAYLOAD_SELECTION_STATE = "payload_selection_state"
 
-        private const val ITEM_HEIGHT_DP = 56f
+        private const val ITEM_HEIGHT_DP = 60f
         private const val ITEM_HORIZONTAL_PADDING_DP = 16f
-        private const val AVATAR_TEXT_SPACING_DP = 13f
+        private const val AVATAR_TEXT_SPACING_DP = 12f
         private const val CHECKBOX_SIZE_DP = 16f
-        private const val CHECKBOX_END_MARGIN_DP = 10f
+        private const val CHECKBOX_END_MARGIN_DP = 16f
         private const val INDEX_BAR_RESERVED_DP = 26f
         private const val HEADER_HORIZONTAL_PADDING_DP = 16f
-        private const val HEADER_VERTICAL_PADDING_DP = 8f
-        private const val ITEM_TEXT_SIZE_SP = 14f
+        private const val HEADER_VERTICAL_PADDING_DP = 6f
+        private const val ITEM_TEXT_SIZE_SP = 18f
         private const val HEADER_TEXT_SIZE_SP = 14f
     }
 

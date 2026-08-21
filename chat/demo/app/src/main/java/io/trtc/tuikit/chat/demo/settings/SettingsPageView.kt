@@ -1,7 +1,7 @@
 package io.trtc.tuikit.chat.demo.settings
 
 import io.trtc.tuikit.chat.demo.common.AppConstants
-import io.trtc.tuikit.chat.demo.common.Event
+import io.trtc.tuikit.chat.demo.main.MainActivity
 
 import android.content.Context
 import android.content.Intent
@@ -24,6 +24,7 @@ import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.atomicx.theme.Theme
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
+import io.trtc.tuikit.atomicx.theme.utils.ThemePersistUtil
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionItem
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionSheet
 import io.trtc.tuikit.chat.uikit.components.widgets.Switch
@@ -55,6 +56,7 @@ class SettingsPageView @JvmOverloads constructor(
     private val userAvatar: Avatar
 
     private val itemTheme: View
+    private val itemPrimaryColor: View
     private val itemLanguage: View
     private val itemAddRule: View
     private val itemTranslateLanguage: View
@@ -63,6 +65,9 @@ class SettingsPageView @JvmOverloads constructor(
     private val switchReadReceipt: Switch
     private val tvReadReceiptTitle: TextView
     private val tvReadReceiptDesc: TextView
+
+    private val switchCallsTab: Switch
+    private val tvCallsTabTitle: TextView
 
     private val btnLogout: TextView
 
@@ -80,6 +85,7 @@ class SettingsPageView @JvmOverloads constructor(
     private var userInfoJob: Job? = null
     private var themeScope: CoroutineScope? = null
     private val themeStore = ThemeStore.shared(context)
+    private val themePersistUtil = ThemePersistUtil(context)
 
     private val translateLanguageOptions = listOf(
         "zh" to "简体中文",
@@ -118,10 +124,11 @@ class SettingsPageView @JvmOverloads constructor(
         tvUserId = findViewById(R.id.demo_tvUserId)
         tvUserStatus = findViewById(R.id.demo_tvUserStatus)
         userAvatar = findViewById<Avatar>(R.id.demo_userAvatar).apply {
-            setSize(Avatar.AvatarSize.XL)
+            setSize(Avatar.AvatarSize.L)
         }
 
         itemTheme = findViewById(R.id.demo_itemTheme)
+        itemPrimaryColor = findViewById(R.id.demo_itemPrimaryColor)
         itemLanguage = findViewById(R.id.demo_itemLanguage)
         itemAddRule = findViewById(R.id.demo_itemAddRule)
         itemTranslateLanguage = findViewById(R.id.demo_itemTranslateLanguage)
@@ -131,6 +138,9 @@ class SettingsPageView @JvmOverloads constructor(
         tvReadReceiptTitle = findViewById(R.id.demo_tvReadReceiptTitle)
         tvReadReceiptDesc = findViewById(R.id.demo_tvReadReceiptDesc)
 
+        switchCallsTab = findViewById(R.id.demo_switchCallsTab)
+        tvCallsTabTitle = findViewById(R.id.demo_tvCallsTabTitle)
+
         btnLogout = findViewById(R.id.demo_btnLogout)
 
         settingsGroup1 = findViewById(R.id.demo_settingsGroup1)
@@ -139,19 +149,23 @@ class SettingsPageView @JvmOverloads constructor(
         scrollContent = findViewById(R.id.demo_scrollContent)
 
         allDividers.addAll(listOf(
+            findViewById(R.id.demo_dividerThemeColor),
             findViewById(R.id.demo_divider1),
             findViewById(R.id.demo_divider2),
-            findViewById(R.id.demo_divider3)
+            findViewById(R.id.demo_divider3),
+            findViewById(R.id.demo_divider4)
         ))
         allSpacers.addAll(listOf(
             findViewById(R.id.demo_spacer1),
             findViewById(R.id.demo_spacer2),
             findViewById(R.id.demo_spacerVoice),
+            findViewById(R.id.demo_spacer3),
             findViewById(R.id.demo_spacer4)
         ))
 
         setupSettingsItems()
         setupReadReceiptToggle()
+        setupCallsTabToggle()
         setupLogout()
         setupUserProfileClick()
         observeUserInfo()
@@ -184,13 +198,13 @@ class SettingsPageView @JvmOverloads constructor(
     }
 
     private fun applyThemeColors(colors: ColorTokens) {
-        setBackgroundColor(colors.bgColorOperate)
-        scrollContent.setBackgroundColor(colors.bgColorOperate)
+        setBackgroundColor(colors.bgColorTopBar)
+        scrollContent.setBackgroundColor(colors.bgColorTopBar)
 
         findViewById<View>(R.id.demo_userProfileSection)?.setBackgroundColor(colors.bgColorOperate)
         tvUserName.setTextColor(colors.textColorPrimary)
-        tvUserId.setTextColor(colors.textColorSecondary)
-        tvUserStatus.setTextColor(colors.textColorSecondary)
+        tvUserId.setTextColor(colors.textColorTertiary)
+        tvUserStatus.setTextColor(colors.textColorTertiary)
 
         settingsGroup1.setBackgroundColor(colors.bgColorOperate)
         settingsGroup2.setBackgroundColor(colors.bgColorOperate)
@@ -201,18 +215,27 @@ class SettingsPageView @JvmOverloads constructor(
         }
 
         for (spacer in allSpacers) {
-            spacer.setBackgroundColor(colors.bgColorInput)
+            spacer.setBackgroundColor(colors.bgColorTopBar)
         }
 
-        val entryItems = listOf(itemTheme, itemLanguage, itemAddRule, itemTranslateLanguage, itemVoiceMessage)
+        val entryItems = listOf(
+            itemTheme,
+            itemPrimaryColor,
+            itemLanguage,
+            itemAddRule,
+            itemTranslateLanguage,
+            itemVoiceMessage,
+        )
         for (item in entryItems) {
-            item.findViewById<TextView>(R.id.demo_tvSettingsTitle)?.setTextColor(colors.textColorPrimary)
-            item.findViewById<TextView>(R.id.demo_tvSettingsValue)?.setTextColor(colors.textColorSecondary)
+            item.findViewById<TextView>(R.id.demo_tvSettingsTitle)?.setTextColor(colors.textColorSecondary)
+            item.findViewById<TextView>(R.id.demo_tvSettingsValue)?.setTextColor(colors.textColorPrimary)
             item.findViewById<ImageView>(R.id.demo_ivArrow)?.setColorFilter(colors.textColorTertiary)
         }
+        updatePrimaryColorPreview(currentPrimaryColorHex(), colors.strokeColorPrimary)
 
-        tvReadReceiptTitle.setTextColor(colors.textColorPrimary)
-        tvReadReceiptDesc.setTextColor(colors.textColorSecondary)
+        tvReadReceiptTitle.setTextColor(colors.textColorSecondary)
+        tvReadReceiptDesc.setTextColor(colors.textColorTertiary)
+        tvCallsTabTitle.setTextColor(colors.textColorSecondary)
 
         btnLogout.setTextColor(colors.textColorError)
         val logoutBg = GradientDrawable().apply {
@@ -234,6 +257,17 @@ class SettingsPageView @JvmOverloads constructor(
         ) {
             showThemeSelector()
         }
+
+        setupEntryItem(
+            itemPrimaryColor,
+            context.getString(R.string.demo_settings_primary_color),
+            ""
+        ) {
+            showPrimaryColorPicker()
+        }
+        itemPrimaryColor.findViewById<TextView>(R.id.demo_tvSettingsValue)?.visibility = View.GONE
+        itemPrimaryColor.findViewById<View>(R.id.demo_vSettingsColorPreview)?.visibility = View.VISIBLE
+        updatePrimaryColorPreview(currentPrimaryColorHex())
 
         setupEntryItem(
             itemLanguage,
@@ -301,6 +335,15 @@ class SettingsPageView @JvmOverloads constructor(
             context.getString(R.string.demo_settings_read_receipt_enabled_desc)
         } else {
             context.getString(R.string.demo_settings_read_receipt_disabled_desc)
+        }
+    }
+
+    private fun setupCallsTabToggle() {
+        tvCallsTabTitle.text = context.getString(R.string.demo_settings_show_calls)
+        switchCallsTab.setChecked(MMKV.defaultMMKV().decodeBool(AppConstants.KEY_SHOW_CALLS_TAB, true))
+        switchCallsTab.setOnCheckedChangeListener { isChecked ->
+            MMKV.defaultMMKV().encode(AppConstants.KEY_SHOW_CALLS_TAB, isChecked)
+            (context as? MainActivity)?.setCallsTabVisible(isChecked)
         }
     }
 
@@ -412,6 +455,41 @@ class SettingsPageView @JvmOverloads constructor(
         }
     }
 
+    private fun showPrimaryColorPicker() {
+        PrimaryColorPickerDialog.show(
+            context = context,
+            selectedHex = currentPrimaryColorHex()
+        ) { hex ->
+            themeStore.setPrimaryColor(hex)
+            AppBuilderConfig.primaryColor = hex
+            updatePrimaryColorPreview(hex)
+        }
+    }
+
+    private fun updatePrimaryColorPreview(
+        hex: String,
+        strokeColor: Int = themeStore.themeState.value.currentTheme.tokens.color.strokeColorPrimary
+    ) {
+        val preview = itemPrimaryColor.findViewById<View>(R.id.demo_vSettingsColorPreview) ?: return
+        val color = try {
+            android.graphics.Color.parseColor(PrimaryColorPickerDialog.normalizeHex(hex))
+        } catch (_: IllegalArgumentException) {
+            android.graphics.Color.parseColor(DEFAULT_PRIMARY_COLOR)
+        }
+        val density = resources.displayMetrics.density
+        preview.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(color)
+            setStroke((1.5f * density).toInt(), strokeColor)
+        }
+    }
+
+    private fun currentPrimaryColorHex(): String {
+        val persisted = themePersistUtil.getCustomPrimaryColor()
+        val fallback = AppBuilderConfig.primaryColor
+        return PrimaryColorPickerDialog.normalizeHex(persisted ?: fallback)
+    }
+
     private fun showLanguageSelector() {
         ActionSheet.show(context, appLanguageOptions) { selected ->
             val tag = selected.value as String
@@ -491,5 +569,6 @@ class SettingsPageView @JvmOverloads constructor(
     companion object {
         private const val KEY_ENABLE_READ_RECEIPT = AppConstants.KEY_ENABLE_READ_RECEIPT
         private const val KEY_APP_LANGUAGE = AppConstants.KEY_APP_LANGUAGE
+        private const val DEFAULT_PRIMARY_COLOR = "#1C66E5"
     }
 }

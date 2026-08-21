@@ -81,11 +81,11 @@ class GroupManagementView(
         }
 
         rootLayout.addView(buildTopBar(colors, dm))
-        adminSectionSpacer = buildSpacer(6f, colors.bgColorTopBar, dm)
+        adminSectionSpacer = buildSpacer(10f, colors.bgColorTopBar, dm)
         rootLayout.addView(adminSectionSpacer)
         adminSection = buildAdminSection(colors, dm)
         rootLayout.addView(adminSection)
-        addSpacer(rootLayout, 6f, colors.bgColorTopBar, dm)
+        addSpacer(rootLayout, 10f, colors.bgColorTopBar, dm)
         rootLayout.addView(buildMuteAllSection(colors, dm))
         rootLayout.addView(buildMuteExplanation(colors, dm))
 
@@ -147,9 +147,8 @@ class GroupManagementView(
     }
 
     private fun updateAdminSectionVisibility(visible: Boolean) {
-        val visibility = if (visible) View.VISIBLE else View.GONE
-        adminSection?.visibility = visibility
-        adminSectionSpacer?.visibility = visibility
+        adminSection?.visibility = if (visible) View.VISIBLE else View.GONE
+        adminSectionSpacer?.visibility = View.VISIBLE
     }
 
     fun dismiss() {
@@ -186,7 +185,7 @@ class GroupManagementView(
 
         wrapper.addView(
             View(context).apply {
-                setBackgroundColor(colors.strokeColorSecondary)
+                setBackgroundColor(colors.strokeColorPrimary)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     dp2px(0.5f, dm).toInt().coerceAtLeast(1)
@@ -211,13 +210,13 @@ class GroupManagementView(
         sectionLayout.addView(
             TextView(context).apply {
                 text = context.getString(R.string.chat_setting_group_admins)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
                 setTextColor(colors.textColorSecondary)
                 setPadding(
                     dp2px(16f, dm).toInt(),
+                    dp2px(12f, dm).toInt(),
                     dp2px(16f, dm).toInt(),
-                    dp2px(16f, dm).toInt(),
-                    dp2px(8f, dm).toInt()
+                    dp2px(16f, dm).toInt()
                 )
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -240,8 +239,7 @@ class GroupManagementView(
             orientation = LinearLayout.HORIZONTAL
             layoutDirection = View.LAYOUT_DIRECTION_LOCALE
             val horizontalPadding = dp2px(16f, dm).toInt()
-            val verticalPadding = dp2px(12f, dm).toInt()
-            setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+            setPadding(horizontalPadding, 0, horizontalPadding, dp2px(16f, dm).toInt())
         }
         scrollView.addView(
             adminPreviewRow,
@@ -263,13 +261,24 @@ class GroupManagementView(
             adminPreviewRow?.addView(createAdminMemberItem(member, colors, dm))
         }
 
-        if (!canManageAdmins) return
+        if (!canManageAdmins) {
+            clearLastItemMarginEnd()
+            return
+        }
 
         adminPreviewRow?.addView(createAdminActionItem(isAdd = true, colors, dm))
 
         if (admins.isNotEmpty()) {
             adminPreviewRow?.addView(createAdminActionItem(isAdd = false, colors, dm))
         }
+        clearLastItemMarginEnd()
+    }
+
+    private fun clearLastItemMarginEnd() {
+        val row = adminPreviewRow ?: return
+        val last = row.childCount - 1
+        if (last < 0) return
+        (row.getChildAt(last).layoutParams as? LinearLayout.LayoutParams)?.marginEnd = 0
     }
 
     private fun createAdminMemberItem(
@@ -277,9 +286,9 @@ class GroupManagementView(
         colors: ColorTokens,
         dm: android.util.DisplayMetrics
     ): View {
-        val itemWidth = dp2px(56f, dm).toInt()
+        val itemWidth = dp2px(40f, dm).toInt()
         val avatarSize = dp2px(40f, dm).toInt()
-        val itemSpacing = dp2px(8f, dm).toInt()
+        val itemSpacing = dp2px(20f, dm).toInt()
         val displayName = member.displayName
 
         return LinearLayout(context).apply {
@@ -319,7 +328,7 @@ class GroupManagementView(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        topMargin = dp2px(6f, dm).toInt()
+                        topMargin = dp2px(3f, dm).toInt()
                     }
                 }
             )
@@ -331,10 +340,10 @@ class GroupManagementView(
         colors: ColorTokens,
         dm: android.util.DisplayMetrics
     ): View {
-        val itemWidth = dp2px(56f, dm).toInt()
-        val itemSpacing = dp2px(8f, dm).toInt()
+        val itemWidth = dp2px(40f, dm).toInt()
+        val itemSpacing = dp2px(20f, dm).toInt()
         val iconSize = dp2px(40f, dm).toInt()
-        val iconCornerRadius = dp2px(8f, dm)
+        val iconCornerRadius = dp2px(4f, dm)
         val symbol = if (isAdd) "+" else "−"
 
         return LinearLayout(context).apply {
@@ -471,9 +480,9 @@ class GroupManagementView(
             setBackgroundColor(colors.bgColorOperate)
             setPadding(
                 dp2px(16f, dm).toInt(),
-                dp2px(14f, dm).toInt(),
+                dp2px(10f, dm).toInt(),
                 dp2px(16f, dm).toInt(),
-                dp2px(14f, dm).toInt()
+                dp2px(10f, dm).toInt()
             )
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -483,7 +492,7 @@ class GroupManagementView(
                 TextView(context).apply {
                     text = context.getString(R.string.chat_setting_mute_all)
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-                    setTextColor(colors.textColorPrimary)
+                    setTextColor(colors.textColorSecondary)
                     layoutParams = LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -504,11 +513,11 @@ class GroupManagementView(
     private fun buildMuteExplanation(colors: ColorTokens, dm: android.util.DisplayMetrics): TextView {
         return TextView(context).apply {
             text = context.getString(R.string.chat_setting_mute_all_tips)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-            setTextColor(colors.textColorPrimary)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextColor(colors.textColorTertiary)
             setPadding(
                 dp2px(16f, dm).toInt(),
-                dp2px(16f, dm).toInt(),
+                dp2px(4f, dm).toInt(),
                 dp2px(16f, dm).toInt(),
                 dp2px(16f, dm).toInt()
             )

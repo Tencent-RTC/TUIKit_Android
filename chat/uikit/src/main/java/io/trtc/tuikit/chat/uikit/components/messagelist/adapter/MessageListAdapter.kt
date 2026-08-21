@@ -72,13 +72,16 @@ class MessageListAdapter internal constructor(
         resolver.cellRendererForViewType(viewType)?.let { renderer ->
             val view = renderer.createView(parent.context, parent)
             MessageListTouchTargetTags.mark(view)
+            view.layoutDirection = View.LAYOUT_DIRECTION_LOCALE
             view.layoutParams = RecyclerView.LayoutParams(
                 RecyclerView.LayoutParams.MATCH_PARENT,
                 RecyclerView.LayoutParams.WRAP_CONTENT
             )
             return CustomCellViewHolder(view, renderer)
         }
-        val itemRoot = FrameLayout(parent.context)
+        val itemRoot = FrameLayout(parent.context).apply {
+            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+        }
         val messageItemView = MessageItemView(parent.context, config, density)
         itemRoot.addView(
             messageItemView,

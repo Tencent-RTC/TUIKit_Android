@@ -36,8 +36,9 @@ class SettingRowNavigate @JvmOverloads constructor(
         gravity = Gravity.CENTER_VERTICAL
         layoutDirection = LAYOUT_DIRECTION_LOCALE
         val horizontalPadding = dp2px(16f, resources.displayMetrics).toInt()
-        val verticalPadding = dp2px(14f, resources.displayMetrics).toInt()
+        val verticalPadding = dp2px(12f, resources.displayMetrics).toInt()
         setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+        setMinimumHeight(dp2px(48f, resources.displayMetrics).toInt())
         isClickable = true
         isFocusable = true
 
@@ -66,8 +67,8 @@ class SettingRowNavigate @JvmOverloads constructor(
             layoutDirection = LAYOUT_DIRECTION_LOCALE
             scaleType = ImageView.ScaleType.CENTER_INSIDE
             layoutParams = LayoutParams(
-                dp2px(16f, resources.displayMetrics).toInt(),
-                dp2px(16f, resources.displayMetrics).toInt()
+                dp2px(14f, resources.displayMetrics).toInt(),
+                dp2px(14f, resources.displayMetrics).toInt()
             ).apply {
                 marginStart = dp2px(8f, resources.displayMetrics).toInt()
             }
@@ -109,7 +110,7 @@ class SettingRowNavigate @JvmOverloads constructor(
         accessoryImageView.visibility = VISIBLE
         accessoryImageView.setImageResource(drawableResId)
         accessoryImageView.scaleX = 1f
-        accessoryImageView.setColorFilter(colors.textColorSecondary)
+        accessoryImageView.setColorFilter(colors.textColorTertiary)
     }
 
     override fun onAttachedToWindow() {

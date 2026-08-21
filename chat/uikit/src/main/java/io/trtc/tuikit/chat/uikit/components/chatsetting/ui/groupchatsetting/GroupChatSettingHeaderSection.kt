@@ -54,8 +54,7 @@ internal class GroupChatSettingHeaderSection(
         }
 
         nameView = TextView(context).apply {
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
-            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             maxLines = 1
         }
         textInfoLayout.addView(nameView)
@@ -124,7 +123,7 @@ internal class GroupChatSettingHeaderSection(
     fun applyThemeColors(colors: ColorTokens) {
         rootView.setBackgroundColor(colors.bgColorOperate)
         nameView.setTextColor(colors.textColorPrimary)
-        idView.setTextColor(colors.textColorSecondary)
+        idView.setTextColor(colors.textColorTertiary)
     }
 
     private fun getColors(): ColorTokens {

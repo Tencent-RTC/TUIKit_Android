@@ -73,7 +73,7 @@ class VoiceMessageSettingActivity : BaseActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = systemBars.top)
+            headerContainer.updatePadding(top = systemBars.top)
             scrollView.updatePadding(bottom = systemBars.bottom)
             insets
         }
@@ -129,19 +129,19 @@ class VoiceMessageSettingActivity : BaseActivity() {
     }
 
     private fun applyColors(colors: ColorTokens) {
-        rootContainer.setBackgroundColor(colors.bgColorOperate)
-        scrollView.setBackgroundColor(colors.bgColorOperate)
+        rootContainer.setBackgroundColor(colors.bgColorTopBar)
+        scrollView.setBackgroundColor(colors.bgColorTopBar)
         headerContainer.setBackgroundColor(colors.bgColorOperate)
         tvTitle.setTextColor(colors.textColorPrimary)
         btnBack.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
         headerDivider.setBackgroundColor(colors.strokeColorPrimary)
 
         settingGroup.setBackgroundColor(colors.bgColorOperate)
-        groupDivider.setBackgroundColor(colors.strokeColorSecondary)
+        groupDivider.setBackgroundColor(colors.strokeColorPrimary)
 
         for (item in listOf(itemClone, itemSelect)) {
-            item.findViewById<TextView>(R.id.demo_tvSettingsTitle).setTextColor(colors.textColorPrimary)
-            item.findViewById<TextView>(R.id.demo_tvSettingsValue).setTextColor(colors.textColorSecondary)
+            item.findViewById<TextView>(R.id.demo_tvSettingsTitle).setTextColor(colors.textColorSecondary)
+            item.findViewById<TextView>(R.id.demo_tvSettingsValue).setTextColor(colors.textColorPrimary)
             item.findViewById<ImageView>(R.id.demo_ivArrow).setColorFilter(colors.textColorTertiary)
         }
     }

@@ -161,33 +161,30 @@ object ColorAlgorithm {
     private fun generateDynamicColorVariations(baseColor: String, theme: String): List<Int> {
         val variations = mutableListOf<Int>()
         val adjustments = HSL_ADJUSTMENTS[theme] ?: HSL_ADJUSTMENTS["light"]!!
-        val baseHsl = hexToHSL(baseColor)
-        val saturationFactor = when {
-            baseHsl.second > 70 -> 0.8
-            baseHsl.second < 30 -> 1.2
-            else -> 1.0
-        }
-        val lightnessFactor = when {
-            baseHsl.third > 70 -> 0.8
-            baseHsl.third < 30 -> 1.2
-            else -> 1.0
-        }
 
         for (i in 1..10) {
             val adjustment = adjustments[i] ?: Pair(0.0, 0.0)
-            val adjustedS = adjustment.first * saturationFactor
-            val adjustedL = adjustment.second * lightnessFactor
-            variations.add(parseHexColor(adjustColor(baseColor, Pair(adjustedS, adjustedL))))
+            variations.add(parseHexColor(adjustColor(baseColor, adjustment)))
         }
 
         return variations
     }
 
-    private fun adjustColor(color: String, adjustment: Pair<Double, Double>): String {
+    internal fun adjustColor(color: String, adjustment: Pair<Double, Double>): String {
         val hsl = hexToHSL(color)
-        val newS = max(0.0, min(100.0, hsl.second + adjustment.first))
-        val newL = max(0.0, min(100.0, hsl.third + adjustment.second))
+        val saturationScale = availableRangeScale(hsl.second, adjustment.first)
+        val lightnessScale = availableRangeScale(hsl.third, adjustment.second)
+        val newS = (hsl.second + adjustment.first * saturationScale).coerceIn(0.0, 100.0)
+        val newL = (hsl.third + adjustment.second * lightnessScale).coerceIn(0.0, 100.0)
         return hslToHex(hsl.first, newS, newL)
+    }
+
+    private fun availableRangeScale(value: Double, adjustment: Double): Double {
+        return when {
+            adjustment > 0.0 -> ((100.0 - value) / 50.0).coerceAtMost(1.0)
+            adjustment < 0.0 -> (value / 50.0).coerceAtMost(1.0)
+            else -> 0.0
+        }
     }
 
     private fun colorDistance(

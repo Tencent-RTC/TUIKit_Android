@@ -23,6 +23,8 @@ internal object AtomicCallEventPublisher {
         mediaType: String,
         chatGroupId: String? = null
     ) {
+        DataReport.reportInteractionMetrics(InteractionMetrics.CHAT_INVOKE_CALL)
+
         if (participantIds.isEmpty()) {
             return
         }
@@ -34,12 +36,7 @@ internal object AtomicCallEventPublisher {
         if (!chatGroupId.isNullOrEmpty()) {
             data[KEY_CHAT_GROUP_ID] = chatGroupId
         }
-        // CallKit subscribes to the start-call event once integrated, so a live
-        // subscriber means the host app has CallKit. Unlike reflection on class
-        // names, this survives R8/ProGuard obfuscation.
-        if (TUIEventBus.shared.hasSubscriber(EVENT_START_CALL, null)) {
-            DataReport.reportInteractionMetrics(InteractionMetrics.CHAT_INVOKE_CALL)
-        }
+
         TUIEventBus.shared.publish(
             EVENT_START_CALL,
             null,

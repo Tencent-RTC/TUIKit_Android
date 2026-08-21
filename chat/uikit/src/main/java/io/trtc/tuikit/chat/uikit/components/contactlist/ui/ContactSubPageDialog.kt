@@ -47,6 +47,7 @@ internal abstract class ContactSubPageDialog(context: Context) : Dialog(context,
                 leadingContentDescription = context.getString(R.string.uikit_back)
             )
         )
+        navBar.titleView.textSize = 17f
         rootLayout.addView(navBar)
 
         dividerView = View(context).apply {

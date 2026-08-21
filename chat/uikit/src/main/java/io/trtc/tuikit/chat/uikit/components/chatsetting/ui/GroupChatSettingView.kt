@@ -190,7 +190,7 @@ class GroupChatSettingView @JvmOverloads constructor(
                 dp2px(0.5f, resources.displayMetrics).toInt().coerceAtLeast(1)
             )
             tag = TAG_DIVIDER
-            setBackgroundColor(getColors().strokeColorSecondary)
+            setBackgroundColor(getColors().strokeColorPrimary)
         }
         themeTaggedViews.add(divider)
         return divider
@@ -486,7 +486,7 @@ class GroupChatSettingView @JvmOverloads constructor(
         themeTaggedViews.forEach { view ->
             when (view.tag) {
                 TAG_SPACER -> view.setBackgroundColor(colors.bgColorTopBar)
-                TAG_DIVIDER -> view.setBackgroundColor(colors.strokeColorSecondary)
+                TAG_DIVIDER -> view.setBackgroundColor(colors.strokeColorPrimary)
             }
         }
     }

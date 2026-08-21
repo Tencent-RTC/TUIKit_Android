@@ -269,13 +269,17 @@ class MessageListViewModel(
         return visibilityPolicy.shouldDisplay(message)
     }
 
-    fun clearMessageReadCount() {
+    fun syncConversationAsRead() {
         conversationListStore.clearConversationUnreadCount(conversationID)
         conversationListStore.markConversation(
             listOf(conversationID),
             ConversationMarkType.unread,
             false
         )
+    }
+
+    fun clearConversationUnreadCount() {
+        conversationListStore.clearConversationUnreadCount(conversationID)
     }
 
     fun loadMoreOlderMessage(completion: CompletionHandler? = null) {

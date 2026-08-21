@@ -50,15 +50,15 @@ class AtomicAZOrderedList @JvmOverloads constructor(
     companion object {
         private const val INDEX_BAR_END_PADDING_DP = 8f
         private const val INDEX_BAR_VERTICAL_PADDING_DP = 16f
-        private const val ITEM_HEIGHT_DP = 56f
+        private const val ITEM_HEIGHT_DP = 60f
         private const val ITEM_HORIZONTAL_PADDING_DP = 16f
-        private const val AVATAR_TEXT_SPACING_DP = 13f
+        private const val AVATAR_TEXT_SPACING_DP = 12f
         private const val HEADER_HORIZONTAL_PADDING_DP = 16f
-        private const val HEADER_VERTICAL_PADDING_DP = 8f
-        private const val ITEM_TEXT_SIZE_SP = 14f
+        private const val HEADER_VERTICAL_PADDING_DP = 6f
+        private const val ITEM_TEXT_SIZE_SP = 18f
         private const val HEADER_TEXT_SIZE_SP = 14f
         private const val DIVIDER_HEIGHT_DP = 0.5f
-        private const val DIVIDER_LEFT_MARGIN_DP = 70f
+        private const val DIVIDER_LEFT_MARGIN_DP = 68f
     }
 
     private val recyclerView: RecyclerView
@@ -272,7 +272,7 @@ class AtomicAZOrderedList @JvmOverloads constructor(
 
                 holder is SectionHeaderViewHolder && item is FlatItem.SectionHeader -> {
                     holder.textView.text = item.letter
-                    holder.textView.setTextColor(colors.textColorPrimary)
+                    holder.textView.setTextColor(colors.textColorTertiary)
                     holder.itemView.setBackgroundColor(colors.bgColorInput)
                 }
 
@@ -326,7 +326,7 @@ class AtomicAZOrderedList @JvmOverloads constructor(
             val textView = TextView(context).apply {
                 tag = "sectionText"
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, HEADER_TEXT_SIZE_SP)
-                setTextColor(colors.textColorPrimary)
+                setTextColor(colors.textColorTertiary)
                 textAlignment = TEXT_ALIGNMENT_VIEW_START
                 textDirection = TEXT_DIRECTION_LOCALE
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -425,7 +425,7 @@ class AtomicAZOrderedList @JvmOverloads constructor(
             val isRtl = parent.layoutDirection == LAYOUT_DIRECTION_RTL
             textPaint.textAlign = if (isRtl) Paint.Align.RIGHT else Paint.Align.LEFT
             textPaint.textSize = dp2px(HEADER_TEXT_SIZE_SP, dm)
-            textPaint.color = colors.textColorPrimary
+            textPaint.color = colors.textColorTertiary
             headerPaint.color = colors.bgColorInput
 
             val currentItem = flatItems.getOrNull(firstVisiblePos) ?: return

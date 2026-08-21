@@ -22,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.updatePadding
 import com.google.gson.Gson
 import io.trtc.tuikit.chat.uikit.components.common.EventBus
@@ -42,11 +43,13 @@ import io.trtc.tuikit.atomicxcore.api.group.GroupStore
 import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageInputStore
+import io.trtc.tuikit.atomicxcore.api.message.SendMessageOption
 import io.trtc.tuikit.atomicxcore.api.message.SendMessagePayload
 import io.trtc.tuikit.chat.demo.common.AppConstants
 import io.trtc.tuikit.chat.demo.common.BaseActivity
 import io.trtc.tuikit.chat.demo.common.Event
 import io.trtc.tuikit.chat.app.R
+import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputActionIDs
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
@@ -84,6 +87,7 @@ class ChatActivity : BaseActivity() {
     private lateinit var btnMultiSelectCancel: TextView
     private lateinit var chatPageView: ChatPageView
     private lateinit var chatSecurityBar: LinearLayout
+    private lateinit var securityWarningIcon: ImageView
     private lateinit var securityWarningText: TextView
     private lateinit var securityWarningClose: ImageView
 
@@ -97,7 +101,6 @@ class ChatActivity : BaseActivity() {
         private const val GROUP_CONVERSATION_ID_PREFIX = "group_"
         private const val UNREAD_BADGE_DEBOUNCE_MS = 300L
         private const val DEMO_MESSAGE_INPUT_CUSTOM_LINK_ACTION_ID = "demo.messageInput.customLink"
-        private val SECURITY_REPORT_LINK_COLOR = 0xFF147AFF.toInt()
 
         fun start(context: Context, conversationID: String) {
             start(context, conversationID, null)
@@ -143,7 +146,6 @@ class ChatActivity : BaseActivity() {
         chatSecurityBar = findViewById(R.id.demo_chatSecurityBar)
         securityWarningText = findViewById(R.id.demo_securityWarningText)
         securityWarningClose = findViewById(R.id.demo_securityWarningClose)
-        setupSecurityWarning()
 
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -191,6 +193,9 @@ class ChatActivity : BaseActivity() {
                         )
                         MessageInputStore.create(conversationID).sendMessage(
                             payload = payload,
+                            option = SendMessageOption(
+                                needReadReceipt = AppBuilderConfig.enableReadReceipt
+                            ),
                             completion = object : CompletionHandler {
                                 override fun onSuccess() {}
                                 override fun onFailure(code: Int, desc: String) {}
@@ -384,39 +389,6 @@ class ChatActivity : BaseActivity() {
         super.onBackPressed()
     }
 
-    private fun setupSecurityWarning() {
-        val warning = getString(R.string.demo_chat_security_warning)
-        val report = getString(R.string.demo_chat_security_warning_click_to_report)
-        val builder = SpannableStringBuilder(warning).append(" ")
-        val reportStart = builder.length
-        builder.append(report)
-        builder.setSpan(
-            ForegroundColorSpan(SECURITY_REPORT_LINK_COLOR),
-            reportStart,
-            builder.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        builder.setSpan(
-            object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    openSecurityReport()
-                }
-
-                override fun updateDrawState(ds: TextPaint) {
-                    ds.isUnderlineText = false
-                }
-            },
-            reportStart,
-            builder.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        securityWarningText.text = builder
-        securityWarningText.movementMethod = LinkMovementMethod.getInstance()
-        securityWarningClose.setOnClickListener {
-            chatSecurityBar.visibility = View.GONE
-        }
-    }
-
     private fun openSecurityReport() {
         try {
             startActivity(
@@ -443,6 +415,11 @@ class ChatActivity : BaseActivity() {
         }
         badgeContainer.background = badgeBg
         tvUnreadBadge.setTextColor(colors.textColorButton)
+
+        chatSecurityBar.setBackgroundColor(colors.toastColorWarning)
+        securityWarningIcon.imageTintList = ColorStateList.valueOf(colors.textColorWarning)
+        securityWarningText.setTextColor(colors.textColorWarning)
+        securityWarningClose.imageTintList = ColorStateList.valueOf(colors.textColorWarning)
     }
 
     override fun onDestroy() {
