@@ -27,6 +27,7 @@ import io.trtc.tuikit.chat.uikit.components.config.MessageAlignment
 import io.trtc.tuikit.chat.uikit.components.messagelist.adapter.MessageListAdapter
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.messageRenderRules
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageQuoteLocatePolicy
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRendererResolver
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListLocateCoordinator
@@ -94,7 +95,7 @@ class MergedMessageDetailActivity : AppCompatActivity() {
     }
     private val rendererResolver by lazy {
         MessageRendererResolver(
-            customRules = (config as? ChatMessageListConfig)?.customRenderRules.orEmpty()
+            customRules = config.messageRenderRules()
         )
     }
 

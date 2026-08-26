@@ -1,5 +1,5 @@
 <resources>
-    <string name="message_input_edit_text_hint">Send a message or hold to talk...</string>
+    <string name="message_input_edit_text_hint">Type or hold to talk...</string>
     <string name="message_input_edit_text_hint_text_only">Send a message...</string>
     <string name="message_input_album">Album</string>
     <string name="message_input_take_photo">Take Photo</string>
@@ -36,4 +36,6 @@
     <string name="message_input_message_type_video">[Video]</string>
     <string name="message_input_message_type_file">[File]</string>
     <string name="message_input_message_type_animate_emoji">[Animated Sticker]</string>
+    <string name="message_input_chatbot_stop">Stop answer</string>
+    <string name="message_input_chatbot_waiting_tips">Please wait for the current answer or stop it first.</string>
 </resources>

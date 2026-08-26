@@ -32,13 +32,14 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
         private const val FRAME_INTERVAL_MS = 300L
         private const val DIMMED_ALPHA_INT = 76
         private const val FULL_ALPHA_INT = 255
+        private const val SELF_ICON_ROTATION_DEGREES = 180f
 
         private const val MAX_DURATION_SECONDS = 60
 
-        private const val ABSOLUTE_MIN_WIDTH_DP = 80
+        private const val ABSOLUTE_MIN_WIDTH_DP = 64
         private const val ABSOLUTE_MAX_WIDTH_DP = 260
 
-        private const val MIN_WIDTH_SCREEN_RATIO = 0.22f
+        private const val MIN_WIDTH_SCREEN_RATIO = 0.16f
         private const val MAX_WIDTH_SCREEN_RATIO = 0.55f
 
         private val LAYER_IDS = intArrayOf(
@@ -131,6 +132,7 @@ class SoundMessageRenderer : MessageRenderer, RecyclableMessageRenderer {
         }
         applyContentOrder(container, animIcon, durationView, isRtl)
         animIcon.scaleX = if (isRtl) -1f else 1f
+        animIcon.rotation = if (message.isSentBySelf) SELF_ICON_ROTATION_DEGREES else 0f
 
         tintVoiceLayers(animIcon.drawable, contentColor)
 

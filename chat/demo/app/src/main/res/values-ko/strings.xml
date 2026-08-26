@@ -31,4 +31,9 @@
     <string name="demo_voice_custom_badge">사용자 지정</string>
     <string name="demo_voice_delete">삭제</string>
     <string name="demo_voice_delete_failed">삭제에 실패했습니다</string>
+    <string name="demo_chatbot_clear_history">대화 기록 지우기</string>
+    <string name="demo_chatbot_clear_history_confirmation">전체 대화 기록을 지우시겠습니까?</string>
+    <string name="demo_chatbot_clear_history_failed">대화 기록을 지우지 못했습니다</string>
+    <string name="demo_confirm">지우기</string>
+    <string name="demo_cancel">취소</string>
 </resources>

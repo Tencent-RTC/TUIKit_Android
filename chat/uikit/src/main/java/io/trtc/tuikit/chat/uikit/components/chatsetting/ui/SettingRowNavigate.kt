@@ -102,6 +102,7 @@ class SettingRowNavigate @JvmOverloads constructor(
     }
 
     private fun applyAccessory(colors: ColorTokens) {
+        val hasCustomAccessory = customAccessoryResId != null
         val drawableResId = customAccessoryResId ?: if (showArrow) R.drawable.uikit_ic_arrow_right else null
         if (drawableResId == null) {
             accessoryImageView.visibility = GONE
@@ -110,7 +111,9 @@ class SettingRowNavigate @JvmOverloads constructor(
         accessoryImageView.visibility = VISIBLE
         accessoryImageView.setImageResource(drawableResId)
         accessoryImageView.scaleX = 1f
-        accessoryImageView.setColorFilter(colors.textColorTertiary)
+        accessoryImageView.setColorFilter(
+            if (hasCustomAccessory) colors.textColorPrimary else colors.textColorTertiary
+        )
     }
 
     override fun onAttachedToWindow() {

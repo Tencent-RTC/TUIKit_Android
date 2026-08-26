@@ -1,33 +1,24 @@
 package io.trtc.tuikit.chat.uikit.components.chatsetting.ui.groupchatsetting
+
 import android.content.Context
-import android.view.View
-import android.widget.LinearLayout
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingCustomItem
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingItemIDs
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingSectionIDs
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.GroupChatSettingItemContext
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.SettingRowNavigate
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.SettingRowToggle
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.TextInputDialog
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupChatSettingViewModel
-import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 
 internal class GroupChatSettingRowsController(
     private val context: Context,
     private val viewModelProvider: () -> GroupChatSettingViewModel?,
-    private val createSectionContainer: () -> LinearLayout,
-    private val rebuildSection: (LinearLayout, List<View>) -> Unit,
     private val onOpenGroupManagement: (GroupChatSettingViewModel) -> Unit,
     private val onShowJoinMethod: (GroupChatSettingViewModel) -> Unit,
     private val onShowInviteMethod: (GroupChatSettingViewModel) -> Unit,
-    private val onShowChatBackgroundPicker: (GroupChatSettingViewModel) -> Unit
+    private val onShowChatBackgroundPicker: (GroupChatSettingViewModel) -> Unit,
 ) {
-    lateinit var settingsSection: LinearLayout
-        private set
-    lateinit var aliasSection: LinearLayout
-        private set
-    lateinit var switchSection: LinearLayout
-        private set
-    lateinit var backgroundSection: LinearLayout
-        private set
-
     private lateinit var groupNoticeRow: SettingRowNavigate
     private lateinit var groupTypeRow: SettingRowNavigate
     private lateinit var joinMethodRow: SettingRowNavigate
@@ -38,8 +29,7 @@ internal class GroupChatSettingRowsController(
     private lateinit var doNotDisturbRow: SettingRowToggle
     private lateinit var pinRow: SettingRowToggle
 
-    fun buildSections(): List<LinearLayout> {
-        settingsSection = createSectionContainer()
+    fun buildItems(): List<ChatSettingCustomItem<GroupChatSettingItemContext>> {
         groupNoticeRow = SettingRowNavigate(context).apply {
             setTitle(context.getString(R.string.chat_setting_group_notice))
         }
@@ -57,15 +47,9 @@ internal class GroupChatSettingRowsController(
         inviteMethodRow = SettingRowNavigate(context).apply {
             setTitle(context.getString(R.string.chat_setting_group_invited_method))
         }
-        rebuildSettingsSection()
-
-        aliasSection = createSectionContainer()
         myAliasRow = SettingRowNavigate(context).apply {
             setTitle(context.getString(R.string.chat_setting_my_alias_in_group))
         }
-        rebuildSection(aliasSection, listOf(myAliasRow))
-
-        switchSection = createSectionContainer()
         doNotDisturbRow = SettingRowToggle(context).apply {
             setTitle(context.getString(R.string.chat_setting_do_not_disturb))
             onToggleChanged = { checked -> viewModelProvider()?.setDoNotDisturb(checked) }
@@ -74,9 +58,6 @@ internal class GroupChatSettingRowsController(
             setTitle(context.getString(R.string.chat_setting_pin))
             onToggleChanged = { checked -> viewModelProvider()?.setPinChat(checked) }
         }
-        rebuildSection(switchSection, listOf(doNotDisturbRow, pinRow))
-
-        backgroundSection = createSectionContainer()
         chatBackgroundRow = SettingRowNavigate(context).apply {
             setTitle(context.getString(R.string.chat_setting_chat_background))
             setShowArrow(true)
@@ -84,9 +65,45 @@ internal class GroupChatSettingRowsController(
                 viewModelProvider()?.let(onShowChatBackgroundPicker)
             }
         }
-        rebuildSection(backgroundSection, listOf(chatBackgroundRow))
 
-        return listOf(settingsSection, aliasSection, switchSection, backgroundSection)
+        return listOf(
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_NOTICE,
+                ChatSettingSectionIDs.GROUP_SETTINGS,
+            ) { groupNoticeRow },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_MANAGEMENT,
+                ChatSettingSectionIDs.GROUP_SETTINGS,
+            ) { groupManageRow },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_TYPE,
+                ChatSettingSectionIDs.GROUP_SETTINGS,
+            ) { groupTypeRow },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_JOIN_METHOD,
+                ChatSettingSectionIDs.GROUP_SETTINGS,
+            ) { joinMethodRow },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_INVITE_METHOD,
+                ChatSettingSectionIDs.GROUP_SETTINGS,
+            ) { inviteMethodRow },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_ALIAS,
+                ChatSettingSectionIDs.GROUP_ALIAS,
+            ) { myAliasRow },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_DO_NOT_DISTURB,
+                ChatSettingSectionIDs.GROUP_SWITCHES,
+            ) { doNotDisturbRow },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_PIN,
+                ChatSettingSectionIDs.GROUP_SWITCHES,
+            ) { pinRow },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_CHAT_BACKGROUND,
+                ChatSettingSectionIDs.GROUP_CHAT_BACKGROUND,
+            ) { chatBackgroundRow },
+        )
     }
 
     fun refresh(state: GroupChatSettingUiState, viewModel: GroupChatSettingViewModel) {
@@ -120,7 +137,6 @@ internal class GroupChatSettingRowsController(
             groupNoticeRow.setOnClickListener(null)
         }
 
-        groupManageRow.visibility = if (permissions.canOpenGroupManagement) View.VISIBLE else View.GONE
         if (permissions.canOpenGroupManagement) {
             groupManageRow.setShowArrow(true)
             groupManageRow.setCustomAccessory(null)
@@ -188,9 +204,7 @@ internal class GroupChatSettingRowsController(
             myAliasRow.setOnClickListener(null)
         }
 
-        doNotDisturbRow.visibility = if (permissions.canToggleDoNotDisturb) View.VISIBLE else View.GONE
         doNotDisturbRow.setChecked(state.isNotDisturb)
-        pinRow.visibility = if (permissions.canTogglePinned) View.VISIBLE else View.GONE
         pinRow.setChecked(state.isPinned)
 
         chatBackgroundRow.setTitle(context.getString(R.string.chat_setting_chat_background))
@@ -203,32 +217,5 @@ internal class GroupChatSettingRowsController(
         )
         chatBackgroundRow.setShowArrow(true)
         chatBackgroundRow.setOnClickListener { onShowChatBackgroundPicker(viewModel) }
-
-        rebuildSettingsSection()
-        rebuildSection(aliasSection, listOf(myAliasRow))
-        rebuildSection(switchSection, listOf(doNotDisturbRow, pinRow))
-        rebuildSection(backgroundSection, listOf(chatBackgroundRow))
-    }
-
-    fun applyThemeColors(colors: ColorTokens) {
-        if (::settingsSection.isInitialized) {
-            settingsSection.setBackgroundColor(colors.bgColorOperate)
-        }
-        if (::aliasSection.isInitialized) {
-            aliasSection.setBackgroundColor(colors.bgColorOperate)
-        }
-        if (::switchSection.isInitialized) {
-            switchSection.setBackgroundColor(colors.bgColorOperate)
-        }
-        if (::backgroundSection.isInitialized) {
-            backgroundSection.setBackgroundColor(colors.bgColorOperate)
-        }
-    }
-
-    private fun rebuildSettingsSection() {
-        rebuildSection(
-            settingsSection,
-            listOf(groupNoticeRow, groupManageRow, groupTypeRow, joinMethodRow, inviteMethodRow)
-        )
     }
 }

@@ -152,4 +152,5 @@
     <string name="message_list_mention_all">所有人</string>
     <string name="message_list_violation_message">[违规消息]</string>
     <string name="message_list_user_count_suffix">等%1$d人</string>
+    <string name="message_list_chatbot_forward_not_supported">不能转发消息到 AI 聊天</string>
 </resources>

@@ -31,6 +31,10 @@ import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.ContactFlowLauncher
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
 import io.trtc.tuikit.atomicxcore.api.contact.ContactStore
@@ -86,10 +90,6 @@ class ChatActivity : BaseActivity() {
     private lateinit var leftContainer: LinearLayout
     private lateinit var btnMultiSelectCancel: TextView
     private lateinit var chatPageView: ChatPageView
-    private lateinit var chatSecurityBar: LinearLayout
-    private lateinit var securityWarningIcon: ImageView
-    private lateinit var securityWarningText: TextView
-    private lateinit var securityWarningClose: ImageView
 
     private var isPeerTyping = false
     private var latestChatTitle: String = ""
@@ -127,6 +127,7 @@ class ChatActivity : BaseActivity() {
             finish()
             return
         }
+        val isChatbotConversation = ChatPageView.isChatbotConversationID(conversationID)
         @Suppress("DEPRECATION")
         val locateMessage = intent?.getParcelableExtra<MessageInfo>(EXTRA_LOCATE_MESSAGE)
 
@@ -143,9 +144,6 @@ class ChatActivity : BaseActivity() {
         btnMultiSelectCancel.text = getString(R.string.demo_chat_header_cancel)
         updateChatTitle(ChatTitleResolver.resolve(conversationID = conversationID))
         val chatPageContainer = findViewById<FrameLayout>(R.id.demo_chatPageContainer)
-        chatSecurityBar = findViewById(R.id.demo_chatSecurityBar)
-        securityWarningText = findViewById(R.id.demo_securityWarningText)
-        securityWarningClose = findViewById(R.id.demo_securityWarningClose)
 
         ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -156,11 +154,19 @@ class ChatActivity : BaseActivity() {
 
         leftContainer.contentDescription = btnBack.contentDescription
         leftContainer.setOnClickListener { finish() }
+        if (isChatbotConversation) {
+            btnMore.setImageResource(R.drawable.demo_ic_clear_chat_history)
+            btnMore.contentDescription = getString(R.string.demo_chatbot_clear_history)
+        }
         btnMore.setOnClickListener {
-            handleChatSettingNavigation(
-                userID = getUserID(conversationID),
-                groupID = getGroupID(conversationID)
-            )
+            if (isChatbotConversation) {
+                showClearChatHistoryConfirmation()
+            } else {
+                handleChatSettingNavigation(
+                    userID = getUserID(conversationID),
+                    groupID = getGroupID(conversationID)
+                )
+            }
         }
         btnMore.expandTouchTarget()
 
@@ -348,6 +354,33 @@ class ChatActivity : BaseActivity() {
         }
     }
 
+    private fun showClearChatHistoryConfirmation() {
+        AtomicAlertDialog(this).apply {
+            init {
+                content = getString(R.string.demo_chatbot_clear_history_confirmation)
+                confirmButton(getString(R.string.demo_confirm)) { _ ->
+                    chatPageView.clearChatHistory(
+                        object : CompletionHandler {
+                            override fun onSuccess() = Unit
+
+                            override fun onFailure(code: Int, desc: String) {
+                                AtomicToast.show(
+                                    this@ChatActivity,
+                                    desc.ifBlank {
+                                        getString(R.string.demo_chatbot_clear_history_failed)
+                                    },
+                                    style = AtomicToast.Style.ERROR
+                                )
+                            }
+                        }
+                    )
+                }
+                cancelButton(getString(R.string.demo_cancel))
+            }
+            show()
+        }
+    }
+
     private fun getUserID(conversationID: String): String? {
         return if (conversationID.startsWith(C2C_CONVERSATION_ID_PREFIX)) {
             conversationID.removePrefix(C2C_CONVERSATION_ID_PREFIX)
@@ -389,17 +422,6 @@ class ChatActivity : BaseActivity() {
         super.onBackPressed()
     }
 
-    private fun openSecurityReport() {
-        try {
-            startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(AppConstants.REPORT_URL))
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        } catch (_: Exception) {
-            Toast.makeText(this, getString(R.string.demo_open_browser_failed), Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private fun applyColors(colors: ColorTokens) {
         rootContainer.setBackgroundColor(colors.bgColorOperate)
         headerContainer.setBackgroundColor(colors.bgColorOperate)
@@ -407,7 +429,7 @@ class ChatActivity : BaseActivity() {
         btnBack.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
         btnMore.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
         btnMultiSelectCancel.setTextColor(colors.textColorLink)
-        headerDivider.setBackgroundColor(colors.strokeColorPrimary)
+        headerDivider.setBackgroundColor(colors.strokeColorSecondary)
 
         val badgeBg = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
@@ -415,11 +437,6 @@ class ChatActivity : BaseActivity() {
         }
         badgeContainer.background = badgeBg
         tvUnreadBadge.setTextColor(colors.textColorButton)
-
-        chatSecurityBar.setBackgroundColor(colors.toastColorWarning)
-        securityWarningIcon.imageTintList = ColorStateList.valueOf(colors.textColorWarning)
-        securityWarningText.setTextColor(colors.textColorWarning)
-        securityWarningClose.imageTintList = ColorStateList.valueOf(colors.textColorWarning)
     }
 
     override fun onDestroy() {

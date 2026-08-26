@@ -1,5 +1,5 @@
 <resources>
-    <string name="message_input_edit_text_hint">رسالة أو اضغط...</string>
+    <string name="message_input_edit_text_hint">اكتب أو اضغط...</string>
     <string name="message_input_edit_text_hint_text_only">أرسل رسالة...</string>
     <string name="message_input_album">الصور</string>
     <string name="message_input_take_photo">التقاط صورة</string>
@@ -36,4 +36,6 @@
     <string name="message_input_message_type_video">[فيديو]</string>
     <string name="message_input_message_type_file">[ملف]</string>
     <string name="message_input_message_type_animate_emoji">[ملصق متحرك]</string>
+    <string name="message_input_chatbot_stop">إيقاف الإجابة</string>
+    <string name="message_input_chatbot_waiting_tips">يرجى انتظار الإجابة الحالية أو إيقافها أولاً.</string>
 </resources>

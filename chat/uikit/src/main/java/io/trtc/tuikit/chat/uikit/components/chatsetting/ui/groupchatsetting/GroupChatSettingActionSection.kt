@@ -1,14 +1,11 @@
 package io.trtc.tuikit.chat.uikit.components.chatsetting.ui.groupchatsetting
+
 import android.content.Context
-import android.view.View
-import android.widget.LinearLayout
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionConfig
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionContext
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionStyle
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingCustomAction
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingScene
-import io.trtc.tuikit.chat.uikit.components.chatsetting.permission.GroupPermission
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingCustomItem
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingItemIDs
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingSectionIDs
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.GroupChatSettingItemContext
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.GroupMemberPickerDialog
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.SettingRowButton
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupChatSettingViewModel
@@ -17,91 +14,30 @@ import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import io.trtc.tuikit.atomicxcore.api.group.GroupMemberRole
-import io.trtc.tuikit.atomicxcore.api.group.GroupType
 
 internal class GroupChatSettingActionSection(
     private val context: Context,
-    private val createDivider: () -> View,
-    private val createSpacer: () -> View,
-    private val canPerformAction: (GroupType, GroupMemberRole, GroupPermission) -> Boolean,
-    private val onGroupDeletedProvider: () -> (() -> Unit)?
+    private val onGroupDeletedProvider: () -> (() -> Unit)?,
 ) {
-    fun rebuild(
-        actionSection: LinearLayout,
-        actionSpacer: View,
-        viewModel: GroupChatSettingViewModel,
-        groupType: GroupType,
-        selfRole: GroupMemberRole
-    ) {
-        actionSection.removeAllViews()
-
-        val builtInRows = mutableListOf<SettingRowButton>()
-        if (canPerformAction(groupType, selfRole, GroupPermission.TRANSFER_OWNER)) {
-            builtInRows.add(createTransferOwnerRow(viewModel))
-        }
-
-        if (canPerformAction(groupType, selfRole, GroupPermission.CLEAR_HISTORY_MESSAGES)) {
-            builtInRows.add(createClearHistoryRow(viewModel))
-        }
-
-        if (canPerformAction(groupType, selfRole, GroupPermission.DELETE_AND_QUIT)) {
-            builtInRows.add(createDeleteAndQuitRow(viewModel))
-        }
-
-        if (canPerformAction(groupType, selfRole, GroupPermission.DISMISS_GROUP)) {
-            builtInRows.add(createDismissGroupRow(viewModel))
-        }
-
-        val customRows = customActions(viewModel).map { createCustomActionRow(it) }
-
-        builtInRows.forEachIndexed { index, row ->
-            actionSection.addView(row)
-            if (index != builtInRows.lastIndex) {
-                actionSection.addView(createDivider())
-            }
-        }
-
-        if (customRows.isNotEmpty()) {
-            if (builtInRows.isNotEmpty()) {
-                actionSection.addView(createSpacer())
-            }
-            customRows.forEachIndexed { index, row ->
-                actionSection.addView(row)
-                if (index != customRows.lastIndex) {
-                    actionSection.addView(createDivider())
-                }
-            }
-        }
-
-        val hasActions = builtInRows.isNotEmpty() || customRows.isNotEmpty()
-        actionSection.visibility = if (hasActions) View.VISIBLE else View.GONE
-        actionSpacer.visibility = if (hasActions) View.VISIBLE else View.GONE
-    }
-
-    private fun customActions(viewModel: GroupChatSettingViewModel): List<ChatSettingCustomAction> {
-        val provider = ChatSettingActionConfig.customActionProvider ?: return emptyList()
-        return provider.getActions(
-            ChatSettingActionContext(
-                context = context,
-                scene = ChatSettingScene.GROUP,
-                userID = null,
-                groupID = viewModel.groupID
-            )
+    fun buildItems(viewModel: GroupChatSettingViewModel): List<ChatSettingCustomItem<GroupChatSettingItemContext>> {
+        return listOf(
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_TRANSFER_OWNER,
+                ChatSettingSectionIDs.GROUP_ACTIONS,
+            ) { createTransferOwnerRow(viewModel) },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_CLEAR_HISTORY,
+                ChatSettingSectionIDs.GROUP_ACTIONS,
+            ) { createClearHistoryRow(viewModel) },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_DELETE_AND_QUIT,
+                ChatSettingSectionIDs.GROUP_ACTIONS,
+            ) { createDeleteAndQuitRow(viewModel) },
+            ChatSettingCustomItem(
+                ChatSettingItemIDs.GROUP_DISMISS,
+                ChatSettingSectionIDs.GROUP_ACTIONS,
+            ) { createDismissGroupRow(viewModel) },
         )
-    }
-
-    private fun createCustomActionRow(action: ChatSettingCustomAction): SettingRowButton {
-        return SettingRowButton(context).apply {
-            setTitle(action.title)
-            setButtonStyle(
-                when (action.style) {
-                    ChatSettingActionStyle.LINK -> SettingRowButton.Style.LINK
-                    ChatSettingActionStyle.DANGER -> SettingRowButton.Style.DANGER
-                    ChatSettingActionStyle.NORMAL -> SettingRowButton.Style.NORMAL
-                }
-            )
-            setOnClickListener { action.onClick(context) }
-        }
     }
 
     private fun createTransferOwnerRow(viewModel: GroupChatSettingViewModel): SettingRowButton {

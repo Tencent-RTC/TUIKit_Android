@@ -84,6 +84,8 @@ class MessageInputViewModel(
 ) : ViewModel() {
 
     private var currentConversationTitle: String? = null
+    private var canSendTextMessage: () -> Boolean = { true }
+    private var onTextMessageSent: () -> Unit = {}
     private val attachmentFileResolver = MessageInputAttachmentFileResolver()
     private val audioTranscriber = AudioTranscriber()
     private val recordTranslationTtsHelper = TtsPlaybackHelper()
@@ -112,6 +114,14 @@ class MessageInputViewModel(
                 currentConversationTitle = info?.title
             }
         }
+    }
+
+    internal fun setTextSendCallbacks(
+        canSend: () -> Boolean,
+        onSent: () -> Unit
+    ) {
+        canSendTextMessage = canSend
+        onTextMessageSent = onSent
     }
 
     fun getActions(
@@ -309,6 +319,25 @@ class MessageInputViewModel(
         quotedMessage: MessageInfo? = null,
         onSuccess: (() -> Unit)? = null
     ) {
+        trySendTextMessage(context, text, mentionList, quotedMessage, onSuccess)
+    }
+
+    fun trySendTextMessage(
+        context: Context?,
+        text: String,
+        mentionList: List<MentionInfo>,
+        quotedMessage: MessageInfo? = null,
+        onSuccess: (() -> Unit)? = null
+    ): Boolean {
+        if (!canSendTextMessage()) {
+            context?.let {
+                AtomicToast.show(
+                    it,
+                    it.getString(R.string.message_input_chatbot_waiting_tips)
+                )
+            }
+            return false
+        }
         val payload = SendMessagePayload.TextSendMessagePayload(text)
         val option = createSendMessageOption(
             context = context,
@@ -318,6 +347,7 @@ class MessageInputViewModel(
         )
         messageInputStore.sendMessage(payload, option, object : CompletionHandler {
             override fun onSuccess() {
+                onTextMessageSent()
                 onSuccess?.invoke()
             }
 
@@ -325,6 +355,7 @@ class MessageInputViewModel(
                 context?.let { showSendFailed(it) }
             }
         })
+        return true
     }
 
     fun sendFaceMessage(
@@ -908,6 +939,17 @@ class MessageInputViewModelFactory(
     private val messageInputConfig: MessageInputConfigProtocol = ChatMessageInputConfig(),
     private val conversationListStore: ConversationListStore = ConversationListStore.create()
 ) : ViewModelProvider.Factory {
+    private var canSendTextMessage: () -> Boolean = { true }
+    private var onTextMessageSent: () -> Unit = {}
+
+    internal fun setTextSendCallbacks(
+        canSend: () -> Boolean,
+        onSent: () -> Unit
+    ): MessageInputViewModelFactory = apply {
+        canSendTextMessage = canSend
+        onTextMessageSent = onSent
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MessageInputViewModel::class.java)) {
@@ -916,7 +958,9 @@ class MessageInputViewModelFactory(
                 conversationID = conversationID,
                 messageInputConfig = messageInputConfig,
                 conversationListStore = conversationListStore
-            ) as T
+            ).apply {
+                setTextSendCallbacks(canSendTextMessage, onTextMessageSent)
+            } as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }

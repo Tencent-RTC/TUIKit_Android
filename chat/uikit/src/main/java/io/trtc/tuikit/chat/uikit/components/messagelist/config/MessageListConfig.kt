@@ -56,6 +56,18 @@ interface MessageListConfigProtocol {
         get() = null
 }
 
+internal interface DelegatingMessageListConfig {
+    val delegateConfig: MessageListConfigProtocol
+}
+
+internal fun MessageListConfigProtocol.messageRenderRules(): List<MessageRenderRule> {
+    return when (this) {
+        is ChatMessageListConfig -> customRenderRules
+        is DelegatingMessageListConfig -> delegateConfig.messageRenderRules()
+        else -> emptyList()
+    }
+}
+
 sealed class MessageListBackground {
     data class Image(val uri: Any) : MessageListBackground()
 

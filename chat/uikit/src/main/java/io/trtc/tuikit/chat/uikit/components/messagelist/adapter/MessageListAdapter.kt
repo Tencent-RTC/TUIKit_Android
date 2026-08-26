@@ -17,6 +17,8 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRendererResolv
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageListTouchTargetTags
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.NoOpMessageRenderActions
 import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListViewModel
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageProtocol
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageSource
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
@@ -199,7 +201,21 @@ class MessageListAdapter internal constructor(
             val colors = this@MessageListAdapter.colors
             val isMultiSelectMode = viewModel.isMultiSelectMode.value
             val selectedMessages = viewModel.selectedMessages.value
-            val timeString = viewModel.getMessageTimeString(position)
+            val isInteractionEnabled = isMessageInteractionEnabled(message)
+            val placeholderOffset = if (
+                ChatbotMessageProtocol.parse(currentList.firstOrNull() ?: message)
+                    ?.isPlaceholder == true
+            ) {
+                1
+            } else {
+                0
+            }
+            val sourcePosition = position - placeholderOffset
+            val timeString = if (sourcePosition >= 0) {
+                viewModel.getMessageTimeString(sourcePosition)
+            } else {
+                null
+            }
             val inlineTimeString = if (showInlineMessageTime) {
                 ChatDateTimeUtils.formatMessageListTime(
                     timestampMs = message.timestamp?.times(1000),
@@ -247,13 +263,13 @@ class MessageListAdapter internal constructor(
                 onQuoteClick = { quoteInfo ->
                     onQuoteClick(message, quoteInfo)
                 },
-                enableMessageInteraction = enableMessageInteraction,
+                enableMessageInteraction = isInteractionEnabled,
                 enableQuoteNavigation = enableQuoteNavigation,
                 showMessageReadReceipt = showMessageReadReceipt,
                 inlineTimeString = inlineTimeString
             )
 
-            if (isMultiSelectMode && enableMessageInteraction) {
+            if (isMultiSelectMode && isInteractionEnabled) {
                 multiSelectOverlay.visibility = View.VISIBLE
                 multiSelectOverlay.setOnClickListener {
                     viewModel.toggleMessageSelection(message)
@@ -266,6 +282,19 @@ class MessageListAdapter internal constructor(
 
         fun recycle() {
             messageItemView.recycle()
+        }
+
+        private fun isMessageInteractionEnabled(message: MessageInfo): Boolean {
+            if (!enableMessageInteraction) {
+                return false
+            }
+            val data = ChatbotMessageProtocol.parse(message) ?: return true
+            return when (data.source) {
+                ChatbotMessageSource.FLOW -> data.isFinished && !data.isPlaceholder
+                ChatbotMessageSource.ERROR -> true
+                ChatbotMessageSource.INTERRUPT,
+                ChatbotMessageSource.UNKNOWN -> false
+            }
         }
     }
 

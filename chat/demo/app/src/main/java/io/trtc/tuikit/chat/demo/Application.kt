@@ -10,9 +10,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.tencent.mmkv.MMKV
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionConfig
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionStyle
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingCustomAction
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.app.R
 import io.trtc.tuikit.atomicxcore.api.login.LoginListener
@@ -44,7 +41,7 @@ class Application : Application() {
             AppBuilderConfig.enableReadReceipt = it
         }
 
-        registerChatSettingExtensions()
+
         CustomLinkMessageManager.registerMessageSummary()
         CustomerServiceManager.registerSummary()
         LoginStore.shared.addLoginListener(loginListener)
@@ -58,29 +55,6 @@ class Application : Application() {
         startActivity(Intent(this, LocalLoginActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })
-    }
-
-    private fun registerChatSettingExtensions() {
-        ChatSettingActionConfig.setCustomActionProvider { actionContext ->
-            listOf(
-                ChatSettingCustomAction(
-                    title = actionContext.context.getString(R.string.demo_report),
-                    style = ChatSettingActionStyle.DANGER,
-                    onClick = { context -> openReportPage(context) }
-                )
-            )
-        }
-    }
-
-    private fun openReportPage(context: Context) {
-        try {
-            context.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(AppConstants.REPORT_URL))
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        } catch (_: Exception) {
-            Toast.makeText(context, context.getString(R.string.demo_open_browser_failed), Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun applyLanguageFromSettings() {

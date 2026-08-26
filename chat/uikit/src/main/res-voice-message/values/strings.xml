@@ -7,7 +7,7 @@
     <string name="voice_message_select_language">Select Language</string>
     <string name="voice_message_translate_failed">Translation failed</string>
     <string name="voice_message_speak_failed">Read aloud failed</string>
-    <string name="voice_message_listen_from_here">Listen from here</string>
+    <string name="voice_message_listen_from_here">Listen</string>
     <string name="voice_message_listen_self_speaker">I</string>
     <string name="voice_message_listen_says">"%1$s said: "</string>
     <string name="voice_message_listen_sent_image">%1$s sent an image</string>

@@ -10,6 +10,12 @@ import android.widget.ScrollView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.chatsetting.config.GroupChatSettingConfig
+import io.trtc.tuikit.chat.uikit.components.chatsetting.config.GroupChatSettingConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingCustomItem
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.GroupChatSettingItemContext
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingItemIDs
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.buildChatSettingItems
 import io.trtc.tuikit.chat.uikit.components.chatsetting.permission.GroupMemberActionPolicy
 import io.trtc.tuikit.chat.uikit.components.chatsetting.permission.GroupPermission
 import io.trtc.tuikit.chat.uikit.components.chatsetting.permission.GroupPermissionManager
@@ -21,7 +27,6 @@ import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupChatSettingViewModel
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.GroupChatSettingViewModelFactory
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.getGroupAvatarUrls
-import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.uikit.components.widgets.ActionItem
@@ -46,7 +51,6 @@ class GroupChatSettingView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private var onSendMessageClick: (() -> Unit)? = null
     private var onGroupMemberClick: ((GroupMember) -> Unit)? = null
     private var onGroupDeleted: (() -> Unit)? = null
 
@@ -58,37 +62,30 @@ class GroupChatSettingView @JvmOverloads constructor(
     private lateinit var headerSection: GroupChatSettingHeaderSection
     private lateinit var rowsController: GroupChatSettingRowsController
     private lateinit var actionSectionController: GroupChatSettingActionSection
-    private lateinit var actionSection: LinearLayout
-    private lateinit var actionSpacer: View
-    private val themeTaggedViews = mutableSetOf<View>()
+    private lateinit var itemRenderer: ChatSettingItemLayoutRenderer<GroupChatSettingItemContext>
 
     private lateinit var memberPreviewSection: GroupMemberPreviewSection
 
-    private var currentGroupID: String? = null
-    private var isUiBuilt = false
+    private var config: GroupChatSettingConfigProtocol = GroupChatSettingConfig()
 
     fun setup(
         groupID: String,
-        onSendMessageClick: (() -> Unit)? = null,
         onGroupMemberClick: ((GroupMember) -> Unit)? = null,
-        onGroupDeleted: (() -> Unit)? = null
+        onGroupDeleted: (() -> Unit)? = null,
+        config: GroupChatSettingConfigProtocol = GroupChatSettingConfig(),
     ) {
-        this.onSendMessageClick = onSendMessageClick
         this.onGroupMemberClick = onGroupMemberClick
         this.onGroupDeleted = onGroupDeleted
+        this.config = config
 
         val owner = context.findViewModelStoreOwner() ?: return
 
         cleanupBinding()
-        currentGroupID = groupID
         val viewModelKey = "${GroupChatSettingViewModel::class.java.name}:$groupID"
         viewModel = ViewModelProvider(owner, GroupChatSettingViewModelFactory(groupID, context))
             .get(viewModelKey, GroupChatSettingViewModel::class.java)
 
-        if (!isUiBuilt) {
-            buildUI()
-            isUiBuilt = true
-        }
+        buildUI()
 
         if (isAttachedToWindow) {
             bindViewModel()
@@ -96,6 +93,7 @@ class GroupChatSettingView @JvmOverloads constructor(
     }
 
     private fun buildUI() {
+        val vm = viewModel ?: return
         layoutDirection = LAYOUT_DIRECTION_LOCALE
         removeAllViews()
 
@@ -103,124 +101,86 @@ class GroupChatSettingView @JvmOverloads constructor(
             layoutDirection = LAYOUT_DIRECTION_LOCALE
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             isVerticalScrollBarEnabled = false
-            setBackgroundColor(getColors().bgColorTopBar)
+            setBackgroundColor(getColors().bgColorInput)
         }
 
         contentLayout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             layoutDirection = LAYOUT_DIRECTION_LOCALE
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            setBackgroundColor(getColors().bgColorTopBar)
+            setBackgroundColor(getColors().bgColorInput)
         }
 
         headerSection = GroupChatSettingHeaderSection(context)
-        contentLayout.addView(headerSection.rootView)
-        contentLayout.addView(createSpacer(10f))
-
         memberPreviewSection = GroupMemberPreviewSection(context).apply {
             onHeaderClick = { showMemberList() }
             onMemberClick = { member -> onGroupMemberClick?.invoke(member) }
             onAddClick = { showAddMemberDialog() }
             onRemoveClick = { showRemoveMemberDialog() }
         }
-        contentLayout.addView(memberPreviewSection)
-        contentLayout.addView(createSpacer(10f))
 
         rowsController = GroupChatSettingRowsController(
             context = context,
             viewModelProvider = { viewModel },
-            createSectionContainer = ::createSectionContainer,
-            rebuildSection = ::rebuildSection,
             onOpenGroupManagement = ::showGroupManagement,
             onShowJoinMethod = ::showJoinMethodActionSheet,
             onShowInviteMethod = ::showInviteMethodActionSheet,
-            onShowChatBackgroundPicker = ::showChatBackgroundPicker
+            onShowChatBackgroundPicker = ::showChatBackgroundPicker,
         )
-        val rowSections = rowsController.buildSections()
-        rowSections.forEachIndexed { index, section ->
-            contentLayout.addView(section)
-            if (index != rowSections.lastIndex) {
-                contentLayout.addView(createSpacer(10f))
-            }
-        }
-
-        actionSpacer = createSpacer(10f)
-        contentLayout.addView(actionSpacer)
-
-        actionSection = createSectionContainer()
+        val rowItems = rowsController.buildItems()
         actionSectionController = GroupChatSettingActionSection(
             context = context,
-            createDivider = ::createDivider,
-            createSpacer = { createSpacer(10f) },
-            canPerformAction = ::canPerformAction,
-            onGroupDeletedProvider = { onGroupDeleted }
+            onGroupDeletedProvider = { onGroupDeleted },
         )
-        contentLayout.addView(actionSection)
+        val actionItems = actionSectionController.buildItems(vm)
+
+        val itemContext = GroupChatSettingItemContext(
+            androidContext = context,
+            groupID = vm.groupID,
+        )
+        val candidates = buildList<ChatSettingCustomItem<GroupChatSettingItemContext>> {
+            add(ChatSettingCustomItem(ChatSettingItemIDs.GROUP_HEADER) { headerSection.rootView })
+            add(ChatSettingCustomItem(ChatSettingItemIDs.GROUP_MEMBER_PREVIEW) { memberPreviewSection })
+            addAll(rowItems)
+            addAll(actionItems)
+        }
+        val items = buildChatSettingItems(
+            itemContext = itemContext,
+            defaults = candidates.filter { isItemEnabled(it.ID) },
+            customizer = config.itemCustomizer,
+        )
+        itemRenderer = ChatSettingItemLayoutRenderer(context, contentLayout)
+        itemRenderer.setItems(itemContext, items)
 
         scrollView.addView(contentLayout)
         addView(scrollView)
-    }
-
-    private fun createSectionContainer(): LinearLayout {
-        return LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutDirection = LAYOUT_DIRECTION_LOCALE
-            setBackgroundColor(getColors().bgColorOperate)
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        }
-    }
-
-    private fun createSpacer(heightDp: Float): View {
-        val spacer = View(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp2px(heightDp, resources.displayMetrics).toInt()
-            )
-            tag = TAG_SPACER
-            setBackgroundColor(getColors().bgColorTopBar)
-        }
-        themeTaggedViews.add(spacer)
-        return spacer
-    }
-
-    private fun createDivider(): View {
-        val divider = View(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp2px(0.5f, resources.displayMetrics).toInt().coerceAtLeast(1)
-            )
-            tag = TAG_DIVIDER
-            setBackgroundColor(getColors().strokeColorPrimary)
-        }
-        themeTaggedViews.add(divider)
-        return divider
+        applyThemeColors(getColors())
+        refreshViewState()
     }
 
     private fun getColors(): ColorTokens {
         return ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
     }
 
-    private fun rebuildSection(section: LinearLayout, rows: List<View>) {
-        val visibleRows = rows.filter { it.visibility != View.GONE }
-        if (!isSectionLayoutUpToDate(section, visibleRows)) {
-            section.removeAllViews()
-            visibleRows.forEachIndexed { index, row ->
-                section.addView(row)
-                if (index != visibleRows.lastIndex) {
-                    section.addView(createDivider())
-                }
-            }
+    private fun isItemEnabled(ID: String): Boolean {
+        return when (ID) {
+            ChatSettingItemIDs.GROUP_HEADER -> config.isShowHeader
+            ChatSettingItemIDs.GROUP_MEMBER_PREVIEW -> config.isShowMemberPreview
+            ChatSettingItemIDs.GROUP_NOTICE -> config.isShowNotice
+            ChatSettingItemIDs.GROUP_MANAGEMENT -> config.isShowManagement
+            ChatSettingItemIDs.GROUP_TYPE -> config.isShowGroupType
+            ChatSettingItemIDs.GROUP_JOIN_METHOD -> config.isShowJoinMethod
+            ChatSettingItemIDs.GROUP_INVITE_METHOD -> config.isShowInviteMethod
+            ChatSettingItemIDs.GROUP_ALIAS -> config.isShowAlias
+            ChatSettingItemIDs.GROUP_DO_NOT_DISTURB -> config.isShowDoNotDisturb
+            ChatSettingItemIDs.GROUP_PIN -> config.isShowPin
+            ChatSettingItemIDs.GROUP_CHAT_BACKGROUND -> config.isShowChatBackground
+            ChatSettingItemIDs.GROUP_TRANSFER_OWNER -> config.isShowTransferOwner
+            ChatSettingItemIDs.GROUP_CLEAR_HISTORY -> config.isShowClearHistory
+            ChatSettingItemIDs.GROUP_DELETE_AND_QUIT -> config.isShowDeleteAndQuit
+            ChatSettingItemIDs.GROUP_DISMISS -> config.isShowDismiss
+            else -> true
         }
-        section.visibility = if (visibleRows.isEmpty()) View.GONE else View.VISIBLE
-    }
-
-    private fun isSectionLayoutUpToDate(section: LinearLayout, visibleRows: List<View>): Boolean {
-        val expectedChildCount = if (visibleRows.isEmpty()) 0 else visibleRows.size * 2 - 1
-        if (section.childCount != expectedChildCount) return false
-        visibleRows.forEachIndexed { index, row ->
-            if (section.getChildAt(index * 2) !== row) return false
-        }
-        return true
     }
 
     private fun bindViewModel() {
@@ -300,12 +260,32 @@ class GroupChatSettingView @JvmOverloads constructor(
         )
 
         rowsController.refresh(state, vm)
-        actionSectionController.rebuild(
-            actionSection = actionSection,
-            actionSpacer = actionSpacer,
-            viewModel = vm,
-            groupType = state.groupType,
-            selfRole = state.selfRole
+        itemRenderer.setItemAvailability(
+            mapOf(
+                ChatSettingItemIDs.GROUP_MANAGEMENT to permissions.canOpenGroupManagement,
+                ChatSettingItemIDs.GROUP_DO_NOT_DISTURB to permissions.canToggleDoNotDisturb,
+                ChatSettingItemIDs.GROUP_PIN to permissions.canTogglePinned,
+                ChatSettingItemIDs.GROUP_TRANSFER_OWNER to canPerformAction(
+                    state.groupType,
+                    state.selfRole,
+                    GroupPermission.TRANSFER_OWNER,
+                ),
+                ChatSettingItemIDs.GROUP_CLEAR_HISTORY to canPerformAction(
+                    state.groupType,
+                    state.selfRole,
+                    GroupPermission.CLEAR_HISTORY_MESSAGES,
+                ),
+                ChatSettingItemIDs.GROUP_DELETE_AND_QUIT to canPerformAction(
+                    state.groupType,
+                    state.selfRole,
+                    GroupPermission.DELETE_AND_QUIT,
+                ),
+                ChatSettingItemIDs.GROUP_DISMISS to canPerformAction(
+                    state.groupType,
+                    state.selfRole,
+                    GroupPermission.DISMISS_GROUP,
+                ),
+            )
         )
     }
 
@@ -467,27 +447,18 @@ class GroupChatSettingView @JvmOverloads constructor(
     }
 
     private fun applyThemeColors(colors: ColorTokens) {
-        setBackgroundColor(colors.bgColorTopBar)
+        setBackgroundColor(colors.bgColorInput)
         if (::scrollView.isInitialized) {
-            scrollView.setBackgroundColor(colors.bgColorTopBar)
+            scrollView.setBackgroundColor(colors.bgColorInput)
         }
         if (::contentLayout.isInitialized) {
-            contentLayout.setBackgroundColor(colors.bgColorTopBar)
+            contentLayout.setBackgroundColor(colors.bgColorInput)
         }
         if (::headerSection.isInitialized) {
             headerSection.applyThemeColors(colors)
         }
-        if (::rowsController.isInitialized) {
-            rowsController.applyThemeColors(colors)
-        }
-        if (::actionSection.isInitialized) {
-            actionSection.setBackgroundColor(colors.bgColorOperate)
-        }
-        themeTaggedViews.forEach { view ->
-            when (view.tag) {
-                TAG_SPACER -> view.setBackgroundColor(colors.bgColorTopBar)
-                TAG_DIVIDER -> view.setBackgroundColor(colors.strokeColorPrimary)
-            }
+        if (::itemRenderer.isInitialized) {
+            itemRenderer.applyThemeColors(colors)
         }
     }
 
@@ -500,10 +471,5 @@ class GroupChatSettingView @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         cleanupBinding()
-    }
-
-    private companion object {
-        const val TAG_SPACER = "chat_setting_spacer"
-        const val TAG_DIVIDER = "chat_setting_divider"
     }
 }

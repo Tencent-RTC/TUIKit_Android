@@ -32,6 +32,11 @@
     <string name="demo_chat_header_back">رجوع</string>
     <string name="demo_chat_header_more">المزيد</string>
     <string name="demo_chat_header_cancel">إلغاء</string>
+    <string name="demo_chatbot_clear_history">مسح السجل</string>
+    <string name="demo_chatbot_clear_history_confirmation">هل تريد مسح سجل المحادثة بالكامل؟</string>
+    <string name="demo_chatbot_clear_history_failed">فشل مسح سجل المحادثة</string>
+    <string name="demo_confirm">مسح</string>
+    <string name="demo_cancel">إلغاء</string>
     <string name="demo_chat_typing_indicator">يكتب الآن…</string>
     <string name="demo_clear_all_unread_success">تم مسح كل الرسائل غير المقروءة</string>
     <string name="demo_group_event_kicked">تم طردك من المجموعة: %1$s</string>

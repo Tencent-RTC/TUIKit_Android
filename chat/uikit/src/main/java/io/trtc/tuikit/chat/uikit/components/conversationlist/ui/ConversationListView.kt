@@ -29,6 +29,7 @@ import io.trtc.tuikit.chat.uikit.components.conversationlist.adapter.Conversatio
 import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ChatConversationActionConfig
 import io.trtc.tuikit.chat.uikit.components.conversationlist.config.ConversationActionConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
+import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationActionIDs
 import io.trtc.tuikit.chat.uikit.components.conversationlist.model.ConversationCustomActionContext
 import io.trtc.tuikit.chat.uikit.components.conversationlist.model.resolveConversationActionTitle
 import io.trtc.tuikit.chat.uikit.components.conversationlist.viewmodel.ConversationListViewModel
@@ -36,6 +37,9 @@ import io.trtc.tuikit.chat.uikit.components.conversationlist.viewmodel.Conversat
 import io.trtc.tuikit.chat.uikit.components.conversationlist.viewmodel.applyConversationActionCustomizer
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton
 import io.trtc.tuikit.atomicxcore.api.conversation.ConversationInfo
 import io.trtc.tuikit.atomicxcore.api.conversation.ConversationListStore
 import kotlinx.coroutines.CoroutineScope
@@ -255,25 +259,30 @@ class ConversationListView @JvmOverloads constructor(
         val colors = themeStore.themeState.value.currentTheme.tokens.color
 
         val defaults = viewModel.getDefaultActions(conversation)
-        val allActions = applyConversationActionCustomizer(
+        val customizedActions = applyConversationActionCustomizer(
             actionContext = ConversationCustomActionContext(
                 androidContext = context,
                 conversation = conversation,
             ),
             defaults = defaults,
             customizer = config.actionCustomizer,
-        ).map { action ->
-            val title = resolveConversationActionTitle(
-                title = action.title,
-                titleResID = action.titleResID,
-                getString = { resID -> context.getString(resID) },
-            )
-            Triple(
-                title,
-                action.dangerous,
-                Runnable { action.action(conversation) }
-            )
-        }
+        )
+        val allActions = customizedActions
+            .withDestructiveActionConfirmation { actionID, onConfirm ->
+                showConversationActionConfirmDialog(actionID, onConfirm)
+            }
+            .map { action ->
+                val title = resolveConversationActionTitle(
+                    title = action.title,
+                    titleResID = action.titleResID,
+                    getString = { resID -> context.getString(resID) },
+                )
+                Triple(
+                    title,
+                    action.dangerous,
+                    Runnable { action.action(conversation) }
+                )
+            }
 
         if (allActions.isEmpty()) {
             (anchorView as? ConversationItemLayout)?.setHighlighted(false, colors)
@@ -336,6 +345,27 @@ class ConversationListView @JvmOverloads constructor(
             colors = colors
         ).also {
             it.show()
+        }
+    }
+
+    private fun showConversationActionConfirmDialog(actionID: String, onConfirm: () -> Unit) {
+        val contentResID = when (actionID) {
+            ConversationActionIDs.DELETE -> R.string.conversation_list_delete_confirmation
+            ConversationActionIDs.CLEAR_HISTORY -> R.string.conversation_list_clear_history_confirmation
+            else -> return
+        }
+        AtomicAlertDialog(context).apply {
+            init {
+                content = context.getString(contentResID)
+                confirmButton(
+                    context.getString(R.string.uikit_confirm),
+                    type = AtomicAlertDialog.TextColorPreset.RED
+                ) { _ ->
+                    onConfirm()
+                }
+                cancelButton(context.getString(R.string.uikit_cancel))
+            }
+            show()
         }
     }
 
@@ -611,18 +641,17 @@ class ConversationDividerDecoration(
 
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         val colors = themeStore.themeState.value.currentTheme.tokens.color
-        paint.color = colors.strokeColorSecondary
+        paint.color = colors.strokeColorPrimary
 
         val startInset = dp2px(context, 76f).toFloat()
         val lineHeight = dp2px(context, 0.5f).toFloat().coerceAtLeast(1f)
         val isRtl = parent.layoutDirection == View.LAYOUT_DIRECTION_RTL
-        val adapterItemCount = parent.adapter?.itemCount ?: return
 
         val childCount = parent.childCount
         for (i in 0 until childCount) {
             val child = parent.getChildAt(i)
             val adapterPosition = parent.getChildAdapterPosition(child)
-            if (adapterPosition == RecyclerView.NO_POSITION || adapterPosition >= adapterItemCount - 1) {
+            if (adapterPosition == RecyclerView.NO_POSITION) {
                 continue
             }
             val bottom = (parent.layoutManager?.getDecoratedBottom(child) ?: child.bottom).toFloat()

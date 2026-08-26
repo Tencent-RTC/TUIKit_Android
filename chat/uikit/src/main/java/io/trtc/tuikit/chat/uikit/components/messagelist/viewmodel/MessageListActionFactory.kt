@@ -19,6 +19,8 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActio
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.popups.withDeleteConfirmation
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.AuxiliaryTextVisibilityStore
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.MessageListMessageSummaryFormatter
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageProtocol
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageSource
 
 internal data class MessageListActionCallbacks(
     val onEnterMultiSelectMode: (MessageInfo) -> Unit = {},
@@ -242,7 +244,8 @@ internal class MessageListActionFactory(
             onCopyText = { msg ->
                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val text = (msg.messagePayload as? TextMessagePayload)?.text
-                val clip = ClipData.newPlainText("Copied Text", text)
+                    ?: ChatbotMessageProtocol.parse(msg)?.displayText
+                val clip = ClipData.newPlainText("Copied Text", text.orEmpty())
                 clipboard.setPrimaryClip(clip)
             },
             onRecall = { messageActionStore.revoke() },
@@ -263,6 +266,27 @@ internal fun resolveMessageListActionCapability(
     auxiliaryTextVisibilityStore: AuxiliaryTextVisibilityStore = AuxiliaryTextVisibilityStore(),
     currentTimeMs: Long = System.currentTimeMillis(),
 ): MessageListActionCapability {
+    val chatbotData = ChatbotMessageProtocol.parse(message)
+    if (chatbotData?.source == ChatbotMessageSource.FLOW ||
+        chatbotData?.source == ChatbotMessageSource.ERROR
+    ) {
+        val isComplete = !chatbotData.isPlaceholder &&
+            (chatbotData.source == ChatbotMessageSource.ERROR || chatbotData.isFinished) &&
+            message.status != MessageStatus.VIOLATION
+        return MessageListActionCapability(
+            isSupportMultiSelect = false,
+            isSupportForward = isComplete &&
+                config.isSupportForward &&
+                message.status == MessageStatus.SEND_SUCCESS,
+            isSupportQuote = false,
+            isSupportCopy = isComplete && config.isSupportCopy,
+            isSupportRecall = false,
+            isSupportDelete = isComplete && config.isSupportDelete,
+            showConvertToText = false,
+            showTranslate = false,
+            showListenFromHere = false
+        )
+    }
     val showConvertToText = config.isSupportConvertToText &&
         message.messageType == MessageType.AUDIO &&
         message.status == MessageStatus.SEND_SUCCESS &&

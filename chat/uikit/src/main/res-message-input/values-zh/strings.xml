@@ -36,4 +36,6 @@
     <string name="message_input_message_type_video">[视频]</string>
     <string name="message_input_message_type_file">[文件]</string>
     <string name="message_input_message_type_animate_emoji">[动画表情]</string>
+    <string name="message_input_chatbot_stop">停止回答</string>
+    <string name="message_input_chatbot_waiting_tips">请等待继续或点击停止回答</string>
 </resources>

@@ -1,6 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.ui
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.CallingMessageRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.CallingTipsMessageRenderer
+import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.ChatbotMessageRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.CreateGroupMessageRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.DefaultMessageRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.FaceMessageRenderer
@@ -14,6 +15,8 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.Vide
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageParser
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallParticipantType
 import io.trtc.tuikit.chat.uikit.components.common.jsonData2Dictionary
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageProtocol
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageSource
 import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageStatus
@@ -122,6 +125,7 @@ internal class MessageRendererResolver(
         private val systemMessageRenderer = SystemMessageRenderer()
         private val callingMessageRenderer = CallingMessageRenderer()
         private val callingTipsMessageRenderer = CallingTipsMessageRenderer()
+        private val chatbotMessageRenderer = ChatbotMessageRenderer()
         private val renderers = mapOf(
             MessageType.TEXT to TextMessageRenderer(),
             MessageType.IMAGE to ImageMessageRenderer(),
@@ -143,11 +147,18 @@ internal class MessageRendererResolver(
         private const val CALLING_C2C_VIEW_TYPE = -2
         private const val CALLING_TIPS_VIEW_TYPE = -3
         private const val REVOKED_VIEW_TYPE = -4
+        private const val CHATBOT_VIEW_TYPE = -5
         private const val CUSTOM_VIEW_TYPE_BASE = 1000
         private const val CUSTOM_VIEW_TYPE_HASH_MASK = 0x3FFFFFFF
 
         private fun resolveBuiltIn(message: MessageInfo): BuiltInResolution {
             if (message.messageType == MessageType.CUSTOM) {
+                val chatbotData = ChatbotMessageProtocol.parse(message)
+                if (chatbotData?.source == ChatbotMessageSource.FLOW ||
+                    chatbotData?.source == ChatbotMessageSource.ERROR
+                ) {
+                    return BuiltInResolution(chatbotMessageRenderer, CHATBOT_VIEW_TYPE)
+                }
                 val callModel = CallMessageParser.parse(message)
                 if (callModel != null) {
                     return if (callModel.participantType == CallParticipantType.GROUP) {

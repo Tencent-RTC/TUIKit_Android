@@ -6,6 +6,8 @@
     <string name="conversation_list_unpin">取消置頂</string>
     <string name="conversation_list_delete">刪除聊天</string>
     <string name="conversation_list_clear">清空聊天記錄</string>
+    <string name="conversation_list_delete_confirmation">確定刪除該會話？</string>
+    <string name="conversation_list_clear_history_confirmation">確定清空該會話的聊天記錄？</string>
     <string name="conversation_list_mark_unread">標為未讀</string>
     <string name="conversation_list_mark_read">標為已讀</string>
     <string name="conversation_list_message_count_unit">條</string>
