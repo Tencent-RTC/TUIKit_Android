@@ -487,7 +487,7 @@ class ContactListView @JvmOverloads constructor(
 
         return View(context).apply {
             layoutDirection = LAYOUT_DIRECTION_LOCALE
-            setBackgroundColor(colors.strokeColorSecondary)
+            setBackgroundColor(colors.strokeColorPrimary)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 dividerHeightPx
@@ -520,7 +520,7 @@ class ContactListView @JvmOverloads constructor(
             for (i in 0 until container.childCount) {
                 val child = container.getChildAt(i)
                 if (child.tag == "divider") {
-                    child.setBackgroundColor(colors.strokeColorSecondary)
+                    child.setBackgroundColor(colors.strokeColorPrimary)
                 }
             }
         }

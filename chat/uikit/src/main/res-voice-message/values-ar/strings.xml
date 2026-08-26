@@ -7,7 +7,7 @@
     <string name="voice_message_select_language">اختر اللغة</string>
     <string name="voice_message_translate_failed">فشلت الترجمة</string>
     <string name="voice_message_speak_failed">فشلت القراءة الصوتية</string>
-    <string name="voice_message_listen_from_here">الاستماع من هنا</string>
+    <string name="voice_message_listen_from_here">استمع</string>
     <string name="voice_message_listen_self_speaker">أنا</string>
     <string name="voice_message_listen_says">"%1$s قال: "</string>
     <string name="voice_message_listen_sent_image">%1$s أرسل صورة</string>

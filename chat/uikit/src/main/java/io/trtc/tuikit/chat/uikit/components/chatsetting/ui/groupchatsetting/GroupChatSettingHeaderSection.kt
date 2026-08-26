@@ -1,7 +1,10 @@
 package io.trtc.tuikit.chat.uikit.components.chatsetting.ui.groupchatsetting
 import android.content.Context
+import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
@@ -17,7 +20,9 @@ internal class GroupChatSettingHeaderSection(
     val rootView: LinearLayout
 
     private val avatarView: Avatar
+    private val nameRow: LinearLayout
     private val nameView: TextView
+    private val nameEditView: ImageView
     private val idView: TextView
 
     init {
@@ -53,11 +58,40 @@ internal class GroupChatSettingHeaderSection(
             }
         }
 
+        nameRow = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
         nameView = TextView(context).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
         }
-        textInfoLayout.addView(nameView)
+        nameRow.addView(nameView)
+
+        nameEditView = ImageView(context).apply {
+            setImageResource(R.drawable.chat_setting_group_name_edit_icon)
+            contentDescription = context.getString(R.string.chat_setting_edit)
+            visibility = View.GONE
+            layoutParams = LinearLayout.LayoutParams(
+                dp2px(15f, dm).toInt(),
+                dp2px(15f, dm).toInt()
+            ).apply {
+                marginStart = dp2px(8f, dm).toInt()
+            }
+        }
+        nameRow.addView(nameEditView)
+        textInfoLayout.addView(nameRow)
 
         idView = TextView(context).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
@@ -97,9 +131,11 @@ internal class GroupChatSettingHeaderSection(
             avatarView.setOnAvatarClickListener(null)
         }
 
+        nameEditView.visibility = if (permissions.canEditGroupName) View.VISIBLE else View.GONE
         if (permissions.canEditGroupName) {
-            nameView.isClickable = true
-            nameView.setOnClickListener {
+            nameRow.isClickable = true
+            nameRow.isFocusable = true
+            nameRow.setOnClickListener {
                 TextInputDialog(
                     context = context,
                     title = context.getString(R.string.chat_setting_modify_group_name),
@@ -112,8 +148,9 @@ internal class GroupChatSettingHeaderSection(
                 ).show()
             }
         } else {
-            nameView.isClickable = false
-            nameView.setOnClickListener(null)
+            nameRow.isClickable = false
+            nameRow.isFocusable = false
+            nameRow.setOnClickListener(null)
         }
 
         idView.isClickable = true
@@ -123,6 +160,7 @@ internal class GroupChatSettingHeaderSection(
     fun applyThemeColors(colors: ColorTokens) {
         rootView.setBackgroundColor(colors.bgColorOperate)
         nameView.setTextColor(colors.textColorPrimary)
+        nameEditView.setColorFilter(colors.textColorPrimary)
         idView.setTextColor(colors.textColorTertiary)
     }
 

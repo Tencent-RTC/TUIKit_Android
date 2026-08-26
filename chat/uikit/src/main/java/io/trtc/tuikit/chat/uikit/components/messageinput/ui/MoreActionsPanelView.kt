@@ -303,7 +303,7 @@ class MoreActionsPanelView @JvmOverloads constructor(
             holder.titleView.setTextColor(colors.textColorSecondary)
 
             val iconBg = GradientDrawable().apply {
-                setColor(colors.bgColorInput)
+                setColor(colors.bgColorTopBar)
                 cornerRadius = 12 * density
             }
             holder.iconContainer.background = iconBg

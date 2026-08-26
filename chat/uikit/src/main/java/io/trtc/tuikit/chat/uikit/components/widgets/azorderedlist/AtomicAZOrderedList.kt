@@ -469,7 +469,7 @@ class AtomicAZOrderedList @JvmOverloads constructor(
         override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
             val dm = parent.context.resources.displayMetrics
             val colors = getColors()
-            dividerPaint.color = colors.strokeColorSecondary
+            dividerPaint.color = colors.strokeColorPrimary
             val dividerHeight = dp2px(DIVIDER_HEIGHT_DP, dm).coerceAtLeast(1f)
             val startMargin = dp2px(DIVIDER_LEFT_MARGIN_DP, dm)
             val isRtl = parent.layoutDirection == LAYOUT_DIRECTION_RTL

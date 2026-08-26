@@ -210,6 +210,22 @@
 
         </FrameLayout>
 
+        <FrameLayout
+            android:id="@+id/message_input_btn_chatbot_stop"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:contentDescription="@string/message_input_chatbot_stop"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/message_input_btn_chatbot_stop_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/message_input_chatbot_stop_icon" />
+
+        </FrameLayout>
+
     </LinearLayout>
 
     <LinearLayout

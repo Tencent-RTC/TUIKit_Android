@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
@@ -24,7 +25,7 @@ import io.trtc.tuikit.atomicxcore.api.message.MergedMessagePayload
 class MergeMessageRenderer : MessageRenderer {
 
     private companion object {
-        const val BUBBLE_WIDTH_DP = 214f
+        const val BUBBLE_WIDTH_DP = 238f
 
         const val PADDING_HORIZONTAL_DP = 12f
         const val PADDING_TOP_DP = 10f
@@ -32,13 +33,17 @@ class MergeMessageRenderer : MessageRenderer {
 
         const val TITLE_FONT_SIZE_SP = 16f
         const val ABSTRACT_FONT_SIZE_SP = 12f
-        const val FOOTER_FONT_SIZE_SP = 10f
+        const val FOOTER_FONT_SIZE_SP = 9f
 
-        const val TITLE_TO_ABSTRACT_MARGIN_DP = 6f
-        const val ABSTRACT_LINE_MARGIN_DP = 2f
+        const val TITLE_LINE_HEIGHT_DP = 21f
+        const val ABSTRACT_LINE_HEIGHT_DP = 18f
+        const val FOOTER_LINE_HEIGHT_DP = 14f
 
-        const val DIVIDER_MARGIN_TOP_DP = 9f
-        const val DIVIDER_MARGIN_BOTTOM_DP = 6f
+        const val TITLE_TO_ABSTRACT_MARGIN_DP = 5.5f
+        const val ABSTRACT_LINE_MARGIN_DP = 4f
+
+        const val DIVIDER_MARGIN_TOP_DP = 9.25f
+        const val DIVIDER_MARGIN_BOTTOM_DP = 5.75f
         const val DIVIDER_HEIGHT_DP = 0.5f
 
         const val ABSTRACT_MAX_COUNT = 4
@@ -83,6 +88,7 @@ class MergeMessageRenderer : MessageRenderer {
             typeface = Typeface.DEFAULT
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
+            TextViewCompat.setLineHeight(this, (TITLE_LINE_HEIGHT_DP * density).toInt())
             applyLocaleTextAlignment()
             tag = TAG_TITLE
         }
@@ -99,6 +105,7 @@ class MergeMessageRenderer : MessageRenderer {
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, ABSTRACT_FONT_SIZE_SP)
                 maxLines = 1
                 ellipsize = TextUtils.TruncateAt.END
+                TextViewCompat.setLineHeight(this, (ABSTRACT_LINE_HEIGHT_DP * density).toInt())
                 applyLocaleTextAlignment()
                 tag = "$TAG_ABSTRACT_PREFIX$index"
                 visibility = View.GONE
@@ -131,6 +138,7 @@ class MergeMessageRenderer : MessageRenderer {
 
         val footerView = TextView(context).apply {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, FOOTER_FONT_SIZE_SP)
+            TextViewCompat.setLineHeight(this, (FOOTER_LINE_HEIGHT_DP * density).toInt())
             applyLocaleTextAlignment()
             tag = TAG_FOOTER
         }
@@ -174,7 +182,7 @@ class MergeMessageRenderer : MessageRenderer {
                         abstractView.text = spanned
                     }
                 }
-                abstractView.setTextColor(colors.textColorSecondary)
+                abstractView.setTextColor(colors.textColorTertiary)
             } else {
                 abstractView.visibility = View.GONE
             }
@@ -182,7 +190,7 @@ class MergeMessageRenderer : MessageRenderer {
 
         divider.setBackgroundColor(colors.strokeColorPrimary)
         footerView.text = view.context.getString(R.string.message_list_forward_chat_record)
-        footerView.setTextColor(colors.textColorSecondary)
+        footerView.setTextColor(colors.textColorTertiary)
 
         if (message.status == MessageStatus.VIOLATION) {
             view.setOnClickListener(null)

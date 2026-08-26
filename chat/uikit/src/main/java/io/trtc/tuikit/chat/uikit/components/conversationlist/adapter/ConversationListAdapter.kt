@@ -310,7 +310,7 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         summaryFormatter: MessageListMessageSummaryFormatter = MessageListMessageSummaryFormatter()
     ) {
         setBackgroundColor(
-            if (conversation.isPinned) colors.bgColorInput else colors.bgColorOperate
+            if (conversation.isPinned) colors.bgColorInput else colors.bgColorTopBar
         )
         titleView.setTextColor(colors.textColorPrimary)
         subtitleView.setTextColor(colors.textColorSecondary)

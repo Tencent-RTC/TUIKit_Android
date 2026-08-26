@@ -23,12 +23,20 @@ import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.EventBus
 import io.trtc.tuikit.chat.uikit.components.common.findLifecycleOwner
 import io.trtc.tuikit.chat.uikit.components.common.onEvent
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotConversationController
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotConversationState
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotConversationPolicy
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotForwardTargetPolicy
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageProtocol
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageSource
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotPlaceholderMessageFactory
 import io.trtc.tuikit.chat.uikit.components.messagelist.background.MessageListBackgroundView
 import io.trtc.tuikit.chat.uikit.components.messagelist.background.MmkvChatBackgroundStore
 import io.trtc.tuikit.chat.uikit.components.messagelist.adapter.MessageListAdapter
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListBackground
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.messageRenderRules
 import io.trtc.tuikit.chat.uikit.components.messagelist.listen.ListenPlaybackBar
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomAction
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActionContext
@@ -60,11 +68,13 @@ import io.trtc.tuikit.atomicxcore.api.message.MessageForwardType
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageListStore
 import io.trtc.tuikit.atomicxcore.api.message.MessageQuoteInfo
+import io.trtc.tuikit.atomicxcore.api.message.MessageSenderInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class MessageListView @JvmOverloads constructor(
@@ -124,6 +134,7 @@ class MessageListView @JvmOverloads constructor(
     }
     private var scrollToLatestAfterReload = false
     private var currentConversationID: String? = null
+    private var chatbotController: ChatbotConversationController? = null
     private var hostLifecycleOwner: LifecycleOwner? = null
     private var hostLifecycleObserver: DefaultLifecycleObserver? = null
     private var isHostResumed = false
@@ -156,7 +167,7 @@ class MessageListView @JvmOverloads constructor(
             }
         }
         backgroundView.setDefaultBackgroundColor(
-            themeStore.themeState.value.currentTheme.tokens.color.bgColorOperate
+            themeStore.themeState.value.currentTheme.tokens.color.bgColorTopBar
         )
         alignmentController = MessageListAlignmentController(recyclerView)
         adapterDataObserver = object : RecyclerView.AdapterDataObserver() {
@@ -273,8 +284,45 @@ class MessageListView @JvmOverloads constructor(
         onMultiSelectStateChanged: (Boolean) -> Unit = {},
         onUserClick: (String) -> Unit = {}
     ) {
+        setupInternal(
+            conversationID = conversationID,
+            config = config,
+            locateMessage = locateMessage,
+            chatbotController = null,
+            onMultiSelectStateChanged = onMultiSelectStateChanged,
+            onUserClick = onUserClick
+        )
+    }
+
+    internal fun setupWithChatbot(
+        conversationID: String,
+        config: MessageListConfigProtocol,
+        locateMessage: MessageInfo?,
+        chatbotController: ChatbotConversationController,
+        onMultiSelectStateChanged: (Boolean) -> Unit = {},
+        onUserClick: (String) -> Unit = {}
+    ) {
+        setupInternal(
+            conversationID = conversationID,
+            config = config,
+            locateMessage = locateMessage,
+            chatbotController = chatbotController,
+            onMultiSelectStateChanged = onMultiSelectStateChanged,
+            onUserClick = onUserClick
+        )
+    }
+
+    private fun setupInternal(
+        conversationID: String,
+        config: MessageListConfigProtocol,
+        locateMessage: MessageInfo?,
+        chatbotController: ChatbotConversationController?,
+        onMultiSelectStateChanged: (Boolean) -> Unit,
+        onUserClick: (String) -> Unit
+    ) {
         this.config = config
         currentConversationID = conversationID
+        this.chatbotController = chatbotController
         this.onMultiSelectStateChanged = onMultiSelectStateChanged
         this.onUserClick = onUserClick
         locateCoordinator.reset(locateMessage?.msgID)
@@ -303,7 +351,7 @@ class MessageListView @JvmOverloads constructor(
         ).get(viewModelKey, MessageListViewModel::class.java)
 
         val resolver = MessageRendererResolver(
-            customRules = (config as? ChatMessageListConfig)?.customRenderRules.orEmpty()
+            customRules = config.messageRenderRules()
         )
         val renderActions = createMessageRenderActions()
 
@@ -404,9 +452,45 @@ class MessageListView @JvmOverloads constructor(
         readReceiptController.scheduleRefresh()
         var previousProcessingAuxiliaryTextMessageIds = viewModel.processingAuxiliaryTextMessageIds.value
         var previousHiddenAuxiliaryTextMessageIds = viewModel.hiddenAuxiliaryTextMessageIds.value
+        val activeChatbotController = chatbotController
+
+        if (activeChatbotController != null) {
+            scope.launch {
+                viewModel.messageListState.messageList.collectLatest { messages ->
+                    activeChatbotController.onMessagesChanged(messages)
+                }
+            }
+        }
+
+        val displayedMessages = if (activeChatbotController == null) {
+            viewModel.messageList
+        } else {
+            combine(
+                viewModel.messageList,
+                activeChatbotController.state
+            ) { list, state ->
+                val sourceMessages = viewModel.messageListState.messageList.value
+                if (state is ChatbotConversationState.Waiting &&
+                    activeChatbotController.shouldShowPlaceholder(sourceMessages)
+                ) {
+                    listOf(
+                        ChatbotPlaceholderMessageFactory.create(
+                            conversationID = activeChatbotController.conversationID,
+                            timestampSeconds = state.requestTimestampSeconds,
+                            sender = resolveChatbotPlaceholderSender(
+                                sourceMessages,
+                                activeChatbotController.conversationID
+                            )
+                        )
+                    ) + list
+                } else {
+                    list
+                }
+            }
+        }
 
         scope.launch {
-            viewModel.messageList.collectLatest { list ->
+            displayedMessages.collectLatest { list ->
                 val currentLatestMessageId = adapter.currentList.firstOrNull()?.msgID
                 val newLatestMessageId = list.firstOrNull()?.msgID
                 val shouldSuppressLatestAutoScroll =
@@ -624,7 +708,7 @@ class MessageListView @JvmOverloads constructor(
         scope.launch {
             themeStore.themeState.collectLatest {
                 val colors = it.currentTheme.tokens.color
-                backgroundView.setDefaultBackgroundColor(colors.bgColorOperate)
+                backgroundView.setDefaultBackgroundColor(colors.bgColorTopBar)
                 applyFloatingEntryTheme()
                 listenPlaybackBar.applyColors(colors)
                 adapter.notifyDataSetChanged()
@@ -1135,9 +1219,13 @@ class MessageListView @JvmOverloads constructor(
         conversationIDs: List<String>,
         exitMultiSelect: Boolean
     ) {
+        val allowedConversationIDs = filterForwardTargets(conversationIDs)
+        if (allowedConversationIDs.isEmpty()) {
+            return
+        }
         viewModel.forwardMessages(
             messageList = messages,
-            conversationIDList = conversationIDs,
+            conversationIDList = allowedConversationIDs,
             completion = object : CompletionHandler {
                 override fun onSuccess() {
                     if (exitMultiSelect) {
@@ -1160,9 +1248,13 @@ class MessageListView @JvmOverloads constructor(
         text: String,
         conversationIDs: List<String>
     ) {
+        val allowedConversationIDs = filterForwardTargets(conversationIDs)
+        if (allowedConversationIDs.isEmpty()) {
+            return
+        }
         viewModel.sendAuxiliaryTextToConversations(
             text = text,
-            conversationIDList = conversationIDs,
+            conversationIDList = allowedConversationIDs,
             completion = object : CompletionHandler {
                 override fun onSuccess() {
                     viewModel.clearAuxiliaryTextForward()
@@ -1176,6 +1268,41 @@ class MessageListView @JvmOverloads constructor(
                     )
                 }
             }
+        )
+    }
+
+    private fun filterForwardTargets(conversationIDs: List<String>): List<String> {
+        val partition = ChatbotForwardTargetPolicy.partition(conversationIDs)
+        if (partition.rejectedChatbotTargets.isNotEmpty()) {
+            AtomicToast.show(
+                context,
+                context.getString(R.string.message_list_chatbot_forward_not_supported),
+                style = AtomicToast.Style.WARNING
+            )
+        }
+        return partition.allowedTargets
+    }
+
+    private fun resolveChatbotPlaceholderSender(
+        sourceMessages: List<MessageInfo>,
+        conversationID: String
+    ): MessageSenderInfo? {
+        val previousSender = sourceMessages.asReversed().firstOrNull { message ->
+            val data = ChatbotMessageProtocol.parse(message)
+            !message.isSentBySelf &&
+                (data?.source == ChatbotMessageSource.FLOW ||
+                    data?.source == ChatbotMessageSource.ERROR)
+        }?.from
+        if (previousSender != null) {
+            return previousSender
+        }
+        val conversation = viewModel.conversationListState.conversationList.value
+            .firstOrNull { it.conversationID == conversationID }
+            ?: return null
+        return MessageSenderInfo(
+            userID = ChatbotConversationPolicy.targetID(conversationID).orEmpty(),
+            avatarURL = conversation.avatarURL,
+            nickname = conversation.title
         )
     }
 

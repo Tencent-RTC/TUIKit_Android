@@ -6,6 +6,8 @@
     <string name="conversation_list_unpin">Unpin</string>
     <string name="conversation_list_delete">Delete chat</string>
     <string name="conversation_list_clear">Clear chat history</string>
+    <string name="conversation_list_delete_confirmation">Are you sure you want to delete this chat?</string>
+    <string name="conversation_list_clear_history_confirmation">Are you sure you want to clear this chat history?</string>
     <string name="conversation_list_mark_unread">Mark as unread</string>
     <string name="conversation_list_mark_read">Mark as read</string>
     <string name="conversation_list_message_count_unit">messages</string>

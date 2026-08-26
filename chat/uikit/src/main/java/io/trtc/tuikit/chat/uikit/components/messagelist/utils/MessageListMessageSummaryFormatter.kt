@@ -2,8 +2,9 @@ package io.trtc.tuikit.chat.uikit.components.messagelist.utils
 import android.content.Context
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.jsonData2Dictionary
-import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageSummaryPolicy
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.messageRenderRules
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageMatcher
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderRule
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageSummaryContext
@@ -87,8 +88,8 @@ class MessageListMessageSummaryFormatter(
     config: MessageListConfigProtocol? = null
 ) {
     private val configRules: List<MessageSummaryRule> =
-        (config as? ChatMessageListConfig)
-            ?.customRenderRules
+        config
+            ?.messageRenderRules()
             .orEmpty()
             .mapNotNull { it.toSummaryRule() }
 
@@ -164,6 +165,7 @@ private fun formatCustomMessage(
     message: MessageInfo,
     payload: CustomMessagePayload
 ): String {
+    ChatbotMessageSummaryPolicy.getSummary(message)?.let { return it }
     val callModel = CallMessageParser.parse(message)
     if (callModel != null) {
         return getCallMessageDisplayString(

@@ -24,14 +24,8 @@ import android.widget.TextView
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.app.R
-import kotlin.apply
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.ranges.coerceIn
-import kotlin.text.format
-import kotlin.text.startsWith
-import kotlin.text.trim
-import kotlin.text.uppercase
 
 class PrimaryColorPickerDialog private constructor(
     context: Context,

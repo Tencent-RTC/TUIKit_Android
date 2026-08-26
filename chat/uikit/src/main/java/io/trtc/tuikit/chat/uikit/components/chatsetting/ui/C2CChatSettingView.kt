@@ -10,11 +10,13 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import io.trtc.tuikit.chat.uikit.R
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionConfig
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionContext
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingActionStyle
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingCustomAction
-import io.trtc.tuikit.chat.uikit.components.chatsetting.config.ChatSettingScene
+import io.trtc.tuikit.chat.uikit.components.chatsetting.config.C2CChatSettingConfig
+import io.trtc.tuikit.chat.uikit.components.chatsetting.config.C2CChatSettingConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.C2CChatSettingItemContext
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingCustomItem
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingItemIDs
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.ChatSettingSectionIDs
+import io.trtc.tuikit.chat.uikit.components.chatsetting.model.buildChatSettingItems
 import io.trtc.tuikit.chat.uikit.components.common.findViewModelStoreOwner
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.C2CChatSettingViewModel
 import io.trtc.tuikit.chat.uikit.components.chatsetting.viewmodel.C2CChatSettingViewModelFactory
@@ -65,29 +67,23 @@ class C2CChatSettingView @JvmOverloads constructor(
     private lateinit var blacklistRow: SettingRowToggle
     private lateinit var chatBackgroundRow: SettingRowNavigate
 
-    private lateinit var sendMessageButton: SettingRowButton
-    private lateinit var voiceCallButton: SettingRowButton
-    private lateinit var videoCallButton: SettingRowButton
-    private lateinit var clearHistoryButton: SettingRowButton
-    private lateinit var deleteFriendButton: SettingRowButton
-
-    private val spacers = mutableListOf<View>()
-    private val dividers = mutableListOf<View>()
-
+    private var config: C2CChatSettingConfigProtocol = C2CChatSettingConfig()
     private var currentUserID: String? = null
-    private var isUiBuilt = false
+    private lateinit var itemRenderer: ChatSettingItemLayoutRenderer<C2CChatSettingItemContext>
 
     fun setup(
         userID: String,
         onSendMessageClick: (() -> Unit)? = null,
         onVoiceCallClick: (() -> Unit)? = null,
         onVideoCallClick: (() -> Unit)? = null,
-        onContactDeleted: (() -> Unit)? = null
+        onContactDeleted: (() -> Unit)? = null,
+        config: C2CChatSettingConfigProtocol = C2CChatSettingConfig(),
     ) {
         this.onSendMessageClick = onSendMessageClick
         this.onVoiceCallClick = onVoiceCallClick
         this.onVideoCallClick = onVideoCallClick
         this.onContactDeleted = onContactDeleted
+        this.config = config
 
         val owner = context.findViewModelStoreOwner() ?: return
 
@@ -97,10 +93,7 @@ class C2CChatSettingView @JvmOverloads constructor(
         viewModel = ViewModelProvider(owner, C2CChatSettingViewModelFactory(userID, context))
             .get(viewModelKey, C2CChatSettingViewModel::class.java)
 
-        if (!isUiBuilt) {
-            buildUI()
-            isUiBuilt = true
-        }
+        buildUI()
 
         if (isAttachedToWindow) {
             bindViewModel()
@@ -108,24 +101,23 @@ class C2CChatSettingView @JvmOverloads constructor(
     }
 
     private fun buildUI() {
+        val userID = currentUserID ?: return
         layoutDirection = LAYOUT_DIRECTION_LOCALE
         removeAllViews()
-        spacers.clear()
-        dividers.clear()
         val dm = resources.displayMetrics
         val colors = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
 
         scrollView = ScrollView(context).apply {
             layoutDirection = LAYOUT_DIRECTION_LOCALE
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-            setBackgroundColor(colors.bgColorTopBar)
+            setBackgroundColor(colors.bgColorInput)
         }
 
         contentLayout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             layoutDirection = LAYOUT_DIRECTION_LOCALE
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            setBackgroundColor(colors.bgColorTopBar)
+            setBackgroundColor(colors.bgColorInput)
         }
 
         userInfoLayout = LinearLayout(context).apply {
@@ -179,12 +171,10 @@ class C2CChatSettingView @JvmOverloads constructor(
         textInfoLayout.addView(signatureTextView)
 
         userInfoLayout.addView(textInfoLayout)
-        contentLayout.addView(userInfoLayout)
-
-        addSpacer(contentLayout)
 
         remarkRow = SettingRowNavigate(context).apply {
-            setShowArrow(true)
+            setShowArrow(false)
+            setCustomAccessory(R.drawable.chat_setting_group_name_edit_icon)
         }
         remarkRow.setOnClickListener {
             val vm = viewModel ?: return@setOnClickListener
@@ -195,25 +185,16 @@ class C2CChatSettingView @JvmOverloads constructor(
                 onConfirm = { vm.setFriendRemark(it) }
             ).show()
         }
-        contentLayout.addView(remarkRow)
-
-        addSpacer(contentLayout)
 
         doNotDisturbRow = SettingRowToggle(context).apply {
             setTitle(context.getString(R.string.chat_setting_do_not_disturb))
             onToggleChanged = { checked -> viewModel?.setDoNotDisturb(checked) }
         }
-        contentLayout.addView(doNotDisturbRow)
-
-        addDivider(contentLayout)
 
         pinRow = SettingRowToggle(context).apply {
             setTitle(context.getString(R.string.chat_setting_pin))
             onToggleChanged = { checked -> viewModel?.setPinChat(checked) }
         }
-        contentLayout.addView(pinRow)
-
-        addSpacer(contentLayout)
 
         chatBackgroundRow = SettingRowNavigate(context).apply {
             setTitle(context.getString(R.string.chat_setting_chat_background))
@@ -222,70 +203,117 @@ class C2CChatSettingView @JvmOverloads constructor(
                 viewModel?.let { vm -> showChatBackgroundPicker(vm) }
             }
         }
-        contentLayout.addView(chatBackgroundRow)
-
-        addSpacer(contentLayout)
 
         blacklistRow = SettingRowToggle(context).apply {
             setTitle(context.getString(R.string.chat_setting_add_blacklist))
             onToggleChanged = { viewModel?.toggleBlacklist() }
         }
-        contentLayout.addView(blacklistRow)
 
-        addSpacer(contentLayout)
+        val sendMessageButton = createSendMessageButton()
+        val voiceCallButton = createVoiceCallButton()
+        val videoCallButton = createVideoCallButton()
+        val clearHistoryButton = createClearHistoryButton()
+        val deleteFriendButton = createDeleteFriendButton()
 
-        val actionRows = C2CChatSettingActionPolicy.actions().map { action ->
-            when (action) {
-                C2CChatSettingAction.SEND_MESSAGE -> createSendMessageButton().also { sendMessageButton = it }
-                C2CChatSettingAction.VOICE_CALL -> createVoiceCallButton().also { voiceCallButton = it }
-                C2CChatSettingAction.VIDEO_CALL -> createVideoCallButton().also { videoCallButton = it }
-                C2CChatSettingAction.CLEAR_HISTORY -> createClearHistoryButton().also { clearHistoryButton = it }
-                C2CChatSettingAction.DELETE_FRIEND -> createDeleteFriendButton().also { deleteFriendButton = it }
-            }
-        }
-        actionRows.forEachIndexed { index, row ->
-            contentLayout.addView(row)
-            if (index != actionRows.lastIndex) {
-                addDivider(contentLayout)
-            }
-        }
-
-        appendCustomActions(contentLayout, actionRows.isNotEmpty())
+        val itemContext = C2CChatSettingItemContext(
+            androidContext = context,
+            userID = userID,
+        )
+        val items = buildChatSettingItems(
+            itemContext = itemContext,
+            defaults = buildList<ChatSettingCustomItem<C2CChatSettingItemContext>> {
+                if (config.isShowHeader) {
+                    add(ChatSettingCustomItem(ChatSettingItemIDs.C2C_HEADER) { userInfoLayout })
+                }
+                if (config.isShowRemark) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_REMARK,
+                            ChatSettingSectionIDs.C2C_REMARK,
+                        ) { remarkRow }
+                    )
+                }
+                if (config.isShowDoNotDisturb) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_DO_NOT_DISTURB,
+                            ChatSettingSectionIDs.C2C_SWITCHES,
+                        ) { doNotDisturbRow }
+                    )
+                }
+                if (config.isShowPin) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_PIN,
+                            ChatSettingSectionIDs.C2C_SWITCHES,
+                        ) { pinRow }
+                    )
+                }
+                if (config.isShowChatBackground) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_CHAT_BACKGROUND,
+                            ChatSettingSectionIDs.C2C_CHAT_BACKGROUND,
+                        ) { chatBackgroundRow }
+                    )
+                }
+                if (config.isShowBlacklist) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_BLACKLIST,
+                            ChatSettingSectionIDs.C2C_BLACKLIST,
+                        ) { blacklistRow }
+                    )
+                }
+                if (config.isShowSendMessage) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_SEND_MESSAGE,
+                            ChatSettingSectionIDs.C2C_ACTIONS,
+                        ) { sendMessageButton }
+                    )
+                }
+                if (config.isShowVoiceCall) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_VOICE_CALL,
+                            ChatSettingSectionIDs.C2C_ACTIONS,
+                        ) { voiceCallButton }
+                    )
+                }
+                if (config.isShowVideoCall) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_VIDEO_CALL,
+                            ChatSettingSectionIDs.C2C_ACTIONS,
+                        ) { videoCallButton }
+                    )
+                }
+                if (config.isShowClearHistory) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_CLEAR_HISTORY,
+                            ChatSettingSectionIDs.C2C_ACTIONS,
+                        ) { clearHistoryButton }
+                    )
+                }
+                if (config.isShowDeleteFriend) {
+                    add(
+                        ChatSettingCustomItem(
+                            ChatSettingItemIDs.C2C_DELETE_FRIEND,
+                            ChatSettingSectionIDs.C2C_ACTIONS,
+                        ) { deleteFriendButton }
+                    )
+                }
+            },
+            customizer = config.itemCustomizer,
+        )
+        itemRenderer = ChatSettingItemLayoutRenderer(context, contentLayout)
+        itemRenderer.setItems(itemContext, items)
 
         scrollView.addView(contentLayout)
         addView(scrollView)
-    }
-
-    private fun appendCustomActions(parent: LinearLayout, hasPrecedingActions: Boolean) {
-        val provider = ChatSettingActionConfig.customActionProvider ?: return
-        val actions = provider.getActions(
-            ChatSettingActionContext(
-                context = context,
-                scene = ChatSettingScene.C2C,
-                userID = currentUserID,
-                groupID = null
-            )
-        )
-        actions.forEachIndexed { index, action ->
-            if (hasPrecedingActions || index > 0) {
-                addDivider(parent)
-            }
-            parent.addView(createCustomActionRow(action))
-        }
-    }
-
-    private fun createCustomActionRow(action: ChatSettingCustomAction): SettingRowButton {
-        return SettingRowButton(context).apply {
-            setTitle(action.title)
-            setButtonStyle(
-                when (action.style) {
-                    ChatSettingActionStyle.LINK -> SettingRowButton.Style.LINK
-                    ChatSettingActionStyle.DANGER -> SettingRowButton.Style.DANGER
-                    ChatSettingActionStyle.NORMAL -> SettingRowButton.Style.NORMAL
-                }
-            )
-            setOnClickListener { action.onClick(context) }
-        }
+        applyThemeColors(colors)
     }
 
     private fun createSendMessageButton(): SettingRowButton {
@@ -372,30 +400,6 @@ class C2CChatSettingView @JvmOverloads constructor(
         }
     }
 
-    private fun addSpacer(parent: LinearLayout) {
-        val spacer = View(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp2px(10f, resources.displayMetrics).toInt()
-            )
-        }
-        spacers.add(spacer)
-        parent.addView(spacer)
-    }
-
-    private fun addDivider(parent: LinearLayout) {
-        val divider = View(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp2px(0.5f, resources.displayMetrics).toInt()
-            )
-            val colors = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
-            setBackgroundColor(colors.strokeColorPrimary)
-        }
-        dividers.add(divider)
-        parent.addView(divider)
-    }
-
     private fun bindViewModel() {
         val vm = viewModel ?: return
         if (viewScope != null) return
@@ -429,7 +433,7 @@ class C2CChatSettingView @JvmOverloads constructor(
                     signatureTextView.visibility = View.GONE
                 }
                 remarkRow.setTitle(context.getString(R.string.chat_setting_remark_name))
-                remarkRow.setValue(remark.ifEmpty { displayName })
+                remarkRow.setValue(remark)
             }
         }
         scope.launch {
@@ -479,15 +483,16 @@ class C2CChatSettingView @JvmOverloads constructor(
     }
 
     private fun applyThemeColors(colors: ColorTokens) {
-        setBackgroundColor(colors.bgColorTopBar)
-        scrollView.setBackgroundColor(colors.bgColorTopBar)
-        contentLayout.setBackgroundColor(colors.bgColorTopBar)
+        setBackgroundColor(colors.bgColorInput)
+        scrollView.setBackgroundColor(colors.bgColorInput)
+        contentLayout.setBackgroundColor(colors.bgColorInput)
         userInfoLayout.setBackgroundColor(colors.bgColorOperate)
         nicknameTextView.setTextColor(colors.textColorPrimary)
         idTextView.setTextColor(colors.textColorTertiary)
         signatureTextView.setTextColor(colors.textColorTertiary)
-        spacers.forEach { it.setBackgroundColor(colors.bgColorTopBar) }
-        dividers.forEach { it.setBackgroundColor(colors.strokeColorPrimary) }
+        if (::itemRenderer.isInitialized) {
+            itemRenderer.applyThemeColors(colors)
+        }
     }
 
     override fun onAttachedToWindow() {

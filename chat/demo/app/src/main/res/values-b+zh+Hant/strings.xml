@@ -32,6 +32,11 @@
     <string name="demo_chat_header_back">返回</string>
     <string name="demo_chat_header_more">更多</string>
     <string name="demo_chat_header_cancel">取消</string>
+    <string name="demo_chatbot_clear_history">清空歷史訊息</string>
+    <string name="demo_chatbot_clear_history_confirmation">確定清空歷史訊息嗎？</string>
+    <string name="demo_chatbot_clear_history_failed">清空歷史訊息失敗</string>
+    <string name="demo_confirm">清空</string>
+    <string name="demo_cancel">取消</string>
     <string name="demo_chat_typing_indicator">對方正在輸入…</string>
     <string name="demo_clear_all_unread_success">已清空全部未讀訊息</string>
     <string name="demo_group_event_kicked">您已被踢出群: %1$s</string>

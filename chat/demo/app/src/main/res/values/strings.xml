@@ -33,6 +33,11 @@
     <string name="demo_chat_header_back">Back</string>
     <string name="demo_chat_header_more">More</string>
     <string name="demo_chat_header_cancel">Cancel</string>
+    <string name="demo_chatbot_clear_history">Clear history</string>
+    <string name="demo_chatbot_clear_history_confirmation">Clear all chat history?</string>
+    <string name="demo_chatbot_clear_history_failed">Failed to clear chat history</string>
+    <string name="demo_confirm">Clear</string>
+    <string name="demo_cancel">Cancel</string>
     <string name="demo_chat_typing_indicator">Typing…</string>
     <string name="demo_clear_all_unread_success">All unread messages cleared</string>
     <string name="demo_group_event_kicked">You have been kicked out of the group: %1$s</string>

@@ -120,12 +120,6 @@ class ChatSettingActivity : BaseActivity() {
             settingContainer.addView(settingView)
             settingView.setup(
                 groupID = groupID,
-                onSendMessageClick = {
-                    if (needNavigateToChat) {
-                        ChatActivity.start(this, "group_$groupID")
-                    }
-                    finish()
-                },
                 onGroupMemberClick = { member ->
                     handleGroupMemberClick(member.userID)
                 },
@@ -139,6 +133,7 @@ class ChatSettingActivity : BaseActivity() {
         val currentColors = themeStore.themeState.value.currentTheme.tokens.color
         rootContainer.setBackgroundColor(currentColors.bgColorOperate)
         headerContainer.setBackgroundColor(currentColors.bgColorOperate)
+        settingContainer.setBackgroundColor(currentColors.bgColorInput)
         tvTitle.setTextColor(currentColors.textColorPrimary)
         btnBack.imageTintList = ColorStateList.valueOf(currentColors.textColorSecondary)
         headerDivider.setBackgroundColor(currentColors.strokeColorPrimary)
@@ -149,6 +144,7 @@ class ChatSettingActivity : BaseActivity() {
                 val colors = state.currentTheme.tokens.color
                 rootContainer.setBackgroundColor(colors.bgColorOperate)
                 headerContainer.setBackgroundColor(colors.bgColorOperate)
+                settingContainer.setBackgroundColor(colors.bgColorInput)
                 tvTitle.setTextColor(colors.textColorPrimary)
                 btnBack.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
                 headerDivider.setBackgroundColor(colors.strokeColorPrimary)

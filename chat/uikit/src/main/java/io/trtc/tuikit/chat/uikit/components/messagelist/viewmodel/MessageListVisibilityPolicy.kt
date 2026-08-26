@@ -1,9 +1,11 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel
-import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.messageRenderRules
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRendererResolver
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageModel
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageParser
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageProtocol
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageSource
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageStatus
 import io.trtc.tuikit.atomicxcore.api.message.MessageType
@@ -13,13 +15,16 @@ internal class MessageListVisibilityPolicy(
     private val parseCallMessage: (MessageInfo) -> CallMessageModel? = CallMessageParser::parse
 ) {
     private val rendererResolver = MessageRendererResolver(
-        customRules = (config as? ChatMessageListConfig)?.customRenderRules.orEmpty()
+        customRules = config.messageRenderRules()
     )
 
     fun shouldDisplay(message: MessageInfo): Boolean {
         if (!config.isShowSystemMessage &&
             (message.messageType == MessageType.TIPS || message.status == MessageStatus.REVOKED)
         ) {
+            return false
+        }
+        if (ChatbotMessageProtocol.parse(message)?.source == ChatbotMessageSource.INTERRUPT) {
             return false
         }
         if (!config.isShowUnsupportMessage &&

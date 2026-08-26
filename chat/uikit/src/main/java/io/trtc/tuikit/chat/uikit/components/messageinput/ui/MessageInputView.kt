@@ -12,6 +12,8 @@ import android.widget.Space
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.onEvent
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotConversationController
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageInputConfig
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiManager
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
@@ -36,10 +38,13 @@ import io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel.MessageInputV
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.message.MessageInputStore
+import io.trtc.tuikit.atomicxcore.api.CompletionHandler
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -53,7 +58,9 @@ class MessageInputView @JvmOverloads constructor(
     private var viewScope: CoroutineScope? = null
     private var viewModel: MessageInputViewModel? = null
     private var draftCollectorJob: kotlinx.coroutines.Job? = null
+    private var chatbotStateJob: Job? = null
     private var typingStatusSender: ((Boolean) -> Unit)? = null
+    private var chatbotController: ChatbotConversationController? = null
 
     private var keyboardBridge: KeyboardBridge? = null
     private val softInputModeGuard = WindowSoftInputModeGuard()
@@ -95,6 +102,8 @@ class MessageInputView @JvmOverloads constructor(
     private lateinit var spaceAfterEmoji: Space
     private lateinit var btnSend: FrameLayout
     private lateinit var btnSendIcon: ImageView
+    private lateinit var btnChatbotStop: FrameLayout
+    private lateinit var btnChatbotStopIcon: ImageView
     private lateinit var btnPressToTalk: AudioRecorderView
     private lateinit var panelContainer: FrameLayout
     private var voiceTranscriptionAudioPath: String? = null
@@ -121,8 +130,37 @@ class MessageInputView @JvmOverloads constructor(
         config: MessageInputConfigProtocol = ChatMessageInputConfig(),
         typingStatusSender: ((Boolean) -> Unit)? = null
     ) {
+        setupInternal(
+            conversationID = conversationID,
+            config = config,
+            typingStatusSender = typingStatusSender,
+            chatbotController = null
+        )
+    }
+
+    internal fun setupWithChatbot(
+        conversationID: String,
+        config: MessageInputConfigProtocol,
+        chatbotController: ChatbotConversationController,
+        typingStatusSender: ((Boolean) -> Unit)? = null
+    ) {
+        setupInternal(
+            conversationID = conversationID,
+            config = ChatbotMessageInputConfig(config),
+            typingStatusSender = typingStatusSender,
+            chatbotController = chatbotController
+        )
+    }
+
+    private fun setupInternal(
+        conversationID: String,
+        config: MessageInputConfigProtocol,
+        typingStatusSender: ((Boolean) -> Unit)?,
+        chatbotController: ChatbotConversationController?
+    ) {
         this.config = config
         this.typingStatusSender = typingStatusSender
+        this.chatbotController = chatbotController
         viewModel?.let { oldVm ->
             saveDraftIfNeeded(oldVm)
         }
@@ -144,6 +182,7 @@ class MessageInputView @JvmOverloads constructor(
             }
         }
         applyConfig()
+        bindChatbotState()
     }
 
     private fun createBusinessViewModel(conversationID: String): MessageInputViewModel {
@@ -153,7 +192,14 @@ class MessageInputView @JvmOverloads constructor(
         val viewModelKey = "${MessageInputViewModel::class.java.name}:${System.identityHashCode(this)}:$conversationID"
         return ViewModelProvider(
             owner,
-            MessageInputViewModelFactory(store, conversationID, config)
+            MessageInputViewModelFactory(
+                messageInputStore = store,
+                conversationID = conversationID,
+                messageInputConfig = config
+            ).setTextSendCallbacks(
+                canSend = { chatbotController?.isActive != true },
+                onSent = { chatbotController?.onTextMessageSent() }
+            )
         ).get(viewModelKey, MessageInputViewModel::class.java)
     }
 
@@ -214,6 +260,26 @@ class MessageInputView @JvmOverloads constructor(
         }
 
         applyConfig()
+        bindChatbotState()
+    }
+
+    private fun bindChatbotState() {
+        chatbotStateJob?.cancel()
+        chatbotStateJob = null
+        val controller = chatbotController ?: run {
+            if (::coordinator.isInitialized) {
+                updateSendButtonVisibility(coordinator.state.value)
+            }
+            return
+        }
+        val scope = viewScope ?: return
+        chatbotStateJob = scope.launch {
+            controller.state.collectLatest {
+                if (::coordinator.isInitialized) {
+                    updateSendButtonVisibility(coordinator.state.value)
+                }
+            }
+        }
     }
 
     private fun handleIncomingDraft(draft: String?) {
@@ -268,6 +334,8 @@ class MessageInputView @JvmOverloads constructor(
         }
         draftCollectorJob?.cancel()
         draftCollectorJob = null
+        chatbotStateJob?.cancel()
+        chatbotStateJob = null
         viewScope?.cancel()
         viewScope = null
     }
@@ -456,14 +524,15 @@ class MessageInputView @JvmOverloads constructor(
     private fun updateSendButtonVisibility(state: InputUiState) {
         val hasText = ::textController.isInitialized && textController.inputText.isNotEmpty()
         val isTextMode = state.inputMode == InputMode.TEXT
-
-        if (hasText && isTextMode) {
-            btnMore.visibility = View.GONE
-            btnSend.visibility = View.VISIBLE
-        } else {
-            btnSend.visibility = View.GONE
-            btnMore.visibility = if (config.isShowMore) View.VISIBLE else View.GONE
-        }
+        val visibility = MessageInputActionVisibilityPolicy.resolve(
+            hasText = hasText,
+            isTextMode = isTextMode,
+            isShowMore = config.isShowMore,
+            isChatbotActive = chatbotController?.isActive == true
+        )
+        btnMore.visibility = if (visibility.showMore) View.VISIBLE else View.GONE
+        btnSend.visibility = if (visibility.showSend) View.VISIBLE else View.GONE
+        btnChatbotStop.visibility = if (visibility.showStop) View.VISIBLE else View.GONE
     }
 
     private fun updateInputHintVisibility(state: InputUiState) {
@@ -519,6 +588,8 @@ class MessageInputView @JvmOverloads constructor(
         spaceAfterEmoji = findViewById(R.id.message_input_space_after_emoji)
         btnSend = findViewById(R.id.message_input_btn_send)
         btnSendIcon = findViewById(R.id.message_input_btn_send_icon)
+        btnChatbotStop = findViewById(R.id.message_input_btn_chatbot_stop)
+        btnChatbotStopIcon = findViewById(R.id.message_input_btn_chatbot_stop_icon)
         btnPressToTalk = findViewById<AudioRecorderView>(R.id.message_input_btn_press_to_talk).apply {
             config = AudioRecorderViewConfig(
                 minDurationMs = AUDIO_MIN_RECORD_TIME,
@@ -582,6 +653,22 @@ class MessageInputView @JvmOverloads constructor(
             },
             logDebug = { message -> Log.d(TAG, message) }
         )
+        btnChatbotStop.setOnClickListener {
+            chatbotController?.sendInterrupt(
+                object : CompletionHandler {
+                    override fun onSuccess() = Unit
+
+                    override fun onFailure(code: Int, desc: String) {
+                        AtomicToast.show(
+                            context,
+                            desc.takeIf { it.isNotBlank() }
+                                ?: context.getString(R.string.message_input_send_failed),
+                            style = AtomicToast.Style.ERROR
+                        )
+                    }
+                }
+            )
+        }
         setupVoiceTranscriptionDraftListeners()
         setupQuotePreviewListeners()
     }
@@ -741,11 +828,20 @@ class MessageInputView @JvmOverloads constructor(
             maxDurationMs = config.audioMaxRecordDurationMs.coerceAtLeast(AUDIO_MIN_RECORD_TIME)
         )
         lastRenderedState?.let { updateInputHintVisibility(it) }
+        if (::coordinator.isInitialized) {
+            updateSendButtonVisibility(coordinator.state.value)
+        } else if (chatbotController?.isActive == true) {
+            btnMore.visibility = View.GONE
+            btnSend.visibility = View.GONE
+            btnChatbotStop.visibility = View.VISIBLE
+        } else {
+            btnChatbotStop.visibility = View.GONE
+        }
     }
 
     private fun updateColors(colors: ColorTokens) {
         setBackgroundColor(colors.bgColorOperate)
-        topDivider.setBackgroundColor(colors.strokeColorPrimary)
+        topDivider.setBackgroundColor(colors.strokeColorSecondary)
         quoteContainer.setBackgroundColor(colors.bgColorDefault)
         quoteSummaryView.setTextColor(colors.textColorSecondary)
         quoteCloseView.setTextColor(colors.textColorSecondary)
@@ -795,6 +891,9 @@ class MessageInputView @JvmOverloads constructor(
         }
         btnSend.background = sendBg
         btnSendIcon.setColorFilter(colors.textColorButton)
+        btnChatbotStopIcon.setImageResource(R.drawable.message_input_chatbot_stop_icon)
+        btnChatbotStop.background = sendBg.constantState?.newDrawable()?.mutate()
+        btnChatbotStopIcon.setColorFilter(colors.textColorButton)
     }
 
     private fun setupTextWatcher() {

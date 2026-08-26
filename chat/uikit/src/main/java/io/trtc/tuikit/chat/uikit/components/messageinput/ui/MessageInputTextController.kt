@@ -73,13 +73,16 @@ internal class MessageInputTextController(
         if (text.isNotEmpty()) {
             val mentionList = editText.getAtomicRanges<MentionInfo>().map { it.data }
             val quotedMessage = currentState().overlay.quoteMessage?.toMessageInfo()
-            viewModelProvider()?.sendTextMessage(
+            val accepted = viewModelProvider()?.trySendTextMessage(
                 context = context,
                 text = text,
                 mentionList = mentionList,
                 quotedMessage = quotedMessage,
                 onSuccess = clearQuote
-            )
+            ) == true
+            if (!accepted) {
+                return
+            }
             onSubmitted()
             editText.setText("")
             editText.clearAtomicRanges()
