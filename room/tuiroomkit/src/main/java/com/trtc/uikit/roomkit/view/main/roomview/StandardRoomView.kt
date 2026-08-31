@@ -1,25 +1,32 @@
 package com.trtc.uikit.roomkit.view.main.roomview
 
 import android.content.Context
+import android.content.res.Configuration
+import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.ImageView
-import androidx.recyclerview.widget.RecyclerView
+import android.view.View
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.ui.BaseView
-import com.trtc.uikit.roomkit.base.utils.dpToPx
-import com.trtc.uikit.roomkit.base.utils.pxToDp
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
+import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
-import io.trtc.tuikit.atomicxcore.api.view.VideoStreamType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * Top-level dispatcher for the standard room video layout.
+ *
+ * Owns the [RoomParticipantStore] subscription and turns the raw state
+ * (participant list + screen-share participant + speaking users) into a
+ * [LayoutMode] via [resolveLayoutMode]. Based on the resolved mode it shows
+ * exactly one of two child views and pushes the relevant data into it:
+ */
 class StandardRoomView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -27,49 +34,65 @@ class StandardRoomView @JvmOverloads constructor(
 ) : BaseView(context, attrs, defStyleAttr) {
 
     companion object {
-        private const val PAGING_GRID_ROWS = 3
-        private const val PAGING_GRID_COLUMNS = 2
-        private const val PAGE_SIZE = PAGING_GRID_ROWS * PAGING_GRID_COLUMNS
-        private const val MAX_RECYCLED_VIEWS = 12
-        private const val ITEM_SPACING_DP = 8
         private const val SPEAKING_VOLUME_THRESHOLD = 25
+        private const val PIP_SWITCH_COOLDOWN_MS = 5_000L
     }
 
+    internal enum class LayoutMode { EMPTY, FOCUS, GRID }
+
     private val logger = RoomKitLogger.getLogger("StandardRoomView")
+
+    private val focusView: FocusRoomView
+    private val gridView: GridRoomView
+    private val screenSharePip: RoomPipView
     private var subscribeJob: Job? = null
-
-    private val recyclerView: RecyclerView by lazy { findViewById(R.id.rv_video_grid) }
-    private val arrowLeft: ImageView by lazy { findViewById(R.id.iv_arrow_left) }
-    private val arrowRight: ImageView by lazy { findViewById(R.id.iv_arrow_right) }
-
-    private var itemWidthPx = 0
-    private var itemHeightPx = 0
-    private val spacingPx by lazy { dpToPx(ITEM_SPACING_DP) }
-
-    private lateinit var adapter: RoomVideoGridAdapter
-    private lateinit var layoutStrategy: RoomVideoLayoutStrategy
-    private lateinit var itemSizeDecoration: RoomVideoGridDecoration
-
+    private var pendingUpdateJob: Job? = null
+    private var participantStore: RoomParticipantStore? = null
     private var participants: List<RoomParticipant> = emptyList()
     private var screenShareParticipant: RoomParticipant? = null
-    private var participantStore: RoomParticipantStore? = null
-
-    private val speakingStateCache = mutableMapOf<String, Boolean>()
-    private var pendingUpdateJob: Job? = null
+    private var latestSpeakingMap: Map<String, Int> = emptyMap()
+    private var currentMode: LayoutMode = LayoutMode.EMPTY
+    private var currentPipUserId: String? = null
+    private var lastPipSwitchTs: Long = 0L
+    private var currentGridPageIndex: Int = 0
     private var isFirstUpdate = true
-    private var lastHasScreenShare = false
-    private var cachedVisibleRange: PagedVideoLayoutManager.VisibleRange? = null
 
     var onOrientationSwitchClick: (() -> Unit)? = null
         set(value) {
             field = value
-            if (::adapter.isInitialized) adapter.onOrientationSwitchClick = value
+            gridView.onOrientationSwitchClick = value
         }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_standard_room_view, this)
-        calculateItemSize()
-        initRecyclerView()
+        focusView = findViewById(R.id.view_focus_room)
+        gridView = findViewById(R.id.view_grid_room)
+        screenSharePip = findViewById(R.id.view_screen_share_pip)
+
+        // Track the grid's visible page so the screen-share PIP can hide
+        // itself when the user swipes off page 0 (the full-screen share) to
+        // the paged camera grid on page 1+.
+        gridView.onPageIndexChanged = { pageIndex ->
+            if (currentGridPageIndex != pageIndex) {
+                logger.info("grid page changed: $currentGridPageIndex -> $pageIndex")
+                currentGridPageIndex = pageIndex
+                updateScreenSharePip()
+            }
+        }
+
+        gridView.onVisibleItemsUpdated = {
+            if (isPipShown() && currentPipUserId != null) {
+                screenSharePip.reclaimStream()
+            }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        screenSharePip.release()
+        currentPipUserId = null
+        lastPipSwitchTs = 0L
+        updateScreenSharePip()
     }
 
     public override fun init(roomID: String) {
@@ -86,257 +109,230 @@ class StandardRoomView @JvmOverloads constructor(
         subscribeJob?.cancel()
         subscribeJob = CoroutineScope(Dispatchers.Main).launch {
             launch {
-                store.state.participantList.collect { participants ->
-                    logger.info("participantList changed, size: ${participants.size}")
-                    updateParticipants(participants)
+                store.state.participantList.collect { list ->
+                    logger.info("participantList changed, size=${list.size}")
+                    participants = list
+                    scheduleUpdate()
                 }
             }
 
             launch {
                 store.state.participantWithScreen.collect { screenParticipant ->
-                    logger.info("participantWithScreen changed: ${screenParticipant?.userID}")
-                    updateScreenShareParticipant(screenParticipant)
+                    logger.info("participantWithScreen changed: userID=${screenParticipant?.userID}")
+                    screenShareParticipant = screenParticipant
+                    scheduleUpdate()
                 }
             }
 
             launch {
                 store.state.speakingUsers.collect { speakingMap ->
-                    updateSpeakingStates(speakingMap)
+                    latestSpeakingMap = speakingMap
+                    dispatchSpeakingUpdate()
                 }
             }
         }
     }
 
     override fun removeObserver() {
+        focusView.release()
+        gridView.release()
+        screenSharePip.release()
         pendingUpdateJob?.cancel()
         pendingUpdateJob = null
         subscribeJob?.cancel()
         subscribeJob = null
-        speakingStateCache.clear()
         isFirstUpdate = true
-        lastHasScreenShare = false
-        cachedVisibleRange = null
+        currentMode = LayoutMode.EMPTY
+        currentPipUserId = null
+        lastPipSwitchTs = 0L
+        currentGridPageIndex = 0
     }
 
-    private fun initRecyclerView() {
-        itemSizeDecoration = RoomVideoGridDecoration(itemWidthPx, itemHeightPx, spacingPx)
-        adapter = RoomVideoGridAdapter()
-
-        adapter.onDataUpdateCompleted = {
-            recyclerView.post {
-                updateVisibleItems()
-            }
-        }
-
-        layoutStrategy = RoomVideoLayoutStrategy(context, recyclerView, itemSizeDecoration)
-
-        recyclerView.adapter = adapter
-        recyclerView.addItemDecoration(itemSizeDecoration)
-        recyclerView.setItemViewCacheSize(0)
-        recyclerView.recycledViewPool.setMaxRecycledViews(0, MAX_RECYCLED_VIEWS)
-        recyclerView.itemAnimator = null
-
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    updateVisibleItems()
-                }
-            }
-        })
-        adapter.onOrientationSwitchClick = onOrientationSwitchClick
-    }
-
-    private fun updateVisibleItems() {
-        val currentRange = layoutStrategy.getVisibleRange() ?: return
-        cachedVisibleRange = currentRange
-        processVisibleItems(currentRange.startPosition, currentRange.endPosition)
-        updateArrowsVisibility()
-    }
-
-    private fun processVisibleItems(startPosition: Int, endPosition: Int) {
-        forEachViewHolder { holder, position, streamItem ->
-            val isVisible = position in startPosition..endPosition
-            holder.setActive(isVisible)
-
-            if (isVisible && streamItem.streamType == VideoStreamType.CAMERA) {
-                participantStore?.state?.speakingUsers?.value?.let { speakingMap ->
-                    updateViewHolderSpeakingState(holder, streamItem.participant, speakingMap)
-                }
-            }
-        }
-    }
-
-    private inline fun forEachViewHolder(
-        action: (holder: RoomVideoGridAdapter.VideoStreamViewHolder, position: Int, streamItem: VideoStreamItem) -> Unit
-    ) {
-        val streamItems = adapter.getStreamItems()
-        if (streamItems.isEmpty()) return
-
-        for (i in 0 until recyclerView.childCount) {
-            val child = recyclerView.getChildAt(i) ?: continue
-            val holder =
-                recyclerView.getChildViewHolder(child) as? RoomVideoGridAdapter.VideoStreamViewHolder ?: continue
-
-            val position = holder.adapterPosition
-            if (position < 0 || position >= streamItems.size) continue
-
-            val streamItem = streamItems[position]
-            action(holder, position, streamItem)
-        }
-    }
-
-    private fun calculateItemSize() {
-        // Use actual view size if available, otherwise fallback to screen metrics
-        val containerWidth = if (width > 0) width else context.resources.displayMetrics.widthPixels
-        val containerHeight = if (height > 0) height else context.resources.displayMetrics.heightPixels
-
-        val totalHorizontalSpacing = spacingPx * (PAGING_GRID_COLUMNS + 1)
-        val availableWidth = containerWidth - totalHorizontalSpacing
-        val maxItemWidth = availableWidth / PAGING_GRID_COLUMNS
-
-        val totalVerticalSpacing = spacingPx * (PAGING_GRID_ROWS + 1)
-        val availableHeight = containerHeight - totalVerticalSpacing
-        val maxItemHeight = availableHeight / PAGING_GRID_ROWS
-
-        val itemSize = minOf(maxItemWidth, maxItemHeight)
-        itemWidthPx = itemSize
-        itemHeightPx = itemSize
-
-        if (::itemSizeDecoration.isInitialized) {
-            itemSizeDecoration.updateItemSize(itemWidthPx, itemHeightPx, spacingPx)
-        }
-
-        logger.info(
-            "Item size calculated: ${pxToDp(itemWidthPx)}dp x ${pxToDp(itemHeightPx)}dp " +
-                    "(container: ${pxToDp(containerWidth)}dp x ${pxToDp(containerHeight)}dp, " +
-                    "spacing: ${ITEM_SPACING_DP}dp, maxWidth: ${pxToDp(maxItemWidth)}dp, " +
-                    "maxHeight: ${pxToDp(maxItemHeight)}dp)"
-        )
-    }
-
-    private fun updateParticipants(newParticipants: List<RoomParticipant>) {
-        participants = newParticipants
-        scheduleUpdateDisplayList()
-    }
-
-    private fun updateScreenShareParticipant(screenParticipant: RoomParticipant?) {
-        val wasSharing = screenShareParticipant != null
-        val isSharing = screenParticipant != null
-        logger.info(
-            "updateScreenShareParticipant: wasSharing=$wasSharing, isSharing=$isSharing, " +
-                    "userID=${screenParticipant?.userID ?: "null"}"
-        )
-        screenShareParticipant = screenParticipant
-        scheduleUpdateDisplayList()
-    }
-
-    private fun scheduleUpdateDisplayList() {
+    /**
+     * Schedule a full rebuild. Immediate on first update or when the resolved
+     * mode changes; otherwise 250ms-debounced to coalesce bursts of updates.
+     *
+     * Screen-share start/end always hits the fast path because it either
+     * flips the top-level mode (1-2 participants: FOCUS <-> GRID) or flips
+     * the grid's first tile between camera and SCREEN — both cases would be
+     * visibly laggy with a 250ms debounce.
+     */
+    private fun scheduleUpdate() {
         val hasData = participants.isNotEmpty() || screenShareParticipant != null
-        if (isFirstUpdate && hasData) {
+        val nextMode = resolveLayoutMode(participants, screenShareParticipant)
+        val modeChanged = nextMode != currentMode
+
+        if ((isFirstUpdate && hasData) || modeChanged) {
             isFirstUpdate = false
-            updateDisplayList()
+            pendingUpdateJob?.cancel()
+            pendingUpdateJob = null
+            applyUpdate(nextMode)
         } else {
             pendingUpdateJob?.cancel()
             pendingUpdateJob = CoroutineScope(Dispatchers.Main).launch {
                 delay(250)
-                updateDisplayList()
+                applyUpdate(resolveLayoutMode(participants, screenShareParticipant))
             }
         }
     }
 
-    private fun updateDisplayList() {
-        val displayList = buildList {
-            screenShareParticipant?.let { screenUser ->
-                add(VideoStreamItem.screenShare(screenUser))
-            }
-
-            participants.forEach { participant ->
-                add(VideoStreamItem.camera(participant))
-            }
-        }
-
-        val hasScreenShare = screenShareParticipant != null
-
-        logger.info(
-            "updateDisplayList: total=${displayList.size}, hasScreenShare=$hasScreenShare, " +
-                    "screenShareUserId=${screenShareParticipant?.userID}, participants=${participants.size}"
-        )
-
-        layoutStrategy.configureForParticipantCount(displayList.size, hasScreenShare)
-        adapter.updateData(displayList)
-        updateArrowsVisibility()
-
-        speakingStateCache.keys.removeAll { userId ->
-            displayList.none { it.participant.userID == userId }
-        }
-
-        if (!lastHasScreenShare && hasScreenShare) {
-            recyclerView.scrollToPosition(0)
-            recyclerView.post {
-                updateVisibleItems()
-            }
-        }
-        lastHasScreenShare = hasScreenShare
-    }
-
-    private fun updateSpeakingStates(speakingMap: Map<String, Int>) {
-        val currentRange = cachedVisibleRange ?: return
-
-        forEachViewHolder { holder, position, streamItem ->
-            val isVisible = position in currentRange.startPosition..currentRange.endPosition
-
-            if (isVisible && streamItem.streamType == VideoStreamType.CAMERA) {
-                updateViewHolderSpeakingState(holder, streamItem.participant, speakingMap)
-            }
+    private fun resolveLayoutMode(
+        participants: List<RoomParticipant>,
+        screenShareParticipant: RoomParticipant?
+    ): LayoutMode {
+        if (screenShareParticipant != null) return LayoutMode.GRID
+        return when (participants.size) {
+            0 -> LayoutMode.EMPTY
+            1, 2 -> LayoutMode.FOCUS
+            else -> LayoutMode.GRID
         }
     }
 
-    private fun updateArrowsVisibility() {
-        val streamItems = adapter.getStreamItems()
-        val hasScreenShare = screenShareParticipant != null
-
-        val totalPages = if (hasScreenShare) {
-            if (streamItems.size <= 1) {
-                1
-            } else {
-                val remainingItems = streamItems.size - 1
-                1 + (remainingItems + PAGE_SIZE - 1) / PAGE_SIZE
+    private fun applyUpdate(nextMode: LayoutMode) {
+        val modeChanged = nextMode != currentMode
+        if (modeChanged) {
+            logger.info("mode changed: $currentMode -> $nextMode")
+            notifyPreviousModeHidden(currentMode)
+            currentMode = nextMode
+            updateChildVisibility(nextMode)
+            if (nextMode == LayoutMode.GRID) {
+                currentGridPageIndex = 0
             }
-        } else {
-            (streamItems.size + PAGE_SIZE - 1) / PAGE_SIZE
         }
+        dispatchBind(nextMode)
+        updateScreenSharePip()
+    }
 
-        if (totalPages <= 1) {
-            arrowLeft.visibility = GONE
-            arrowRight.visibility = GONE
+    private fun updateChildVisibility(mode: LayoutMode) {
+        focusView.visibility = if (mode == LayoutMode.FOCUS) VISIBLE else GONE
+        gridView.visibility = if (mode == LayoutMode.GRID) VISIBLE else GONE
+    }
+
+    private fun notifyPreviousModeHidden(prevMode: LayoutMode) {
+        when (prevMode) {
+            LayoutMode.FOCUS -> focusView.release()
+            LayoutMode.GRID -> gridView.release()
+            LayoutMode.EMPTY -> Unit
+        }
+    }
+
+    private fun dispatchBind(mode: LayoutMode) {
+        when (mode) {
+            LayoutMode.EMPTY -> Unit
+            LayoutMode.FOCUS -> {
+                focusView.bind(participants)
+                focusView.updateSpeakingStates(latestSpeakingMap)
+            }
+
+            LayoutMode.GRID -> {
+                gridView.bind(participants, screenShareParticipant)
+                gridView.updateSpeakingStates(latestSpeakingMap)
+            }
+        }
+    }
+
+    private fun dispatchSpeakingUpdate() {
+        when (currentMode) {
+            LayoutMode.FOCUS -> focusView.updateSpeakingStates(latestSpeakingMap)
+            LayoutMode.GRID -> {
+                gridView.updateSpeakingStates(latestSpeakingMap)
+                val pipVisible = isPipShown()
+                val prevId = currentPipUserId
+                val inPipSwitchCooldown = pipVisible && prevId != null && isValidPipCandidate(prevId)
+                        && SystemClock.uptimeMillis() - lastPipSwitchTs < PIP_SWITCH_COOLDOWN_MS
+                if (!inPipSwitchCooldown) {
+                    val nextPipUserId = if (pipVisible) {
+                        resolveScreenSharePipParticipant()?.userID
+                    } else {
+                        null
+                    }
+                    if (nextPipUserId != currentPipUserId) {
+                        updateScreenSharePip()
+                    }
+                }
+                screenSharePip.updateSpeakingStates(latestSpeakingMap)
+            }
+
+            else -> Unit
+        }
+    }
+
+    private fun isPipShown(): Boolean {
+        return currentMode == LayoutMode.GRID
+                && screenShareParticipant != null
+                && currentGridPageIndex == 0
+    }
+
+    private fun updateScreenSharePip() {
+        val sharing = currentMode == LayoutMode.GRID && screenShareParticipant != null
+
+        if (!sharing) {
+            releasePipBinding()
             return
         }
 
-        val currentPage = getCurrentPage()
-
-        arrowLeft.visibility = if (currentPage > 0) VISIBLE else GONE
-        arrowRight.visibility = if (currentPage < totalPages - 1) VISIBLE else GONE
-    }
-
-    private fun getCurrentPage(): Int {
-        val currentRange = cachedVisibleRange ?: return 0
-        return currentRange.pageIndex
-    }
-
-    private fun updateViewHolderSpeakingState(
-        viewHolder: RoomVideoGridAdapter.VideoStreamViewHolder,
-        participant: RoomParticipant,
-        speakingMap: Map<String, Int>
-    ) {
-        val volume = speakingMap[participant.userID] ?: 0
-        val isMicOn = participant.microphoneStatus == DeviceStatus.ON
-        val isSpeaking = isMicOn && volume > SPEAKING_VOLUME_THRESHOLD
-
-        val cachedState = speakingStateCache[participant.userID]
-        if (cachedState != isSpeaking) {
-            speakingStateCache[participant.userID] = isSpeaking
-            viewHolder.updateSpeakingState(isSpeaking)
+        if (currentGridPageIndex != 0) {
+            if (currentPipUserId != null) screenSharePip.hide()
+            return
         }
+
+        val next = resolveScreenSharePipParticipant()
+        if (next == null) {
+            releasePipBinding()
+            return
+        }
+        if (isInPipSwitchCooldown(next)) return
+        bindPip(next)
+    }
+
+    private fun releasePipBinding() {
+        if (screenSharePip.visibility != View.VISIBLE && currentPipUserId == null) return
+        screenSharePip.release()
+        currentPipUserId = null
+        lastPipSwitchTs = 0L
+    }
+
+    private fun isInPipSwitchCooldown(next: RoomParticipant): Boolean {
+        val prevId = currentPipUserId ?: return false
+        if (next.userID == prevId) return false
+        if (!isValidPipCandidate(prevId)) return false
+        return SystemClock.uptimeMillis() - lastPipSwitchTs < PIP_SWITCH_COOLDOWN_MS
+    }
+
+    private fun isValidPipCandidate(userID: String): Boolean {
+        return participants.any { it.userID == userID }
+    }
+
+    private fun bindPip(next: RoomParticipant) {
+        val sameUser = next.userID == currentPipUserId
+        screenSharePip.bind(next)
+        if (!sameUser) lastPipSwitchTs = SystemClock.uptimeMillis()
+        currentPipUserId = next.userID
+    }
+
+    private fun resolveScreenSharePipParticipant(): RoomParticipant? {
+        if (participants.isEmpty()) return null
+
+        // Rule 1: pick the loudest active speaker (must be above the threshold
+        // AND actively unmuted — matches RoomPipView's own "is speaking" check).
+        val loudest = participants
+            .filter { it.microphoneStatus == DeviceStatus.ON }
+            .mapNotNull { participant ->
+                val volume = latestSpeakingMap[participant.userID] ?: 0
+                if (volume > SPEAKING_VOLUME_THRESHOLD) participant to volume else null
+            }
+            .maxByOrNull { (_, volume) -> volume }
+            ?.first
+        if (loudest != null) return loudest
+
+        // Rule 2: keep the previously bound participant if they're still around.
+        val previouslyBound = currentPipUserId?.let { prevId ->
+            participants.firstOrNull { it.userID == prevId }
+        }
+        if (previouslyBound != null) return previouslyBound
+
+        // Rule 3: fall back to the local user.
+        val localUserId = LoginStore.shared.loginState.loginUserInfo.value?.userID
+        return participants.firstOrNull { it.userID == localUserId }
     }
 }

@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -14,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.ui.RoomTopBar
+import com.trtc.uikit.roomkit.base.utils.KeyboardUtils
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
 import io.trtc.tuikit.atomicxcore.api.contact.ContactStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomUser
@@ -63,7 +63,7 @@ class ContactPickerView @JvmOverloads constructor(
         setupSearch()
         topBar.onBackClick = { onBackClick?.invoke() }
         btnConfirm.setOnClickListener {
-            hideSoftKeyboard()
+            KeyboardUtils.hideKeyboard(etSearch)
             onConfirm?.invoke(selectedIds.toList())
         }
         llSelectedMore.setOnClickListener { showSelectedDialog() }
@@ -124,7 +124,7 @@ class ContactPickerView @JvmOverloads constructor(
 
         etSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                hideSoftKeyboard()
+                KeyboardUtils.hideKeyboard(etSearch)
                 true
             } else {
                 false
@@ -183,11 +183,6 @@ class ContactPickerView @JvmOverloads constructor(
             rvSelectedAvatars.visibility = View.GONE
             llSelectedMore.visibility = View.GONE
         }
-    }
-
-    private fun hideSoftKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
-        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
     private fun showSelectedDialog() {

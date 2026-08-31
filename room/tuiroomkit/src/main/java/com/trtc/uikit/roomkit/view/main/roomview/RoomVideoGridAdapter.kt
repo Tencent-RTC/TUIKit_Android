@@ -5,17 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
-import androidx.constraintlayout.utils.widget.ImageFilterView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.utils.dpToPx
-import io.trtc.tuikit.atomicx.common.imageloader.ImageLoader
-import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
-import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
-import io.trtc.tuikit.atomicxcore.api.view.FillMode
-import io.trtc.tuikit.atomicxcore.api.view.RoomParticipantView
 import io.trtc.tuikit.atomicxcore.api.view.VideoStreamType
 
 /**
@@ -122,46 +116,24 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
     // ========== Inner Classes ==========
 
     /**
-     * ViewHolder for video stream items in the room video grid
+     * ViewHolder for video stream items in the room video grid.
      *
-     * Layout hierarchy (from bottom to top):
-     *   Layer 1: RoomParticipantView - Video rendering layer
-     *   Layer 2: Avatar placeholder - Shown when camera is off (hidden for screen share)
-     *   Layer 3: Speaking border - Visual indicator for speaking state
-     *   Layer 4: Name overlay - User name and status information
+     * The item view IS a [RoomViewVideoStreamCell] — a self-contained widget
+     * that owns the four visual layers (video renderer, avatar placeholder,
+     * speaking border, name overlay). This ViewHolder is therefore purely a
+     * thin adapter between DiffUtil callbacks and the cell's API, plus the
+     * grid-specific chrome (16dp rounded outline).
      *
-     * The stream type (SCREEN/CAMERA) is set via [setStreamType] when binding,
-     * not in the constructor — it controls the overlay's orientation switch
-     * button visibility and avatar behavior.
      */
     inner class VideoStreamViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
-        // Layer 1: Bottom layer - video rendering
-        private val participantView: RoomParticipantView = itemView.findViewById(R.id.room_participant_view)
-
-        // Layer 2: Avatar placeholder layer
-        private val avatarPlaceholder: ImageFilterView = itemView.findViewById(R.id.iv_avatar_placeholder)
-
-        // Layer 3: Speaking state border
-        private val speakingBorder: View = itemView.findViewById(R.id.view_speaking_border)
-
-        // Layer 4: User name, status information, and orientation switch button
-        private val nameOverlay: RoomVideoNameOverlayView = itemView.findViewById(R.id.video_name_overlay)
-
-        // Track current stream to detect stream changes
-        private var currentStreamId: String? = null
-        private var streamType: VideoStreamType = VideoStreamType.CAMERA
+        private val cell: RoomViewVideoStreamCell = itemView as RoomViewVideoStreamCell
 
         init {
             setupRoundedCorners()
-            nameOverlay.setOrientationSwitchClickListener(onOrientationSwitchClick)
-        }
-
-        fun setStreamType(streamType: VideoStreamType) {
-            this.streamType = streamType
-            nameOverlay.setStreamType(streamType)
+            cell.setOrientationSwitchClickListener(onOrientationSwitchClick)
         }
 
         /**
@@ -178,72 +150,13 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
         }
 
         /**
-         * Bind video stream data to this ViewHolder
-         * - Initializes participant view if stream changed
-         * - Updates participant info if stream unchanged
-         *
-         * @param streamItem The video stream item to bind
+         * Bind video stream data to this ViewHolder. Delegates the four-layer
+         * update (renderer, avatar visibility, speaking-border reset, overlay
+         * refresh) to [RoomViewVideoStreamCell.bind]; stream-change detection
+         * happens inside the cell.
          */
         fun bind(streamItem: VideoStreamItem) {
-            setStreamType(streamItem.streamType)
-            val isStreamChanged = currentStreamId != streamItem.uniqueId
-
-            if (isStreamChanged) {
-                // Stream changed - reinitialize participant view
-                currentStreamId = streamItem.uniqueId
-                participantView.init(streamItem.streamType, streamItem.participant)
-            } else {
-                // Same stream - just update participant info
-                participantView.updateParticipant(streamItem.participant)
-            }
-            val fillMode = if (streamItem.streamType == VideoStreamType.SCREEN) FillMode.FIT else FillMode.FILL
-            participantView.setFillMode(fillMode)
-
-            nameOverlay.updateParticipant(streamItem.participant)
-            updateAvatarVisibility(streamItem.participant)
-            resetSpeakingState(streamItem.participant)
-        }
-
-        /**
-         * Update avatar placeholder visibility based on camera status
-         *
-         * Rules:
-         * - Screen share: Never show avatar
-         * - Camera stream: Show avatar when camera is off
-         *
-         * @param participant The room participant
-         */
-        private fun updateAvatarVisibility(participant: RoomParticipant) {
-            // Screen share never shows avatar
-            if (streamType == VideoStreamType.SCREEN) {
-                avatarPlaceholder.visibility = View.GONE
-                return
-            }
-
-            val shouldShowAvatar = participant.cameraStatus != DeviceStatus.ON
-
-            if (shouldShowAvatar) {
-                loadAvatar(participant)
-                avatarPlaceholder.visibility = View.VISIBLE
-            } else {
-                avatarPlaceholder.visibility = View.GONE
-            }
-        }
-
-        /**
-         * Load participant avatar image
-         */
-        private fun loadAvatar(participant: RoomParticipant) {
-            if (participant.avatarURL.isEmpty()) {
-                avatarPlaceholder.setImageResource(R.drawable.roomkit_ic_default_avatar)
-            } else {
-                ImageLoader.load(
-                    participantView.context,
-                    avatarPlaceholder,
-                    participant.avatarURL,
-                    R.drawable.roomkit_ic_default_avatar
-                )
-            }
+            cell.bind(streamItem.participant, streamItem.streamType)
         }
 
         /**
@@ -253,7 +166,7 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
          * @param active true to activate video rendering, false to deactivate
          */
         fun setActive(active: Boolean) {
-            participantView.setActive(active)
+            cell.setActive(active)
         }
 
         /**
@@ -262,25 +175,11 @@ class RoomVideoGridAdapter : RecyclerView.Adapter<RoomVideoGridAdapter.VideoStre
          * @param isSpeaking true to show speaking border, false to hide
          */
         fun updateSpeakingState(isSpeaking: Boolean) {
-            speakingBorder.visibility = if (isSpeaking) View.VISIBLE else View.INVISIBLE
+            cell.updateSpeakingState(isSpeaking)
         }
 
-        fun resetSpeakingState(participant: RoomParticipant) {
-            if (participant.microphoneStatus == DeviceStatus.OFF) {
-                speakingBorder.visibility = View.INVISIBLE
-            }
-        }
-
-        /**
-         * Update participant state (used for partial updates via DiffUtil payloads)
-         *
-         * @param item The updated stream item data
-         */
         fun updateParticipantState(item: VideoStreamItem) {
-            nameOverlay.updateParticipant(item.participant)
-            participantView.updateParticipant(item.participant)
-            updateAvatarVisibility(item.participant)
-            resetSpeakingState(item.participant)
+            cell.updateParticipant(item.participant)
         }
     }
 }

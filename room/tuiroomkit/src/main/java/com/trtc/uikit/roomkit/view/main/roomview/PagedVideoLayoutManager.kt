@@ -218,15 +218,27 @@ class PagedVideoLayoutManager(
         val startPos = 1 + (currentPage - 1) * pageSize
         val endPos = minOf(startPos + pageSize - 1, itemCount - 1)
 
+        val useActualCounts = currentPage == 1
+        val itemsOnThisPage = endPos - startPos + 1
+        val rowsOnThisPage = if (useActualCounts) {
+            (itemsOnThisPage + columns - 1) / columns  // ceil
+        } else {
+            rows
+        }
+        val colsOnLastRow = if (useActualCounts && rowsOnThisPage == 1) itemsOnThisPage else columns
+
         for (i in startPos..endPos) {
-            layoutGridItemForSpeakerPage(i, recycler, currentPage)
+            layoutGridItemForSpeakerPage(i, recycler, currentPage, rowsOnThisPage, colsOnLastRow)
         }
     }
 
-    /**
-     * Layout a single grid item for speaker mode pages
-     */
-    private fun layoutGridItemForSpeakerPage(position: Int, recycler: RecyclerView.Recycler, page: Int) {
+    private fun layoutGridItemForSpeakerPage(
+        position: Int,
+        recycler: RecyclerView.Recycler,
+        page: Int,
+        rowsOnThisPage: Int,
+        colsOnThisPage: Int
+    ) {
         val gridPosition = position - 1  // Item 0 is full screen, convert to 0-based grid
         val positionInPage = gridPosition % pageSize
         val row = positionInPage / columns
@@ -234,19 +246,17 @@ class PagedVideoLayoutManager(
 
         val pageStartX = page * getUsableWidth()
 
-        // Use virtual grid-page area if provided, otherwise full usable area
         val gridAreaWidth = if (gridPageWidth > 0) gridPageWidth else getUsableWidth()
         val gridAreaHeight = if (gridPageHeight > 0) gridPageHeight else getUsableHeight()
         val gridAreaOffsetX = (getUsableWidth() - gridAreaWidth) / 2
         val gridAreaOffsetY = (getUsableHeight() - gridAreaHeight) / 2
 
-        // Center items horizontally within grid area
-        val totalItemsWidth = columns * itemWidth + (columns + 1) * margin
+        val actualCols = if (row == rowsOnThisPage - 1) colsOnThisPage else columns
+        val totalItemsWidth = actualCols * itemWidth + (actualCols + 1) * margin
         val centerHorizontalMargin = (gridAreaWidth - totalItemsWidth) / 2
         val x = pageStartX + gridAreaOffsetX + centerHorizontalMargin + margin + col * (itemWidth + margin)
 
-        // Center items vertically within grid area
-        val totalItemsHeight = rows * itemHeight + (rows + 1) * margin
+        val totalItemsHeight = rowsOnThisPage * itemHeight + (rowsOnThisPage + 1) * margin
         val centerVerticalMargin = (gridAreaHeight - totalItemsHeight) / 2
         val y = gridAreaOffsetY + centerVerticalMargin + margin + row * (itemHeight + margin)
 

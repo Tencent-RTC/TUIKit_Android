@@ -336,7 +336,8 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
 
     private fun handleScreenShareClick() {
         val participantStore = participantStore ?: return
-        val localParticipant = participantStore.state.localParticipant.value ?: return
+        val participantState = participantStore.state
+        val localParticipant = participantState.localParticipant.value ?: return
         val isAllScreenShareDisabled = roomStore.state.currentRoom.value?.isAllScreenShareDisabled ?: false
         if (isAllScreenShareDisabled && localParticipant.role == ParticipantRole.GENERAL_USER) {
             logger.info("handleScreenShareClick: screen share is disabled for general users")
@@ -348,14 +349,14 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
             return
         }
 
-        val screenStatus = localParticipant.screenShareStatus ?: DeviceStatus.OFF
+        val screenStatus = localParticipant.screenShareStatus
         logger.info("handleScreenShareClick screenStatus:$screenStatus")
         if (screenStatus == DeviceStatus.ON) {
             showStopScreenShareConfirmDialog()
             return
         }
-        val localUserID = participantStore.state.localParticipant.value?.userID
-        val sharingUser = participantStore.state.participantWithScreen.value
+        val localUserID = localParticipant.userID
+        val sharingUser = participantState.participantWithScreen.value
         if (sharingUser != null && sharingUser.userID != localUserID) {
             logger.info("handleScreenShareClick: another user(${sharingUser.userID}) is sharing the screen")
             AtomicToast.show(

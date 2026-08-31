@@ -70,6 +70,6 @@ class ChatButton @JvmOverloads constructor(
         }
         unreadCount++
         tvUnreadCount.visibility = VISIBLE
-        tvUnreadCount.text = if (unreadCount > 99) "99+" else unreadCount.toString()
+        tvUnreadCount.text = if (unreadCount > 99) "99" else unreadCount.toString()
     }
 }

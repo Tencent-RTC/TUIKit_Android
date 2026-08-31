@@ -6,7 +6,6 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatButton
@@ -20,6 +19,7 @@ import com.trtc.uikit.roomkit.base.log.RoomKitLogger
 import com.trtc.uikit.roomkit.base.ui.BaseView
 import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
 import com.trtc.uikit.roomkit.base.ui.RoomPopupDialog
+import com.trtc.uikit.roomkit.base.utils.KeyboardUtils
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
 import com.trtc.uikit.roomkit.view.main.ParticipantManagerView.OnParticipantActionListener
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
@@ -158,6 +158,16 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
         rvParticipants.visibility = VISIBLE
         rvPending.visibility = GONE
 
+        val hideKeyboardOnScrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    KeyboardUtils.hideKeyboard(etSearch)
+                }
+            }
+        }
+        rvParticipants.addOnScrollListener(hideKeyboardOnScrollListener)
+        rvPending.addOnScrollListener(hideKeyboardOnScrollListener)
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 currentTab = tab.position
@@ -197,7 +207,7 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
 
         etSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                hideSoftKeyboard()
+                KeyboardUtils.hideKeyboard(etSearch)
                 true
             } else {
                 false
@@ -440,10 +450,5 @@ class StandardRoomParticipantListView @JvmOverloads constructor(
                 }
             }
         )
-    }
-
-    private fun hideSoftKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
-        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 }

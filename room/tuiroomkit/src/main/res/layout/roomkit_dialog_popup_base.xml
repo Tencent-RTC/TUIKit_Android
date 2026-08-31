@@ -6,17 +6,27 @@
     android:layout_height="wrap_content"
     android:background="@drawable/roomkit_bg_bottom_sheet_dialog">
 
-    <ImageView
-        android:id="@+id/view_drag_indicator"
-        android:padding="10dp"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/drag_indicator_container"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:src="@drawable/roomkit_bg_drag_indicator"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/view_drag_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/roomkit_bg_drag_indicator"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/content_container"
@@ -26,6 +36,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_drag_indicator" />
+        app:layout_constraintTop_toBottomOf="@id/drag_indicator_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
