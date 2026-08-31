@@ -11,6 +11,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.aitranscription.AIMinutesActivity
 import com.trtc.uikit.roomkit.aitranscription.AITranscriptionSettingActivity
@@ -80,6 +83,26 @@ class RoomMainView @JvmOverloads constructor(
 
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_main_view, this)
+        applyBottomInsets()
+    }
+
+    private fun applyBottomInsets() {
+        val bottomAreaBaseHeightPx =
+            resources.getDimensionPixelSize(R.dimen.roomkit_main_bottom_area_height)
+        val padding =
+            resources.getDimensionPixelSize(R.dimen.roomkit_main_bottom_padding)
+        ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+            val navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            bottomArea.updateLayoutParams { height = bottomAreaBaseHeightPx + navBarHeight + padding * 2 }
+            bottomBarView.setPadding(
+                bottomBarView.paddingLeft,
+                bottomBarView.paddingTop,
+                bottomBarView.paddingRight,
+                navBarHeight
+            )
+            insets
+        }
+        ViewCompat.requestApplyInsets(this)
     }
 
     sealed class RoomBehavior {

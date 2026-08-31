@@ -21,7 +21,7 @@ open class RoomPopupDialog : BottomSheetDialog {
 
     private var contentView: View? = null
     private var bottomSheet: View? = null
-    private var dragIndicator: View? = null
+    private var dragIndicatorContainer: View? = null
     private var contentContainer: FrameLayout? = null
 
     constructor(context: Context) : super(context, R.style.RoomKitBottomDialog)
@@ -36,7 +36,7 @@ open class RoomPopupDialog : BottomSheetDialog {
         setContentView(baseView)
         
         bottomSheet = findViewById(com.google.android.material.R.id.design_bottom_sheet)
-        dragIndicator = baseView.findViewById(R.id.view_drag_indicator)
+        dragIndicatorContainer = baseView.findViewById(R.id.drag_indicator_container)
         contentContainer = baseView.findViewById(R.id.content_container)
 
         contentView?.let { content ->
@@ -51,7 +51,7 @@ open class RoomPopupDialog : BottomSheetDialog {
     }
 
     private fun setupDragIndicator() {
-        dragIndicator?.setOnClickListener {
+        dragIndicatorContainer?.setOnClickListener {
             dismiss()
         }
     }

@@ -57,13 +57,12 @@
         android:id="@+id/btn_create_room"
         android:layout_width="90dp"
         android:layout_height="80dp"
-        android:layout_marginTop="25dp"
         android:background="@drawable/roomkit_bg_bottom_item_blue"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@+id/btn_join_room"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_info_container">
+        app:layout_constraintEnd_toStartOf="@+id/btn_schedule_room"
+        app:layout_constraintStart_toEndOf="@+id/btn_join_room"
+        app:layout_constraintTop_toTopOf="@+id/btn_join_room">
 
         <ImageView
             android:layout_width="24dp"
@@ -86,12 +85,13 @@
         android:id="@+id/btn_join_room"
         android:layout_width="90dp"
         android:layout_height="80dp"
+        android:layout_marginTop="25dp"
         android:background="@drawable/roomkit_bg_bottom_item_blue"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@+id/btn_schedule_room"
-        app:layout_constraintStart_toEndOf="@+id/btn_create_room"
-        app:layout_constraintTop_toTopOf="@+id/btn_create_room">
+        app:layout_constraintEnd_toStartOf="@+id/btn_create_room"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_info_container">
 
         <ImageView
             android:layout_width="24dp"
@@ -118,8 +118,8 @@
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_join_room"
-        app:layout_constraintTop_toTopOf="@+id/btn_join_room">
+        app:layout_constraintStart_toEndOf="@+id/btn_create_room"
+        app:layout_constraintTop_toTopOf="@+id/btn_create_room">
 
         <ImageView
             android:layout_width="24dp"

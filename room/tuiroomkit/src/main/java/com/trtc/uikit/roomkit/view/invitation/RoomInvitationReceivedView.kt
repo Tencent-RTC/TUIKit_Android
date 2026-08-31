@@ -170,10 +170,8 @@ class RoomInvitationReceivedView @JvmOverloads constructor(
 
                 override fun onFailure(code: Int, desc: String) {
                     logger.error("acceptCall failed: code=$code, desc=$desc")
-                    isHandling = false
-                    setButtonsEnabled(true)
-                    viewSlideToAccept.reset()
                     ErrorLocalized.showError(context, code)
+                    finishActivity()
                 }
             }
         )
@@ -197,17 +195,14 @@ class RoomInvitationReceivedView @JvmOverloads constructor(
             object : CompletionHandler {
                 override fun onSuccess() {
                     logger.info("rejectCall success")
-                    finishActivity()
                 }
 
                 override fun onFailure(code: Int, desc: String) {
                     logger.error("rejectCall failed: code=$code, desc=$desc")
-                    isHandling = false
-                    setButtonsEnabled(true)
-                    ErrorLocalized.showError(context, code)
                 }
             }
         )
+        finishActivity()
     }
 
     private fun launchRoomMainActivity() {

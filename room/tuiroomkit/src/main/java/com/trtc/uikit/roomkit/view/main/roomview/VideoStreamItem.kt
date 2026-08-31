@@ -22,8 +22,8 @@ data class VideoStreamItem(
      * Unique ID for this stream item
      * Used by RecyclerView adapter for stable IDs and DiffUtil comparison
      */
-    val uniqueId: String = "${participant.userID}_${streamType.name}"
-    
+    val uniqueId: String = buildUniqueId(participant.userID, streamType)
+
     companion object {
         /**
          * Create a camera stream item
@@ -32,7 +32,7 @@ data class VideoStreamItem(
             participant = participant,
             streamType = VideoStreamType.CAMERA
         )
-        
+
         /**
          * Create a screen share stream item
          */
@@ -40,5 +40,8 @@ data class VideoStreamItem(
             participant = participant,
             streamType = VideoStreamType.SCREEN
         )
+
+        fun buildUniqueId(userId: String, streamType: VideoStreamType): String =
+            "${userId}_${streamType.name}"
     }
 }

@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@android:color/transparent"
     android:paddingTop="10dp"
-    android:paddingBottom="26dp">
+    android:paddingBottom="10dp">
 
     <LinearLayout
         android:id="@+id/ll_participants"
@@ -36,6 +36,7 @@
 
         <TextView
             android:id="@+id/tv_participants"
+            android:text="@string/roomkit_member"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"

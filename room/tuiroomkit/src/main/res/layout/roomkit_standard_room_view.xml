@@ -1,35 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_video_grid"
+    <com.trtc.uikit.roomkit.view.main.roomview.FocusRoomView
+        android:id="@+id/view_focus_room"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:overScrollMode="never" />
+        android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/iv_arrow_left"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="start|center_vertical"
-        android:layout_marginStart="12dp"
-        android:src="@drawable/roomkit_ic_arrow_left"
-        android:visibility="gone"
-        tools:ignore="ContentDescription" />
+    <com.trtc.uikit.roomkit.view.main.roomview.GridRoomView
+        android:id="@+id/view_grid_room"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/iv_arrow_right"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="12dp"
-        android:src="@drawable/roomkit_ic_arrow_right"
-        android:visibility="gone"
-        tools:ignore="ContentDescription" />
+    <com.trtc.uikit.roomkit.view.main.roomview.RoomPipView
+        android:id="@+id/view_screen_share_pip"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:visibility="gone" />
 
 </FrameLayout>

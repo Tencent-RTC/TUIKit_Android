@@ -7,17 +7,26 @@
     android:layout_height="match_parent"
     android:paddingBottom="16dp">
 
-    <ImageView
+    <FrameLayout
         android:id="@+id/drag_indicator"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:layout_marginTop="2dp"
-        android:src="@drawable/roomkit_bg_drag_indicator"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/roomkit_bg_drag_indicator"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_tips"
