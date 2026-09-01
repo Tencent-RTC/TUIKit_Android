@@ -446,7 +446,7 @@ class StandardRoomBottomBarView @JvmOverloads constructor(
         ).apply {
             onToggleStart = { expand ->
                 llExpand.isClickable = false
-                ivExpand.setImageResource(if (expand) R.drawable.roomkit_ic_close else R.drawable.roomkit_ic_expand)
+                ivExpand.setImageResource(if (expand) R.drawable.roomkit_ic_close_expand else R.drawable.roomkit_ic_expand)
                 tvExpand.text =
                     context.getString(if (expand) R.string.roomkit_item_close else R.string.roomkit_item_expand)
             }
