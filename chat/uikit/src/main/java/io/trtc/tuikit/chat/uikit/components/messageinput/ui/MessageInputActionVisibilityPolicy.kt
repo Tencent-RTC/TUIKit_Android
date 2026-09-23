@@ -11,7 +11,8 @@ internal object MessageInputActionVisibilityPolicy {
         hasText: Boolean,
         isTextMode: Boolean,
         isShowMore: Boolean,
-        isChatbotActive: Boolean
+        isChatbotActive: Boolean,
+        keepSendVisible: Boolean = false
     ): MessageInputActionVisibility {
         if (isChatbotActive) {
             return MessageInputActionVisibility(
@@ -20,9 +21,9 @@ internal object MessageInputActionVisibilityPolicy {
                 showStop = true
             )
         }
-        val showSend = hasText && isTextMode
+        val showSend = isTextMode && (hasText || keepSendVisible)
         return MessageInputActionVisibility(
-            showMore = !showSend && isShowMore,
+            showMore = isShowMore && (keepSendVisible || !showSend),
             showSend = showSend,
             showStop = false
         )

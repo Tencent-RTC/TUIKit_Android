@@ -45,7 +45,8 @@ internal data class MessageItemViewHierarchy(
 
 internal fun MessageItemView.buildMessageItemViewHierarchy(
     config: MessageListConfigProtocol,
-    density: Float
+    density: Float,
+    fillAvailableWidth: Boolean
 ): MessageItemViewHierarchy {
     orientation = LinearLayout.VERTICAL
     val horizontalPad = (config.horizontalPadding * density).toInt()
@@ -237,7 +238,8 @@ internal fun MessageItemView.buildMessageItemViewHierarchy(
     )
     val maxBubbleWidth = MessageItemDisplayPolicy.resolvePreferredBubbleMaxWidth(
         screenWidth = screenWidth,
-        maxRowWidth = maxRowWidth
+        maxRowWidth = maxRowWidth,
+        fillAvailableWidth = fillAvailableWidth
     )
     bubbleRow.maxWidth = maxRowWidth
     bubbleContainer.maxWidth = maxBubbleWidth

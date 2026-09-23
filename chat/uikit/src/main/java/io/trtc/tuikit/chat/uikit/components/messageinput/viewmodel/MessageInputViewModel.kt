@@ -13,11 +13,6 @@ import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.albumpicker.AlbumMedia
 import io.trtc.tuikit.atomicx.albumpicker.AlbumMediaType
-import io.trtc.tuikit.atomicx.albumpicker.AlbumPickerConfig
-import io.trtc.tuikit.atomicx.albumpicker.AlbumPickerMediaFilter
-import io.trtc.tuikit.atomicx.albumpicker.AlbumPickerStyle
-import io.trtc.tuikit.atomicx.albumpicker.AlbumPickerTheme
-import io.trtc.tuikit.chat.uikit.components.messageinput.utils.MessageInputAlbumPickerActivity
 import io.trtc.tuikit.chat.uikit.components.ai.AiMediaProcessManager
 import io.trtc.tuikit.chat.uikit.components.ai.tts.TtsPlaybackHelper
 import io.trtc.tuikit.chat.uikit.components.ai.tts.TtsTextSanitizer
@@ -29,6 +24,7 @@ import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.filepicker.FilePicker
 import io.trtc.tuikit.chat.uikit.components.filepicker.FilePickerListener
+import io.trtc.tuikit.chat.uikit.components.messageinput.albumpicker.AlbumPickerMediaSendCoordinator
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
@@ -53,7 +49,9 @@ import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.OfflinePushInfo
 import io.trtc.tuikit.atomicxcore.api.message.SendMessageOption
 import io.trtc.tuikit.atomicxcore.api.message.SendMessagePayload
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -142,142 +140,26 @@ class MessageInputViewModel(
     }
 
     fun pickMediaAndSend(context: Context) {
-        val config = AlbumPickerConfig(
-            mediaFilter = AlbumPickerMediaFilter.ALL,
-            maxSelectionCount = ALBUM_PICKER_MAX_SELECTION,
-            style = AlbumPickerStyle.LIKE_WECHAT,
-        )
-        MessageInputAlbumPickerActivity.start(
-            context = context,
-            config = config,
-            theme = AlbumPickerTheme(),
-            listener = AlbumPickerMediaSendCoordinator(
-                onProcessingStarted = { media ->
-                    AlbumPickerProcessingMessageStore.upsert(conversationID, media, progress = 0)
-                },
-                onProcessingProgress = { media, progress ->
-                    AlbumPickerProcessingMessageStore.upsert(conversationID, media, progress)
-                },
-                onProcessingFinished = { media ->
-                    AlbumPickerProcessingMessageStore.remove(conversationID, media.id)
-                },
-                onSendProcessedMedia = { media, path ->
-                    sendAlbumPickerMedia(context, media, path)
-                },
-                onSendOriginalMedia = { media ->
-                    Log.w(TAG, "AlbumPicker media processing error: id=${media.id}")
-                    sendOriginalAlbumPickerMedia(context, media)
-                },
-                onSendText = { text ->
-                    sendTextMessage(context, text, emptyList())
-                },
-                shouldProcessMedia = { media ->
-                    isAlbumPickerMediaWithinSizeLimit(context, media)
-                },
-                onMediaRejected = {
-                    showFileTooLarge(context)
-                }
-            )
-        )
+        AlbumPickerMediaSendCoordinator(
+            conversationID = conversationID,
+            onSendMedia = { media, path ->
+                sendAlbumPickerMedia(context, media, path)
+            },
+            onSendText = { text ->
+                sendTextMessage(context, text, emptyList())
+            },
+            onSendFailed = {
+                showSendFailed(context)
+            }
+        ).showAlbumPicker(context)
     }
 
     private fun sendAlbumPickerMedia(context: Context, media: AlbumMedia, path: String) {
         if (media.mediaType == AlbumMediaType.VIDEO) {
-            sendVideoMessage(context, path)
+            sendVideoMessage(context, path, albumPickerSendScope)
         } else {
-            sendImageMessage(context, path)
+            sendImageMessage(context, path, albumPickerSendScope)
         }
-    }
-
-    private fun sendOriginalAlbumPickerMedia(context: Context, media: AlbumMedia) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val mediaPath = media.mediaPath?.takeIf { it.isNotBlank() }
-            if (mediaPath != null) {
-                if (!isAlbumPickerPathWithinSizeLimit(context, media, mediaPath)) {
-                    showFileTooLarge(context)
-                    return@launch
-                }
-                sendAlbumPickerMedia(context, media, mediaPath)
-                return@launch
-            }
-
-            val uri = media.uri
-            if (uri == null) {
-                showSendFailed(context)
-                return@launch
-            }
-            val resolvedFile = attachmentFileResolver.resolveFileForSend(
-                context = context,
-                uri = uri,
-                maxFileSizeBytes = getAlbumPickerMediaMaxSizeBytes(context, media)
-            )
-            when (resolvedFile) {
-                is MessageInputAttachmentFileResolver.ResolvedFile.Success -> {
-                    sendAlbumPickerMedia(context, media, resolvedFile.filePath)
-                }
-                MessageInputAttachmentFileResolver.ResolvedFile.FileTooLarge -> {
-                    showFileTooLarge(context)
-                }
-                MessageInputAttachmentFileResolver.ResolvedFile.Failure -> {
-                    showSendFailed(context)
-                }
-            }
-        }
-    }
-
-    private fun isAlbumPickerMediaWithinSizeLimit(context: Context, media: AlbumMedia): Boolean {
-        val fileSize = media.mediaPath
-            ?.takeIf { it.isNotBlank() && File(it).exists() }
-            ?.let { attachmentFileResolver.getFileSize(it) }
-            ?: media.uri?.let { attachmentFileResolver.getDeclaredFileSize(context, it) }
-        if (fileSize == null) {
-            return true
-        }
-        return !AlbumPickerMediaSizeGuard.isTooLarge(
-            fileSize = fileSize,
-            mediaType = media.mediaType,
-            mimeType = getAlbumPickerMediaMimeType(context, media),
-            fileName = getAlbumPickerMediaFileName(context, media)
-        )
-    }
-
-    private fun isAlbumPickerPathWithinSizeLimit(
-        context: Context,
-        media: AlbumMedia,
-        path: String
-    ): Boolean {
-        return !AlbumPickerMediaSizeGuard.isTooLarge(
-            fileSize = attachmentFileResolver.getFileSize(path),
-            mediaType = media.mediaType,
-            mimeType = getAlbumPickerMediaMimeType(context, media),
-            fileName = attachmentFileResolver.getFileName(path) ?: getAlbumPickerMediaFileName(context, media)
-        )
-    }
-
-    private fun getAlbumPickerMediaMaxSizeBytes(context: Context, media: AlbumMedia): Long {
-        return AlbumPickerMediaSizeGuard.maxSizeBytes(
-            mediaType = media.mediaType,
-            mimeType = getAlbumPickerMediaMimeType(context, media),
-            fileName = getAlbumPickerMediaFileName(context, media)
-        )
-    }
-
-    private fun getAlbumPickerMediaMimeType(context: Context, media: AlbumMedia): String? {
-        val uriMimeType = media.uri?.let { uri ->
-            runCatching { context.contentResolver.getType(uri) }.getOrNull()
-        }
-        if (!uriMimeType.isNullOrBlank()) {
-            return uriMimeType
-        }
-        val fileName = getAlbumPickerMediaFileName(context, media).orEmpty()
-        val extension = attachmentFileResolver.getFileExtensionFromUrl(fileName)
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-    }
-
-    private fun getAlbumPickerMediaFileName(context: Context, media: AlbumMedia): String? {
-        return media.mediaPath
-            ?.let { attachmentFileResolver.getFileName(it) }
-            ?: media.uri?.let { attachmentFileResolver.getFileName(context, it) }
     }
 
     fun captureImageAndSend(context: Context) {
@@ -385,8 +267,8 @@ class MessageInputViewModel(
         })
     }
 
-    fun sendImageMessage(context: Context, filePath: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun sendImageMessage(context: Context, filePath: String, scope: CoroutineScope = viewModelScope) {
+        scope.launch(Dispatchers.IO) {
             if (!MessageInputSendGuards.isReadableFilePath(filePath)) {
                 showSendFailed(context)
                 return@launch
@@ -417,7 +299,8 @@ class MessageInputViewModel(
             )
             val option = createSendMessageOption(context, payload)
             messageInputStore.sendMessage(payload, option, object : CompletionHandler {
-                override fun onSuccess() {}
+                override fun onSuccess() {
+                }
 
                 override fun onFailure(code: Int, desc: String) {
                     showSendFailed(context)
@@ -426,8 +309,8 @@ class MessageInputViewModel(
         }
     }
 
-    fun sendVideoMessage(context: Context, filePath: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun sendVideoMessage(context: Context, filePath: String, scope: CoroutineScope = viewModelScope) {
+        scope.launch(Dispatchers.IO) {
             if (!MessageInputSendGuards.isReadableFilePath(filePath)) {
                 showSendFailed(context)
                 return@launch
@@ -923,13 +806,13 @@ class MessageInputViewModel(
 
     companion object {
         private const val TAG = "MessageInputViewModel"
+        private val albumPickerSendScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         private const val CALL_MEMBER_LIMIT = 9
         private const val DOCUMENTS_DIR = "documents"
         private const val CAPTURE_DIRECTORY_NAME = "message_input_capture"
         private const val CAPTURE_IMAGE_SUFFIX = ".jpg"
         private const val CAPTURE_VIDEO_SUFFIX = ".mp4"
         private const val TIME_FORMAT_PATTERN = "yyyyMMdd_HHmmss"
-        private const val ALBUM_PICKER_MAX_SELECTION = 9
     }
 }
 

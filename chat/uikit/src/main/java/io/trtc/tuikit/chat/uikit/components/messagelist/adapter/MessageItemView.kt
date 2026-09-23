@@ -40,7 +40,8 @@ import java.util.IdentityHashMap
 class MessageItemView(
     context: Context,
     private val config: MessageListConfigProtocol,
-    private val density: Float
+    private val density: Float,
+    private val fillAvailableWidth: Boolean = false
 ) : LinearLayout(context) {
 
     private val timeView: TextView
@@ -65,6 +66,7 @@ class MessageItemView(
     private val highlightController: MessageItemHighlightController
     private var maxBubbleWidth: Int = 0
     private var maxRowWidth: Int = 0
+    private var maxContentWidth: Int = 0
     private var inlineTimeReserveWidth: Int = 0
     private val customContentRendererAdapters = IdentityHashMap<MessageContentRenderer, CustomContentRendererAdapter>()
     private var cachedContentRenderer: MessageRenderer? = null
@@ -73,7 +75,7 @@ class MessageItemView(
 
     init {
         layoutDirection = View.LAYOUT_DIRECTION_LOCALE
-        val hierarchy = buildMessageItemViewHierarchy(config, density)
+        val hierarchy = buildMessageItemViewHierarchy(config, density, fillAvailableWidth)
         timeView = hierarchy.timeView
         checkBox = hierarchy.checkBox
         contentRow = hierarchy.contentRow
@@ -199,8 +201,13 @@ class MessageItemView(
         )
         checkBox.setOnClickListener { onCheckToggle() }
 
-        val showLeftAvatar = isLeftAligned
-        val showRightAvatar = !isLeftAligned
+        val isShowAvatar = if (isLeftAligned) {
+            config.isShowLeftAvatar
+        } else {
+            config.isShowRightAvatar
+        }
+        val showLeftAvatar = isLeftAligned && isShowAvatar
+        val showRightAvatar = !isLeftAligned && isShowAvatar
 
         bindAvatar(
             avatarView = leftAvatarView,
@@ -223,11 +230,17 @@ class MessageItemView(
             onUserLongClick = onUserLongClick
         )
 
-        val showNickname = MessageItemDisplayPolicy.shouldShowNickname(
+        val policyShowNickname = MessageItemDisplayPolicy.shouldShowNickname(
             alignment = config.alignment,
             isSelf = isSelf,
             isGroupChat = isGroupChat
         )
+        val configShowNickname = if (isLeftAligned) {
+            config.isShowLeftNickname
+        } else {
+            config.isShowRightNickname
+        }
+        val showNickname = policyShowNickname && configShowNickname
         if (showNickname) {
             nicknameView.visibility = View.VISIBLE
             nicknameView.text = message.senderDisplayName
@@ -786,8 +799,10 @@ class MessageItemView(
             checkBoxVisible = checkBoxVisible,
             statusReserveWidth = statusReserveWidth,
             density = density,
-            inlineTimeReserveWidth = inlineTimeReserveWidth
+            inlineTimeReserveWidth = inlineTimeReserveWidth,
+            fillAvailableWidth = fillAvailableWidth
         )
+        maxContentWidth = maxWidths.contentMaxWidth
         if (bubbleRow.maxWidth != maxWidths.rowMaxWidth) {
             bubbleRow.maxWidth = maxWidths.rowMaxWidth
         }
@@ -829,13 +844,7 @@ class MessageItemView(
     private fun applyContentViewWidth() {
         val contentView = cachedContentView ?: return
         val innerPad = bubbleContentContainer.paddingLeft + bubbleContentContainer.paddingRight
-        val statusReserve = (STATUS_AREA_WORST_CASE_DP * density).toInt()
-        val bubbleCap = (bubbleContainer.maxWidth - innerPad).coerceAtLeast(0)
-        val rowCap = (bubbleRow.maxWidth - statusReserve - innerPad).coerceAtLeast(0)
-        val cap = when {
-            bubbleCap > 0 && rowCap > 0 -> minOf(bubbleCap, rowCap)
-            else -> maxOf(bubbleCap, rowCap)
-        }
+        val cap = (maxContentWidth - innerPad).coerceAtLeast(0)
         (contentView as? TextMessageWidthAware)?.setMessageMaxWidth(cap)
 
         val designedWidth = cachedContentDesignedWidth

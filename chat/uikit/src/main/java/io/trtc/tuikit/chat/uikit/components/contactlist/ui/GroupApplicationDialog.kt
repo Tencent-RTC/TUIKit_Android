@@ -154,6 +154,11 @@ internal class GroupApplicationDialog(
         scope = null
     }
 
+    override fun dismiss() {
+        viewModel.clearGroupApplicationUnreadCount()
+        super.dismiss()
+    }
+
     private fun showFailureToast(message: String) {
         if (message.isNotBlank()) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

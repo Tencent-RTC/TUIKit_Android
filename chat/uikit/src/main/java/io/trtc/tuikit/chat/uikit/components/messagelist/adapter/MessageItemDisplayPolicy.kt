@@ -28,8 +28,12 @@ internal object MessageItemDisplayPolicy {
 
     fun resolvePreferredBubbleMaxWidth(
         screenWidth: Int,
-        maxRowWidth: Int
+        maxRowWidth: Int,
+        fillAvailableWidth: Boolean = false
     ): Int {
+        if (fillAvailableWidth) {
+            return maxRowWidth.coerceAtLeast(0)
+        }
         val upperBound = (screenWidth * BUBBLE_SCREEN_WIDTH_RATIO).toInt()
         return minOf(maxRowWidth, upperBound).coerceAtLeast(0)
     }
@@ -40,7 +44,8 @@ internal object MessageItemDisplayPolicy {
         checkBoxVisible: Boolean,
         statusReserveWidth: Int,
         density: Float,
-        inlineTimeReserveWidth: Int = 0
+        inlineTimeReserveWidth: Int = 0,
+        fillAvailableWidth: Boolean = false
     ): MessageItemMaxWidths {
         val offset = (if (checkBoxVisible) {
             resolveMultiSelectCheckBoxArea(density)
@@ -54,9 +59,22 @@ internal object MessageItemDisplayPolicy {
             preferredBubbleMaxWidth = preferredBubbleWidth,
             statusReserveWidth = statusReserveWidth
         )
+        val contentWidth = if (fillAvailableWidth) {
+            bubbleWidth
+        } else {
+            val worstCaseContentWidth =
+                (rowWidth - (STATUS_AREA_WORST_CASE_DP * density).toInt()).coerceAtLeast(0)
+            when {
+                bubbleWidth > 0 && worstCaseContentWidth > 0 -> {
+                    minOf(bubbleWidth, worstCaseContentWidth)
+                }
+                else -> maxOf(bubbleWidth, worstCaseContentWidth)
+            }
+        }
         return MessageItemMaxWidths(
             rowMaxWidth = rowWidth,
-            bubbleMaxWidth = bubbleWidth
+            bubbleMaxWidth = bubbleWidth,
+            contentMaxWidth = contentWidth
         )
     }
 
@@ -84,5 +102,6 @@ internal object MessageItemDisplayPolicy {
 
 internal data class MessageItemMaxWidths(
     val rowMaxWidth: Int,
-    val bubbleMaxWidth: Int
+    val bubbleMaxWidth: Int,
+    val contentMaxWidth: Int
 )

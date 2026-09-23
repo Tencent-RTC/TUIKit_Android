@@ -29,13 +29,16 @@ class SearchContactViewModel internal constructor(
     private val _searchError = MutableStateFlow<SearchError?>(null)
     val searchError: StateFlow<SearchError?> = _searchError
 
+    private val _isResultCleared = MutableStateFlow(true)
     private val _contactSearchResults = MutableStateFlow<List<FriendSearchInfo>>(emptyList())
     val contactSearchResults: StateFlow<List<FriendSearchInfo>> = _contactSearchResults
 
     init {
         viewModelScope.launch {
             state.friendList.collectLatest {
-                _contactSearchResults.value = it
+                if (!_isResultCleared.value) {
+                    _contactSearchResults.value = it
+                }
             }
         }
     }
@@ -48,6 +51,7 @@ class SearchContactViewModel internal constructor(
         if (query == lastSubmittedQuery && (_isSearching.value || _contactSearchResults.value.isNotEmpty())) return
 
         lastSubmittedQuery = query
+        _isResultCleared.value = false
         _isSearching.value = true
         _searchError.value = null
         searchStore.search(
@@ -55,6 +59,10 @@ class SearchContactViewModel internal constructor(
             SearchOption(searchScope = listOf(SearchType.FRIEND)),
             searchCompletionHandler(_isSearching)
         )
+    }
+
+    fun clearSearchError() {
+        _searchError.value = null
     }
 
     fun searchMore() {
@@ -67,6 +75,7 @@ class SearchContactViewModel internal constructor(
 
     private fun clearSearch() {
         lastSubmittedQuery = ""
+        _isResultCleared.value = true
         _isSearching.value = false
         _isLoadingMore.value = false
         _searchError.value = null

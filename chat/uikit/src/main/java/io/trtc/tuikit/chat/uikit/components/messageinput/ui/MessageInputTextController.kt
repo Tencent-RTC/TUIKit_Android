@@ -176,14 +176,11 @@ internal class MessageInputTextController(
 
 internal object MentionTriggerDetector {
     fun shouldTrigger(previousText: String, newText: String): Boolean {
-        if (newText.length <= previousText.length) return false
-        val insertedLength = newText.length - previousText.length
+        if (newText.length != previousText.length + 1) return false
         val insertPosition = newText.indices.firstOrNull { index ->
             index >= previousText.length || newText[index] != previousText[index]
         } ?: previousText.length
-        val endPosition = (insertPosition + insertedLength).coerceAtMost(newText.length)
-        val insertedText = newText.substring(insertPosition, endPosition)
-        return insertedText.any(::isTriggerChar)
+        return isTriggerChar(newText.getOrNull(insertPosition))
     }
 
     fun isTriggerChar(char: Char?): Boolean {

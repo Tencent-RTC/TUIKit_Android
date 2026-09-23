@@ -28,13 +28,16 @@ class SearchMessageViewModel internal constructor(
     private val _searchError = MutableStateFlow<SearchError?>(null)
     val searchError: StateFlow<SearchError?> = _searchError
 
+    private val _isResultCleared = MutableStateFlow(true)
     private val _messageSearchResults = MutableStateFlow<List<MessageSearchResultItem>>(emptyList())
     val messageSearchResults: StateFlow<List<MessageSearchResultItem>> = _messageSearchResults
 
     init {
         viewModelScope.launch {
             state.messageResults.collectLatest {
-                _messageSearchResults.value = it
+                if (!_isResultCleared.value) {
+                    _messageSearchResults.value = it
+                }
             }
         }
     }
@@ -47,6 +50,7 @@ class SearchMessageViewModel internal constructor(
         if (query == lastSubmittedQuery && (_isSearching.value || _messageSearchResults.value.isNotEmpty())) return
 
         lastSubmittedQuery = query
+        _isResultCleared.value = false
         _isSearching.value = true
         _searchError.value = null
         searchStore.search(
@@ -54,6 +58,10 @@ class SearchMessageViewModel internal constructor(
             SearchOption(searchScope = listOf(SearchType.MESSAGE)),
             searchCompletion(_isSearching, _searchError)
         )
+    }
+
+    fun clearSearchError() {
+        _searchError.value = null
     }
 
     fun searchMore() {
@@ -66,6 +74,7 @@ class SearchMessageViewModel internal constructor(
 
     private fun clearSearch() {
         lastSubmittedQuery = ""
+        _isResultCleared.value = true
         _isSearching.value = false
         _isLoadingMore.value = false
         _searchError.value = null

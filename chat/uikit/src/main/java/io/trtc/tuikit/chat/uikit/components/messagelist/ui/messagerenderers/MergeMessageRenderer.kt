@@ -198,7 +198,7 @@ class MergeMessageRenderer : MessageRenderer {
         } else {
             view.isClickable = true
             view.setOnClickListener {
-                MergedMessageDetailActivity.start(view.context, message)
+                MergedMessageDetailActivity.start(view.context, message, config)
             }
         }
     }

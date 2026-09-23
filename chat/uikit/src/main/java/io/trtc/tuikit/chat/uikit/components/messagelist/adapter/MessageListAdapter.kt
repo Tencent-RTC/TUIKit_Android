@@ -39,6 +39,7 @@ class MessageListAdapter internal constructor(
     private val enableQuoteNavigation: Boolean = true,
     private val showMessageReadReceipt: Boolean = true,
     private val showInlineMessageTime: Boolean = false,
+    private val fillAvailableWidth: Boolean = false,
     private val resolver: MessageRendererResolver = MessageRendererResolver(emptyList()),
     private val renderActions: MessageRenderActions = NoOpMessageRenderActions
 ) : ListAdapter<MessageInfo, RecyclerView.ViewHolder>(DIFF) {
@@ -84,7 +85,12 @@ class MessageListAdapter internal constructor(
         val itemRoot = FrameLayout(parent.context).apply {
             layoutDirection = View.LAYOUT_DIRECTION_LOCALE
         }
-        val messageItemView = MessageItemView(parent.context, config, density)
+        val messageItemView = MessageItemView(
+            parent.context,
+            config,
+            density,
+            fillAvailableWidth
+        )
         itemRoot.addView(
             messageItemView,
             FrameLayout.LayoutParams(

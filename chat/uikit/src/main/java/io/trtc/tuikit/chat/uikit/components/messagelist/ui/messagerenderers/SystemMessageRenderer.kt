@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.tencent.imsdk.v2.V2TIMManager
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderConfig
@@ -44,13 +45,14 @@ class SystemMessageRenderer : MessageRenderer {
         colors: ColorTokens
     ) {
         val textView = view as TextView
-        textView.text = RecalledMessageDisplayPolicy.format(textView.context, message) ?: run {
+        val displayText = RecalledMessageDisplayPolicy.format(textView.context, message) ?: run {
             val payload = message.messagePayload as? TipsMessagePayload
             getSystemInfoDisplayString(
                 textView.context,
                 payload?.groupTips
             )
         }
+        textView.text = displayText
         textView.setTextColor(colors.textColorSecondary)
     }
 }
@@ -67,15 +69,20 @@ internal object RecalledMessageDisplayPolicy {
             ?: context.getString(spec.textResId)
     }
 
-    fun createSpec(message: MessageInfo): RecalledMessageDisplaySpec? {
+    fun createSpec(
+        message: MessageInfo,
+        currentUserID: String? = V2TIMManager.getInstance().loginUser,
+    ): RecalledMessageDisplaySpec? {
         if (message.status != MessageStatus.REVOKED) {
             return null
         }
-        if (message.isSentBySelf) {
+        val revokerUserID = message.revokerInfo?.userID.takeUnless { it.isNullOrBlank() }
+        val selfUserID = currentUserID.takeUnless { it.isNullOrBlank() }
+        if (!revokerUserID.isNullOrBlank() && revokerUserID == selfUserID) {
             return RecalledMessageDisplaySpec(R.string.message_list_message_tips_you_recall_message)
         }
         val revokerName = message.revokerInfo?.nickname.takeUnless { it.isNullOrBlank() }
-            ?: message.revokerInfo?.userID.takeUnless { it.isNullOrBlank() }
+            ?: revokerUserID
         if (!revokerName.isNullOrBlank()) {
             return RecalledMessageDisplaySpec(
                 textResId = R.string.message_list_message_tips_recall_message_format,

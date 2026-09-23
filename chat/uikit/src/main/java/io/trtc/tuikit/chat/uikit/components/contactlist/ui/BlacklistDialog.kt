@@ -30,7 +30,6 @@ import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.uikit.components.widgets.azorderedlist.AZOrderedListItem
 import io.trtc.tuikit.chat.uikit.components.widgets.azorderedlist.AtomicAZOrderedList
-import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
 import io.trtc.tuikit.atomicxcore.api.contact.ContactStore
 import kotlinx.coroutines.CoroutineScope
@@ -366,15 +365,11 @@ internal class BlacklistDialog(
     }
 
     private fun removeFromBlacklist(contactInfo: ContactInfo) {
-        contactStore.removeFromBlacklist(contactInfo.userID, object : CompletionHandler {
-            override fun onSuccess() {}
-
-            override fun onFailure(code: Int, desc: String) {
-                if (desc.isNotBlank()) {
-                    Toast.makeText(context, desc, Toast.LENGTH_SHORT).show()
-                }
+        viewModel.removeFromBlacklist(contactInfo.userID) { desc ->
+            if (desc.isNotBlank()) {
+                Toast.makeText(context, desc, Toast.LENGTH_SHORT).show()
             }
-        })
+        }
     }
 
     private inner class BlacklistPopupMenu(

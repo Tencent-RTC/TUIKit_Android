@@ -106,6 +106,20 @@ class MessageListMessageSummaryFormatter(
         return formatBuiltInMessage(context, message)
     }
 
+    fun resolveCallStreamMediaType(
+        context: Context,
+        message: MessageInfo?,
+        conversationID: String? = null
+    ): CallStreamMediaType? {
+        if (message == null) return null
+        if (message.messageType != MessageType.CUSTOM) return null
+        if (message.status == MessageStatus.REVOKED || message.status == MessageStatus.VIOLATION) return null
+        if (resolveCustomSummary(context, message, conversationID) != null) return null
+        val callModel = CallMessageParser.parse(message) ?: return null
+        if (getCallMessageDisplayString(context, message, callModel).isEmpty()) return null
+        return callModel.streamMediaType.takeIf { it != CallStreamMediaType.UNKNOWN }
+    }
+
     private fun resolveCustomSummary(
         context: Context,
         message: MessageInfo,

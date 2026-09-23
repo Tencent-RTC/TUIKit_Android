@@ -111,14 +111,6 @@ internal class MessageListLocateCoordinator(
         clearPendingScrollToLatestMessage()
     }
 
-    fun isLatestMessageCompletelyVisible(): Boolean {
-        val layoutManager = recyclerView.layoutManager as? LinearLayoutManager ?: return false
-        return MessageListAutoScrollPolicy.shouldScrollForReceivedMessage(
-            firstVisibleItem = layoutManager.findFirstVisibleItemPosition(),
-            firstCompletelyVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition()
-        )
-    }
-
     private fun clearPendingScrollToLatestMessage() {
         pendingScrollToLatestMessage = false
         pendingScrollToLatestMessageId = null

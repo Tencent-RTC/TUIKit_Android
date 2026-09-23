@@ -42,6 +42,7 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActio
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActionContext
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.forward.ForwardTargetSelectorDialog
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListAlignmentController
+import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListAutoScrollPolicy
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListBoundaryPagingPolicy
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListItemAnimatorFactory
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout.MessageListLocateCoordinator
@@ -69,6 +70,7 @@ import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageListStore
 import io.trtc.tuikit.atomicxcore.api.message.MessageQuoteInfo
 import io.trtc.tuikit.atomicxcore.api.message.MessageSenderInfo
+import io.trtc.tuikit.atomicxcore.api.message.MessageStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -86,6 +88,7 @@ class MessageListView @JvmOverloads constructor(
     private companion object {
         const val MENTION_LOCATE_MAX_LOAD_COUNT = 20
         const val UNREAD_CLEAR_DEBOUNCE_MS = 300L
+        const val LATEST_RELOAD_TIMEOUT_MS = 15_000L
     }
 
     private val backgroundView: MessageListBackgroundView
@@ -133,6 +136,18 @@ class MessageListView @JvmOverloads constructor(
         suppressLatestAutoScrollFromMessageId = null
     }
     private var scrollToLatestAfterReload = false
+    private var isReloadingLatest = false
+    private var latestReloadSucceeded = false
+    private var retainHasMoreNewerUntilLatestReload = false
+    private var latestReloadRequestId = 0L
+    private val latestReloadTimeoutRunnable = Runnable {
+        if (isReloadingLatest) {
+            isReloadingLatest = false
+            latestReloadSucceeded = false
+            scrollToLatestAfterReload = false
+            updateFloatingEntryForScroll()
+        }
+    }
     private var currentConversationID: String? = null
     private var chatbotController: ChatbotConversationController? = null
     private var hostLifecycleOwner: LifecycleOwner? = null
@@ -330,7 +345,7 @@ class MessageListView @JvmOverloads constructor(
         boundaryPagingPolicy.reset()
         isUserScrollSession = false
         clearSuppressedLatestAutoScroll()
-        scrollToLatestAfterReload = false
+        resetLatestReloadState()
         floatingEntryStateController.reset()
         refreshFloatingEntry()
 
@@ -491,6 +506,7 @@ class MessageListView @JvmOverloads constructor(
 
         scope.launch {
             displayedMessages.collectLatest { list ->
+                removeRecalledNewMessagesFromFloatingEntry(list)
                 val currentLatestMessageId = adapter.currentList.firstOrNull()?.msgID
                 val newLatestMessageId = list.firstOrNull()?.msgID
                 val shouldSuppressLatestAutoScroll =
@@ -504,10 +520,12 @@ class MessageListView @JvmOverloads constructor(
                     !newLatestMessageId.isNullOrBlank() &&
                     currentLatestMessageId != newLatestMessageId &&
                     !shouldSuppressLatestAutoScroll &&
-                    locateCoordinator.isLatestMessageCompletelyVisible()
+                    isAtLatestPosition()
                 ) {
                     locateCoordinator.requestScrollToLatestMessage(newLatestMessageId)
                 }
+                val reloadRequestIdForSubmission = latestReloadRequestId
+                val submittedSourceList = viewModel.messageList.value
                 adapter.submitList(list) {
                     if (list.isNotEmpty()) {
                         alignmentController.markDataLoaded()
@@ -516,13 +534,24 @@ class MessageListView @JvmOverloads constructor(
                     locateCoordinator.handlePendingLocateMessage(list)
                     locateCoordinator.scrollToPendingMessageIfReady()
                     locateCoordinator.scrollToLatestMessageIfReady()
-                    if (scrollToLatestAfterReload) {
+                    val didCompleteLatestReload =
+                        scrollToLatestAfterReload &&
+                            latestReloadSucceeded &&
+                            reloadRequestIdForSubmission == latestReloadRequestId &&
+                            submittedSourceList === viewModel.messageList.value
+                    if (didCompleteLatestReload) {
+                        removeCallbacks(latestReloadTimeoutRunnable)
                         scrollToLatestAfterReload = false
+                        isReloadingLatest = false
+                        latestReloadSucceeded = false
+                        retainHasMoreNewerUntilLatestReload = false
                         recyclerView.scrollToPosition(0)
                         recyclerView.post { updateFloatingEntryForScroll() }
                     }
                     readReceiptController.postSyncVisibleReadReceipts()
-                    updateFloatingEntryForScroll()
+                    if (!didCompleteLatestReload) {
+                        updateFloatingEntryForScroll()
+                    }
                 }
             }
         }
@@ -587,13 +616,12 @@ class MessageListView @JvmOverloads constructor(
                 when (event) {
                     is MessageEvent.OnReceiveNewMessage -> {
                         scheduleDebouncedUnreadClear()
-                        val isLatestVisible = locateCoordinator.isLatestMessageCompletelyVisible()
-                        if (isLatestVisible) {
+                        if (isAtLatestPosition()) {
                             locateCoordinator.requestScrollToLatestMessage(event.message.msgID)
                         } else {
                             floatingEntryStateController.onNewMessage(
                                 message = event.message,
-                                isLatestCompletelyVisible = false
+                                isAtLatest = false
                             )
                             refreshFloatingEntry()
                         }
@@ -739,7 +767,7 @@ class MessageListView @JvmOverloads constructor(
         locateCoordinator.cancel()
         clearSuppressedLatestAutoScroll()
         isUserScrollSession = false
-        scrollToLatestAfterReload = false
+        resetLatestReloadState()
         viewScope?.cancel()
         viewScope = null
         if (::adapter.isInitialized && isAdapterDataObserverRegistered) {
@@ -833,6 +861,15 @@ class MessageListView @JvmOverloads constructor(
         suppressLatestAutoScrollFromMessageId = null
     }
 
+    private fun resetLatestReloadState() {
+        removeCallbacks(latestReloadTimeoutRunnable)
+        latestReloadRequestId += 1
+        isReloadingLatest = false
+        latestReloadSucceeded = false
+        retainHasMoreNewerUntilLatestReload = false
+        scrollToLatestAfterReload = false
+    }
+
     private fun buildViewModelKey(conversationID: String, locateMessage: MessageInfo?): String {
         return "${MessageListViewModel::class.java.name}:${System.identityHashCode(this)}:" +
             "$conversationID:${locateMessage?.msgID.orEmpty()}"
@@ -887,14 +924,34 @@ class MessageListView @JvmOverloads constructor(
         }
     }
 
+    private fun hasMoreNewerForNavigation(): Boolean {
+        return (::viewModel.isInitialized && viewModel.hasMoreNewerMessage.value) ||
+            retainHasMoreNewerUntilLatestReload
+    }
+
+    private fun isAtLatestPosition(): Boolean {
+        if (!::adapter.isInitialized || !::viewModel.isInitialized) {
+            return false
+        }
+        return MessageListAutoScrollPolicy.isAtLatestPosition(
+            hasItems = adapter.itemCount > 0,
+            hasMoreNewerMessages = hasMoreNewerForNavigation(),
+            canScrollTowardLatest = recyclerView.canScrollVertically(1)
+        )
+    }
+
     private fun updateFloatingEntryForScroll() {
+        if (!::viewModel.isInitialized) {
+            return
+        }
         floatingEntryStateController.onMentionTargetVisibilityChanged(
             visibility = currentMentionTargetVisibility()
         )
         floatingEntryStateController.onScroll(
             distanceFromLatestPx = distanceFromLatestMessagePx(),
             viewportHeightPx = recyclerView.height,
-            isLatestCompletelyVisible = locateCoordinator.isLatestMessageCompletelyVisible(),
+            isAtLatest = isAtLatestPosition(),
+            hasMoreNewerMessages = hasMoreNewerForNavigation(),
             isReturnMessageCompletelyVisible = isBackToQuoteReturnMessageCompletelyVisible()
         )
         refreshFloatingEntry()
@@ -909,7 +966,7 @@ class MessageListView @JvmOverloads constructor(
     }
 
     private fun distanceFromLatestMessagePx(): Int {
-        if (locateCoordinator.isLatestMessageCompletelyVisible()) {
+        if (isAtLatestPosition()) {
             return 0
         }
         return MessageListFloatingEntryPolicy.distanceFromBottomPx(
@@ -949,6 +1006,23 @@ class MessageListView @JvmOverloads constructor(
             MessageListMentionTargetVisibility.VISIBLE
         } else {
             MessageListMentionTargetVisibility.HIDDEN
+        }
+    }
+
+    private fun removeRecalledNewMessagesFromFloatingEntry(messages: List<MessageInfo>) {
+        if (!floatingEntryStateController.hasNewMessages()) {
+            return
+        }
+        var removed = false
+        messages.forEach { message ->
+            if (message.status == MessageStatus.REVOKED &&
+                floatingEntryStateController.onMessageRecalled(message.msgID)
+            ) {
+                removed = true
+            }
+        }
+        if (removed) {
+            refreshFloatingEntry()
         }
     }
 
@@ -1035,16 +1109,39 @@ class MessageListView @JvmOverloads constructor(
     }
 
     private fun handleBackToLatestClick() {
-        when (MessageListBackToLatestPolicy.action(viewModel.hasMoreNewerMessage.value)) {
+        if (isReloadingLatest) {
+            return
+        }
+        when (MessageListBackToLatestPolicy.action(hasMoreNewerForNavigation())) {
             MessageListBackToLatestAction.ReloadLatestMessages -> {
+                isReloadingLatest = true
+                latestReloadSucceeded = false
+                retainHasMoreNewerUntilLatestReload = true
                 scrollToLatestAfterReload = true
+                latestReloadRequestId += 1
+                val requestId = latestReloadRequestId
+                removeCallbacks(latestReloadTimeoutRunnable)
+                postDelayed(latestReloadTimeoutRunnable, LATEST_RELOAD_TIMEOUT_MS)
                 boundaryPagingPolicy.reset()
                 viewModel.reloadLatestMessages(
                     object : CompletionHandler {
-                        override fun onSuccess() = Unit
+                        override fun onSuccess() {
+                            if (requestId == latestReloadRequestId && isReloadingLatest) {
+                                latestReloadSucceeded = true
+                            }
+                        }
 
                         override fun onFailure(code: Int, desc: String) {
-                            scrollToLatestAfterReload = false
+                            post {
+                                if (requestId != latestReloadRequestId) {
+                                    return@post
+                                }
+                                removeCallbacks(latestReloadTimeoutRunnable)
+                                isReloadingLatest = false
+                                latestReloadSucceeded = false
+                                scrollToLatestAfterReload = false
+                                updateFloatingEntryForScroll()
+                            }
                         }
                     }
                 )

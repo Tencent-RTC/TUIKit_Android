@@ -30,13 +30,16 @@ class SearchMessageInConversationViewModel internal constructor(
     private val _searchError = MutableStateFlow<SearchError?>(null)
     val searchError: StateFlow<SearchError?> = _searchError
 
+    private val _isResultCleared = MutableStateFlow(true)
     private val _messagesInConversation = MutableStateFlow<List<MessageInfo>>(emptyList())
     val messagesInConversation: StateFlow<List<MessageInfo>> = _messagesInConversation
 
     init {
         viewModelScope.launch {
             state.messageResults.collectLatest { messageResults ->
-                _messagesInConversation.value = messageResults.firstOrNull()?.messageList ?: emptyList()
+                if (!_isResultCleared.value) {
+                    _messagesInConversation.value = messageResults.firstOrNull()?.messageList ?: emptyList()
+                }
             }
         }
     }
@@ -56,6 +59,7 @@ class SearchMessageInConversationViewModel internal constructor(
 
         lastSubmittedConversationID = conversationID
         lastSubmittedQuery = query
+        _isResultCleared.value = false
         _isSearching.value = true
         _searchError.value = null
         searchMessagesInConversation(conversationID, query)
@@ -72,6 +76,10 @@ class SearchMessageInConversationViewModel internal constructor(
         )
     }
 
+    fun clearSearchError() {
+        _searchError.value = null
+    }
+
     fun searchMore() {
         if (_isSearching.value || _isLoadingMore.value || !state.hasMoreMessageResults.value) return
 
@@ -83,6 +91,7 @@ class SearchMessageInConversationViewModel internal constructor(
     private fun clearSearch() {
         lastSubmittedConversationID = ""
         lastSubmittedQuery = ""
+        _isResultCleared.value = true
         _isSearching.value = false
         _isLoadingMore.value = false
         _searchError.value = null

@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.chatsetting.ui.TextInputDialog
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil.dp2px
@@ -20,7 +21,7 @@ internal class GroupChatSettingHeaderSection(
     val rootView: LinearLayout
 
     private val avatarView: Avatar
-    private val nameRow: LinearLayout
+    private val nameRow: ConstraintLayout
     private val nameView: TextView
     private val nameEditView: ImageView
     private val idView: TextView
@@ -58,9 +59,7 @@ internal class GroupChatSettingHeaderSection(
             }
         }
 
-        nameRow = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
+        nameRow = ConstraintLayout(context).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -68,29 +67,44 @@ internal class GroupChatSettingHeaderSection(
         }
 
         nameView = TextView(context).apply {
+            id = View.generateViewId()
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
-            layoutParams = LinearLayout.LayoutParams(
-                0,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                1f
-            )
         }
         nameRow.addView(nameView)
 
         nameEditView = ImageView(context).apply {
+            id = View.generateViewId()
             setImageResource(R.drawable.chat_setting_group_name_edit_icon)
             contentDescription = context.getString(R.string.chat_setting_edit)
             visibility = View.GONE
-            layoutParams = LinearLayout.LayoutParams(
-                dp2px(15f, dm).toInt(),
-                dp2px(15f, dm).toInt()
-            ).apply {
-                marginStart = dp2px(8f, dm).toInt()
-            }
         }
         nameRow.addView(nameEditView)
+
+        nameView.layoutParams = ConstraintLayout.LayoutParams(
+            0,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+            endToStart = nameEditView.id
+            topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+            matchConstraintDefaultWidth = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_WRAP
+            constrainedWidth = true
+            horizontalChainStyle = ConstraintLayout.LayoutParams.CHAIN_PACKED
+            horizontalBias = 0f
+        }
+        nameEditView.layoutParams = ConstraintLayout.LayoutParams(
+            dp2px(15f, dm).toInt(),
+            dp2px(15f, dm).toInt()
+        ).apply {
+            startToEnd = nameView.id
+            endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+            topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+            marginStart = dp2px(16f, dm).toInt()
+        }
         textInfoLayout.addView(nameRow)
 
         idView = TextView(context).apply {

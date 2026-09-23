@@ -60,6 +60,8 @@
     <string name="message_list_message_tips_edit_group_invite_opt_format">%1$s changed group inviting option to "%2$s"</string>
     <string name="message_list_group_create_tips_message">Create Group</string>
     <string name="message_list_community_create_tips_message">Create Community</string>
+    <string name="message_list_group_create_tips_message_format">"%1$s" created the group</string>
+    <string name="message_list_community_create_tips_message_format">"%1$s" created the community</string>
     <string name="message_list_unknown">Unknown</string>
     <string name="message_list_merge_message">Merge Messages</string>
     <string name="message_list_upgrade_latest_version">Please upgrade to the latest version</string>

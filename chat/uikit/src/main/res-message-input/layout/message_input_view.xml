@@ -180,21 +180,6 @@
             android:layout_height="0dp" />
 
         <FrameLayout
-            android:id="@+id/message_input_btn_more"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:contentDescription="@string/message_input_more">
-
-            <ImageView
-                android:id="@+id/message_input_btn_more_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter"
-                android:src="@drawable/message_input_more_icon" />
-
-        </FrameLayout>
-
-        <FrameLayout
             android:id="@+id/message_input_btn_send"
             android:layout_width="28dp"
             android:layout_height="28dp"
@@ -207,6 +192,45 @@
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/message_input_send_icon" />
+
+            <TextView
+                android:id="@+id/message_input_btn_send_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <!-- Only visible when keepSendButtonVisible puts the send and more buttons side by side. -->
+        <android.widget.Space
+            android:id="@+id/message_input_space_after_send"
+            android:layout_width="8dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/message_input_btn_more"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:contentDescription="@string/message_input_more">
+
+            <ImageView
+                android:id="@+id/message_input_btn_more_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/message_input_more_icon" />
+
+            <View
+                android:id="@+id/message_input_btn_more_red_dot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_gravity="top|end"
+                android:visibility="gone" />
 
         </FrameLayout>
 

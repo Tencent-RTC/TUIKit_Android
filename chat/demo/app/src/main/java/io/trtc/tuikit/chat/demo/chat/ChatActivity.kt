@@ -46,12 +46,14 @@ import io.trtc.tuikit.atomicxcore.api.group.GroupEvent
 import io.trtc.tuikit.atomicxcore.api.group.GroupStore
 import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
+import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.message.MessageInputStore
 import io.trtc.tuikit.atomicxcore.api.message.SendMessageOption
 import io.trtc.tuikit.atomicxcore.api.message.SendMessagePayload
 import io.trtc.tuikit.chat.demo.common.AppConstants
 import io.trtc.tuikit.chat.demo.common.BaseActivity
 import io.trtc.tuikit.chat.demo.common.Event
+import io.trtc.tuikit.chat.demo.common.MessageInputCallRedDotStore
 import io.trtc.tuikit.chat.app.R
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
@@ -179,6 +181,7 @@ class ChatActivity : BaseActivity() {
             }
         )
 
+        val sdkAppID = LoginStore.shared.sdkAppID
         val messageInputConfig = ChatMessageInputConfig().customizeActions {
             val androidContext = editorContext.androidContext
             val conversationID = editorContext.conversationID
@@ -210,6 +213,12 @@ class ChatActivity : BaseActivity() {
                     }
                 )
             )
+            replace(MessageInputActionIDs.VIDEO_CALL) { action ->
+                withCallRedDotIfNeeded(sdkAppID, action)
+            }
+            replace(MessageInputActionIDs.AUDIO_CALL) { action ->
+                withCallRedDotIfNeeded(sdkAppID, action)
+            }
         }
 
         chatPageView = ChatPageView(this)
@@ -443,5 +452,21 @@ class ChatActivity : BaseActivity() {
         super.onDestroy()
         activityScope?.cancel()
         activityScope = null
+    }
+
+    private fun withCallRedDotIfNeeded(
+        sdkAppID: Int,
+        action: MessageInputMenuAction
+    ): MessageInputMenuAction {
+        if (!MessageInputCallRedDotStore.shouldShow(sdkAppID, action.ID)) {
+            return action
+        }
+        return action.copy(
+            showRedDot = true,
+            onClick = {
+                MessageInputCallRedDotStore.markClicked(sdkAppID, action.ID)
+                action.onClick()
+            }
+        )
     }
 }

@@ -17,9 +17,14 @@ import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageInputConfig
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiManager
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputAppearance
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputButtonAppearance
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputConfigProtocol
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputFieldAppearance
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputFill
 import io.trtc.tuikit.chat.uikit.components.messageinput.keyboard.KeyboardBridge
 import io.trtc.tuikit.chat.uikit.components.messageinput.keyboard.WindowSoftInputModeGuard
+import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.InputCoordinator
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.InputMode
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.InputModeEvent
@@ -75,6 +80,9 @@ class MessageInputView @JvmOverloads constructor(
 
     private var config: MessageInputConfigProtocol = ChatMessageInputConfig()
     private var isKeyboardBridgePausedForVoiceOverlay = false
+    private var lastColors: ColorTokens? = null
+    private var morePanelActions: List<MessageInputMenuAction> = emptyList()
+    private val dismissedMorePanelRedDotIds = mutableSetOf<String>()
 
     private val hasBoundViews: Boolean
         get() = ::btnPressToTalk.isInitialized
@@ -92,6 +100,7 @@ class MessageInputView @JvmOverloads constructor(
     private lateinit var editText: AtomicEditText
     private lateinit var btnMore: FrameLayout
     private lateinit var btnMoreIcon: ImageView
+    private lateinit var btnMoreRedDot: View
     private lateinit var inputContainer: LinearLayout
     private lateinit var inputSwitchContainer: FrameLayout
     private lateinit var btnEmoji: FrameLayout
@@ -100,8 +109,10 @@ class MessageInputView @JvmOverloads constructor(
     private lateinit var btnAudioRecordIcon: ImageView
     private lateinit var spaceAfterAudioRecord: Space
     private lateinit var spaceAfterEmoji: Space
+    private lateinit var spaceAfterSend: Space
     private lateinit var btnSend: FrameLayout
     private lateinit var btnSendIcon: ImageView
+    private lateinit var btnSendText: TextView
     private lateinit var btnChatbotStop: FrameLayout
     private lateinit var btnChatbotStopIcon: ImageView
     private lateinit var btnPressToTalk: AudioRecorderView
@@ -506,19 +517,41 @@ class MessageInputView @JvmOverloads constructor(
     }
 
     private fun updateButtonIcons(state: InputUiState) {
-        val emojiIcon = if (state.panel == PanelState.EMOJI_PANEL) {
-            R.drawable.message_input_keyboard_icon
-        } else {
-            R.drawable.message_input_emoji_icon
-        }
-        btnEmojiIcon.setImageResource(emojiIcon)
+        val appearance = config.appearance
 
-        val audioIcon = if (state.inputMode == InputMode.VOICE) {
-            R.drawable.message_input_keyboard_icon
-        } else {
-            R.drawable.message_input_audio_icon
-        }
-        btnAudioRecordIcon.setImageResource(audioIcon)
+        val isEmojiPanelOpen = state.panel == PanelState.EMOJI_PANEL
+        btnEmojiIcon.setImageResource(
+            MessageInputAppearanceApplier.resolveIcon(
+                appearance = appearance?.emojiButton,
+                isActive = isEmojiPanelOpen,
+                defaultIcon = if (isEmojiPanelOpen) {
+                    R.drawable.message_input_keyboard_icon
+                } else {
+                    R.drawable.message_input_emoji_icon
+                }
+            )
+        )
+
+        val isVoiceMode = state.inputMode == InputMode.VOICE
+        btnAudioRecordIcon.setImageResource(
+            MessageInputAppearanceApplier.resolveIcon(
+                appearance = appearance?.audioRecordButton,
+                isActive = isVoiceMode,
+                defaultIcon = if (isVoiceMode) {
+                    R.drawable.message_input_keyboard_icon
+                } else {
+                    R.drawable.message_input_audio_icon
+                }
+            )
+        )
+
+        btnMoreIcon.setImageResource(
+            MessageInputAppearanceApplier.resolveIcon(
+                appearance = appearance?.moreButton,
+                isActive = state.panel == PanelState.MORE_PANEL,
+                defaultIcon = R.drawable.message_input_more_icon
+            )
+        )
     }
 
     private fun updateSendButtonVisibility(state: InputUiState) {
@@ -528,11 +561,25 @@ class MessageInputView @JvmOverloads constructor(
             hasText = hasText,
             isTextMode = isTextMode,
             isShowMore = config.isShowMore,
-            isChatbotActive = chatbotController?.isActive == true
+            isChatbotActive = chatbotController?.isActive == true,
+            keepSendVisible = config.keepSendButtonVisible
         )
         btnMore.visibility = if (visibility.showMore) View.VISIBLE else View.GONE
         btnSend.visibility = if (visibility.showSend) View.VISIBLE else View.GONE
         btnChatbotStop.visibility = if (visibility.showStop) View.VISIBLE else View.GONE
+        spaceAfterSend.visibility = if (visibility.showSend && visibility.showMore) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+        updateMoreButtonRedDotVisibility()
+    }
+
+    private fun updateMoreButtonRedDotVisibility() {
+        if (!hasBoundViews) return
+        val shouldShow = btnMore.visibility == View.VISIBLE &&
+            morePanelActions.any { it.showRedDot && it.ID !in dismissedMorePanelRedDotIds }
+        btnMoreRedDot.visibility = if (shouldShow) View.VISIBLE else View.GONE
     }
 
     private fun updateInputHintVisibility(state: InputUiState) {
@@ -545,7 +592,8 @@ class MessageInputView @JvmOverloads constructor(
         } else {
             R.string.message_input_edit_text_hint_text_only
         }
-        val nextHint = if (shouldHideHint) "" else context.getString(hintRes)
+        val hint = config.appearance?.field?.hintText?.toString() ?: context.getString(hintRes)
+        val nextHint = if (shouldHideHint) "" else hint
         if (editText.hint?.toString().orEmpty() != nextHint) {
             editText.hint = nextHint
             editText.requestLayout()
@@ -578,6 +626,7 @@ class MessageInputView @JvmOverloads constructor(
         editText = findViewById(R.id.message_input_edit_text)
         btnMore = findViewById(R.id.message_input_btn_more)
         btnMoreIcon = findViewById(R.id.message_input_btn_more_icon)
+        btnMoreRedDot = findViewById(R.id.message_input_btn_more_red_dot)
         inputContainer = findViewById(R.id.message_input_container)
         inputSwitchContainer = findViewById(R.id.message_input_switch_container)
         btnEmoji = findViewById(R.id.message_input_btn_emoji)
@@ -586,8 +635,10 @@ class MessageInputView @JvmOverloads constructor(
         btnAudioRecordIcon = findViewById(R.id.message_input_btn_audio_record_icon)
         spaceAfterAudioRecord = findViewById(R.id.message_input_space_after_audio_record)
         spaceAfterEmoji = findViewById(R.id.message_input_space_after_emoji)
+        spaceAfterSend = findViewById(R.id.message_input_space_after_send)
         btnSend = findViewById(R.id.message_input_btn_send)
         btnSendIcon = findViewById(R.id.message_input_btn_send_icon)
+        btnSendText = findViewById(R.id.message_input_btn_send_text)
         btnChatbotStop = findViewById(R.id.message_input_btn_chatbot_stop)
         btnChatbotStopIcon = findViewById(R.id.message_input_btn_chatbot_stop_icon)
         btnPressToTalk = findViewById<AudioRecorderView>(R.id.message_input_btn_press_to_talk).apply {
@@ -631,6 +682,10 @@ class MessageInputView @JvmOverloads constructor(
             onCustomEmojiClick = { group, emoji ->
                 val faceIndex = EmojiManager.emojiGroupList.indexOfFirst { it.id == group.id }
                 textController.sendFaceMessage(faceIndex.coerceAtLeast(0), emoji.key)
+            },
+            onMoreActionRedDotDismissed = { actionID ->
+                dismissedMorePanelRedDotIds.add(actionID)
+                updateMoreButtonRedDotVisibility()
             }
         )
     }
@@ -812,8 +867,10 @@ class MessageInputView @JvmOverloads constructor(
 
     private fun refreshMorePanelActions() {
         val vm = viewModel ?: return
-        val actions = vm.getActions(context, config)
-        panelContentController.refreshMorePanelActions(actions)
+        morePanelActions = vm.getActions(context, config)
+        dismissedMorePanelRedDotIds.clear()
+        panelContentController.refreshMorePanelActions(morePanelActions, dismissedMorePanelRedDotIds)
+        updateMoreButtonRedDotVisibility()
     }
 
     private fun applyConfig() {
@@ -827,7 +884,13 @@ class MessageInputView @JvmOverloads constructor(
             minDurationMs = AUDIO_MIN_RECORD_TIME,
             maxDurationMs = config.audioMaxRecordDurationMs.coerceAtLeast(AUDIO_MIN_RECORD_TIME)
         )
-        lastRenderedState?.let { updateInputHintVisibility(it) }
+        updateColors(
+            lastColors ?: ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
+        )
+        lastRenderedState?.let {
+            updateInputHintVisibility(it)
+            updateButtonIcons(it)
+        }
         if (::coordinator.isInitialized) {
             updateSendButtonVisibility(coordinator.state.value)
         } else if (chatbotController?.isActive == true) {
@@ -837,24 +900,36 @@ class MessageInputView @JvmOverloads constructor(
         } else {
             btnChatbotStop.visibility = View.GONE
         }
+        refreshMorePanelActions()
     }
 
     private fun updateColors(colors: ColorTokens) {
-        setBackgroundColor(colors.bgColorOperate)
+        lastColors = colors
+        val appearance = config.appearance
+
+        background = MessageInputAppearanceApplier.fillDrawable(
+            fill = appearance?.fill ?: MessageInputFill.Color(colors.bgColorOperate),
+            cornerRadiusDp = null,
+            density = density
+        )
         topDivider.setBackgroundColor(colors.strokeColorSecondary)
+        topDivider.visibility = if (appearance?.showTopDivider == false) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
         quoteContainer.setBackgroundColor(colors.bgColorDefault)
         quoteSummaryView.setTextColor(colors.textColorSecondary)
         quoteCloseView.setTextColor(colors.textColorSecondary)
-
-        val inputBg = GradientDrawable().apply {
-            setColor(colors.bgColorInput)
-            cornerRadius = 4f * density
+        btnMoreRedDot.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(colors.textColorError)
         }
-        inputSwitchContainer.background = inputBg
 
-        editText.setTextColor(colors.textColorPrimary)
-        editText.setHintTextColor(colors.textColorTertiary)
-        btnPressToTalk.setTextColor(colors.textColorPrimary)
+        applyInputFieldAppearance(appearance?.field, colors)
+        applyToolbarButtonAppearance(appearance, colors)
+        panelContentController.applyMorePanelAppearance(appearance?.morePanel)
+
         voiceTranscriptionEditText.setTextColor(colors.textColorButton)
         voiceTranscriptionEditText.setHintTextColor(colors.textColorButton)
         voiceTranscriptionContainer.setBackgroundColor(colors.bgColorOperate)
@@ -875,25 +950,99 @@ class MessageInputView @JvmOverloads constructor(
         voiceTranscriptionCancel.setTextColor(colors.textColorPrimary)
         voiceTranscriptionSendAudio.setTextColor(colors.textColorPrimary)
         voiceTranscriptionSendText.setTextColor(colors.textColorButton)
+    }
 
-        btnAudioRecord.background = null
-        btnEmoji.background = null
-        btnMore.background = null
-
-        btnAudioRecordIcon.setColorFilter(colors.textColorSecondary)
-        btnEmojiIcon.setColorFilter(colors.textColorSecondary)
-        btnMoreIcon.setColorFilter(colors.textColorSecondary)
-
-        btnSendIcon.setImageResource(R.drawable.message_input_send_arrow_icon)
-        val sendBg = GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(colors.buttonColorPrimaryDefault)
+    private fun applyInputFieldAppearance(
+        field: MessageInputFieldAppearance?,
+        colors: ColorTokens
+    ) {
+        inputSwitchContainer.background = MessageInputAppearanceApplier.fillDrawable(
+            fill = field?.fill ?: MessageInputFill.Color(colors.bgColorInput),
+            cornerRadiusDp = field?.cornerRadiusDp ?: DEFAULT_FIELD_CORNER_RADIUS_DP,
+            density = density
+        )
+        field?.minHeightDp?.let { minHeightDp ->
+            val minHeightPx = (minHeightDp * density).toInt()
+            inputSwitchContainer.minimumHeight = minHeightPx
+            inputContainer.minimumHeight = minHeightPx
+            btnPressToTalk.layoutParams?.let { params ->
+                params.height = minHeightPx
+                btnPressToTalk.layoutParams = params
+            }
         }
-        btnSend.background = sendBg
-        btnSendIcon.setColorFilter(colors.textColorButton)
+        field?.horizontalPaddingDp?.let { paddingDp ->
+            val paddingPx = (paddingDp * density).toInt()
+            inputContainer.setPaddingRelative(
+                paddingPx,
+                inputContainer.paddingTop,
+                paddingPx,
+                inputContainer.paddingBottom
+            )
+        }
+        val textColor = field?.textColor ?: colors.textColorPrimary
+        editText.setTextColor(textColor)
+        editText.setHintTextColor(field?.hintColor ?: colors.textColorTertiary)
+        btnPressToTalk.setTextColor(textColor)
+    }
+
+    private fun applyToolbarButtonAppearance(
+        appearance: MessageInputAppearance?,
+        colors: ColorTokens
+    ) {
+        val secondaryDefaults = MessageInputAppearanceApplier.ActionButtonDefaults(
+            sizeDp = DEFAULT_TOOLBAR_BUTTON_SIZE_DP,
+            iconTint = colors.textColorSecondary
+        )
+        MessageInputAppearanceApplier.applyActionButton(
+            container = btnAudioRecord,
+            iconView = btnAudioRecordIcon,
+            labelView = null,
+            appearance = appearance?.audioRecordButton,
+            defaults = secondaryDefaults
+        )
+        MessageInputAppearanceApplier.applyActionButton(
+            container = btnEmoji,
+            iconView = btnEmojiIcon,
+            labelView = null,
+            appearance = appearance?.emojiButton,
+            defaults = secondaryDefaults
+        )
+        MessageInputAppearanceApplier.applyActionButton(
+            container = btnMore,
+            iconView = btnMoreIcon,
+            labelView = null,
+            appearance = appearance?.moreButton,
+            defaults = secondaryDefaults
+        )
+
+        val primaryDefaults = MessageInputAppearanceApplier.ActionButtonDefaults(
+            sizeDp = DEFAULT_TOOLBAR_BUTTON_SIZE_DP,
+            iconTint = colors.textColorButton,
+            fill = MessageInputFill.Color(colors.buttonColorPrimaryDefault),
+            cornerRadiusDp = MessageInputButtonAppearance.CORNER_RADIUS_PILL
+        )
+        btnSendIcon.setImageResource(
+            MessageInputAppearanceApplier.resolveIcon(
+                appearance = appearance?.sendButton,
+                isActive = false,
+                defaultIcon = R.drawable.message_input_send_arrow_icon
+            )
+        )
+        MessageInputAppearanceApplier.applyActionButton(
+            container = btnSend,
+            iconView = btnSendIcon,
+            labelView = btnSendText,
+            appearance = appearance?.sendButton,
+            defaults = primaryDefaults
+        )
         btnChatbotStopIcon.setImageResource(R.drawable.message_input_chatbot_stop_icon)
-        btnChatbotStop.background = sendBg.constantState?.newDrawable()?.mutate()
-        btnChatbotStopIcon.setColorFilter(colors.textColorButton)
+        MessageInputAppearanceApplier.applyActionButton(
+            container = btnChatbotStop,
+            iconView = btnChatbotStopIcon,
+            labelView = null,
+            appearance = null,
+            defaults = primaryDefaults
+        )
     }
 
     private fun setupTextWatcher() {
@@ -905,6 +1054,8 @@ class MessageInputView @JvmOverloads constructor(
         private const val MESSAGE_LIST_SOURCE = "MessageList"
         private const val BLANK_AREA_CLICK_EVENT = "onBlankAreaClick"
         private const val QUOTE_MESSAGE_EVENT = "onQuoteMessage"
+        private const val DEFAULT_FIELD_CORNER_RADIUS_DP = 4
+        private const val DEFAULT_TOOLBAR_BUTTON_SIZE_DP = 28
     }
 }
 

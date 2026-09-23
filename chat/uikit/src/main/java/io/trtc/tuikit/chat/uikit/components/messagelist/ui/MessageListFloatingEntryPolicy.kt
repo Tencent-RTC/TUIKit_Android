@@ -80,8 +80,7 @@ internal object MessageListFloatingEntryPolicy {
 }
 
 internal class MessageListFloatingEntryStateController {
-    private var firstNewMessage: MessageInfo? = null
-    private var newMessageCount: Int = 0
+    private val newMessages = mutableListOf<MessageInfo>()
     private var mentionTarget: MessageListMentionTarget? = null
     private var mentionTargetVisibility = MessageListMentionTargetVisibility.UNKNOWN
     private var shouldShowBackToLatest: Boolean = false
@@ -90,8 +89,7 @@ internal class MessageListFloatingEntryStateController {
     private var showBackToQuote: Boolean = false
 
     fun reset() {
-        firstNewMessage = null
-        newMessageCount = 0
+        newMessages.clear()
         mentionTarget = null
         mentionTargetVisibility = MessageListMentionTargetVisibility.UNKNOWN
         shouldShowBackToLatest = false
@@ -142,24 +140,36 @@ internal class MessageListFloatingEntryStateController {
         return mentionTarget
     }
 
-    fun onNewMessage(message: MessageInfo, isLatestCompletelyVisible: Boolean) {
+    fun onNewMessage(message: MessageInfo, isAtLatest: Boolean) {
         if (message.msgID.isBlank()) {
             return
         }
-        if (isLatestCompletelyVisible) {
+        if (isAtLatest) {
             clearNewMessages()
             return
         }
-        if (firstNewMessage == null) {
-            firstNewMessage = message
+        if (newMessages.any { it.msgID == message.msgID }) {
+            return
         }
-        newMessageCount += 1
+        newMessages.add(message)
+    }
+
+    fun onMessageRecalled(msgID: String): Boolean {
+        if (msgID.isBlank()) {
+            return false
+        }
+        return newMessages.removeAll { it.msgID == msgID }
+    }
+
+    fun hasNewMessages(): Boolean {
+        return newMessages.isNotEmpty()
     }
 
     fun onScroll(
         distanceFromLatestPx: Int,
         viewportHeightPx: Int,
-        isLatestCompletelyVisible: Boolean,
+        isAtLatest: Boolean,
+        hasMoreNewerMessages: Boolean,
         isReturnMessageCompletelyVisible: Boolean
     ) {
         if (isReturnMessageCompletelyVisible) {
@@ -167,7 +177,7 @@ internal class MessageListFloatingEntryStateController {
             showBackToQuote = false
         }
 
-        if (isLatestCompletelyVisible) {
+        if (isAtLatest) {
             clearNewMessages()
             isBeyondDisplayThreshold = false
             shouldShowBackToLatest = false
@@ -181,7 +191,7 @@ internal class MessageListFloatingEntryStateController {
         ) {
             isBeyondDisplayThreshold = true
         }
-        shouldShowBackToLatest = isBeyondDisplayThreshold
+        shouldShowBackToLatest = hasMoreNewerMessages || isBeyondDisplayThreshold
     }
 
     fun currentEntry(): MessageListFloatingEntry? {
@@ -193,13 +203,8 @@ internal class MessageListFloatingEntryStateController {
             return MessageListFloatingEntry.Mention(it)
         }
 
-        val newMessage = firstNewMessage
-        if (isBeyondDisplayThreshold && newMessageCount > 0 && newMessage?.msgID?.isNotBlank() == true) {
-            return MessageListFloatingEntry.NewMessages(count = newMessageCount, firstMessage = newMessage)
-        }
-
-        if (!isBeyondDisplayThreshold) {
-            return null
+        newMessages.firstOrNull()?.let {
+            return MessageListFloatingEntry.NewMessages(count = newMessages.size, firstMessage = it)
         }
 
         return if (shouldShowBackToLatest) {
@@ -222,7 +227,6 @@ internal class MessageListFloatingEntryStateController {
     }
 
     private fun clearNewMessages() {
-        firstNewMessage = null
-        newMessageCount = 0
+        newMessages.clear()
     }
 }

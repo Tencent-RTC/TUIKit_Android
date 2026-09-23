@@ -60,6 +60,8 @@
     <string name="message_list_message_tips_edit_group_invite_opt_format">قام %1$s بتغيير طريقة دعوة الأعضاء إلى المجموعة إلى "%2$s"</string>
     <string name="message_list_group_create_tips_message">إنشاء مجموعة</string>
     <string name="message_list_community_create_tips_message">إنشاء مجتمع</string>
+    <string name="message_list_group_create_tips_message_format">أنشأ "%1$s" المجموعة</string>
+    <string name="message_list_community_create_tips_message_format">أنشأ "%1$s" المجتمع</string>
     <string name="message_list_unknown">غير معروف</string>
     <string name="message_list_merge_message">دمج الرسائل</string>
     <string name="message_list_upgrade_latest_version">يرجى الترقية إلى أحدث إصدار</string>

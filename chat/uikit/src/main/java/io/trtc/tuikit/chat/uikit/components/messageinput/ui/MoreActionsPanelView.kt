@@ -13,6 +13,8 @@ import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputFill
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputMorePanelAppearance
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -38,12 +40,19 @@ class MoreActionsPanelView @JvmOverloads constructor(
         private const val PAGE_INDICATOR_DOT_SPACING_DP = 4
         private const val PAGE_INDICATOR_VERTICAL_PADDING_DP = 6
         private const val PAGE_INDICATOR_INACTIVE_ALPHA = 64
+
+        private const val ITEM_SIZE_DP = 56
+        private const val ITEM_ICON_SIZE_DP = 28
+        private const val ITEM_CORNER_RADIUS_DP = 12
+        private const val ITEM_TITLE_SIZE_SP = 12f
     }
 
     private val viewPager: ViewPager2
     private val indicatorContainer: LinearLayout
     private var pagerAdapter: MoreActionsPagerAdapter? = null
     private var viewScope: CoroutineScope? = null
+    private var appearance: MessageInputMorePanelAppearance? = null
+    private var onRedDotDismissed: ((actionID: String) -> Unit)? = null
 
     private val density: Float
         get() = resources.displayMetrics.density
@@ -93,16 +102,33 @@ class MoreActionsPanelView @JvmOverloads constructor(
         )
     }
 
-    fun setActions(actions: List<MessageInputMenuAction>) {
+    fun setActions(actions: List<MessageInputMenuAction>, dismissedRedDotIds: Set<String> = emptySet()) {
         val pages = if (actions.isEmpty()) {
             listOf(emptyList())
         } else {
             actions.chunked(PAGE_SIZE)
         }
-        val newAdapter = MoreActionsPagerAdapter(pages)
+        val newAdapter = MoreActionsPagerAdapter(
+            pages = pages,
+            appearanceProvider = { appearance },
+            dismissedRedDotIds = dismissedRedDotIds,
+            onRedDotDismissed = { actionID -> onRedDotDismissed?.invoke(actionID) }
+        )
         pagerAdapter = newAdapter
         viewPager.adapter = newAdapter
         rebuildIndicator(pages.size)
+    }
+
+    fun setOnRedDotDismissedListener(listener: ((actionID: String) -> Unit)?) {
+        onRedDotDismissed = listener
+    }
+
+    fun setAppearance(appearance: MessageInputMorePanelAppearance?) {
+        if (this.appearance == appearance) {
+            return
+        }
+        this.appearance = appearance
+        applyThemeColors(ThemeStore.shared(context).themeState.value.currentTheme.tokens.color)
     }
 
     override fun onAttachedToWindow() {
@@ -123,7 +149,11 @@ class MoreActionsPanelView @JvmOverloads constructor(
     }
 
     private fun applyThemeColors(colors: ColorTokens) {
-        setBackgroundColor(colors.bgColorOperate)
+        background = MessageInputAppearanceApplier.fillDrawable(
+            fill = appearance?.fill ?: MessageInputFill.Color(colors.bgColorOperate),
+            cornerRadiusDp = null,
+            density = density
+        )
         pagerAdapter?.notifyPageItemsChanged()
         applyIndicatorColors(colors)
     }
@@ -188,7 +218,10 @@ class MoreActionsPanelView @JvmOverloads constructor(
     }
 
     private class MoreActionsPagerAdapter(
-        private val pages: List<List<MessageInputMenuAction>>
+        private val pages: List<List<MessageInputMenuAction>>,
+        private val appearanceProvider: () -> MessageInputMorePanelAppearance?,
+        private val dismissedRedDotIds: Set<String>,
+        private val onRedDotDismissed: (actionID: String) -> Unit
     ) : RecyclerView.Adapter<MoreActionsPagerAdapter.PageViewHolder>() {
 
         class PageViewHolder(
@@ -198,7 +231,12 @@ class MoreActionsPanelView @JvmOverloads constructor(
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
             val context = parent.context
-            val pageAdapter = MoreActionsAdapter(emptyList())
+            val pageAdapter = MoreActionsAdapter(
+                actions = emptyList(),
+                dismissedRedDotIds = dismissedRedDotIds,
+                appearanceProvider = appearanceProvider,
+                onRedDotDismissed = onRedDotDismissed
+            )
             val recyclerView = RecyclerView(context).apply {
                 layoutDirection = View.LAYOUT_DIRECTION_LOCALE
                 layoutManager = GridLayoutManager(context, COLUMNS)
@@ -213,7 +251,10 @@ class MoreActionsPanelView @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
-            holder.adapter.submitActions(pages.getOrNull(position).orEmpty())
+            holder.adapter.submitActions(
+                newActions = pages.getOrNull(position).orEmpty(),
+                firstActionIndex = position * PAGE_SIZE
+            )
         }
 
         override fun getItemCount(): Int = pages.size
@@ -224,18 +265,25 @@ class MoreActionsPanelView @JvmOverloads constructor(
     }
 
     private class MoreActionsAdapter(
-        private var actions: List<MessageInputMenuAction>
+        private var actions: List<MessageInputMenuAction>,
+        private val dismissedRedDotIds: Set<String>,
+        private val appearanceProvider: () -> MessageInputMorePanelAppearance?,
+        private val onRedDotDismissed: (actionID: String) -> Unit
     ) : RecyclerView.Adapter<MoreActionsAdapter.ViewHolder>() {
+
+        private var firstActionIndex = 0
 
         class ViewHolder(
             val container: LinearLayout,
             val iconContainer: FrameLayout,
             val iconView: ImageView,
-            val titleView: TextView
+            val titleView: TextView,
+            val redDot: View
         ) : RecyclerView.ViewHolder(container)
 
-        fun submitActions(newActions: List<MessageInputMenuAction>) {
+        fun submitActions(newActions: List<MessageInputMenuAction>, firstActionIndex: Int = 0) {
             actions = newActions
+            this.firstActionIndex = firstActionIndex
             notifyDataSetChanged()
         }
 
@@ -257,28 +305,38 @@ class MoreActionsPanelView @JvmOverloads constructor(
                 layoutParams = lp
             }
 
-            val dp56 = (56 * density).toInt()
             val iconContainer = FrameLayout(context).apply {
-                val lp = LinearLayout.LayoutParams(dp56, dp56)
+                layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                val lp = LinearLayout.LayoutParams(0, 0)
                 lp.gravity = Gravity.CENTER_HORIZONTAL
                 layoutParams = lp
             }
 
-            val dp28 = (28 * density).toInt()
             val iconView = ImageView(context).apply {
                 scaleType = ImageView.ScaleType.FIT_CENTER
-                val lp = FrameLayout.LayoutParams(dp28, dp28)
+                val lp = FrameLayout.LayoutParams(0, 0)
                 lp.gravity = Gravity.CENTER
                 layoutParams = lp
             }
             iconContainer.addView(iconView)
+
+            val dp8 = (8 * density).toInt()
+            val redDot = View(context).apply {
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                }
+                val lp = FrameLayout.LayoutParams(dp8, dp8)
+                lp.gravity = Gravity.TOP or Gravity.END
+                layoutParams = lp
+                visibility = View.GONE
+            }
+            iconContainer.addView(redDot)
             container.addView(iconContainer)
 
             val dp4 = (4 * density).toInt()
             val titleView = TextView(context).apply {
                 gravity = Gravity.CENTER
                 textDirection = View.TEXT_DIRECTION_LOCALE
-                textSize = 12f
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -288,7 +346,7 @@ class MoreActionsPanelView @JvmOverloads constructor(
             }
             container.addView(titleView)
 
-            return ViewHolder(container, iconContainer, iconView, titleView)
+            return ViewHolder(container, iconContainer, iconView, titleView, redDot)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -296,23 +354,76 @@ class MoreActionsPanelView @JvmOverloads constructor(
             val context = holder.itemView.context
             val density = context.resources.displayMetrics.density
             val colors = ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
+            val appearance = appearanceProvider()
 
             holder.iconView.setImageResource(action.iconResID)
-            holder.iconView.setColorFilter(colors.textColorPrimary)
+            holder.iconView.setColorFilter(appearance?.itemIconTint ?: colors.textColorPrimary)
             holder.titleView.text = action.title
-            holder.titleView.setTextColor(colors.textColorSecondary)
+            holder.titleView.setTextColor(appearance?.itemTitleColor ?: colors.textColorSecondary)
+            holder.titleView.textSize = appearance?.itemTitleSizeSp ?: ITEM_TITLE_SIZE_SP
 
-            val iconBg = GradientDrawable().apply {
-                setColor(colors.bgColorTopBar)
-                cornerRadius = 12 * density
+            applyItemMetrics(holder, appearance, density)
+            holder.iconContainer.background = MessageInputAppearanceApplier.fillDrawable(
+                fill = resolveItemFill(appearance, position, colors),
+                cornerRadiusDp = appearance?.itemCornerRadiusDp ?: ITEM_CORNER_RADIUS_DP,
+                density = density
+            )
+
+            val redDotBg = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(colors.textColorError)
             }
-            holder.iconContainer.background = iconBg
+            holder.redDot.background = redDotBg
+            holder.redDot.visibility =
+                if (action.showRedDot && action.ID !in dismissedRedDotIds) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
 
             holder.container.setOnClickListener {
+                if (action.showRedDot) {
+                    holder.redDot.visibility = View.GONE
+                    onRedDotDismissed(action.ID)
+                }
                 action.onClick()
             }
         }
 
         override fun getItemCount(): Int = actions.size
+
+        private fun applyItemMetrics(
+            holder: ViewHolder,
+            appearance: MessageInputMorePanelAppearance?,
+            density: Float
+        ) {
+            val itemSizePx = ((appearance?.itemSizeDp ?: ITEM_SIZE_DP) * density).toInt()
+            holder.iconContainer.layoutParams = holder.iconContainer.layoutParams.apply {
+                width = itemSizePx
+                height = itemSizePx
+            }
+            val iconSizePx = ((appearance?.itemIconSizeDp ?: ITEM_ICON_SIZE_DP) * density).toInt()
+            holder.iconView.layoutParams = holder.iconView.layoutParams.apply {
+                width = iconSizePx
+                height = iconSizePx
+            }
+        }
+
+        /**
+         * Item fills are indexed by the action's position across the whole panel and cycle when the
+         * host supplied fewer fills than there are actions, so a short color sequence repeats
+         * instead of leaving later entries unstyled.
+         */
+        private fun resolveItemFill(
+            appearance: MessageInputMorePanelAppearance?,
+            position: Int,
+            colors: ColorTokens
+        ): MessageInputFill {
+            val fills = appearance?.itemFills.orEmpty()
+            if (fills.isEmpty()) {
+                return MessageInputFill.Color(colors.bgColorTopBar)
+            }
+            return fills[(firstActionIndex + position) % fills.size]
+        }
     }
 }

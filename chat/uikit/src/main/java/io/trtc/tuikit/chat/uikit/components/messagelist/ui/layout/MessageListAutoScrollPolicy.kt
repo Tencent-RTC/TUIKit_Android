@@ -1,18 +1,14 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.ui.layout
-import androidx.recyclerview.widget.RecyclerView
 
 internal object MessageListAutoScrollPolicy {
-    fun shouldScrollForReceivedMessage(
-        firstVisibleItem: Int,
-        firstCompletelyVisibleItem: Int
+    fun isAtLatestPosition(
+        hasItems: Boolean,
+        hasMoreNewerMessages: Boolean,
+        canScrollTowardLatest: Boolean
     ): Boolean {
-        if (firstVisibleItem == RecyclerView.NO_POSITION ||
-            firstCompletelyVisibleItem == RecyclerView.NO_POSITION
-        ) {
-            return false
+        if (!hasItems) {
+            return !hasMoreNewerMessages
         }
-        return firstVisibleItem == 0 && firstCompletelyVisibleItem == 0
+        return !hasMoreNewerMessages && !canScrollTowardLatest
     }
-
-    fun shouldScrollForSentMessage(): Boolean = true
 }

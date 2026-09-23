@@ -32,7 +32,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:contentDescription="@string/demo_chat_header_back"
-                    android:src="@drawable/demo_ic_back" />
+                    android:src="@drawable/uikit_ic_back" />
 
                 <FrameLayout
                     android:id="@+id/demo_badgeContainer"

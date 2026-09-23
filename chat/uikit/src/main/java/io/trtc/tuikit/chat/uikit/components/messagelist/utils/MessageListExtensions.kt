@@ -86,10 +86,21 @@ fun getCreateGroupDisplayString(context: Context, message: MessageInfo): String 
     val customData = (message.messagePayload as? CustomMessagePayload)?.customData
     val customInfo = jsonData2Dictionary(customData)
     val groupType = customInfo?.get("groupType").orEmpty()
-    return if (groupType.equals("Community", ignoreCase = true)) {
-        context.getString(R.string.message_list_community_create_tips_message)
+    // Senders only carry "cmd", so "groupType" stays empty for locally created groups.
+    val isCommunity = groupType.equals("Community", ignoreCase = true) ||
+        customInfo?.get("cmd")?.toDoubleOrNull() == 1.0
+    val creatorName = message.senderDisplayName.takeIf { it.isNotBlank() }
+    if (message.isSentBySelf || creatorName == null) {
+        return if (isCommunity) {
+            context.getString(R.string.message_list_community_create_tips_message)
+        } else {
+            context.getString(R.string.message_list_group_create_tips_message)
+        }
+    }
+    return if (isCommunity) {
+        context.getString(R.string.message_list_community_create_tips_message_format, creatorName)
     } else {
-        context.getString(R.string.message_list_group_create_tips_message)
+        context.getString(R.string.message_list_group_create_tips_message_format, creatorName)
     }
 }
 

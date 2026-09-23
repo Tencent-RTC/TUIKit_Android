@@ -14,7 +14,7 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.typing.TypingMessageProt
 import io.trtc.tuikit.chat.uikit.components.common.MessageOfflinePushInfoFactory
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
-import io.trtc.tuikit.chat.uikit.components.messageinput.viewmodel.AlbumPickerProcessingMessageStore
+import io.trtc.tuikit.chat.uikit.components.messageinput.albumpicker.AlbumPickerProcessingMessageStore
 import io.trtc.tuikit.chat.uikit.components.messageinput.model.MentionInfo
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
@@ -132,6 +132,7 @@ class MessageListViewModel(
         scope = viewModelScope
     )
     private val mediaPreviewMessagesOverride = MutableStateFlow<List<MessageInfo>?>(null)
+    private var mediaPreviewMessagesRefresher: MessageMediaPreviewRefresher? = null
     private val mediaPreviewMessageSource = createMediaPreviewMessageSource()
     private val mediaPreviewController = MessageMediaPreviewController(
         scope = viewModelScope,
@@ -156,7 +157,21 @@ class MessageListViewModel(
         hiddenResendingMessageIds
     ) { list, processingMessagesByConversation, hiddenMessageIds ->
         val processingMessages = processingMessagesByConversation[conversationID].orEmpty()
-        val visibleMessages = (list + processingMessages).filterNot { message ->
+        val sentMediaPaths = list.mapNotNull { AlbumPickerProcessingMessageStore.localMediaPath(it) }.toSet()
+        val visibleProcessingMessages = if (sentMediaPaths.isEmpty()) {
+            processingMessages
+        } else {
+            processingMessages.filter { placeholder ->
+                val mediaPath = AlbumPickerProcessingMessageStore.localMediaPath(placeholder)
+                val visible = mediaPath == null || mediaPath !in sentMediaPaths
+                if (!visible) {
+                }
+                visible
+            }
+        }
+        if (processingMessages.isNotEmpty()) {
+        }
+        val visibleMessages = (list + visibleProcessingMessages).filterNot { message ->
             message.msgID in hiddenMessageIds
         }
         displayMapper.map(visibleMessages)
@@ -175,7 +190,15 @@ class MessageListViewModel(
         } else {
             StaticMessageMediaPreviewMessageSource(
                 messagesProvider = { mediaPreviewMessagesOverride.value ?: emptyList() },
-                reverseMessageOrderForPreview = reverseMediaPreviewMessageOrder
+                reverseMessageOrderForPreview = reverseMediaPreviewMessageOrder,
+                messagesRefresher = { onCompleted ->
+                    val refresher = mediaPreviewMessagesRefresher
+                    if (refresher == null) {
+                        onCompleted()
+                    } else {
+                        refresher(onCompleted)
+                    }
+                }
             )
         }
     }
@@ -210,6 +233,7 @@ class MessageListViewModel(
         }
     )
     val audioPlayingState = audioController.audioPlayingState
+    private val pendingAudioPlaybackMessageIds = mutableSetOf<String>()
 
     private val listenFromHereController = ListenFromHereController()
     val listenPlaybackState: StateFlow<ListenPlaybackState> = listenFromHereController.state
@@ -682,14 +706,52 @@ class MessageListViewModel(
         videoPlaybackController.downloadOrShowVideo(context, messageInfo)
     }
 
+    fun setMediaPreviewMessagesRefresher(refresher: MessageMediaPreviewRefresher?) {
+        mediaPreviewMessagesRefresher = refresher
+    }
+
     fun setMediaPreviewMessages(messages: List<MessageInfo>?) {
         mediaPreviewMessagesOverride.value = messages
     }
 
     fun playAudioMessage(message: MessageInfo) {
         val messageId = message.msgID ?: return
-        val targetPath = resolvePlayableAudioPath(message) ?: return
-        audioController.toggle(messageId = messageId, filePath = targetPath)
+        val targetPath = resolvePlayableAudioPath(message)
+        if (targetPath != null) {
+            audioController.toggle(messageId = messageId, filePath = targetPath)
+            return
+        }
+        downloadAudioThenPlay(message, messageId)
+    }
+
+    private fun downloadAudioThenPlay(message: MessageInfo, messageId: String) {
+        if (!pendingAudioPlaybackMessageIds.add(messageId)) {
+            return
+        }
+        downloadMessageMedia(
+            message,
+            MessageMediaFileType.AUDIO,
+            object : CompletionHandler {
+                override fun onSuccess() {
+                    viewModelScope.launch {
+                        pendingAudioPlaybackMessageIds.remove(messageId)
+                        val downloadedPath = resolvePlayableAudioPath(message)
+                        if (downloadedPath == null) {
+                            Log.e(TAG, "play audio failed: no playable path after download, msgID=$messageId")
+                            return@launch
+                        }
+                        audioController.toggle(messageId = messageId, filePath = downloadedPath)
+                    }
+                }
+
+                override fun onFailure(code: Int, desc: String) {
+                    viewModelScope.launch {
+                        pendingAudioPlaybackMessageIds.remove(messageId)
+                        Log.e(TAG, "download audio failed: code=$code, desc=$desc, msgID=$messageId")
+                    }
+                }
+            }
+        )
     }
 
     fun initializeAudioPlayer() {

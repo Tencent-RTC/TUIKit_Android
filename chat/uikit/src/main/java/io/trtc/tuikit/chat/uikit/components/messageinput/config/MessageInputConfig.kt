@@ -14,6 +14,16 @@ interface MessageInputConfigProtocol {
         get() = 60 * 1000
     val actionCustomizer: MessageInputActionCustomizer?
         get() = null
+    val appearance: MessageInputAppearance?
+        get() = null
+
+    /**
+     * Keeps the send button on screen while the text field is empty instead of swapping it for the
+     * more button. Sending an empty draft stays a no-op.
+     */
+    val keepSendButtonVisible: Boolean
+        get() = false
+
 }
 
 class ChatMessageInputConfig : MessageInputConfigProtocol {
@@ -28,7 +38,8 @@ class ChatMessageInputConfig : MessageInputConfigProtocol {
     private var _enableLongPressToTalk: Boolean? = null
     private var _audioMaxRecordDurationMs: Int? = null
     private var _actionCustomizer: MessageInputActionCustomizer? = null
-
+    private var _appearance: MessageInputAppearance? = null
+    private var _keepSendButtonVisible: Boolean? = null
     constructor(
         isShowAudioRecorder: Boolean? = null,
         isShowPhotoTaker: Boolean? = null,
@@ -108,9 +119,30 @@ class ChatMessageInputConfig : MessageInputConfigProtocol {
     override val actionCustomizer: MessageInputActionCustomizer?
         get() = _actionCustomizer
 
+    override var appearance: MessageInputAppearance?
+        get() = _appearance
+        set(value) {
+            _appearance = value
+        }
+
+    override var keepSendButtonVisible: Boolean
+        get() = _keepSendButtonVisible ?: false
+        set(value) {
+            _keepSendButtonVisible = value
+        }
+
     fun customizeActions(block: MessageInputActionEditor.() -> Unit): ChatMessageInputConfig = apply {
         _actionCustomizer = MessageInputActionCustomizer { editor ->
             editor.block()
         }
     }
+
+    fun setAppearance(appearance: MessageInputAppearance?): ChatMessageInputConfig = apply {
+        _appearance = appearance
+    }
+
+    fun setKeepSendButtonVisible(keepVisible: Boolean): ChatMessageInputConfig = apply {
+        _keepSendButtonVisible = keepVisible
+    }
+
 }

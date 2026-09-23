@@ -144,8 +144,12 @@ internal class MessageMediaPreviewController(
                     val resolvedPath = resolveDownloadedVideoPath(target, imagePath, stableId)
                     if (resolvedPath != null) {
                         callback(resolvedPath)
-                    } else {
-                        callback(null)
+                        return
+                    }
+                    // Messages outside a MessageListStore (merged message detail) keep the payload
+                    // they were created with, so the downloaded path only shows up after a refresh.
+                    messageSource.refreshMediaMessages {
+                        callback(resolveDownloadedVideoPath(target, imagePath, stableId))
                     }
                 }
 
@@ -188,7 +192,15 @@ internal class MessageMediaPreviewController(
             fileType,
             object : CompletionHandler {
                 override fun onSuccess() {
-                    callback(resolveLocalSavePath(target))
+                    val savePath = resolveLocalSavePath(target)
+                    if (savePath != null) {
+                        callback(savePath)
+                        return
+                    }
+                    messageSource.refreshMediaMessages {
+                        val refreshedTarget = findMediaMessage(path, stableId, mediaType) ?: target
+                        callback(resolveLocalSavePath(refreshedTarget))
+                    }
                 }
 
                 override fun onFailure(code: Int, desc: String) {

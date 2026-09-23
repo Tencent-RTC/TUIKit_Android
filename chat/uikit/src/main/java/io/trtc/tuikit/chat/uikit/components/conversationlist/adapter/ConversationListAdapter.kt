@@ -1,15 +1,20 @@
 package io.trtc.tuikit.chat.uikit.components.conversationlist.adapter
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
+import android.text.style.ImageSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -19,6 +24,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +35,7 @@ import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.isUnread
 import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.needShowBadge
 import io.trtc.tuikit.chat.uikit.components.conversationlist.utils.needShowNotReceiveIcon
 import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
+import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallStreamMediaType
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.MessageListMessageSummaryFormatter
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -393,25 +400,82 @@ class ConversationItemLayout(context: Context) : FrameLayout(context) {
         }
 
         val defaultSubtitle = transform(getMessageAbstract(conversation, context, summaryFormatter))
+        val callMediaType = summaryFormatter.resolveCallStreamMediaType(
+            context, conversation.lastMessage, conversation.conversationID
+        )
+        val subtitleWithCallIcon: CharSequence = if (callMediaType != null) {
+            SpannableStringBuilder().apply {
+                appendCallIconSpan(context, colors, callMediaType)
+                append(defaultSubtitle)
+            }
+        } else {
+            defaultSubtitle
+        }
+
         if (atTagText.isNotEmpty()) {
             return SpannableStringBuilder().apply {
                 appendErrorText(colors, atTagText)
                 append(" ")
-                append(defaultSubtitle)
+                append(subtitleWithCallIcon)
             }
         }
 
         if (conversation.receiveOption != ReceiveMessageOption.RECEIVE && conversation.unreadCount > 0) {
-            return buildString {
+            return SpannableStringBuilder().apply {
                 append("[")
-                append(conversation.unreadCount)
+                append(conversation.unreadCount.toString())
                 append(context.getString(R.string.conversation_list_message_count_unit))
                 append("] ")
-                append(defaultSubtitle)
+                append(subtitleWithCallIcon)
             }
         }
 
-        return defaultSubtitle
+        return subtitleWithCallIcon
+    }
+
+    private fun SpannableStringBuilder.appendCallIconSpan(
+        context: Context,
+        colors: ColorTokens,
+        mediaType: CallStreamMediaType
+    ) {
+        val iconRes = when (mediaType) {
+            CallStreamMediaType.VOICE -> R.drawable.conversation_list_call_audio_icon
+            CallStreamMediaType.VIDEO -> R.drawable.conversation_list_call_video_icon
+            else -> return
+        }
+        val drawable = ContextCompat.getDrawable(context, iconRes)?.mutate() ?: return
+        drawable.setTint(colors.textColorSecondary)
+        val heightPx = dp2px(context, 12f)
+        val widthPx = heightPx
+        val marginPx = dp2px(context, 4f)
+        val insetDrawable = InsetDrawable(drawable, 0, 0, marginPx, 0)
+        insetDrawable.setBounds(0, 0, widthPx + marginPx, heightPx)
+        val start = length
+        append(" ")
+        setSpan(VerticallyCenteredImageSpan(insetDrawable), start, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+
+    private class VerticallyCenteredImageSpan(drawable: Drawable) : ImageSpan(drawable) {
+        override fun draw(
+            canvas: Canvas,
+            text: CharSequence?,
+            start: Int,
+            end: Int,
+            x: Float,
+            top: Int,
+            y: Int,
+            bottom: Int,
+            paint: Paint
+        ) {
+            val icon = drawable
+            val fm = paint.fontMetricsInt
+            val textCenter = y + (fm.ascent + fm.descent) / 2
+            val transY = textCenter - icon.bounds.height() / 2
+            canvas.save()
+            canvas.translate(x, transY.toFloat())
+            icon.draw(canvas)
+            canvas.restore()
+        }
     }
 
     private fun SpannableStringBuilder.appendErrorText(colors: ColorTokens, text: String) {
@@ -472,3 +536,4 @@ fun dp2px(context: Context, dpValue: Float): Int {
         TypedValue.COMPLEX_UNIT_DIP, dpValue, context.resources.displayMetrics
     ).toInt()
 }
+

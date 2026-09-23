@@ -7,6 +7,8 @@ import io.trtc.tuikit.atomicxcore.api.message.MessageLoadDirection
 import io.trtc.tuikit.atomicxcore.api.message.MessageLoadOption
 import io.trtc.tuikit.atomicxcore.api.message.MessageType
 
+internal typealias MessageMediaPreviewRefresher = (onCompleted: () -> Unit) -> Unit
+
 internal interface MessageMediaPreviewMessageSource {
     fun loadInitialMediaMessages(
         anchorMessage: MessageInfo,
@@ -19,16 +21,32 @@ internal interface MessageMediaPreviewMessageSource {
     )
 
     fun currentMediaMessages(): List<MessageInfo>
+
+    // Re-reads the underlying messages so paths that only exist after a download become visible.
+    // Store-backed sources already return fresh messages, so refreshing is a no-op for them.
+    fun refreshMediaMessages(onCompleted: () -> Unit) {
+        onCompleted()
+    }
 }
 
 internal class StaticMessageMediaPreviewMessageSource(
     private val messagesProvider: () -> List<MessageInfo>,
-    private val reverseMessageOrderForPreview: Boolean = true
+    private val reverseMessageOrderForPreview: Boolean = true,
+    private val messagesRefresher: MessageMediaPreviewRefresher? = null
 ) : MessageMediaPreviewMessageSource {
     constructor(
         messages: List<MessageInfo>,
         reverseMessageOrderForPreview: Boolean = true
     ) : this({ messages }, reverseMessageOrderForPreview)
+
+    override fun refreshMediaMessages(onCompleted: () -> Unit) {
+        val refresher = messagesRefresher
+        if (refresher == null) {
+            onCompleted()
+            return
+        }
+        refresher(onCompleted)
+    }
 
     override fun loadInitialMediaMessages(
         anchorMessage: MessageInfo,

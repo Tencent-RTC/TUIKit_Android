@@ -63,7 +63,19 @@ class MergedMessageDetailActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_MSG = "extra_msg"
 
-        fun start(context: Context, mergedMessage: MessageInfo) {
+        // MessageListConfigProtocol carries renderer instances and cannot go through an Intent,
+        // so the host config is handed over in-process instead.
+        @Volatile
+        private var hostConfig: MessageListConfigProtocol? = null
+
+        @JvmStatic
+        @JvmOverloads
+        fun start(
+            context: Context,
+            mergedMessage: MessageInfo,
+            hostConfig: MessageListConfigProtocol? = null
+        ) {
+            this.hostConfig = hostConfig
             val intent = Intent(context, MergedMessageDetailActivity::class.java).apply {
                 putExtra(EXTRA_MSG, mergedMessage)
             }
@@ -72,6 +84,8 @@ class MergedMessageDetailActivity : AppCompatActivity() {
             }
             context.startActivity(intent)
         }
+
+        private fun peekHostConfig(): MessageListConfigProtocol? = hostConfig
     }
 
     private lateinit var recyclerView: RecyclerView
@@ -87,11 +101,17 @@ class MergedMessageDetailActivity : AppCompatActivity() {
     private var scope: CoroutineScope? = null
     private var locateCoordinator: MessageListLocateCoordinator? = null
     private val mergedMessageSource = MutableStateFlow<List<MessageInfo>>(emptyList())
+    private val displayMapper = MessageListDisplayMapper(
+        reverseSource = false,
+        shouldDisplayMessage = ::shouldDisplayMessage
+    )
 
     private val config: MessageListConfigProtocol by lazy {
-        ChatMessageListConfig(
+        val baseConfig = ChatMessageListConfig(
             alignment = resolveMergedDetailAlignment()
         )
+        val hostConfig = peekHostConfig() ?: return@lazy baseConfig
+        MergedMessageDetailListConfig(delegateConfig = hostConfig, baseConfig = baseConfig)
     }
     private val rendererResolver by lazy {
         MessageRendererResolver(
@@ -184,6 +204,7 @@ class MergedMessageDetailActivity : AppCompatActivity() {
             enableQuoteNavigation = true,
             showMessageReadReceipt = false,
             showInlineMessageTime = true,
+            fillAvailableWidth = true,
             resolver = rendererResolver
         )
 
@@ -203,10 +224,6 @@ class MergedMessageDetailActivity : AppCompatActivity() {
         val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         scope = activityScope
 
-        val displayMapper = MessageListDisplayMapper(
-            reverseSource = false,
-            shouldDisplayMessage = ::shouldDisplayMessage
-        )
         val mergedMessageList = mergedMessageSource.map { list ->
             displayMapper.map(list)
         }.stateIn(
@@ -238,17 +255,49 @@ class MergedMessageDetailActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.setMediaPreviewMessagesRefresher { onCompleted ->
+            refreshMergedMessages(message, onCompleted)
+        }
+
+        loadMergedMessages(message)
+    }
+
+    private fun loadMergedMessages(message: MessageInfo) {
         MessageActionStore.create(message).downloadMergedMessageList(
             object : MergedMessageListCompletionHandler {
                 override fun onSuccess(messageList: List<MessageInfo>) {
-                    mergedMessageSource.value = messageList
+                    publishMergedMessages(messageList)
                 }
 
                 override fun onFailure(code: Int, desc: String) {
-                    mergedMessageSource.value = emptyList()
+                    publishMergedMessages(emptyList())
                 }
             }
         )
+    }
+
+    // The media preview holds a detached snapshot of these sub-messages, so a completed download
+    // never reaches it. Re-downloading rebuilds them with the now-present local media paths.
+    private fun refreshMergedMessages(message: MessageInfo, onCompleted: () -> Unit) {
+        MessageActionStore.create(message).downloadMergedMessageList(
+            object : MergedMessageListCompletionHandler {
+                override fun onSuccess(messageList: List<MessageInfo>) {
+                    publishMergedMessages(messageList)
+                    onCompleted()
+                }
+
+                override fun onFailure(code: Int, desc: String) {
+                    onCompleted()
+                }
+            }
+        )
+    }
+
+    private fun publishMergedMessages(messageList: List<MessageInfo>) {
+        // Update the preview source synchronously: the refresh caller reads media paths back as
+        // soon as it is notified, which is before the list flow below has a chance to emit.
+        viewModel.setMediaPreviewMessages(displayMapper.map(messageList))
+        mergedMessageSource.value = messageList
     }
 
     private fun applyTheme() {
@@ -344,6 +393,9 @@ class MergedMessageDetailActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        if (::viewModel.isInitialized) {
+            viewModel.setMediaPreviewMessagesRefresher(null)
+        }
         locateCoordinator?.let { coordinator ->
             recyclerView.removeOnChildAttachStateChangeListener(coordinator.childAttachStateChangeListener)
             coordinator.cancel()

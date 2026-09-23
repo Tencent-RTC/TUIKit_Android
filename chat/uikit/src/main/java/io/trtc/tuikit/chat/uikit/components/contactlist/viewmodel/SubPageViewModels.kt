@@ -29,6 +29,16 @@ class BlacklistSubViewModel(
             override fun onFailure(code: Int, desc: String) {}
         })
     }
+
+    fun removeFromBlacklist(userID: String, onFailure: (String) -> Unit = {}) {
+        contactStore.removeFromBlacklist(userID, object : CompletionHandler {
+            override fun onSuccess() {}
+
+            override fun onFailure(code: Int, desc: String) {
+                onFailure(desc)
+            }
+        })
+    }
 }
 
 class FriendApplicationSubViewModel(
@@ -96,6 +106,10 @@ class GroupApplicationSubViewModel(
             override fun onFailure(code: Int, desc: String) {}
         })
 
+        clearGroupApplicationUnreadCount()
+    }
+
+    fun clearGroupApplicationUnreadCount() {
         groupStore.clearApplicationUnreadCount(object : CompletionHandler {
             override fun onSuccess() {}
             override fun onFailure(code: Int, desc: String) {}

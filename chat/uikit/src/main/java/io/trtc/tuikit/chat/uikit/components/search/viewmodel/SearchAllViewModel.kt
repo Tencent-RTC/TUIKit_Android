@@ -31,6 +31,7 @@ class SearchAllViewModel internal constructor(
     private val _searchError = MutableStateFlow<SearchError?>(null)
     val searchError: StateFlow<SearchError?> = _searchError
 
+    private val _isResultCleared = MutableStateFlow(true)
     private val _searchCategories = MutableStateFlow<List<SearchCategory>>(emptyList())
     val searchCategories: StateFlow<List<SearchCategory>> = _searchCategories
 
@@ -58,8 +59,12 @@ class SearchAllViewModel internal constructor(
         }
 
         viewModelScope.launch {
-            combine(friendSource, groupSource, messageSource) { friend, group, message ->
-                listOf(friend, group, message).filter { it.results.isNotEmpty() }
+            combine(friendSource, groupSource, messageSource, _isResultCleared) { friend, group, message, isCleared ->
+                if (isCleared) {
+                    emptyList()
+                } else {
+                    listOf(friend, group, message).filter { it.results.isNotEmpty() }
+                }
             }.collect { _searchCategories.value = it }
         }
     }
@@ -72,6 +77,7 @@ class SearchAllViewModel internal constructor(
         if (query == lastSubmittedQuery && (_isSearching.value || _searchCategories.value.isNotEmpty())) return
 
         lastSubmittedQuery = query
+        _isResultCleared.value = false
         _isSearching.value = true
         _searchError.value = null
         searchStore.search(
@@ -87,10 +93,15 @@ class SearchAllViewModel internal constructor(
         )
     }
 
+    fun clearSearchError() {
+        _searchError.value = null
+    }
+
     private fun clearSearch() {
         lastSubmittedQuery = ""
         _isSearching.value = false
         _searchError.value = null
+        _isResultCleared.value = true
         _searchCategories.value = emptyList()
     }
 }

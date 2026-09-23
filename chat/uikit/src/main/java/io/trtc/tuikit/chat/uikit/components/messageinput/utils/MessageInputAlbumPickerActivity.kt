@@ -1,4 +1,5 @@
 package io.trtc.tuikit.chat.uikit.components.messageinput.utils
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -26,6 +27,7 @@ class MessageInputAlbumPickerActivity : AppCompatActivity() {
         albumPickerView.initialize(config, theme, object : AlbumPickerListener {
             override fun onPickConfirm(pickedAlbumMedias: List<AlbumMedia>, textMessage: String?) {
                 forwardListener?.onPickConfirm(pickedAlbumMedias, textMessage)
+                finishSafely()
             }
 
             override fun onMediaProcessing(albumMedia: AlbumMedia, progress: Float, error: Boolean) {
@@ -54,23 +56,27 @@ class MessageInputAlbumPickerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        forwardListener = null
+        pendingOnDismissed?.invoke()
+        pendingOnDismissed = null
     }
 
     companion object {
         private var pendingConfig: AlbumPickerConfig? = null
         private var pendingTheme: AlbumPickerTheme? = null
         private var pendingListener: AlbumPickerListener? = null
+        private var pendingOnDismissed: (() -> Unit)? = null
 
         fun start(
             context: Context,
             config: AlbumPickerConfig = AlbumPickerConfig(),
             theme: AlbumPickerTheme = AlbumPickerTheme(),
-            listener: AlbumPickerListener
+            listener: AlbumPickerListener,
+            onDismissed: () -> Unit = {}
         ) {
             pendingConfig = config
             pendingTheme = theme
             pendingListener = listener
+            pendingOnDismissed = onDismissed
             val intent = Intent(context, MessageInputAlbumPickerActivity::class.java)
             if (context !is Activity) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -60,6 +60,8 @@
     <string name="message_list_message_tips_edit_group_invite_opt_format">%1$s 將邀請進群方式修改為「%2$s」</string>
     <string name="message_list_group_create_tips_message">建立群組</string>
     <string name="message_list_community_create_tips_message">建立社群</string>
+    <string name="message_list_group_create_tips_message_format">"%1$s" 建立群組</string>
+    <string name="message_list_community_create_tips_message_format">"%1$s" 建立社群</string>
     <string name="message_list_unknown">未知</string>
     <string name="message_list_merge_message">合併訊息</string>
     <string name="message_list_upgrade_latest_version">請升級至最新版本</string>

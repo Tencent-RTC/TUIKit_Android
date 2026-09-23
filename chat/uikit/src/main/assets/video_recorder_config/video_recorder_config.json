@@ -6,7 +6,7 @@
   "is_default_front_camera":"false",
   "record_mode":"0",
   "support_record_torch": "true",
-  "support_record_beauty": "false",
-  "support_record_aspect": "false",
+  "support_record_beauty": "true",
+  "support_record_aspect": "true",
   "support_record_scroll_filter": "false"
 }

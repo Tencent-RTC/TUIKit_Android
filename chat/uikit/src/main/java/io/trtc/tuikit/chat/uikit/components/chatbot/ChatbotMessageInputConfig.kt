@@ -1,6 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.chatbot
 
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputActionCustomizer
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputAppearance
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputConfigProtocol
 
 internal class ChatbotMessageInputConfig(
@@ -18,4 +19,8 @@ internal class ChatbotMessageInputConfig(
         get() = base.audioMaxRecordDurationMs
     override val actionCustomizer: MessageInputActionCustomizer?
         get() = base.actionCustomizer
+    override val appearance: MessageInputAppearance?
+        get() = base.appearance
+    override val keepSendButtonVisible: Boolean
+        get() = base.keepSendButtonVisible
 }

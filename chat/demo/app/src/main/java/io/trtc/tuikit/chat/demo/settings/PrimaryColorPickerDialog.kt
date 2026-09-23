@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
@@ -115,7 +114,7 @@ class PrimaryColorPickerDialog private constructor(
                 text = context.getString(R.string.demo_settings_primary_color_title)
                 setTextColor(colors.textColorPrimary)
                 textSize = 16f
-                setTypeface(typeface, Typeface.BOLD)
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
                 gravity = Gravity.CENTER
             },
             matchWidthParams(bottom = dp(12f))
@@ -219,7 +218,7 @@ class PrimaryColorPickerDialog private constructor(
             text = context.getString(android.R.string.ok)
             setTextColor(colors.textColorLink)
             textSize = 16f
-            setTypeface(typeface, Typeface.BOLD)
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
             gravity = Gravity.CENTER
             minWidth = dp(BUTTON_MIN_WIDTH_DP)
             minHeight = dp(BUTTON_MIN_HEIGHT_DP)

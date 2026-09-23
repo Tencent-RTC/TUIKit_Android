@@ -29,13 +29,16 @@ class SearchGroupViewModel internal constructor(
     private val _searchError = MutableStateFlow<SearchError?>(null)
     val searchError: StateFlow<SearchError?> = _searchError
 
+    private val _isResultCleared = MutableStateFlow(true)
     private val _groupSearchResults = MutableStateFlow<List<GroupSearchInfo>>(emptyList())
     val groupSearchResults: StateFlow<List<GroupSearchInfo>> = _groupSearchResults
 
     init {
         viewModelScope.launch {
             state.groupList.collectLatest {
-                _groupSearchResults.value = it
+                if (!_isResultCleared.value) {
+                    _groupSearchResults.value = it
+                }
             }
         }
     }
@@ -48,6 +51,7 @@ class SearchGroupViewModel internal constructor(
         if (query == lastSubmittedQuery && (_isSearching.value || _groupSearchResults.value.isNotEmpty())) return
 
         lastSubmittedQuery = query
+        _isResultCleared.value = false
         _isSearching.value = true
         _searchError.value = null
         searchStore.search(
@@ -55,6 +59,10 @@ class SearchGroupViewModel internal constructor(
             SearchOption(searchScope = listOf(SearchType.GROUP)),
             searchCompletionHandler(_isSearching)
         )
+    }
+
+    fun clearSearchError() {
+        _searchError.value = null
     }
 
     fun searchMore() {
@@ -67,6 +75,7 @@ class SearchGroupViewModel internal constructor(
 
     private fun clearSearch() {
         lastSubmittedQuery = ""
+        _isResultCleared.value = true
         _isSearching.value = false
         _isLoadingMore.value = false
         _searchError.value = null

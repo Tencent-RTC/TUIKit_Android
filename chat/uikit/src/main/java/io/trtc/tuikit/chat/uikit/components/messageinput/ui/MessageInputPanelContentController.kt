@@ -7,6 +7,7 @@ import io.trtc.tuikit.chat.uikit.components.emojipicker.EmojiSpanHelper
 import io.trtc.tuikit.chat.uikit.components.emojipicker.model.Emoji
 import io.trtc.tuikit.chat.uikit.components.emojipicker.model.EmojiGroup
 import io.trtc.tuikit.chat.uikit.components.emojipicker.ui.EmojiPickerView
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.MessageInputMorePanelAppearance
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
 import io.trtc.tuikit.chat.uikit.components.messageinput.state.PanelState
 
@@ -16,8 +17,15 @@ internal class MessageInputPanelContentController private constructor(
     private val panelContainer: FrameLayout,
     private val currentPanel: () -> PanelState?
 ) {
-    fun refreshMorePanelActions(actions: List<MessageInputMenuAction>) {
-        moreActionsPanel.setActions(actions)
+    fun refreshMorePanelActions(
+        actions: List<MessageInputMenuAction>,
+        dismissedRedDotIds: Set<String> = emptySet()
+    ) {
+        moreActionsPanel.setActions(actions, dismissedRedDotIds)
+    }
+
+    fun applyMorePanelAppearance(appearance: MessageInputMorePanelAppearance?) {
+        moreActionsPanel.setAppearance(appearance)
     }
 
     fun cancelAnimations() {
@@ -79,7 +87,8 @@ internal class MessageInputPanelContentController private constructor(
             editText: AtomicEditText,
             currentPanel: () -> PanelState?,
             onSendClick: () -> Unit,
-            onCustomEmojiClick: (EmojiGroup, Emoji) -> Unit = { _, _ -> }
+            onCustomEmojiClick: (EmojiGroup, Emoji) -> Unit = { _, _ -> },
+            onMoreActionRedDotDismissed: (actionID: String) -> Unit = {}
         ): MessageInputPanelContentController {
             val picker = EmojiPickerView(context)
             picker.setup(
@@ -104,6 +113,7 @@ internal class MessageInputPanelContentController private constructor(
             picker.visibility = View.GONE
 
             val morePanel = MoreActionsPanelView(context)
+            morePanel.setOnRedDotDismissedListener(onMoreActionRedDotDismissed)
             panelContainer.addView(
                 morePanel,
                 FrameLayout.LayoutParams(

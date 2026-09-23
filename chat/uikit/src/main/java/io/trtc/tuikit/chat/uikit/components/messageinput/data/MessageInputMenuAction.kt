@@ -19,6 +19,7 @@ data class MessageInputMenuAction(
     val iconResID: Int = 0,
     val dangerous: Boolean = false,
     val onClick: () -> Unit = {},
+    val showRedDot: Boolean = false,
 ) : CustomItem
 
 data class MessageInputMenuActionContext(
