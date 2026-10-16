@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <FrameLayout
+        android:id="@+id/livekit_pusher_prepare_editing_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <com.trtc.uikit.livekit.pusher.video.PusherStageShadingView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/livekit_pusher_prepare_exit"
+            android:layout_width="@dimen/livekit_pusher_prepare_exit_size"
+            android:layout_height="@dimen/livekit_pusher_prepare_exit_size"
+            android:layout_gravity="top|start"
+            android:layout_marginStart="@dimen/livekit_pusher_prepare_exit_margin_start"
+            android:layout_marginTop="@dimen/livekit_pusher_prepare_exit_margin_top"
+            android:contentDescription="@string/common_cancel"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/livekit_pusher_prepare_exit"
+            android:textColor="@color/common_design_standard_flowkit_white"
+            android:textSize="@dimen/livekit_pusher_prepare_exit_text_size" />
+
+        <com.trtc.uikit.livekit.pusher.prepare.PusherLiveInfoEditorView
+            android:id="@+id/livekit_pusher_prepare_setup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/livekit_pusher_prepare_header_top"
+            android:clipChildren="false"
+            android:clipToPadding="false" />
+
+        <LinearLayout
+            android:id="@+id/livekit_pusher_prepare_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/livekit_pusher_prepare_action_height"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginStart="@dimen/livekit_pusher_prepare_actions_horizontal_inset"
+            android:layout_marginEnd="@dimen/livekit_pusher_prepare_actions_horizontal_inset"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.trtc.uikit.livekit.pusher.settings.PusherSettingsItemView
+                android:id="@+id/livekit_pusher_prepare_beauty"
+                android:layout_width="@dimen/livekit_pusher_prepare_action_width"
+                android:layout_height="@dimen/livekit_pusher_prepare_action_height"
+                android:layout_marginEnd="@dimen/livekit_pusher_prepare_actions_spacing" />
+
+            <com.trtc.uikit.livekit.pusher.settings.PusherSettingsItemView
+                android:id="@+id/livekit_pusher_prepare_flip"
+                android:layout_width="@dimen/livekit_pusher_prepare_action_width"
+                android:layout_height="@dimen/livekit_pusher_prepare_action_height"
+                android:layout_marginEnd="@dimen/livekit_pusher_prepare_actions_spacing" />
+
+            <com.trtc.uikit.livekit.pusher.settings.PusherSettingsItemView
+                android:id="@+id/livekit_pusher_prepare_more"
+                android:layout_width="@dimen/livekit_pusher_prepare_action_width"
+                android:layout_height="@dimen/livekit_pusher_prepare_action_height" />
+        </LinearLayout>
+
+        <com.trtc.uikit.livekit.pusher.prepare.GradientButton
+            android:id="@+id/livekit_pusher_prepare_start"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/livekit_pusher_prepare_start_height"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="@dimen/livekit_pusher_prepare_start_horizontal_margin"
+            android:layout_marginEnd="@dimen/livekit_pusher_prepare_start_horizontal_margin" />
+    </FrameLayout>
+
+    <com.trtc.uikit.livekit.pusher.prepare.CountdownView
+        android:id="@+id/livekit_pusher_prepare_countdown"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+</merge>

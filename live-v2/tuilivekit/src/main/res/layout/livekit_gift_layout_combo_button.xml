@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <FrameLayout
+        android:id="@+id/fl_ripple_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false" />
+
+    <com.trtc.uikit.livekit.common.gift.panel.gift.viewholder.ComboTrackView
+        android:id="@+id/v_combo_track"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_gravity="top|center_horizontal" />
+
+    <com.trtc.uikit.livekit.common.gift.panel.gift.viewholder.ComboProgressRingView
+        android:id="@+id/v_combo_progress"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_gravity="top|center_horizontal" />
+
+    <View
+        android:id="@+id/v_combo_core"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/livekit_gift_combo_core_bg" />
+
+    <com.trtc.uikit.livekit.common.gift.panel.gift.viewholder.ComboFaceView
+        android:id="@+id/v_combo_face"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/tv_combo_count"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="70dp"
+        android:background="@drawable/livekit_gift_combo_count_bg"
+        android:gravity="center"
+        android:minWidth="22dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+</merge>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_coguest_audience_manage_title"
+            android:layout_width="match_parent"
+            android:layout_height="22dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="27dp"
+            android:layout_marginEnd="20dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            app:liveTextRole="dialogTitle" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintWidth_max="200dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="72dp"
+            android:layout_marginTop="70dp">
+
+            <LinearLayout
+                android:id="@+id/livekit_pusher_coguest_audience_manage_microphone"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="72dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="top|center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/livekit_pusher_coguest_audience_manage_microphone_icon"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/livekit_pusher_coguest_action_mic" />
+
+                <com.trtc.uikit.livekit.common.theme.LiveText
+                    android:id="@+id/livekit_pusher_coguest_audience_manage_microphone_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="7dp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:textColor="@color/livekit_coguest_manage_label"
+                    app:liveTextRole="control" />
+            </LinearLayout>
+
+            <Space android:layout_width="40dp" android:layout_height="1dp" />
+
+            <LinearLayout
+                android:id="@+id/livekit_pusher_coguest_audience_manage_disconnect"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="72dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="top|center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/livekit_pusher_coguest_action_disconnect" />
+
+                <com.trtc.uikit.livekit.common.theme.LiveText
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="7dp"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:id="@+id/livekit_pusher_coguest_audience_manage_disconnect_label"
+                    android:text="@string/livekit_pusher_coguest_disconnect_user"
+                    android:textColor="@color/livekit_coguest_manage_destructive"
+                    app:liveTextRole="control" />
+            </LinearLayout>
+        </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/livekit_pusher_gift_entry_capsule"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="56dp"
+        android:background="@drawable/livekit_pusher_gift_capsule_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="178dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/livekit_pusher_gift_entry_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <com.trtc.uikit.livekit.common.theme.avatar.AtomicAvatar
+            android:id="@+id/livekit_pusher_gift_entry_avatar"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="3dp"
+            app:avatarShape="round"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/livekit_pusher_gift_entry_sender"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="1dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/livekit_pusher_gift_sender_text"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/livekit_pusher_gift_entry_center"
+            app:layout_constraintEnd_toStartOf="@id/livekit_pusher_gift_entry_icon"
+            app:layout_constraintStart_toEndOf="@id/livekit_pusher_gift_entry_avatar" />
+
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/livekit_pusher_gift_entry_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/livekit_pusher_gift_detail_text"
+            android:textSize="9sp"
+            app:layout_constraintEnd_toEndOf="@id/livekit_pusher_gift_entry_sender"
+            app:layout_constraintStart_toStartOf="@id/livekit_pusher_gift_entry_sender"
+            app:layout_constraintTop_toBottomOf="@id/livekit_pusher_gift_entry_center" />
+
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/livekit_pusher_gift_entry_icon_fallback"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:background="@drawable/livekit_pusher_gift_fallback_background"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/livekit_pusher_gift_fallback"
+            android:textColor="@color/livekit_pusher_gift_sender_text"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/livekit_pusher_gift_entry_icon"
+            app:layout_constraintEnd_toEndOf="@id/livekit_pusher_gift_entry_icon"
+            app:layout_constraintStart_toStartOf="@id/livekit_pusher_gift_entry_icon"
+            app:layout_constraintTop_toTopOf="@id/livekit_pusher_gift_entry_icon" />
+
+        <com.trtc.uikit.livekit.common.gift.player.LiveGiftIconView
+            android:id="@+id/livekit_pusher_gift_entry_icon"
+            android:layout_width="37dp"
+            android:layout_height="37dp"
+            android:layout_marginEnd="5dp"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_pusher_gift_entry_multiplier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:includeFontPadding="false"
+        android:text="@string/livekit_pusher_gift_multiplier"
+        android:textColor="@color/livekit_pusher_gift_count_text"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/livekit_pusher_gift_entry_capsule"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_pusher_gift_entry_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:fontFeatureSettings="tnum"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:minWidth="28dp"
+        android:shadowColor="@color/livekit_pusher_gift_count_shadow"
+        android:shadowDx="0"
+        android:shadowDy="2"
+        android:shadowRadius="4"
+        android:textColor="@color/livekit_pusher_gift_count_text"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:autoSizeMinTextSize="16sp"
+        app:autoSizeMaxTextSize="26sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/livekit_pusher_gift_entry_multiplier"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</merge>

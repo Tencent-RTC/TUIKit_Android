@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing -->
+    <dimen name="spacing_4">4dp</dimen>
+    <dimen name="spacing_8">8dp</dimen>
+    <dimen name="spacing_16">16dp</dimen>
+    <dimen name="spacing_20">20dp</dimen>
+
+    <!-- Radius -->
+    <dimen name="radius_6">6dp</dimen>
+    <dimen name="radius_12">12dp</dimen>
+    <dimen name="radius_20">20dp</dimen>
+
+    <!-- Font Sizes -->
+    <dimen name="text_size_14">14sp</dimen>
+    <dimen name="text_size_24">24sp</dimen>
+
+    <!-- Pusher entry: height of the dark bar below the media stage. -->
+    <dimen name="livekit_pusher_bottom_bar_height">78dp</dimen>
+    <!--
+      Bottom corners of the media stage, from the Ardot 媒体舞台 / 摄像头预览 node. The top
+      corners stay square because the stage reaches the top screen edge.
+    -->
+    <dimen name="livekit_pusher_stage_corner_radius">18dp</dimen>
+
+    <!-- Pusher countdown stage, from the Ardot 倒计时 frame -->
+    <dimen name="livekit_pusher_countdown_circle_size">150dp</dimen>
+    <dimen name="livekit_pusher_countdown_number_width">150dp</dimen>
+    <dimen name="livekit_pusher_countdown_number_height">140dp</dimen>
+    <dimen name="livekit_pusher_countdown_number_text_size">96sp</dimen>
+    <dimen name="livekit_pusher_countdown_number_shadow_radius">12dp</dimen>
+    <dimen name="livekit_pusher_countdown_number_shadow_offset_y">4dp</dimen>
+    <dimen name="livekit_pusher_countdown_cancel_width">200dp</dimen>
+    <dimen name="livekit_pusher_countdown_cancel_height">50dp</dimen>
+    <dimen name="livekit_pusher_countdown_cancel_radius">14dp</dimen>
+    <dimen name="livekit_pusher_countdown_cancel_text_size">16sp</dimen>
+    <dimen name="livekit_pusher_countdown_cancel_margin_bottom">8dp</dimen>
+
+    <!-- Pusher prepare action button, from the Ardot 美化/翻转镜头/更多按钮 nodes -->
+    <dimen name="livekit_pusher_prepare_action_width">68dp</dimen>
+    <dimen name="livekit_pusher_prepare_action_height">71dp</dimen>
+    <dimen name="livekit_pusher_prepare_action_plate_size">48dp</dimen>
+    <dimen name="livekit_pusher_prepare_action_title_top">7dp</dimen>
+    <dimen name="livekit_pusher_prepare_action_title_height">16dp</dimen>
+
+    <!-- Pusher prepare header, from the Ardot 准备页头部 / 封面+标题 node -->
+    <dimen name="livekit_pusher_prepare_cover_size">58dp</dimen>
+    <dimen name="livekit_pusher_prepare_cover_radius">14dp</dimen>
+    <dimen name="livekit_pusher_prepare_cover_border_width">1dp</dimen>
+    <dimen name="livekit_pusher_prepare_cover_hint_top">6dp</dimen>
+    <dimen name="livekit_pusher_prepare_title_top">90dp</dimen>
+    <dimen name="livekit_pusher_prepare_title_height">28dp</dimen>
+    <dimen name="livekit_pusher_prepare_title_horizontal_inset">45dp</dimen>
+    <dimen name="livekit_pusher_prepare_title_text_size">20sp</dimen>
+    <dimen name="livekit_pusher_prepare_edit_hint_height">25dp</dimen>
+    <!-- Title top plus title height, so the hint always sits right below the title. -->
+    <dimen name="livekit_pusher_prepare_edit_hint_text_size">12sp</dimen>
+
+    <!-- Pusher prepare cover picker drawer, mirroring iOS PusherCoverPickerView -->
+    <dimen name="livekit_pusher_cover_picker_height">190dp</dimen>
+    <dimen name="livekit_pusher_cover_picker_options_top">68dp</dimen>
+    <dimen name="livekit_pusher_cover_picker_horizontal_inset">20dp</dimen>
+    <dimen name="livekit_pusher_cover_picker_option_spacing">8dp</dimen>
+    <dimen name="livekit_pusher_cover_picker_option_radius">12dp</dimen>
+    <dimen name="livekit_pusher_cover_picker_option_border_width">2dp</dimen>
+
+    <!-- Pusher prepare page assembly, from the Ardot 开播准备页 frame -->
+    <dimen name="livekit_pusher_prepare_header_top">85dp</dimen>
+    <dimen name="livekit_pusher_prepare_exit_size">44dp</dimen>
+    <dimen name="livekit_pusher_prepare_exit_margin_start">8dp</dimen>
+    <dimen name="livekit_pusher_prepare_exit_margin_top">4dp</dimen>
+    <dimen name="livekit_pusher_prepare_exit_text_size">30sp</dimen>
+    <dimen name="livekit_pusher_prepare_actions_spacing">32dp</dimen>
+    <dimen name="livekit_pusher_prepare_actions_margin_bottom">46dp</dimen>
+    <dimen name="livekit_pusher_prepare_actions_horizontal_inset">20dp</dimen>
+
+    <!-- Pusher start-live button, from the Ardot 开始直播按钮 node -->
+    <dimen name="livekit_pusher_prepare_start_height">52dp</dimen>
+    <dimen name="livekit_pusher_prepare_start_radius">26dp</dimen>
+    <dimen name="livekit_pusher_prepare_start_horizontal_margin">20dp</dimen>
+    <dimen name="livekit_pusher_prepare_start_margin_bottom">7dp</dimen>
+    <dimen name="livekit_pusher_prepare_start_border_width">1.2dp</dimen>
+    <dimen name="livekit_pusher_prepare_start_shadow_radius">14dp</dimen>
+    <dimen name="livekit_pusher_prepare_start_shadow_offset_y">8dp</dimen>
+    <dimen name="livekit_pusher_prepare_start_text_size">16sp</dimen>
+    <dimen name="livekit_pusher_prepare_start_dot_size">8dp</dimen>
+    <dimen name="livekit_pusher_prepare_start_dot_glow_radius">4dp</dimen>
+    <!-- Dot box = dot size plus glow radius on both sides, so the glow is not clipped. -->
+    <dimen name="livekit_pusher_prepare_start_dot_box">16dp</dimen>
+    <!-- Ardot gap between dot edge and text, minus the glow padding of the dot box. -->
+    <dimen name="livekit_pusher_prepare_start_dot_margin_end">4dp</dimen>
+
+    <!-- Pusher settings item, from the Ardot 设置项 · 清晰度/镜像/音效设置 nodes -->
+    <dimen name="livekit_pusher_settings_item_height">84dp</dimen>
+    <dimen name="livekit_pusher_settings_item_plate_size">44dp</dimen>
+    <dimen name="livekit_pusher_settings_item_plate_top">4dp</dimen>
+    <dimen name="livekit_pusher_settings_item_icon_size">22dp</dimen>
+    <dimen name="livekit_pusher_settings_item_title_top">56dp</dimen>
+    <dimen name="livekit_pusher_settings_item_title_height">28dp</dimen>
+
+    <!-- Shared live bottom-sheet background -->
+    <dimen name="livekit_bottom_sheet_radius">26dp</dimen>
+    <dimen name="livekit_pusher_settings_panel_horizontal_inset">16dp</dimen>
+    <dimen name="livekit_bottom_sheet_handle_width">36dp</dimen>
+    <dimen name="livekit_bottom_sheet_handle_height">4dp</dimen>
+    <dimen name="livekit_bottom_sheet_handle_top">10dp</dimen>
+    <dimen name="livekit_bottom_sheet_handle_radius">2dp</dimen>
+    <dimen name="livekit_bottom_sheet_title_top">30dp</dimen>
+    <dimen name="livekit_bottom_sheet_title_height">18dp</dimen>
+    <dimen name="livekit_bottom_sheet_title_horizontal_inset">16dp</dimen>
+    <dimen name="livekit_bottom_sheet_brand_line_height">2dp</dimen>
+    <dimen name="livekit_bottom_sheet_brand_line_glow_radius">8dp</dimen>
+    <dimen name="livekit_bottom_sheet_black_shadow_radius">80dp</dimen>
+    <dimen name="livekit_bottom_sheet_black_shadow_offset_y">24dp</dimen>
+    <dimen name="livekit_bottom_sheet_black_shadow_inset">24dp</dimen>
+    <dimen name="livekit_bottom_sheet_blue_shadow_radius">32dp</dimen>
+    <dimen name="livekit_bottom_sheet_blue_shadow_offset_y">6dp</dimen>
+    <dimen name="livekit_bottom_sheet_blue_shadow_inset">12dp</dimen>
+    <dimen name="livekit_pusher_settings_main_content_top">75dp</dimen>
+
+    <!-- Bottom-sheet heights per page, from the Ardot 抽屉 nodes and the iOS Page.sheetHeight. -->
+    <dimen name="livekit_pusher_settings_page_main_height">191dp</dimen>
+    <dimen name="livekit_pusher_settings_page_video_quality_height">280dp</dimen>
+    <dimen name="livekit_pusher_settings_page_audio_effect_height">466dp</dimen>
+    <dimen name="livekit_pusher_settings_page_beauty_height">220dp</dimen>
+
+    <!-- Pusher resolution rows, from the Ardot 清晰度项 nodes -->
+    <dimen name="livekit_pusher_video_quality_content_top">67dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_height">48dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_radius">12dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_spacing">8dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_border_width">1dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_selected_border_width">1.5dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_inner_line_height">1dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_horizontal_inset">16dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_check_width">14dp</dimen>
+    <dimen name="livekit_pusher_video_quality_row_check_text_size">14sp</dimen>
+
+    <!-- Pusher audio-effect page, from the Ardot 音效设置抽屉 node -->
+    <dimen name="livekit_pusher_audio_content_top">60dp</dimen>
+    <dimen name="livekit_pusher_audio_card_radius">14dp</dimen>
+    <dimen name="livekit_pusher_audio_card_border_width">1dp</dimen>
+    <dimen name="livekit_pusher_audio_row_inset">16dp</dimen>
+    <dimen name="livekit_pusher_audio_ear_card_height">96dp</dimen>
+    <dimen name="livekit_pusher_audio_ear_switch_row_height">48dp</dimen>
+    <dimen name="livekit_pusher_audio_volume_row_height">48dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_width">42dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_height">24dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_margin_end">16dp</dimen>
+    <!-- Centres the switch in the 48dp switch row: (48 - 24) / 2. -->
+    <dimen name="livekit_pusher_audio_switch_margin_top">12dp</dimen>
+    <!-- Section offsets that follow the ear card, matching the iOS constraints. -->
+    <dimen name="livekit_pusher_audio_settings_title_top">108dp</dimen>
+    <dimen name="livekit_pusher_audio_capture_card_top">130dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_knob_size">20dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_knob_inset">2dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_glow_radius">8dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_glow_offset_y">2dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_knob_shadow_radius">4dp</dimen>
+    <dimen name="livekit_pusher_audio_switch_knob_shadow_offset_y">2dp</dimen>
+    <dimen name="livekit_pusher_audio_section_title_height">15dp</dimen>
+    <dimen name="livekit_pusher_audio_capture_card_height">46dp</dimen>
+    <dimen name="livekit_pusher_audio_value_width">30dp</dimen>
+    <!-- Slider start minus the value gap and the value width, so the value ends at 166dp. -->
+    <dimen name="livekit_pusher_audio_value_start">136dp</dimen>
+    <dimen name="livekit_pusher_audio_slider_start">176dp</dimen>
+    <dimen name="livekit_pusher_audio_slider_height">18dp</dimen>
+
+    <!-- Section offsets inside the audio-effect content, matching the iOS constraints. -->
+    <dimen name="livekit_pusher_audio_changer_title_top">188dp</dimen>
+    <dimen name="livekit_pusher_audio_changer_row_top">210dp</dimen>
+    <dimen name="livekit_pusher_audio_reverb_title_top">286dp</dimen>
+    <dimen name="livekit_pusher_audio_reverb_row_top">308dp</dimen>
+
+    <!-- Pusher sound option, from the Ardot 变声项 / 混响项 nodes -->
+    <dimen name="livekit_pusher_sound_option_height">64dp</dimen>
+    <dimen name="livekit_pusher_sound_option_spacing">8dp</dimen>
+    <dimen name="livekit_pusher_sound_option_plate_size">48dp</dimen>
+    <dimen name="livekit_pusher_sound_option_plate_radius">14dp</dimen>
+    <dimen name="livekit_pusher_sound_option_plate_border_width">1dp</dimen>
+    <dimen name="livekit_pusher_sound_option_plate_selected_border_width">1.5dp</dimen>
+    <!-- Centres the icon inside the 48dp plate. -->
+    <dimen name="livekit_pusher_sound_option_label_top">50dp</dimen>
+    <dimen name="livekit_pusher_sound_option_label_height">14dp</dimen>
+
+    <!-- Pusher beauty page, from the Ardot 美颜抽屉 node (439:41) -->
+    <dimen name="livekit_pusher_beauty_content_top">68dp</dimen>
+    <dimen name="livekit_pusher_beauty_row_height">32dp</dimen>
+    <dimen name="livekit_pusher_beauty_label_inset">4dp</dimen>
+    <dimen name="livekit_pusher_beauty_type_label_width">34dp</dimen>
+    <dimen name="livekit_pusher_beauty_value_label_width">22dp</dimen>
+    <!-- Slider start is the type label inset plus its width plus the 8dp gap: 4 + 34 + 8. -->
+    <dimen name="livekit_pusher_beauty_slider_start">46dp</dimen>
+    <!-- Slider end is the value label inset plus its width plus the 8dp gap: 4 + 22 + 8. -->
+    <dimen name="livekit_pusher_beauty_slider_end">34dp</dimen>
+    <dimen name="livekit_pusher_beauty_options_top">40dp</dimen>
+    <dimen name="livekit_pusher_beauty_options_height">73dp</dimen>
+    <dimen name="livekit_slider_track_height">4dp</dimen>
+    <dimen name="livekit_slider_thumb_size">18dp</dimen>
+    <dimen name="livekit_slider_thumb_border_width">1dp</dimen>
+    <dimen name="livekit_slider_thumb_shadow_radius">3dp</dimen>
+    <dimen name="livekit_pusher_beauty_plate_size">44dp</dimen>
+    <dimen name="livekit_pusher_beauty_plate_top">4dp</dimen>
+    <dimen name="livekit_pusher_beauty_plate_border_width">1dp</dimen>
+    <dimen name="livekit_pusher_beauty_icon_size">24dp</dimen>
+    <dimen name="livekit_pusher_beauty_option_label_top">56dp</dimen>
+    <dimen name="livekit_pusher_beauty_option_label_height">14dp</dimen>
+
+    <!-- Pusher living network status, from Ardot 725:27 / 725:33 / 725:41 / 725:42. -->
+    <dimen name="livekit_pusher_header_status_normal_width">68dp</dimen>
+    <dimen name="livekit_pusher_header_status_poor_width">82dp</dimen>
+    <dimen name="livekit_pusher_header_status_very_poor_width">94dp</dimen>
+    <dimen name="livekit_pusher_header_status_disconnected_width">94dp</dimen>
+    <dimen name="livekit_pusher_header_status_icon_normal_width">13dp</dimen>
+    <dimen name="livekit_pusher_header_status_icon_poor_width">13dp</dimen>
+    <dimen name="livekit_pusher_header_status_icon_very_poor_width">17dp</dimen>
+    <dimen name="livekit_pusher_header_status_icon_disconnected_width">17dp</dimen>
+    <dimen name="livekit_pusher_header_status_normal_label_start">8.8dp</dimen>
+    <dimen name="livekit_pusher_header_status_poor_label_start">25dp</dimen>
+    <dimen name="livekit_pusher_header_status_very_poor_label_start">29dp</dimen>
+    <dimen name="livekit_pusher_header_status_disconnected_label_start">29dp</dimen>
+    <dimen name="livekit_pusher_header_status_label_chevron_gap">3dp</dimen>
+    <dimen name="livekit_pusher_header_status_normal_chevron_width">3.5dp</dimen>
+    <dimen name="livekit_pusher_header_status_poor_chevron_width">3.8889dp</dimen>
+    <dimen name="livekit_pusher_header_status_very_poor_chevron_width">3.92dp</dimen>
+    <dimen name="livekit_pusher_header_status_disconnected_chevron_width">3.92dp</dimen>
+    <dimen name="livekit_pusher_header_status_normal_chevron_end">9.7dp</dimen>
+    <dimen name="livekit_pusher_header_status_poor_chevron_end">10.1dp</dimen>
+    <dimen name="livekit_pusher_header_status_very_poor_chevron_end">8.08dp</dimen>
+    <dimen name="livekit_pusher_header_status_disconnected_chevron_end">8.08dp</dimen>
+
+    <!-- Pusher living toolbar, from Ardot 77:450. -->
+    <dimen name="livekit_pusher_message_list_bottom">82dp</dimen>
+    <dimen name="livekit_pusher_audience_welcome_bottom">86dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_action_width">34dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_action_height">46dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_action_top">16dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_leading_inset">12dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_wide_icon_height">26dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_more_icon_size">27dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_more_icon_top">-0.5dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_label_top">30dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_label_height">16dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_badge_canvas_size">24dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_badge_canvas_start">20dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_badge_canvas_top">-10dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_badge_dot_radius">4dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_badge_border_width">1dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_badge_glow_radius">8dp</dimen>
+    <dimen name="livekit_pusher_living_toolbar_like_origin_offset">10dp</dimen>
+    <!-- Header, audience and comment recipes shared by product entry points. -->
+    <dimen name="livekit_header_capsule_radius">18dp</dimen>
+    <dimen name="livekit_audience_avatar_size">42dp</dimen>
+    <dimen name="livekit_comment_row_radius">9dp</dimen>
+    <dimen name="livekit_comment_row_horizontal_inset">8dp</dimen>
+    <dimen name="livekit_comment_row_text_size">13sp</dimen>
+</resources>

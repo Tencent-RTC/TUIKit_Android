@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <com.trtc.uikit.livekit.common.barrage.LiveMessageRecyclerView
+        android:id="@+id/livekit_pusher_message_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:overScrollMode="ifContentScrolls"
+        android:paddingTop="22dp"
+        android:scrollbars="none" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_pusher_message_new_count"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_gravity="start|bottom"
+        android:background="@drawable/livekit_pusher_message_new_background"
+        android:clickable="true"
+        android:elevation="5dp"
+        android:focusable="true"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:minWidth="0dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textColor="@color/livekit_pusher_message_new_text"
+        android:textSize="11sp"
+        android:visibility="gone"
+        tools:text="3 new messages"
+        tools:visibility="visible" />
+
+</FrameLayout>

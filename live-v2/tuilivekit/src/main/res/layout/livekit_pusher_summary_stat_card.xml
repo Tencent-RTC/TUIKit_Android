@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <View
+        android:id="@+id/livekit_pusher_summary_stat_accent"
+        android:layout_width="16dp"
+        android:layout_height="4dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="13dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_summary_stat_title"
+        android:layout_width="0dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="13dp"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        app:liveTextEmphasized="true"
+        app:liveTextRole="metadata"
+        app:liveTextTone="tertiary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="45dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="13dp"
+        app:layout_constraintEnd_toEndOf="parent">
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/livekit_pusher_summary_stat_value"
+            android:layout_width="wrap_content"
+            android:layout_height="31dp"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:textColor="@color/livekit_pusher_summary_text_stat_value"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/livekit_pusher_summary_stat_unit"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeMaxTextSize="23sp"
+            app:autoSizeStepGranularity="1sp" />
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_summary_stat_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="13dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            app:liveTextRole="metadata"
+            app:liveTextTone="disabled"
+            app:layout_constraintStart_toEndOf="@id/livekit_pusher_summary_stat_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <LinearLayout
+        android:id="@+id/livekit_pusher_presence_avatar_stack"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.trtc.uikit.livekit.pusher.living.audience.AudienceAvatarView
+            android:id="@+id/livekit_pusher_presence_rank_1"
+            android:layout_width="32dp"
+            android:layout_height="26dp" />
+
+        <com.trtc.uikit.livekit.pusher.living.audience.AudienceAvatarView
+            android:id="@+id/livekit_pusher_presence_rank_2"
+            android:layout_width="32dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="2dp" />
+
+        <com.trtc.uikit.livekit.pusher.living.audience.AudienceAvatarView
+            android:id="@+id/livekit_pusher_presence_rank_3"
+            android:layout_width="32dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="2dp" />
+
+    </LinearLayout>
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_presence_count"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/livekit_pusher_header_dark_capsule"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:minWidth="26dp"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        app:liveTextRole="caption"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/livekit_pusher_presence_avatar_stack"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="3" />
+
+</merge>

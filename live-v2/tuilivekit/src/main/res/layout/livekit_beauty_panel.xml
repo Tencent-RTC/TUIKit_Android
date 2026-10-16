@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/livekit_player_beauty_content"
+        android:layout_width="0dp" android:layout_height="113dp"
+        android:layout_marginStart="20dp" android:layout_marginEnd="20dp" android:layout_marginTop="68dp"
+        app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_beauty_type"
+        android:layout_width="@dimen/livekit_pusher_beauty_type_label_width"
+        android:layout_height="@dimen/livekit_pusher_beauty_row_height"
+        android:layout_marginStart="@dimen/livekit_pusher_beauty_label_inset"
+        android:gravity="start|center_vertical"
+        android:includeFontPadding="false"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+        app:liveTextRole="caption"
+        app:liveTextTone="secondary" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_beauty_value"
+        android:layout_width="@dimen/livekit_pusher_beauty_value_label_width"
+        android:layout_height="@dimen/livekit_pusher_beauty_row_height"
+        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="@dimen/livekit_pusher_beauty_label_inset"
+        android:gravity="end|center_vertical"
+        android:includeFontPadding="false"
+        app:liveTextEmphasized="true"
+        app:liveTextRole="caption" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveSlider
+        android:id="@+id/livekit_pusher_beauty_slider"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/livekit_pusher_beauty_row_height"
+        android:layout_marginStart="8dp" app:layout_constraintStart_toEndOf="@id/livekit_pusher_beauty_type"
+        android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@id/livekit_pusher_beauty_value" app:layout_constraintTop_toTopOf="parent"
+        app:liveSliderMaximumValue="9" />
+
+    <LinearLayout
+        android:id="@+id/livekit_pusher_beauty_options"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_pusher_beauty_options_height"
+        android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@id/livekit_pusher_beauty_type" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <com.trtc.uikit.livekit.common.theme.LiveSwitch
+                android:id="@+id/livekit_beauty_switch"
+                android:layout_width="42dp" android:layout_height="24dp"
+                android:layout_marginTop="14dp"
+                android:contentDescription="@string/common_video_settings_item_beauty"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" />
+            <com.trtc.uikit.livekit.common.theme.LiveText
+                android:layout_width="0dp" android:layout_height="14dp" android:layout_marginTop="18dp"
+                android:text="@string/common_video_settings_item_beauty" android:gravity="center" android:includeFontPadding="false"
+                app:liveTextRole="control" app:liveTextTone="secondary"
+                app:layout_constraintTop_toBottomOf="@id/livekit_beauty_switch"
+                app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.trtc.uikit.livekit.common.beauty.BeautyOptionControl
+            android:id="@+id/livekit_pusher_beauty_option_smooth"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.trtc.uikit.livekit.common.beauty.BeautyOptionControl
+            android:id="@+id/livekit_pusher_beauty_option_whiteness"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.trtc.uikit.livekit.common.beauty.BeautyOptionControl
+            android:id="@+id/livekit_pusher_beauty_option_ruddy"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.trtc.uikit.livekit.pusher.living.LivingScrimView
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_gravity="top"
+        android:tag="top" />
+
+    <com.trtc.uikit.livekit.pusher.living.LivingScrimView
+        android:layout_width="match_parent"
+        android:id="@+id/livekit_pusher_living_bottom_scrim"
+        android:layout_height="152dp"
+        android:layout_gravity="bottom"
+        android:tag="bottom" />
+
+    <com.trtc.uikit.livekit.pusher.living.LiveHeaderView
+        android:id="@+id/livekit_pusher_living_header"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_gravity="top" />
+
+    <com.trtc.uikit.livekit.common.barrage.BarrageStreamView
+        android:id="@+id/livekit_pusher_living_message_list"
+        android:layout_width="0dp"
+        android:layout_height="184dp"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="@dimen/livekit_pusher_message_list_bottom" />
+
+    <com.trtc.uikit.livekit.common.audience.AudienceWelcomeView
+        android:id="@+id/livekit_pusher_living_audience_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/livekit_pusher_audience_welcome_bottom" />
+
+    <com.trtc.uikit.livekit.pusher.living.LiveBottomToolbarView
+        android:id="@+id/livekit_pusher_living_bottom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_gravity="bottom" />
+
+    <com.trtc.uikit.livekit.common.like.LikeAnimationView
+        android:id="@+id/livekit_pusher_living_like_animation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.trtc.uikit.livekit.common.gift.GiftPlayView
+        android:id="@+id/livekit_pusher_living_gift_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.trtc.uikit.livekit.common.barrage.BarrageInputView
+        android:id="@+id/livekit_pusher_living_comment_composer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.trtc.uikit.livekit.pusher.living.pause.PusherPauseOverlayView
+        android:id="@+id/livekit_pusher_living_pause_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</merge>

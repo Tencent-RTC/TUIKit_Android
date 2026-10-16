@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="14dp"
+        android:paddingBottom="12dp">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp">
+            <com.trtc.uikit.livekit.pusher.living.status.LiveStatusDeviceRowView
+                android:id="@+id/livekit_pusher_status_video_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="42dp"
+                android:paddingEnd="57dp" />
+            <com.trtc.uikit.livekit.common.theme.LiveText
+                android:id="@+id/livekit_pusher_status_video_resolution"
+                android:layout_width="49dp"
+                android:layout_height="16dp"
+                android:gravity="end"
+                android:includeFontPadding="false"
+                app:liveTextRole="caption"
+                app:liveTextTone="tertiary"
+                android:layout_gravity="end|top"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp" />
+        </FrameLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#11FFFFFF"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp"
+            android:layout_marginTop="8dp" />
+        <com.trtc.uikit.livekit.pusher.living.status.LiveStatusDeviceRowView
+            android:id="@+id/livekit_pusher_status_audio_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="42dp"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp"
+            android:layout_marginTop="10dp" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="23dp">
+            <com.trtc.uikit.livekit.common.theme.LiveSlider
+                android:id="@+id/livekit_pusher_status_volume"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                app:liveSliderMaximumValue="100"
+                android:layout_marginEnd="41dp" />
+            <com.trtc.uikit.livekit.common.theme.LiveText
+                android:id="@+id/livekit_pusher_status_volume_value"
+                android:layout_width="28dp"
+                android:layout_height="15dp"
+                android:gravity="end"
+                android:includeFontPadding="false"
+                app:liveTextRole="control"
+                app:liveTextTone="tertiary"
+                android:layout_gravity="end|center_vertical" />
+        </FrameLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#11FFFFFF"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp"
+            android:layout_marginTop="8dp" />
+        <com.trtc.uikit.livekit.pusher.living.status.LiveStatusDeviceRowView
+            android:id="@+id/livekit_pusher_status_temperature_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="42dp"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp"
+            android:layout_marginTop="10dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#11FFFFFF"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp"
+            android:layout_marginTop="8dp" />
+        <com.trtc.uikit.livekit.pusher.living.status.LiveStatusDeviceRowView
+            android:id="@+id/livekit_pusher_status_network_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="42dp"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp"
+            android:layout_marginTop="10dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/livekit_pusher_status_card_bg_15"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:minHeight="68dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:paddingTop="11dp"
+            android:paddingBottom="12dp">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+                    android:id="@+id/livekit_pusher_status_delay"
+                    style="@style/LiveKitPusherStatusNetworkValue" />
+                <com.trtc.uikit.livekit.common.theme.LiveText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/livekit_pusher_status_round_trip_latency"
+                    app:liveTextRole="metadata"
+                    app:liveTextTone="tertiary"
+                    android:minHeight="14dp"
+                    android:maxLines="2"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+                    android:id="@+id/livekit_pusher_status_down_loss"
+                    style="@style/LiveKitPusherStatusNetworkValue" />
+                <com.trtc.uikit.livekit.common.theme.LiveText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/livekit_pusher_status_downstream_loss"
+                    app:liveTextRole="metadata"
+                    app:liveTextTone="tertiary"
+                    android:minHeight="14dp"
+                    android:maxLines="2"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+                    android:id="@+id/livekit_pusher_status_up_loss"
+                    style="@style/LiveKitPusherStatusNetworkValue" />
+                <com.trtc.uikit.livekit.common.theme.LiveText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/livekit_pusher_status_upstream_loss"
+                    app:liveTextRole="metadata"
+                    app:liveTextTone="tertiary"
+                    android:minHeight="14dp"
+                    android:maxLines="2"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/livekit_pusher_status_card_bg_15"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingStart="15dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="15dp"
+            android:minHeight="112dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:paddingBottom="11dp">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <com.trtc.uikit.livekit.common.theme.LiveText
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/livekit_pusher_status_video_info"
+                    app:liveTextRole="sectionTitle"
+                    app:liveTextTone="secondary" />
+                <LinearLayout
+                    android:id="@+id/livekit_pusher_status_video_info_rows"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="vertical" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <com.trtc.uikit.livekit.common.theme.LiveText
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/livekit_pusher_status_audio_info"
+                    app:liveTextRole="sectionTitle"
+                    app:liveTextTone="secondary" />
+                <LinearLayout
+                    android:id="@+id/livekit_pusher_status_audio_info_rows"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</merge>

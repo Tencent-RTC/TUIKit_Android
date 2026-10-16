@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.LiveKitAccess.LogShare" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.LiveKitAccess.LogShare</item>
+    </style>
+    <style name="Widget.LiveKitAccess.LogShare" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="paddingBottomSystemWindowInsets">true</item>
+        <item name="paddingLeftSystemWindowInsets">true</item>
+        <item name="paddingRightSystemWindowInsets">true</item>
+    </style>
+</resources>

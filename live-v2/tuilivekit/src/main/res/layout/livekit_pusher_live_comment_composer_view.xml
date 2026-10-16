@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/livekit_pusher_comment_input_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="36dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/livekit_pusher_comment_input_background"
+        android:clickable="true"
+        android:clipChildren="false"
+        android:elevation="9dp"
+        android:focusable="true"
+        android:outlineAmbientShadowColor="#4D000000"
+        android:outlineSpotShadowColor="#4D000000"
+        tools:targetApi="p">
+
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/livekit_pusher_comment_cancel"
+            android:layout_width="22dp"
+            android:layout_height="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:contentDescription="@string/livekit_comment_cancel"
+            android:focusable="true"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/livekit_comment_cancel_symbol"
+            android:textColor="#94FFFFFF"
+            android:textSize="18sp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <com.trtc.uikit.livekit.common.barrage.CommentEditText
+            android:id="@+id/livekit_pusher_comment_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/livekit_pusher_comment_send"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="36dp"
+            android:layout_marginEnd="8dp"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/livekit_comment_friendly_placeholder"
+            android:imeOptions="actionSend"
+            android:includeFontPadding="false"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="0dp"
+            android:minLines="1"
+            android:maxLines="4"
+            android:fontFamily="sans-serif-medium"
+            android:scrollHorizontally="false"
+            android:textColor="#FFFFFFFF"
+            android:textColorHint="#66FFFFFF"
+            android:textCursorDrawable="@null"
+            android:textSize="14sp" />
+
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/livekit_pusher_comment_send"
+            android:layout_width="60dp"
+            android:layout_height="28dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/livekit_pusher_comment_send_background"
+            android:clickable="true"
+            android:enabled="false"
+            android:focusable="true"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/live_barrage_btn_send"
+            android:textColor="#FFFFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:ignore="TouchTargetSizeCheck" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

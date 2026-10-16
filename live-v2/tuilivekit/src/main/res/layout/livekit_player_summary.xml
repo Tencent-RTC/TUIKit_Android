@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/iv_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000" />
+
+    <TextView
+        android:id="@+id/tv_summary_title"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="114dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/livelist_live_ended"
+        android:textColor="@color/white"
+        android:textFontWeight="600"
+        android:textSize="27sp" />
+
+    <FrameLayout
+        android:layout_width="86dp"
+        android:layout_height="86dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="211dp"
+        android:background="@drawable/livekit_summary_avatar_ring">
+
+        <com.trtc.uikit.livekit.common.theme.avatar.AtomicAvatar
+            android:id="@+id/iv_summary_avatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_summary_anchor_name"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="314dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textFontWeight="600"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_summary_next_hint"
+        android:layout_width="match_parent"
+        android:layout_height="21dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="349dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/livelist_next_live_hint"
+        android:textColor="#99FFFFFF"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="81dp"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/livekit_summary_swipe_arrow"
+        app:tint="#B8FFFFFF" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="18dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="58dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/livelist_swipe_more_hosts"
+        android:textColor="#A8FFFFFF"
+        android:textSize="12sp" />
+</merge>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Beauty "off" icon, exported from the Ardot 美颜内容 / 关闭 icon component (439:302):
+  a 15.5 ring with a diagonal slash. Tinted by the host, as the iOS alwaysTemplate asset is.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <group
+        android:translateX="4.25"
+        android:translateY="4.25">
+        <path
+            android:pathData="M0,7.75a7.75,7.75 0 1,0 15.5,0a7.75,7.75 0 1,0 -15.5,0"
+            android:strokeWidth="1.5"
+            android:strokeColor="#FFFFFF" />
+    </group>
+
+    <group
+        android:translateX="6.45"
+        android:translateY="6.45">
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M10.499 -0.601L-0.601 10.499Q-0.8603 10.7437 -0.85 11.1Q-0.8603 11.4563 -0.601 11.701Q-0.3563 11.9603 0 11.95Q0.3563 11.9603 0.601 11.701L11.701 0.601Q11.9603 0.3563 11.95 0Q11.9603 -0.3563 11.701 -0.601Q11.4563 -0.8603 11.1 -0.85Q10.7437 -0.8603 10.499 -0.601Z" />
+    </group>
+</vector>

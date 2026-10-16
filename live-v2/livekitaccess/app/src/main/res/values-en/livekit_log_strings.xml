@@ -1,0 +1,10 @@
+<resources>
+    <string name="livekit_logs_title">Share Logs</string>
+    <string name="livekit_logs_empty">No logs available to share</string>
+    <string name="livekit_logs_read_failed">Unable to read logs. Close and try again.</string>
+    <string name="livekit_logs_scope">LiteAV logs across live rooms. Tap a file to share it, or share all logs as a ZIP.</string>
+    <string name="livekit_logs_archive">Share All Logs (ZIP)</string>
+    <string name="livekit_logs_count">%1$d files</string>
+    <string name="livekit_logs_failed">Unable to share logs. Files may have rotated or storage may be full. Try again.</string>
+    <string name="livekit_logs_metadata">%1$s · %2$s</string>
+</resources>

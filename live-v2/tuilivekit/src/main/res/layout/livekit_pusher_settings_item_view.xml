@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:id="@+id/livekit_pusher_settings_item_icon_background"
+        android:layout_width="@dimen/livekit_pusher_settings_item_plate_size"
+        android:layout_height="@dimen/livekit_pusher_settings_item_plate_size"
+        android:layout_gravity="top|center_horizontal">
+
+        <ImageView
+            android:id="@+id/livekit_pusher_settings_item_icon"
+            android:layout_width="@dimen/livekit_pusher_settings_item_icon_size"
+            android:layout_height="@dimen/livekit_pusher_settings_item_icon_size"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no" />
+    </FrameLayout>
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_settings_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_pusher_settings_item_title_height"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        app:autoSizeMaxTextSize="11sp"
+        app:autoSizeMinTextSize="8sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
+        app:liveTextRole="control"
+        app:liveTextTone="secondary" />
+</merge>

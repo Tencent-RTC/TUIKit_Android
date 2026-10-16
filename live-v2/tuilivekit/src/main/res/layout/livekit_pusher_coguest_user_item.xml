@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="52dp">
+
+    <FrameLayout
+        android:id="@+id/livekit_pusher_coguest_user_avatar_border"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:background="@drawable/livekit_pusher_coguest_avatar_clip"
+        android:foreground="@drawable/livekit_pusher_coguest_avatar_border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.trtc.uikit.livekit.common.theme.avatar.AtomicAvatar
+            android:id="@+id/livekit_pusher_coguest_user_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:avatarShape="round" />
+    </FrameLayout>
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_coguest_user_name"
+        android:layout_width="0dp"
+        android:layout_height="17dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        app:liveTextRole="itemTitle"
+        app:liveTextTone="secondary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/livekit_pusher_coguest_user_action_container"
+        app:layout_constraintStart_toEndOf="@id/livekit_pusher_coguest_user_avatar_border"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Viewer name" />
+
+    <FrameLayout
+        android:id="@+id/livekit_pusher_coguest_user_action_container"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:minWidth="68dp"
+        android:paddingStart="2dp"
+        android:paddingEnd="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.trtc.uikit.livekit.common.theme.button.AtomicButton
+            android:id="@+id/livekit_pusher_coguest_user_action"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            app:buttonColorType="primary"
+            app:buttonTextSize="12sp"
+            app:buttonVariant="text"
+            app:customButtonSize="s"
+            tools:text="Accept" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

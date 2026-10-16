@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:id="@+id/livekit_pusher_summary_header"
+                android:layout_width="0dp"
+                android:layout_height="58dp"
+                android:layout_marginTop="34dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <FrameLayout
+                    android:id="@+id/livekit_pusher_summary_back"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="14dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="21dp"
+                        android:layout_height="21dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@null"
+                        android:src="@drawable/livekit_pusher_summary_back" />
+                </FrameLayout>
+
+                <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+                    android:id="@+id/livekit_pusher_summary_reason"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:layout_gravity="top"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginEnd="80dp"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textColor="@color/livekit_pusher_summary_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <com.trtc.uikit.livekit.pusher.summary.SummaryHeroCardView
+                android:id="@+id/livekit_pusher_summary_hero"
+                android:layout_width="0dp"
+                android:layout_height="250dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/livekit_pusher_summary_header" />
+
+            <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+                android:id="@+id/livekit_pusher_summary_section_title"
+                android:layout_width="170dp"
+                android:layout_height="21dp"
+                android:layout_marginStart="19dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:text="@string/livekit_summaryview_section_title"
+                android:textColor="@color/livekit_pusher_summary_text_section"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/livekit_pusher_summary_hero" />
+
+            <com.trtc.uikit.livekit.pusher.summary.SummaryStatCardView
+                android:id="@+id/livekit_pusher_summary_gifts"
+                android:layout_width="0dp"
+                android:layout_height="88dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="5dp"
+                app:layout_constraintEnd_toStartOf="@id/livekit_pusher_summary_gift_value"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/livekit_pusher_summary_section_title" />
+
+            <com.trtc.uikit.livekit.pusher.summary.SummaryStatCardView
+                android:id="@+id/livekit_pusher_summary_gift_value"
+                android:layout_width="0dp"
+                android:layout_height="88dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/livekit_pusher_summary_gifts"
+                app:layout_constraintTop_toTopOf="@id/livekit_pusher_summary_gifts" />
+
+            <com.trtc.uikit.livekit.pusher.summary.SummaryStatCardView
+                android:id="@+id/livekit_pusher_summary_viewers"
+                android:layout_width="0dp"
+                android:layout_height="88dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="@id/livekit_pusher_summary_gifts"
+                app:layout_constraintStart_toStartOf="@id/livekit_pusher_summary_gifts"
+                app:layout_constraintTop_toBottomOf="@id/livekit_pusher_summary_gifts" />
+
+            <com.trtc.uikit.livekit.pusher.summary.SummaryStatCardView
+                android:id="@+id/livekit_pusher_summary_comments"
+                android:layout_width="0dp"
+                android:layout_height="88dp"
+                app:layout_constraintEnd_toEndOf="@id/livekit_pusher_summary_gift_value"
+                app:layout_constraintStart_toStartOf="@id/livekit_pusher_summary_gift_value"
+                app:layout_constraintTop_toTopOf="@id/livekit_pusher_summary_viewers" />
+
+            <com.trtc.uikit.livekit.pusher.summary.SummaryStatCardView
+                android:id="@+id/livekit_pusher_summary_gift_senders"
+                android:layout_width="0dp"
+                android:layout_height="88dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="@id/livekit_pusher_summary_gifts"
+                app:layout_constraintStart_toStartOf="@id/livekit_pusher_summary_gifts"
+                app:layout_constraintTop_toBottomOf="@id/livekit_pusher_summary_viewers" />
+
+            <com.trtc.uikit.livekit.pusher.summary.SummaryStatCardView
+                android:id="@+id/livekit_pusher_summary_likes"
+                android:layout_width="0dp"
+                android:layout_height="88dp"
+                app:layout_constraintEnd_toEndOf="@id/livekit_pusher_summary_gift_value"
+                app:layout_constraintStart_toStartOf="@id/livekit_pusher_summary_gift_value"
+                app:layout_constraintTop_toTopOf="@id/livekit_pusher_summary_gift_senders" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/livekit_pusher_summary_cards_bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="livekit_pusher_summary_gift_senders,livekit_pusher_summary_likes" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/livekit_pusher_summary_cards_bottom" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

@@ -1,0 +1,30 @@
+<!-- Ardot 77:1009; converted by Android Studio Svg2Vector, complete 44dp plate. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="44dp"
+    android:height="44dp"
+    android:viewportWidth="44"
+    android:viewportHeight="44">
+  <path
+      android:pathData="M22,22m-22,0a22,22 0,1 1,44 0a22,22 0,1 1,-44 0"
+      android:fillColor="@color/livekit_pusher_settings_mic_foreground"
+      android:fillAlpha="0.08"/>
+  <path
+      android:pathData="M23,14L23,14A3,3 0,0 1,26 17L26,22A3,3 0,0 1,23 25L23,25A3,3 0,0 1,20 22L20,17A3,3 0,0 1,23 14z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1.6"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/livekit_pusher_settings_mic_foreground"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M17.8,22Q17.8,24.154 19.323,25.677Q20.846,27.2 23,27.2Q25.154,27.2 26.677,25.677Q28.2,24.154 28.2,22Q28.19,21.665 28.434,21.434Q28.665,21.19 29,21.2Q29.335,21.19 29.566,21.434Q29.81,21.665 29.8,22Q29.8,24.817 27.808,26.808Q25.817,28.8 23,28.8Q20.183,28.8 18.192,26.808Q16.2,24.817 16.2,22Q16.19,21.665 16.434,21.434Q16.665,21.19 17,21.2Q17.335,21.19 17.566,21.434Q17.81,21.665 17.8,22Z"
+      android:fillColor="@color/livekit_pusher_settings_mic_foreground"/>
+  <path
+      android:pathData="M23.8,28L23.8,32Q23.81,32.335 23.566,32.566Q23.335,32.81 23,32.8Q22.665,32.81 22.434,32.566Q22.19,32.335 22.2,32L22.2,28Q22.19,27.665 22.434,27.434Q22.665,27.19 23,27.2Q23.335,27.19 23.566,27.434Q23.81,27.665 23.8,28Z"
+      android:fillColor="@color/livekit_pusher_settings_mic_foreground"/>
+  <path
+      android:pathData="M19.5,31.2L26.5,31.2Q26.835,31.19 27.066,31.434Q27.31,31.665 27.3,32Q27.31,32.335 27.066,32.566Q26.835,32.81 26.5,32.8L19.5,32.8Q19.165,32.81 18.934,32.566Q18.69,32.335 18.7,32Q18.69,31.665 18.934,31.434Q19.165,31.19 19.5,31.2Z"
+      android:fillColor="@color/livekit_pusher_settings_mic_foreground"/>
+  <path
+      android:pathData="M14.53,13.53L31.501,30.501A0.75,0.75 0,0 1,31.501 31.562L31.501,31.562A0.75,0.75 0,0 1,30.44 31.562L13.47,14.591A0.75,0.75 0,0 1,13.47 13.53L13.47,13.53A0.75,0.75 0,0 1,14.53 13.53z"
+      android:fillColor="@color/livekit_pusher_settings_mic_foreground"/>
+</vector>

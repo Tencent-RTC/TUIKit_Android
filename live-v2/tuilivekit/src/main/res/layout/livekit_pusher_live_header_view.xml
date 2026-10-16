@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <com.trtc.uikit.livekit.pusher.living.LiveHeaderCapsuleView
+        android:id="@+id/livekit_pusher_header_host_capsule"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="4dp"
+        android:clipChildren="true"
+        android:clipToPadding="true"
+        app:layout_constraintEnd_toStartOf="@id/livekit_pusher_header_audience_presence"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="165dp">
+
+        <com.trtc.uikit.livekit.common.theme.avatar.AtomicAvatar
+            android:id="@+id/livekit_pusher_header_avatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            app:avatarShape="round"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_header_name"
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            app:liveTextRole="caption"
+            app:layout_constraintEnd_toStartOf="@id/livekit_pusher_header_fan"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="5dp"
+            tools:text="Borry的直播" />
+
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/livekit_pusher_header_like_count"
+            android:layout_width="0dp"
+            android:layout_height="11dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/livekit_pusher_header_like_count"
+            android:textSize="8sp"
+            app:layout_constraintEnd_toEndOf="@id/livekit_pusher_header_name"
+            app:layout_constraintStart_toStartOf="@id/livekit_pusher_header_name"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="20dp"
+            tools:ignore="SmallSp"
+            tools:text="本场直播 0 点赞" />
+
+        <ImageView
+            android:id="@+id/livekit_pusher_header_fan"
+            android:layout_width="42dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/livekit_pusher_living_fan" />
+
+    </com.trtc.uikit.livekit.pusher.living.LiveHeaderCapsuleView>
+
+    <com.trtc.uikit.livekit.pusher.living.audience.LiveAudiencePresenceView
+        android:id="@+id/livekit_pusher_header_audience_presence"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toStartOf="@id/livekit_pusher_header_close"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/livekit_pusher_header_close"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/livekit_pusher_header_dark_capsule_border"
+        android:contentDescription="@string/livekit_livingtopbarview_close_desc"
+        android:padding="5.5dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/livekit_pusher_living_close" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/livekit_pusher_header_status"
+        android:layout_width="68dp"
+        android:layout_height="19dp"
+        android:background="@drawable/livekit_pusher_header_status_background"
+        android:clickable="true"
+        android:contentDescription="@string/livekit_pusher_living_live_duration"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="42dp">
+
+        <ImageView
+            android:id="@+id/livekit_pusher_header_status_icon"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:layout_marginStart="7dp"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_header_status_label"
+            android:layout_width="0dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="8.8dp"
+            android:layout_marginEnd="3dp"
+            android:gravity="end|center_vertical"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@string/livekit_pusher_status_title"
+            app:liveTextRole="metadata"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/livekit_pusher_header_status_chevron"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SmallSp" />
+
+        <ImageView
+            android:id="@+id/livekit_pusher_header_status_chevron"
+            android:layout_width="3.5dp"
+            android:layout_height="6.2dp"
+            android:layout_marginEnd="9.7dp"
+            android:contentDescription="@null"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/livekit_pusher_living_status_chevron" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>

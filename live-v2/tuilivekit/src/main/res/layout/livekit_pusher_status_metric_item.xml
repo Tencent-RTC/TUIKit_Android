@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_status_metric_title"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:includeFontPadding="false"
+            android:maxLines="2"
+            app:liveTextRole="caption"
+            app:liveTextTone="tertiary"
+            android:layout_marginEnd="4dp" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="3dp">
+            <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+                android:id="@+id/livekit_pusher_status_metric_value"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="bottom"
+                android:includeFontPadding="false"
+                android:textColor="#F5FFFFFF"
+                android:textSize="24sp"
+                android:maxLines="1"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/livekit_pusher_status_metric_unit"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintTop_toTopOf="parent"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeMaxTextSize="24sp"
+                app:autoSizeStepGranularity="1sp" />
+            <com.trtc.uikit.livekit.common.theme.LiveText
+                android:id="@+id/livekit_pusher_status_metric_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="13dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginBottom="3dp"
+                android:includeFontPadding="false"
+                app:liveTextRole="metadata"
+                app:liveTextTone="disabled"
+                app:layout_constraintStart_toEndOf="@id/livekit_pusher_status_metric_value"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</merge>

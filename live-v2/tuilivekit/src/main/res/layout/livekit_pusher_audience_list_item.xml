@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="64dp">
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_audience_item_rank"
+        android:layout_width="12dp"
+        android:layout_height="21dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        app:liveTextRole="listTitle"
+        app:liveTextTone="disabled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.theme.avatar.AtomicAvatar
+        android:id="@+id/livekit_pusher_audience_item_avatar"
+        android:layout_width="@dimen/livekit_audience_avatar_size"
+        android:layout_height="@dimen/livekit_audience_avatar_size"
+        android:layout_marginStart="14dp"
+        android:background="@null"
+        app:avatarShape="round"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/livekit_pusher_audience_item_rank"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_audience_item_name"
+        android:layout_width="wrap_content"
+        android:layout_height="21dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="60dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        app:liveTextRole="listTitle"
+        app:liveTextTone="secondary"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/livekit_pusher_audience_item_gift"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/livekit_pusher_audience_item_avatar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/livekit_pusher_audience_item_level"
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:layout_marginStart="14dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/livekit_pusher_audience_item_name"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_pusher_audience_item_gift"
+        android:layout_width="38dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="end|center_vertical"
+        android:includeFontPadding="false"
+        android:textColor="@color/livekit_audience_gift_value"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/livekit_audience_row_separator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

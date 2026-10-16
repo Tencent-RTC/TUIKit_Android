@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <com.trtc.uikit.livekit.common.like.LikeAnimationView
+        android:id="@+id/livekit_overlay_like_animation"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.player.living.hostinfo.HostInfoView
+        android:id="@+id/livekit_overlay_host_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="54dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.player.living.audience.AudienceView
+        android:id="@+id/livekit_overlay_audience_list"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.barrage.BarrageStreamView
+        android:id="@+id/livekit_overlay_message_list"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.8"
+        android:layout_height="152dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="88dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.trtc.uikit.livekit.common.gift.GiftPlayView
+        android:id="@+id/livekit_overlay_gift_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.audience.AudienceWelcomeView
+        android:id="@+id/livekit_audience_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/livekit_pusher_audience_welcome_bottom" />
+
+    <ImageView
+        android:id="@+id/livekit_overlay_like_view"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="40dp"
+        android:clickable="true"
+        android:contentDescription="@null"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/livekit_player_like"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/livekit_overlay_gift_view"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="40dp"
+        android:clickable="true"
+        android:contentDescription="@null"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/livekit_player_gift"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_overlay_comment_entry"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/livekit_barrage_composer_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:text="@string/livekit_player_comment_placeholder"
+        android:textColor="#80FFFFFF"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/livekit_overlay_coguest_view"/>
+
+    <com.trtc.uikit.livekit.player.living.coguest.CoGuestIcon
+        android:id="@+id/livekit_overlay_coguest_view"
+        android:background="@drawable/livekit_coguest_entry_idle_bg"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/livekit_overlay_controls_restore"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="40dp"
+        android:clickable="true"
+        android:contentDescription="@string/livekit_player_restore_controls"
+        android:focusable="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/livekit_ic_controls_restore"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.trtc.uikit.livekit.common.barrage.BarrageInputView
+        android:id="@+id/livekit_overlay_comment_composer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</merge>

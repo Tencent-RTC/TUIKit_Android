@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="84dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="75dp"
+    android:layout_marginEnd="16dp"
+    android:orientation="horizontal">
+
+    <com.trtc.uikit.livekit.pusher.settings.PusherSettingsItemView
+        android:id="@+id/livekit_pusher_audience_manage_follow"
+        android:layout_width="0dp"
+        android:layout_height="84dp"
+        android:layout_weight="1" />
+
+    <com.trtc.uikit.livekit.pusher.settings.PusherSettingsItemView
+        android:id="@+id/livekit_pusher_audience_manage_mute"
+        android:layout_width="0dp"
+        android:layout_height="84dp"
+        android:layout_weight="1" />
+
+    <com.trtc.uikit.livekit.pusher.settings.PusherSettingsItemView
+        android:id="@+id/livekit_pusher_audience_manage_remove"
+        android:layout_width="0dp"
+        android:layout_height="84dp"
+        android:layout_weight="1" />
+</LinearLayout>

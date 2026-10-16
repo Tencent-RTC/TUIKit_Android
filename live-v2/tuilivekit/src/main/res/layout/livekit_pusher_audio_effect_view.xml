@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Audio-effect page of the settings drawer, from the Ardot 音效设置抽屉 node. Every vertical
+  offset matches the iOS constraints of AudioEffectView, measured from the content top:
+  ear card 0, 音频设置 108, 人声音量卡 130, 变声 188/210, 混响 286/308.
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_pusher_audio_ear_card_height"
+        android:background="@drawable/livekit_pusher_audio_card">
+
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/livekit_pusher_audio_ear_switch_row_height"
+            android:layout_marginStart="@dimen/livekit_pusher_audio_row_inset"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:text="@string/livekit_pusher_settings_ear_monitor"
+            app:liveTextEmphasized="true"
+            app:liveTextRole="body" />
+
+        <com.trtc.uikit.livekit.common.theme.LiveSwitch
+            android:id="@+id/livekit_pusher_audio_ear_switch"
+            android:layout_width="@dimen/livekit_pusher_audio_switch_width"
+            android:layout_height="@dimen/livekit_pusher_audio_switch_height"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="@dimen/livekit_pusher_audio_switch_margin_top"
+            android:layout_marginEnd="@dimen/livekit_pusher_audio_switch_margin_end" />
+
+        <com.trtc.uikit.livekit.pusher.settings.SettingsVolumeView
+            android:id="@+id/livekit_pusher_audio_ear_volume"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/livekit_pusher_audio_volume_row_height"
+            android:layout_gravity="bottom" />
+    </FrameLayout>
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/livekit_pusher_audio_section_title_height"
+        android:layout_marginTop="@dimen/livekit_pusher_audio_settings_title_top"
+        android:includeFontPadding="false"
+        android:text="@string/common_audio_settings"
+        app:liveTextRole="sectionTitle"
+        app:liveTextTone="tertiary" />
+
+    <com.trtc.uikit.livekit.pusher.settings.SettingsVolumeView
+        android:id="@+id/livekit_pusher_audio_capture_volume"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_pusher_audio_capture_card_height"
+        android:layout_marginTop="@dimen/livekit_pusher_audio_capture_card_top"
+        android:background="@drawable/livekit_pusher_audio_card" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/livekit_pusher_audio_section_title_height"
+        android:layout_marginTop="@dimen/livekit_pusher_audio_changer_title_top"
+        android:includeFontPadding="false"
+        android:text="@string/common_change_voice"
+        app:liveTextRole="sectionTitle"
+        app:liveTextTone="tertiary" />
+
+    <LinearLayout
+        android:id="@+id/livekit_pusher_audio_changer_row"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_pusher_sound_option_height"
+        android:layout_marginTop="@dimen/livekit_pusher_audio_changer_row_top"
+        android:orientation="horizontal" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/livekit_pusher_audio_section_title_height"
+        android:layout_marginTop="@dimen/livekit_pusher_audio_reverb_title_top"
+        android:includeFontPadding="false"
+        android:text="@string/common_reverb"
+        app:liveTextRole="sectionTitle"
+        app:liveTextTone="tertiary" />
+
+    <LinearLayout
+        android:id="@+id/livekit_pusher_audio_reverb_row"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_pusher_sound_option_height"
+        android:layout_marginTop="@dimen/livekit_pusher_audio_reverb_row_top"
+        android:orientation="horizontal" />
+</merge>

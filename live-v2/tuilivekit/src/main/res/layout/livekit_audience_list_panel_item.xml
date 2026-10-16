@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="64dp"
+    android:orientation="horizontal"
+    android:paddingStart="4dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="4dp"
+    android:paddingBottom="10dp">
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/tv_marker"
+        android:layout_width="18dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#61FFFFFF"
+        android:textSize="15sp" />
+
+    <com.trtc.uikit.livekit.common.theme.avatar.AtomicAvatar
+        android:id="@+id/iv_head"
+        android:layout_width="@dimen/livekit_audience_avatar_size"
+        android:layout_height="@dimen/livekit_audience_avatar_size"
+        android:layout_marginStart="14dp"
+        app:avatarShape="round"
+        app:avatarSize="m" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="10dp"
+        android:maxWidth="100dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#E0FFFFFF"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/iv_level_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="17dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="center_vertical"
+        android:minWidth="40dp" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/tv_gift_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:minWidth="38dp"
+        android:textColor="@color/livekit_audience_gift_value"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+</LinearLayout>

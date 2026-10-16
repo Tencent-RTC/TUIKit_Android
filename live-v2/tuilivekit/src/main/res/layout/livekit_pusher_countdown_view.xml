@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <View
+        android:id="@+id/livekit_pusher_countdown_dark_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_pusher_bottom_bar_height"
+        android:layout_gravity="bottom"
+        android:background="@color/livekit_pusher_bottom_bar" />
+
+    <View
+        android:id="@+id/livekit_pusher_countdown_circle"
+        android:layout_width="@dimen/livekit_pusher_countdown_circle_size"
+        android:layout_height="@dimen/livekit_pusher_countdown_circle_size"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/livekit_pusher_bottom_bar_height"
+        android:background="@drawable/livekit_pusher_countdown_circle" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_pusher_countdown_number"
+        android:layout_width="@dimen/livekit_pusher_countdown_number_width"
+        android:layout_height="@dimen/livekit_pusher_countdown_number_height"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/livekit_pusher_bottom_bar_height"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textColor="@color/common_design_standard_flowkit_white"
+        android:textSize="@dimen/livekit_pusher_countdown_number_text_size" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_pusher_countdown_cancel"
+        android:layout_width="@dimen/livekit_pusher_countdown_cancel_width"
+        android:layout_height="@dimen/livekit_pusher_countdown_cancel_height"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/livekit_pusher_countdown_cancel_background"
+        android:gravity="center"
+        android:text="@string/common_cancel"
+        android:textColor="@color/livekit_pusher_countdown_cancel_text"
+        android:textSize="@dimen/livekit_pusher_countdown_cancel_text_size" />
+</merge>

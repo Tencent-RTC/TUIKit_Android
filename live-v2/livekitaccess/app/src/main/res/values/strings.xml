@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">LiveKitAccess</string>
+    <string name="anchor">Anchor</string>
+    <string name="audience">Audience</string>
+    <string name="live_list">Live List</string>
+    <string name="login_title">登录</string>
+    <string name="login_hint_user_id">请输入用户ID</string>
+    <string name="login_action">Debug 登录</string>
+    <string name="app_live_list_title">在线直播</string>
+    <string name="app_live_list_start_live">开直播</string>
+    <string name="app_brand_name">腾讯云音视频</string>
+    <string name="app_livelist_loading">Loading...</string>
+    <string name="app_livelist_viewed_audience_count">%1$d people viewed</string>
+    <string name="app_livelist_click_own_live_hint">请点击开直播按钮去开播</string>
+    <string name="app_version_format">APP 版本：%1$s</string>
+    <string name="app_custom_name_1">马丁</string>
+    <string name="app_custom_name_2">伊尔凡</string>
+    <string name="app_custom_name_3">罗莎娜</string>
+    <string name="app_custom_name_4">富兰克林</string>
+    <string name="app_custom_name_5">玛琳</string>
+</resources>

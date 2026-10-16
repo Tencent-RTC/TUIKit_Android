@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parent="android.widget.LinearLayout">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_audience_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:focusable="false"
+        android:overScrollMode="never" />
+
+    <LinearLayout
+        android:id="@+id/ll_audience_count"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/livekit_audience_count_bg"
+        android:gravity="center"
+        android:minWidth="26dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp">
+
+        <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+            android:id="@+id/tv_audience_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFFFF"
+            android:textSize="12sp"
+            tools:text="1234" />
+    </LinearLayout>
+</merge>

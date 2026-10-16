@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="app_livelist_loading_color">#8F9AB2</color>
+    <color name="app_livelist_loading_bg_color">#FFFFFF</color>
+    <color name="app_livelist_text_primary">#E6FFFFFF</color>
+    <color name="app_livelist_text_secondary">#8CFFFFFF</color>
+</resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Metallic-reverb icon. Exported from the Ardot icon · reverbMetal node (77:320). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="25dp"
+    android:height="25dp"
+    android:viewportWidth="25"
+    android:viewportHeight="25">
+
+    <group
+        android:translateX="5.52083"
+        android:translateY="10.7292">
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M5.4167,5.4167m-5.4167,0a5.4167,5.4167 0 1,0 10.8334,0a5.4167,5.4167 0 1,0 -10.8334,0"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="1.7187" />
+    </group>
+
+    <group
+        android:translateX="9.47917"
+        android:translateY="14.6875">
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M1.4583,1.4583m-1.4583,0a1.4583,1.4583 0 1,0 2.9166,0a1.4583,1.4583 0 1,0 -2.9166,0"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="1.7187" />
+    </group>
+
+    <group
+        android:translateX="6.77083"
+        android:translateY="4.6875">
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M5.2311,4.9967L8.9894,0.5551Q9.23,0.2868 9.1897,-0.0714Q9.1702,-0.4312 8.8884,-0.656Q8.6201,-0.8967 8.262,-0.8564Q7.9021,-0.8368 7.6773,-0.5551L4.0413,3.742L0.6236,0.1378Q0.3832,-0.1307 0.0228,-0.1299Q-0.3371,-0.1498 -0.5913,0.1056Q-0.8599,0.346 -0.8591,0.7064Q-0.879,1.0662 -0.6236,1.3205L2.9244,5.062L1.9481,6.2157Q1.7075,6.484 1.7478,6.8422Q1.7673,7.2021 2.0491,7.4269Q2.3174,7.6675 2.6755,7.6272Q3.0354,7.6077 3.2602,7.3259L4.1142,6.3167L5.1056,7.3622Q5.346,7.6307 5.7064,7.6299Q6.0662,7.6498 6.3205,7.3944Q6.589,7.154 6.5882,6.7936Q6.6082,6.4338 6.3528,6.1795L5.2311,4.9967Z" />
+    </group>
+
+    <group
+        android:translateX="17.1875"
+        android:translateY="5.20833">
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M6.4167,0.7344Q6.5006,0.8458 6.5444,0.9782Q6.5888,1.1105 6.5885,1.25Q6.5989,1.6103 6.3368,1.8577Q6.0894,2.1197 5.7292,2.1094L0.5208,2.1094Q0.3813,2.1097 0.2491,2.0653Q0.1166,2.0214 0.0052,1.9375Q-0.2892,1.7296 -0.3299,1.3715Q-0.3911,1.0164 -0.1667,0.7344Q0.4197,-0.0474 1.3246,-0.4671Q2.1704,-0.8594 3.125,-0.8594Q4.0796,-0.8594 4.9254,-0.4671Q5.8303,-0.0474 6.4167,0.7344ZM2.55,2.2656L0,2.2656Q-0.3603,2.2553 -0.6077,2.5173Q-0.8697,2.7647 -0.8594,3.125Q-0.8697,3.4853 -0.6077,3.7327Q-0.3603,3.9947 0,3.9844L1.7448,3.9844L1.7448,14.5833Q1.7344,14.9436 1.9965,15.191Q2.2439,15.4531 2.6042,15.4427Q2.9644,15.4531 3.2118,15.191Q3.4739,14.9436 3.4635,14.5833L3.4635,3.9844L5.2083,3.9844Q5.5686,3.9947 5.816,3.7327Q6.0781,3.4853 6.0677,3.125Q6.0781,2.7647 5.816,2.5173Q5.5686,2.2553 5.2083,2.2656L2.6584,2.2656Q2.6316,2.2648 2.6042,2.2656Q2.5767,2.2648 2.55,2.2656Z" />
+    </group>
+</vector>

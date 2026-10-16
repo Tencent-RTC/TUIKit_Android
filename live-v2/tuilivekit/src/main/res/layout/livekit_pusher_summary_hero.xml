@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/livekit_pusher_summary_outer_ring"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="13dp"
+        android:background="@drawable/livekit_pusher_summary_outer_ring"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/livekit_pusher_summary_mark"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="19dp"
+        android:background="@drawable/livekit_pusher_summary_mark"
+        android:elevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="1dp"
+            android:contentDescription="@null"
+            android:src="@drawable/livekit_pusher_summary_done" />
+    </FrameLayout>
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_pusher_summary_ended"
+        android:layout_width="0dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="40dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/livekit_summaryview_end"
+        android:textColor="@color/livekit_pusher_summary_text_hero"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_summary_time_range"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="111dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        app:liveTextRole="control"
+        app:liveTextTone="tertiary"
+        app:layout_constraintEnd_toEndOf="@id/livekit_pusher_summary_ended"
+        app:layout_constraintStart_toStartOf="@id/livekit_pusher_summary_ended"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_summary_duration_title"
+        android:layout_width="0dp"
+        android:layout_height="14dp"
+        android:layout_marginTop="146dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/livekit_summaryview_live_duration"
+        app:liveTextEmphasized="true"
+        app:liveTextRole="metadata"
+        app:liveTextTone="tertiary"
+        app:layout_constraintEnd_toEndOf="@id/livekit_pusher_summary_ended"
+        app:layout_constraintStart_toStartOf="@id/livekit_pusher_summary_ended"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.trtc.uikit.livekit.common.theme.label.AtomicLabel
+        android:id="@+id/livekit_pusher_summary_duration"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="165dp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textColor="@color/livekit_pusher_summary_duration"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/livekit_pusher_summary_ended"
+        app:layout_constraintStart_toStartOf="@id/livekit_pusher_summary_ended"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/livekit_pusher_summary_pause"
+        android:layout_width="wrap_content"
+        android:minWidth="138dp"
+        android:layout_height="27dp"
+        android:layout_marginTop="211dp"
+        android:background="@drawable/livekit_pusher_summary_pause_capsule"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_summary_pause_title"
+            android:layout_width="wrap_content"
+            android:minWidth="54dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="7dp"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:text="@string/livekit_pusher_summary_pause_title"
+            app:liveTextEmphasized="true"
+            app:liveTextRole="metadata"
+            app:liveTextTone="tertiary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_summary_pause_duration"
+            android:layout_marginStart="7dp"
+            app:layout_constraintStart_toEndOf="@id/livekit_pusher_summary_pause_title"
+            android:layout_width="55dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginEnd="11dp"
+            android:gravity="end|center_vertical"
+            android:includeFontPadding="false"
+            app:liveTextEmphasized="true"
+            app:liveTextRole="metadata"
+            app:liveTextTone="secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

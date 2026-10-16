@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.trtc.uikit.livekit.common.theme.label.AtomicLabel xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/livekit_pusher_message_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/livekit_pusher_message_item_background"
+    android:includeFontPadding="false"
+    android:minHeight="21dp"
+    android:paddingStart="@dimen/livekit_comment_row_horizontal_inset"
+    android:paddingTop="2dp"
+    android:paddingEnd="@dimen/livekit_comment_row_horizontal_inset"
+    android:paddingBottom="2dp"
+    android:textColor="@color/livekit_pusher_message_body"
+    android:textSize="@dimen/livekit_comment_row_text_size" />

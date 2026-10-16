@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">LiveKitAccess</string>
+    <string name="anchor">Anchor</string>
+    <string name="audience">Audience</string>
+    <string name="live_list">Live List</string>
+    <string name="login_title">Login</string>
+    <string name="login_hint_user_id">Enter a user ID</string>
+    <string name="login_action">Debug Login</string>
+    <string name="app_live_list_title">Live Streaming</string>
+    <string name="app_live_list_start_live">Go Live</string>
+    <string name="app_brand_name">Tencent Cloud Audio &amp; Video</string>
+    <string name="app_livelist_loading">Loading...</string>
+    <string name="app_livelist_viewed_audience_count">%1$d people viewed</string>
+    <string name="app_livelist_click_own_live_hint">Tap the Go Live button to start your own stream</string>
+    <string name="app_version_format">APP Version: %1$s</string>
+    <string name="app_custom_name_1">Martijn</string>
+    <string name="app_custom_name_2">irfan</string>
+    <string name="app_custom_name_3">Rosanna</string>
+    <string name="app_custom_name_4">Franklyn</string>
+    <string name="app_custom_name_5">Maren</string>
+</resources>

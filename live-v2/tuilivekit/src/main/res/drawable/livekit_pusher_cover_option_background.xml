@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder plate of a cover candidate, mirroring the iOS white 6% option background. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="@color/livekit_pusher_cover_option_background" />
+
+    <corners android:radius="@dimen/livekit_pusher_cover_picker_option_radius" />
+</shape>

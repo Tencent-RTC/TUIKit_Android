@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="64dp"
+    android:orientation="vertical" android:padding="12dp" android:gravity="center_vertical"
+    android:background="?attr/selectableItemBackground" android:focusable="true" android:clickable="true">
+    <TextView android:id="@+id/livekit_log_filename" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" />
+    <TextView android:id="@+id/livekit_log_detail" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:layout_marginTop="4dp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+</LinearLayout>

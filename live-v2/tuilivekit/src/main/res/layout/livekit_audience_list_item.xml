@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.trtc.uikit.livekit.player.living.audience.AudienceAvatarCellView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fl_root"
+    android:layout_width="26dp"
+    android:layout_height="26dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <com.trtc.uikit.livekit.common.theme.avatar.AtomicAvatar
+        android:id="@+id/iv_avatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:avatarShape="round"
+        app:avatarSize="xs" />
+</com.trtc.uikit.livekit.player.living.audience.AudienceAvatarCellView>

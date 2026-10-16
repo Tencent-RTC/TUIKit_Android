@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Black -->
+    <color name="black_2">#E6000000</color>
+    <color name="black_4">#8C000000</color>
+    <color name="black_5">#66000000</color>
+    <color name="black_6">#40000000</color>
+    <color name="black_7">#1F000000</color>
+    <color name="black_8">#0F000000</color>
+
+    <!-- White -->
+    <color name="white_1">#FFFFFFFF</color>
+    <color name="white_3">#BFFFFFFF</color>
+    <color name="white_4">#8CFFFFFF</color>
+    <color name="white_7">#24FFFFFF</color>
+
+    <!-- Gray Light -->
+    <color name="gray_light_1">#FFF9FAFC</color>
+    <color name="gray_light_2">#FFF0F2F7</color>
+    <color name="gray_light_3">#FFE6E9F0</color>
+    <color name="gray_light_4">#FFD1D4DE</color>
+
+    <!-- Gray Dark -->
+
+    <!-- Theme Light -->
+    <color name="theme_light_1">#FFEBF3FF</color>
+    <color name="theme_light_2">#FFCCE2FF</color>
+    <color name="theme_light_3">#FFADCFFF</color>
+    <color name="theme_light_4">#FF7AAFFF</color>
+    <color name="theme_light_5">#FF4588F5</color>
+    <color name="theme_light_6">#FF1C66E5</color>
+    <color name="theme_light_7">#FF0D49BF</color>
+    <color name="theme_light_8">#FF033099</color>
+    <color name="theme_light_9">#FF001F73</color>
+    <color name="theme_light_10">#FF00124D</color>
+
+    <!-- Theme Dark -->
+    <color name="theme_dark_1">#FF1C2333</color>
+    <color name="theme_dark_2">#FF243047</color>
+    <color name="theme_dark_3">#FF2F4875</color>
+    <color name="theme_dark_4">#FF305BA6</color>
+    <color name="theme_dark_5">#FF2B6AD6</color>
+    <color name="theme_dark_6">#FF4086FF</color>
+    <color name="theme_dark_7">#FF5C9DFF</color>
+    <color name="theme_dark_8">#FF78B0FF</color>
+    <color name="theme_dark_9">#FF9CC7FF</color>
+    <color name="theme_dark_10">#FFC2DEFF</color>
+
+    <!-- Green Light -->
+    <color name="green_light_1">#FFDCFAE9</color>
+    <color name="green_light_2">#FFB6F0D1</color>
+    <color name="green_light_3">#FF84E3B5</color>
+    <color name="green_light_4">#FF5AD69E</color>
+    <color name="green_light_5">#FF3CC98C</color>
+    <color name="green_light_6">#FF0ABF77</color>
+    <color name="green_light_7">#FF09A768</color>
+    <color name="green_light_8">#FF078F59</color>
+    <color name="green_light_9">#FF067049</color>
+    <color name="green_light_10">#FF044D37</color>
+
+    <!-- Green Dark -->
+    <color name="green_dark_1">#FF1A2620</color>
+    <color name="green_dark_2">#FF22352C</color>
+    <color name="green_dark_3">#FF2F4F3F</color>
+    <color name="green_dark_4">#FF377355</color>
+    <color name="green_dark_5">#FF368F65</color>
+    <color name="green_dark_6">#FF38A673</color>
+    <color name="green_dark_7">#FF62B58B</color>
+    <color name="green_dark_8">#FF8BC7A9</color>
+    <color name="green_dark_9">#FFA9D4BD</color>
+    <color name="green_dark_10">#FFC8E5D5</color>
+
+    <!-- Red Light -->
+    <color name="red_light_1">#FFFFE7E6</color>
+    <color name="red_light_2">#FFFCC9C7</color>
+    <color name="red_light_3">#FFFAAEAC</color>
+    <color name="red_light_4">#FFF58989</color>
+    <color name="red_light_5">#FFE86666</color>
+    <color name="red_light_6">#FFE54545</color>
+    <color name="red_light_7">#FFC93439</color>
+    <color name="red_light_8">#FFAD2934</color>
+    <color name="red_light_9">#FF8F222D</color>
+    <color name="red_light_10">#FF6B1A27</color>
+
+    <!-- Red Dark -->
+    <color name="red_dark_1">#FF2B1C1F</color>
+    <color name="red_dark_2">#FF422324</color>
+    <color name="red_dark_3">#FF613234</color>
+    <color name="red_dark_4">#FF8A4242</color>
+    <color name="red_dark_5">#FFC2544E</color>
+    <color name="red_dark_6">#FFE6594C</color>
+    <color name="red_dark_7">#FFE57A6E</color>
+    <color name="red_dark_8">#FFF3A599</color>
+    <color name="red_dark_9">#FFFACBC3</color>
+    <color name="red_dark_10">#FFFAE4DE</color>
+
+    <!-- Orange Light -->
+    <color name="orange_light_1">#FFFFEEDB</color>
+    <color name="orange_light_2">#FFFFD6B2</color>
+    <color name="orange_light_3">#FFFFBE85</color>
+    <color name="orange_light_4">#FFFFA455</color>
+    <color name="orange_light_5">#FFFF8B2B</color>
+    <color name="orange_light_6">#FFFF7200</color>
+    <color name="orange_light_7">#FFE05D00</color>
+    <color name="orange_light_8">#FFBF4900</color>
+    <color name="orange_light_9">#FF8F370B</color>
+    <color name="orange_light_10">#FF662200</color>
+
+    <!-- Orange Dark -->
+    <color name="orange_dark_1">#FF211A19</color>
+    <color name="orange_dark_2">#FF35231A</color>
+    <color name="orange_dark_3">#FF462E1F</color>
+    <color name="orange_dark_4">#FF653C21</color>
+    <color name="orange_dark_5">#FF96562A</color>
+    <color name="orange_dark_6">#FFE37F32</color>
+    <color name="orange_dark_7">#FFE39552</color>
+    <color name="orange_dark_8">#FFEEAD72</color>
+    <color name="orange_dark_9">#FFF7CFA4</color>
+    <color name="orange_dark_10">#FFF9E9D1</color>
+
+    <!-- Transparent -->
+
+    <!-- Accent Light -->
+    <color name="accent_turquoise_light">#FF00ABD6</color>
+    <color name="accent_purple_light">#FF8157FF</color>
+    <color name="accent_magenta_light">#FFF5457F</color>
+
+    <!-- Accent Dark -->
+
+    <!-- ColorTokens - Default Dark Theme -->
+    <!-- Text & Icon Colors -->
+    <color name="text_color_primary">#EDFFFFFF</color>
+    <color name="text_color_secondary">#8CFFFFFF</color>
+    <color name="text_color_tertiary">#4DFFFFFF</color>
+    <color name="text_color_disable">#24FFFFFF</color>
+    <color name="text_color_button">#FFFFFFFF</color>
+    <color name="text_color_button_disabled">#6BFFFFFF</color>
+    <color name="text_color_link">#FF4086FF</color>
+    <color name="text_color_link_hover">#FF2B6AD6</color>
+    <color name="text_color_link_active">#FF5C9DFF</color>
+    <color name="text_color_link_disabled">#FF243047</color>
+    <color name="text_color_anti_primary">#E6000000</color>
+    <color name="text_color_anti_secondary">#8C000000</color>
+    <color name="text_color_warning">#FFE37F32</color>
+    <color name="text_color_success">#FF38A673</color>
+    <color name="text_color_error">#FFE6594C</color>
+
+    <!-- Background Colors -->
+    <color name="bg_color_top_bar">#FF131417</color>
+    <color name="bg_color_operate">#FF1F2024</color>
+    <color name="bg_color_dialog">#FF1F2024</color>
+    <color name="bg_color_dialog_module">#FF2B2C30</color>
+    <color name="bg_color_entry_card">#FF2B2C30</color>
+    <color name="bg_color_function">#FF3A3C42</color>
+    <color name="bg_color_bottom_bar">#FF2B2C30</color>
+    <color name="bg_color_input">#FF2B2C30</color>
+    <color name="bg_color_bubble_reciprocal">#FF2B2C30</color>
+    <color name="bg_color_bubble_own">#FF5C9DFF</color>
+    <color name="bg_color_default">#FF131417</color>
+    <color name="bg_color_tag_mask">#8C000000</color>
+    <color name="bg_color_element_mask">#40000000</color>
+    <color name="bg_color_mask">#8C000000</color>
+    <color name="bg_color_mask_disappeared">#0F000000</color>
+    <color name="bg_color_mask_begin">#E6000000</color>
+    <color name="bg_color_avatar">#FF243047</color>
+
+    <!-- Border Colors -->
+    <color name="stroke_color_primary">#FF3A3C42</color>
+    <color name="stroke_color_secondary">#FF2B2C30</color>
+    <color name="stroke_color_module">#FF48494F</color>
+
+    <!-- Shadow Color -->
+    <color name="shadow_color">#0F000000</color>
+
+    <!-- Status Colors -->
+    <color name="list_color_default">#FF1F2024</color>
+    <color name="list_color_hover">#FF2B2C30</color>
+    <color name="list_color_focused">#FF243047</color>
+
+    <!-- Button Colors -->
+    <color name="button_color_primary_default">#FF4086FF</color>
+    <color name="button_color_primary_hover">#FF2B6AD6</color>
+    <color name="button_color_primary_active">#FF5C9DFF</color>
+    <color name="button_color_primary_disabled">#FF243047</color>
+    <color name="button_color_secondary_default">#FF3A3C42</color>
+    <color name="button_color_secondary_hover">#FF2B2C30</color>
+    <color name="button_color_secondary_active">#FF48494F</color>
+    <color name="button_color_secondary_disabled">#FF2B2C30</color>
+    <color name="button_color_accept">#FF38A673</color>
+    <color name="button_color_hangup_default">#FFE6594C</color>
+    <color name="button_color_hangup_disabled">#FF422324</color>
+    <color name="button_color_hangup_hover">#FFC2544E</color>
+    <color name="button_color_hangup_active">#FFE57A6E</color>
+    <color name="button_color_on">#FFFFFFFF</color>
+    <color name="button_color_off">#66000000</color>
+
+    <!-- Dropdown Colors -->
+    <color name="dropdown_color_default">#FF2B2C30</color>
+    <color name="dropdown_color_hover">#FF3A3C42</color>
+    <color name="dropdown_color_active">#FF1F2024</color>
+
+    <!-- Scrollbar Colors -->
+    <color name="scrollbar_color_default">#24FFFFFF</color>
+    <color name="scrollbar_color_hover">#4DFFFFFF</color>
+
+    <!-- Floating Colors -->
+    <color name="floating_color_default">#FF2B2C30</color>
+    <color name="floating_color_operate">#FF3A3C42</color>
+
+    <!-- Checkbox Color -->
+    <color name="checkbox_color_selected">#FF2B6AD6</color>
+
+    <!-- Toast Colors -->
+    <color name="toast_color_warning">#FF35231A</color>
+    <color name="toast_color_success">#FF22352C</color>
+    <color name="toast_color_error">#FF422324</color>
+    <color name="toast_color_default">#FF243047</color>
+
+    <!-- Tag Colors -->
+    <color name="tag_color_level1">#FF008FB2</color>
+    <color name="tag_color_level2">#FF2B6AD6</color>
+    <color name="tag_color_level3">#FF693CF0</color>
+    <color name="tag_color_level4">#FFC22F56</color>
+
+    <!-- Switch Colors -->
+    <color name="switch_color_off">#FF3A3C42</color>
+    <color name="switch_color_on">#FF2B6AD6</color>
+    <color name="switch_color_button">#FFFFFFFF</color>
+
+    <!-- Slider Colors -->
+    <color name="slider_color_filled">#FF2B6AD6</color>
+    <color name="slider_color_empty">#FF48494F</color>
+    <color name="slider_color_button">#FFFFFFFF</color>
+
+    <!-- Tab Colors -->
+    <color name="tab_color_selected">#FF48494F</color>
+    <color name="tab_color_unselected">#FF3A3C42</color>
+    <color name="tab_color_option">#FF3A3C42</color>
+    <color name="common_design_standard_b1">#1C66E5</color>
+
+    <color name="common_design_standard_c4">#F23C5B</color>
+
+    <color name="common_design_standard_g7">#D5E0F2</color>
+
+    <color name="common_design_standard_flowkit_white">#FFFFFF</color>
+
+    <color name="common_design_standard_transparent">#00000000</color>
+
+    <color name="common_not_standard_blue_30_transparency">#4D4F586B</color>
+
+    <color name="common_barrage_item_back_color">#66000000</color>
+
+    <color name="common_text_color_primary">#E6FFFFFF</color>
+    <color name="common_text_color_secondary">#8CFFFFFF</color>
+    <color name="common_color_white_e5">#E5FFFFFF</color>
+
+    <!-- Pusher entry -->
+    <color name="livekit_pusher_video_background">#1F1F1F</color>
+
+    <!-- Pusher stage shading, from the Ardot 顶部压暗渐变 / 底部压暗渐变 layers -->
+    <color name="livekit_pusher_stage_shading_top_start">#8C000000</color>
+    <color name="livekit_pusher_stage_shading_top_middle">#47000000</color>
+    <color name="livekit_pusher_stage_shading_bottom_middle">#52000000</color>
+    <color name="livekit_pusher_stage_shading_bottom_end">#B3000000</color>
+
+    <!-- Pusher countdown stage, from the Ardot 倒计时 frame -->
+    <color name="livekit_pusher_bottom_bar">#0A0A0F</color>
+    <color name="livekit_pusher_countdown_circle">#29FFFFFF</color>
+    <color name="livekit_pusher_countdown_number_shadow">#80000000</color>
+    <color name="livekit_pusher_countdown_cancel_background">#DB26262B</color>
+    <color name="livekit_pusher_countdown_cancel_text">#EBFFFFFF</color>
+
+    <!-- Pusher prepare stage, from the Ardot 开播准备页 frame -->
+    <color name="livekit_pusher_prepare_action_plate">#80141417</color>
+    <color name="livekit_pusher_prepare_action_plate_border">#1AFFFFFF</color>
+    <color name="livekit_pusher_prepare_cover_gradient_start">#FF292E45</color>
+    <color name="livekit_pusher_prepare_cover_gradient_end">#FF1A1F30</color>
+    <color name="livekit_pusher_prepare_cover_border">#29FFFFFF</color>
+    <color name="livekit_pusher_cover_option_background">#0FFFFFFF</color>
+    <color name="livekit_pusher_cover_option_border">#24FFFFFF</color>
+    <color name="livekit_pusher_cover_option_border_selected">@color/livekit_brand_blue</color>
+
+    <!-- Pusher start-live button, from the Ardot 开始直播按钮 node -->
+    <color name="livekit_pusher_prepare_start_fill_start">#EB0052D9</color>
+    <color name="livekit_pusher_prepare_start_fill_end">#CC4A9EFF</color>
+    <color name="livekit_pusher_prepare_start_border_start">@color/livekit_brand_deep_blue</color>
+    <color name="livekit_pusher_prepare_start_border_middle">@color/livekit_brand_blue</color>
+    <color name="livekit_pusher_prepare_start_border_end">@color/livekit_brand_cyan</color>
+    <color name="livekit_pusher_prepare_start_shadow">#660052D9</color>
+    <color name="livekit_pusher_prepare_start_dot_glow">#D9FFFFFF</color>
+
+    <!-- Pusher settings item, from the Ardot 设置项 nodes -->
+    <color name="livekit_pusher_settings_item_plate">#14FFFFFF</color>
+
+    <!-- Shared live bottom-sheet background -->
+    <color name="livekit_bottom_sheet_bg_start">#181620</color>
+    <color name="livekit_bottom_sheet_bg_end">#0A090E</color>
+    <color name="livekit_bottom_sheet_highlight">#0DFFFFFF</color>
+    <color name="livekit_bottom_sheet_wash_start">#09FFFFFF</color>
+    <color name="livekit_bottom_sheet_wash_end">#04FFFFFF</color>
+    <color name="livekit_bottom_sheet_black_shadow">#B3000000</color>
+    <color name="livekit_bottom_sheet_blue_shadow">#4D4A9EFF</color>
+    <color name="livekit_bottom_sheet_inner_top_line">#24FFFFFF</color>
+    <color name="livekit_bottom_sheet_handle">#33FFFFFF</color>
+    <color name="livekit_bottom_sheet_bottom_glow">#384A9EFF</color>
+    <color name="livekit_bottom_sheet_bokeh1">#514A9EFF</color>
+    <color name="livekit_bottom_sheet_bokeh2">#4A7DE8FF</color>
+    <color name="livekit_bottom_sheet_bokeh3">#590052D9</color>
+    <color name="livekit_bottom_sheet_bokeh4">#3B7DE8FF</color>
+    <color name="livekit_bottom_sheet_bokeh5">#434A9EFF</color>
+    <color name="livekit_bottom_sheet_brand_line_start">#E64A9EFF</color>
+    <color name="livekit_bottom_sheet_brand_line_end">#E67DE8FF</color>
+    <color name="livekit_bottom_sheet_brand_line_glow">#B34A9EFF</color>
+    <color name="livekit_pusher_coguest_section_background">#47000000</color>
+    <color name="livekit_pusher_coguest_separator">#12FFFFFF</color>
+    <color name="livekit_pusher_coguest_avatar_border">#384A9EFF</color>
+    <color name="livekit_pusher_coguest_action_primary_fill">#642269DE</color>
+    <color name="livekit_pusher_coguest_action_primary_border">#5669AEFF</color>
+    <color name="livekit_pusher_coguest_action_destructive_fill">#1AFF4F57</color>
+    <color name="livekit_pusher_coguest_action_destructive_border">#38FF4F57</color>
+    <color name="livekit_pusher_coguest_layout_inactive_border">#24FFFFFF</color>
+    <color name="livekit_pusher_coguest_layout_active_start">#424A9EFF</color>
+    <color name="livekit_pusher_coguest_layout_active_end">#290052D9</color>
+    <color name="livekit_pusher_coguest_layout_selected">#8ECFFF</color>
+    <color name="livekit_pusher_coguest_layout_normal">#B8FFFFFF</color>
+    <color name="livekit_pusher_coguest_error">#FFFF8C8C</color>
+
+    <!-- Pusher resolution rows, from the Ardot 清晰度项 nodes -->
+    <color name="livekit_pusher_video_quality_row_fill">@color/livekit_pusher_settings_selection_idle_fill</color>
+    <color name="livekit_pusher_video_quality_row_border">@color/livekit_pusher_settings_selection_idle_border</color>
+    <color name="livekit_pusher_video_quality_row_inner_top">#14FFFFFF</color>
+    <color name="livekit_pusher_video_quality_row_selected_fill_start">@color/livekit_pusher_settings_selection_top</color>
+    <color name="livekit_pusher_video_quality_row_selected_fill_end">@color/livekit_pusher_settings_selection_bottom</color>
+    <color name="livekit_pusher_video_quality_row_selected_border_start">@color/livekit_brand_deep_blue</color>
+    <color name="livekit_pusher_video_quality_row_selected_border_middle">@color/livekit_brand_blue</color>
+    <color name="livekit_pusher_video_quality_row_selected_border_end">@color/livekit_brand_cyan</color>
+    <color name="livekit_pusher_video_quality_row_selected_inner_top">#8C7DE8FF</color>
+    <color name="livekit_pusher_video_quality_row_selected_inner_bottom">#4D0052D9</color>
+
+    <!-- Pusher audio-effect page, from the Ardot 音效设置抽屉 node -->
+    <color name="livekit_pusher_audio_card_fill">@color/livekit_pusher_settings_selection_idle_fill</color>
+    <color name="livekit_pusher_audio_card_border">@color/livekit_pusher_settings_selection_idle_border</color>
+    <color name="livekit_switch_on_track">#2E85F2</color>
+    <color name="livekit_pusher_audio_switch_off_track">#1FFFFFFF</color>
+    <color name="livekit_pusher_audio_switch_glow">#994A9EFF</color>
+    <color name="livekit_pusher_audio_switch_knob_shadow">#59000000</color>
+    <color name="livekit_pusher_audio_switch_inner_top">#40FFFFFF</color>
+    <color name="livekit_pusher_audio_accent_start">#FF0052D9</color>
+    <color name="livekit_pusher_audio_accent_end">#FF4A9EFF</color>
+
+    <!-- Pusher beauty page, from the Ardot 美颜抽屉 node (439:41) -->
+    <color name="livekit_pusher_beauty_plate_fill">#14FFFFFF</color>
+    <color name="livekit_pusher_beauty_plate_border">#1FFFFFFF</color>
+    <color name="livekit_pusher_beauty_plate_selected_fill">#522E7AEB</color>
+    <color name="livekit_pusher_beauty_plate_selected_border">#FF4FA3FF</color>
+    <color name="livekit_pusher_beauty_icon">#D1FFFFFF</color>
+
+    <!-- Pusher living header, from Ardot 77:405 / 77:417 / 77:426. -->
+    <color name="livekit_pusher_header_capsule_start">@color/livekit_video_overlay_capsule</color>
+    <color name="livekit_pusher_header_capsule_middle_dark">@color/livekit_header_middle</color>
+    <color name="livekit_pusher_header_capsule_middle_accent">@color/livekit_header_purple</color>
+    <color name="livekit_pusher_header_capsule_end">@color/livekit_header_rose</color>
+    <color name="livekit_pusher_header_capsule_border">@color/livekit_header_border</color>
+    <color name="livekit_pusher_header_like_count">#ADFFFFFF</color>
+    <color name="livekit_pusher_header_dark_capsule">@color/livekit_video_overlay_capsule</color>
+    <color name="livekit_pusher_header_close_border">#14FFFFFF</color>
+    <color name="livekit_pusher_header_status_text">#FFFFFFFF</color>
+    <color name="livekit_pusher_header_network_poor">#FFFFD08A</color>
+    <color name="livekit_pusher_header_network_very_poor">#FFFF927D</color>
+    <color name="livekit_pusher_header_network_disconnected">#FFFF6978</color>
+    <color name="livekit_pusher_living_toolbar_icon">#FFFFFFFF</color>
+    <color name="livekit_pusher_living_toolbar_label_shadow">#59000000</color>
+    <color name="livekit_pusher_living_toolbar_badge">#FFFF3B4F</color>
+    <color name="livekit_pusher_living_toolbar_badge_border">#FF090A0F</color>
+    <color name="livekit_pusher_living_toolbar_badge_glow">#B8FF3B4F</color>
+    <color name="livekit_pusher_message_item_background">@color/livekit_comment_row_background</color>
+    <color name="livekit_pusher_message_name">@color/livekit_nickname</color>
+    <color name="livekit_pusher_message_body">#F0FFFFFF</color>
+    <color name="livekit_pusher_message_new_background">#F50A0C12</color>
+    <color name="livekit_pusher_message_new_border">#579BEDFF</color>
+    <color name="livekit_pusher_message_new_text">#FFFFFFFF</color>
+    <color name="livekit_pusher_message_badge_text_shadow">#57000000</color>
+    <color name="livekit_pusher_message_host_fill">#FF3266A4</color>
+    <color name="livekit_pusher_message_host_border">#7D9BEDFF</color>
+    <color name="livekit_pusher_message_host_text">#FFFFFFFF</color>
+    <color name="livekit_pusher_message_host_shadow">#420052D9</color>
+    <color name="livekit_pusher_message_basic_start">#FF53637F</color>
+    <color name="livekit_pusher_message_basic_end">#FF7186AD</color>
+    <color name="livekit_pusher_message_basic_text">#FFDBE7FF</color>
+    <color name="livekit_pusher_message_advanced_start">#FF397BD8</color>
+    <color name="livekit_pusher_message_advanced_end">#FF55B9DC</color>
+    <color name="livekit_pusher_message_advanced_border">#4DD2F6FF</color>
+    <color name="livekit_pusher_message_advanced_text">#FFE9FBFF</color>
+    <color name="livekit_pusher_message_premium_start">#FF6655E8</color>
+    <color name="livekit_pusher_message_premium_middle">#FFA35DF0</color>
+    <color name="livekit_pusher_message_premium_end">#FFE76DBD</color>
+    <color name="livekit_pusher_message_premium_border">#6BFFFFFF</color>
+    <color name="livekit_pusher_message_premium_text">#FFFFF3FF</color>
+    <color name="livekit_pusher_message_elite_start">#FFE58743</color>
+    <color name="livekit_pusher_message_elite_middle">#FFF1C853</color>
+    <color name="livekit_pusher_message_elite_end">#FF7568F0</color>
+    <color name="livekit_pusher_message_elite_border">#FFFFFACF</color>
+    <color name="livekit_pusher_message_elite_text">#FFFFF9DD</color>
+    <color name="livekit_pusher_message_elite_shadow">#70EDAB4A</color>
+    <color name="livekit_pusher_message_level_icon_light">#FFEFF3FA</color>
+    <color name="livekit_pusher_message_level_icon_basic">#FF6886BD</color>
+    <color name="livekit_pusher_message_level_icon_advanced">#FF4E9ED4</color>
+    <color name="livekit_pusher_message_level_icon_premium">#FFA768EE</color>
+    <color name="livekit_pusher_status_normal">#FF4A9EFF</color>
+    <color name="livekit_pusher_status_warning">#FFFF8A3D</color>
+    <color name="livekit_pusher_status_critical">#FFFF5B62</color>
+    <color name="livekit_pusher_status_unknown">#FF8A93A8</color>
+    <color name="livekit_pusher_summary_background_top">#FF14131C</color>
+    <color name="livekit_pusher_summary_background_middle">#FF0D0C12</color>
+    <color name="livekit_pusher_summary_background_bottom">#FF09090D</color>
+    <color name="livekit_pusher_summary_blue">@color/livekit_brand_blue</color>
+    <color name="livekit_pusher_summary_glow_clear">#004A9EFF</color>
+    <color name="livekit_pusher_summary_glow_horizontal">#1C4A9EFF</color>
+    <color name="livekit_pusher_summary_glow_vertical">#0E4A9EFF</color>
+    <color name="livekit_pusher_summary_dot_one">#12FFFFFF</color>
+    <color name="livekit_pusher_summary_dot_two">#0EFFFFFF</color>
+    <color name="livekit_pusher_summary_dot_three">#0AFFFFFF</color>
+    <color name="livekit_pusher_summary_text_primary">#E6FFFFFF</color>
+    <color name="livekit_pusher_summary_text_section">#E6FFFFFF</color>
+    <color name="livekit_pusher_summary_text_hero">#F2FFFFFF</color>
+    <color name="livekit_pusher_summary_duration">#FF8ECFFF</color>
+    <color name="livekit_pusher_summary_text_stat_value">#F0FFFFFF</color>
+    <color name="livekit_pusher_summary_outer_ring">#144A9EFF</color>
+    <color name="livekit_pusher_summary_mark">#FF193E6B</color>
+    <color name="livekit_pusher_summary_pause_fill">#0BFFFFFF</color>
+    <color name="livekit_pusher_summary_pause_border">#12FFFFFF</color>
+    <color name="livekit_pusher_summary_card_border">#16FFFFFF</color>
+    <color name="livekit_pusher_summary_hero_white_top">#11FFFFFF</color>
+    <color name="livekit_pusher_summary_hero_white_bottom">#06FFFFFF</color>
+    <color name="livekit_pusher_summary_hero_blue_top">#214A9EFF</color>
+    <color name="livekit_pusher_summary_hero_blue_middle">#094A9EFF</color>
+    <color name="livekit_pusher_summary_stat_border">#11FFFFFF</color>
+    <color name="livekit_pusher_summary_stat_white_start">#0EFFFFFF</color>
+    <color name="livekit_pusher_summary_stat_white_end">#06FFFFFF</color>
+    <color name="livekit_pusher_summary_accent_yellow">#FFF0BC5F</color>
+    <color name="livekit_pusher_summary_accent_pink">#FFFF6E9D</color>
+    <color name="livekit_pusher_summary_accent_blue">#FF69A8FF</color>
+    <color name="livekit_pusher_summary_accent_purple">#FFBE83FF</color>
+    <color name="livekit_pusher_summary_accent_green">#FF57D5BF</color>
+    <color name="livekit_pusher_summary_accent_orange">#FFFF7B72</color>
+    <color name="livekit_pusher_living_scrim_top">#80000000</color>
+    <color name="livekit_pusher_living_scrim_bottom">#94000000</color>
+    <color name="livekit_pusher_gift_capsule_background">#47080A0F</color>
+    <color name="livekit_pusher_gift_sender_text">#FFFFFFFF</color>
+    <color name="livekit_pusher_gift_detail_text">#B8FFFFFF</color>
+    <color name="livekit_pusher_gift_count_text">#FFFFFFFF</color>
+    <color name="livekit_pusher_gift_count_bump_text">#FF78D9FF</color>
+    <color name="livekit_pusher_gift_count_shadow">#8C000000</color>
+    <color name="livekit_pusher_gift_fallback_gradient_start">@color/livekit_brand_blue</color>
+    <color name="livekit_pusher_gift_fallback_gradient_end">#FF8259F5</color>
+    <color name="livekit_pusher_gift_message_background">@color/livekit_comment_row_background</color>
+    <color name="livekit_pusher_gift_message_sender">@color/livekit_nickname</color>
+    <color name="livekit_pusher_gift_message_action">#FFFFF4CF</color>
+    <color name="livekit_pusher_gift_message_highlight">#FFFFE7A3</color>
+    <color name="livekit_pusher_audience_remove_icon">#FFE47A83</color>
+    <color name="livekit_text_primary">#FFFFFFFF</color>
+    <color name="livekit_text_secondary">#BFFFFFFF</color>
+    <color name="livekit_text_tertiary">#7AFFFFFF</color>
+    <color name="livekit_text_disabled">#61FFFFFF</color>
+    <color name="livekit_slider_progress">@color/livekit_brand_blue</color>
+    <color name="livekit_slider_track">#1FFFFFFF</color>
+    <color name="livekit_slider_thumb">#FFFFFFFF</color>
+    <color name="livekit_slider_thumb_shadow">#40000000</color>
+    <color name="livekit_toast_gradient_start">#EB052963</color>
+    <color name="livekit_toast_gradient_middle">#E61A477D</color>
+    <color name="livekit_toast_gradient_end">#E0336380</color>
+    <color name="livekit_toast_border">#14FFFFFF</color>
+    <color name="livekit_toast_glow">#660052D9</color>
+    <color name="livekit_coguest_seat_muted_icon">#FFFFFFFF</color>
+    <color name="livekit_coguest_seat_muted_background">#52000000</color>
+    <color name="livekit_coguest_seat_name">#CCFFFFFF</color>
+    <color name="livekit_coguest_manage_label">#BFFFFFFF</color>
+    <color name="livekit_coguest_manage_destructive">#FFFF9095</color>
+    <!-- Shared product semantics; feature-specific values remain independently overridable. -->
+    <color name="livekit_brand_blue">#FF4A9EFF</color>
+    <color name="livekit_brand_deep_blue">#FF0052D9</color>
+    <color name="livekit_brand_cyan">#FF7DE8FF</color>
+    <color name="livekit_video_overlay_capsule">#380A0C12</color>
+    <color name="livekit_header_middle">#330E101C</color>
+    <color name="livekit_header_purple">#2E7B4DFF</color>
+    <color name="livekit_header_rose">#29FF5B7A</color>
+    <color name="livekit_header_border">#0FFFFFFF</color>
+    <color name="livekit_nickname">#FF78D8FF</color>
+    <color name="livekit_audience_gift_value">#FFFFE29A</color>
+    <color name="livekit_audience_row_separator">#14FFFFFF</color>
+    <color name="livekit_control_base">#FF0A0A0F</color>
+    <color name="livekit_comment_row_background">#570A0A0F</color>
+    <color name="livekit_pusher_settings_selection_idle_fill">#0BFFFFFF</color>
+    <color name="livekit_pusher_settings_selection_idle_border">#24FFFFFF</color>
+    <color name="livekit_pusher_settings_selection_top">#6B4A9EFF</color>
+    <color name="livekit_pusher_settings_selection_bottom">#420052D9</color>
+    <color name="livekit_player_unit_border">#1FFFFFFF</color>
+    <color name="livekit_player_unit_foreground">#66FFFFFF</color>
+    <color name="livekit_player_unit_background">#C724242B</color>
+    <color name="livekit_player_profile_following_text">#B8FFFFFF</color>
+    <color name="livekit_player_host_following_text">#D1FFFFFF</color>
+    <color name="livekit_pusher_end_count">#FF8ECFFF</color>
+    <color name="livekit_pusher_status_tab_idle">#80FFFFFF</color>
+    <color name="livekit_pusher_music_cover_foreground">#EBFFFFFF</color>
+    <color name="livekit_pusher_music_wave_shadow">#F27DE8FF</color>
+    <color name="livekit_pusher_coguest_no_video_start">#FF1A2E45</color>
+    <color name="livekit_pusher_coguest_no_video_end">#FF080F1F</color>
+    <color name="livekit_pusher_coguest_layout_idle_top">#450D0D12</color>
+    <color name="livekit_pusher_coguest_layout_idle_bottom">#3C06060A</color>
+    <color name="livekit_player_coguest_request_voice_start">#FF0A47B0</color>
+    <color name="livekit_player_coguest_request_voice_end">#FF396DBB</color>
+    <color name="livekit_player_coguest_request_video_start">#FFB735A4</color>
+    <color name="livekit_player_coguest_request_video_middle">#FF7654E8</color>
+    <color name="livekit_player_coguest_request_video_end">#FF367FCB</color>
+    <!-- Gift panel colors deliberately stay separate from the brand palette. -->
+    <color name="livekit_gift_panel_blue">#FF4A9EFF</color>
+    <color name="livekit_gift_panel_deep_blue">#FF0052D9</color>
+    <color name="livekit_gift_panel_send_end">#FF7EE8FF</color>
+    <color name="livekit_gift_panel_selected_fill">#264A9EFF</color>
+    <color name="livekit_gift_panel_selected_border">#D989B4FF</color>
+    <color name="livekit_player_header_middle">#330E1019</color>
+    <color name="livekit_pusher_settings_mic_foreground">#FFFFFFFF</color>
+    <color name="livekit_coguest_entry_idle">#2E0A0A0F</color>
+    <color name="livekit_coguest_entry_border">#0FFFFFFF</color>
+    <color name="livekit_coguest_wave_foreground">#FFF5F7FA</color>
+    <color name="livekit_coguest_link_blue">#8ECFFF</color>
+    <color name="livekit_pusher_ending_scrim">#8C000000</color>
+</resources>

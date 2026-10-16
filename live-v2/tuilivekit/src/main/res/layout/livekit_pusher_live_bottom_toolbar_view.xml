@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/livekit_pusher_living_toolbar_coguest"
+        android:layout_width="wrap_content"
+        android:minWidth="@dimen/livekit_pusher_living_toolbar_action_width"
+        android:layout_height="@dimen/livekit_pusher_living_toolbar_action_height"
+        android:layout_marginStart="@dimen/livekit_pusher_living_toolbar_leading_inset"
+        android:layout_marginTop="@dimen/livekit_pusher_living_toolbar_action_top"
+        android:clickable="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:contentDescription="@string/livekit_pusher_living_toolbar_coguest"
+        android:focusable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/livekit_pusher_living_toolbar_coguest_icon"
+            android:layout_width="46dp"
+            android:layout_height="38dp"
+            android:translationY="-6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/livekit_pusher_living_toolbar_coguest" />
+
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:layout_width="wrap_content"
+        android:minWidth="@dimen/livekit_pusher_living_toolbar_action_width"
+            android:layout_height="@dimen/livekit_pusher_living_toolbar_label_height"
+            android:layout_marginTop="@dimen/livekit_pusher_living_toolbar_label_top"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="top|center_horizontal"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:shadowColor="@color/livekit_pusher_living_toolbar_label_shadow"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="@string/livekit_pusher_living_toolbar_coguest"
+            app:liveTextRole="control"
+            app:liveTextTone="secondary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/livekit_pusher_living_toolbar_more"
+        android:layout_width="wrap_content"
+        android:minWidth="@dimen/livekit_pusher_living_toolbar_action_width"
+        android:layout_height="@dimen/livekit_pusher_living_toolbar_action_height"
+        android:layout_marginTop="@dimen/livekit_pusher_living_toolbar_action_top"
+        android:layout_marginEnd="@dimen/livekit_pusher_living_toolbar_leading_inset"
+        android:clickable="true"
+        android:contentDescription="@string/livekit_pusher_living_toolbar_more"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/livekit_pusher_living_toolbar_more_icon_size"
+            android:layout_height="@dimen/livekit_pusher_living_toolbar_more_icon_size"
+            android:layout_marginTop="@dimen/livekit_pusher_living_toolbar_more_icon_top"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/livekit_pusher_living_toolbar_more" />
+
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:layout_width="wrap_content"
+        android:minWidth="@dimen/livekit_pusher_living_toolbar_action_width"
+            android:layout_height="@dimen/livekit_pusher_living_toolbar_label_height"
+            android:layout_marginTop="@dimen/livekit_pusher_living_toolbar_label_top"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="top|center_horizontal"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:shadowColor="@color/livekit_pusher_living_toolbar_label_shadow"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="@string/livekit_pusher_living_toolbar_more"
+            app:liveTextRole="control"
+            app:liveTextTone="secondary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>
