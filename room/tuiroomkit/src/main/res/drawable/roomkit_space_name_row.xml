@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 名字行的元素间距（对齐设计稿 `body[data-form="mobile"] .rk-tile-name { gap: 4px }`）。
+     用 divider 而不是逐个 margin：`LinearLayout` 的 divider 语义就是「两个相邻子元素之间」，
+     等价于 iOS `UIStackView(spacing:)`；用 margin 会在相邻元素各自带 margin 时叠加成两倍。 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size android:width="4dp" />
+    <solid android:color="@android:color/transparent" />
+</shape>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 行组外壳（对齐 iOS `routeGroup` 的圆角 16 / 设计稿 `#speakerOverlay .h5-leave-group`）。 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="16dp" />
+    <solid android:color="@color/roomkit_bg_canvas" />
+</shape>

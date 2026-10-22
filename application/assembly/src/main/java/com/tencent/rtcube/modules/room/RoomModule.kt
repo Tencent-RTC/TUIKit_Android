@@ -9,7 +9,6 @@ import com.tencent.rtcube.assembly.ModuleEnvironment
 import com.tencent.rtcube.assembly.ModuleProvider
 import com.tencent.rtcube.modules.AtomicXCoreLogin
 import com.tencent.rtcube.modules.R
-import com.trtc.uikit.roomkit.RoomHomeActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

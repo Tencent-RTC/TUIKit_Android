@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 设置页（对齐 iOS PreRoom/Settings：导航栏 + 视频分组 + 通用分组）。 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/roomkit_bg_canvas"
+    android:orientation="vertical">
+
+    <com.trtc.uikit.roomkit.inroom.features.setting.RoomNavigationBar
+        android:id="@+id/settings_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:id="@+id/settings_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/video_group_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textColor="@color/roomkit_fg_tertiary"
+                android:textSize="11sp" />
+
+            <com.trtc.uikit.roomkit.inroom.features.setting.RoomSettingsSection
+                android:id="@+id/video_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/general_group_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:includeFontPadding="false"
+                android:textColor="@color/roomkit_fg_tertiary"
+                android:textSize="11sp" />
+
+            <com.trtc.uikit.roomkit.inroom.features.setting.RoomSettingsSection
+                android:id="@+id/general_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
