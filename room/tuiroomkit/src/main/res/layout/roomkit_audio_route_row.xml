@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 一行输出方式（对齐 iOS `RoomAudioRouteRow` / 设计稿 `#speakerOverlay button[data-route]`）：
+     高 52、圆角 12、左右内边距 14；图标 22、图标与文字间距 12、文字 15、右侧勾选 18。
+     行间距 2 由外层容器统一给，避免最后一行多出一段空隙。 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:background="@drawable/roomkit_bg_route_row"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp">
+
+    <ImageView
+        android:id="@+id/route_row_icon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/route_row_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:includeFontPadding="false"
+        android:textColor="@color/roomkit_fg_primary"
+        android:textSize="@dimen/roomkit_fs_lg" />
+
+    <ImageView
+        android:id="@+id/route_row_check"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/roomkit_icon_check_accent" />
+
+</LinearLayout>

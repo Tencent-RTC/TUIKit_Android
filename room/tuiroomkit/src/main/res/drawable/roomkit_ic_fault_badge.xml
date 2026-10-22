@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 设备异常角标（对齐设计稿 rk-mic-button[fault] .rk-btn__ico::after）：
+     14dp 圆、warning 填充、1.5dp 底栏底色描边。填充 / 描边色由代码 tint 覆盖。 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14dp"
+    android:height="14dp"
+    android:viewportWidth="14"
+    android:viewportHeight="14">
+    <path
+        android:fillColor="#FFFF9F0A"
+        android:pathData="M0.75,7 A6.25,6.25 0 1 1 13.25,7 A6.25,6.25 0 1 1 0.75,7" />
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.5"
+        android:pathData="M0.75,7 A6.25,6.25 0 1 1 13.25,7 A6.25,6.25 0 1 1 0.75,7" />
+</vector>

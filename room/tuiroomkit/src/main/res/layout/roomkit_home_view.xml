@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:background="@drawable/roomkit_bg_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:fitsSystemWindows="true"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="2dp">
+
+                <com.trtc.uikit.roomkit.base.avatar.RoomAvatar
+                    android:id="@+id/avatar"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp" />
+
+                <TextView
+                    android:textColor="@color/roomkit_fg_primary"
+                    android:textSize="@dimen/roomkit_fs_xl"
+                    android:id="@+id/home_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:background="@drawable/roomkit_bg_home_entry_icon"
+                        android:id="@+id/quick_meeting_button"
+                        android:layout_width="68dp"
+                        android:layout_height="68dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/quick_meeting_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/roomkit_icon_quick_meeting" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:textColor="@color/roomkit_fg_primary"
+                        android:textSize="@dimen/roomkit_fs_md"
+                        android:id="@+id/quick_meeting_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/roomkit_pre_room_quick_meeting"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:background="@drawable/roomkit_bg_home_entry_icon"
+                        android:id="@+id/join_button"
+                        android:layout_width="68dp"
+                        android:layout_height="68dp"
+                        android:gravity="center">
+
+                        <LinearLayout
+                            android:background="@drawable/roomkit_bg_home_icon_tile"
+                            android:id="@+id/join_well"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:id="@+id/join_icon"
+                                android:layout_width="6dp"
+                                android:layout_height="6dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/roomkit_icon_plus" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:textColor="@color/roomkit_fg_primary"
+                        android:textSize="@dimen/roomkit_fs_md"
+                        android:id="@+id/join_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/roomkit_pre_room_join"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:background="@drawable/roomkit_bg_home_entry_icon"
+                        android:id="@+id/schedule_button"
+                        android:layout_width="68dp"
+                        android:layout_height="68dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/schedule_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/roomkit_icon_calendar" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:textColor="@color/roomkit_fg_primary"
+                        android:textSize="@dimen/roomkit_fs_md"
+                        android:id="@+id/schedule_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/roomkit_schedule_title"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:background="@drawable/roomkit_bg_home_card"
+                android:id="@+id/schedule_panel"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingTop="14dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="8dp">
+
+                    <View
+                        android:background="@drawable/roomkit_bg_home_primary_pill"
+                        android:id="@+id/schedule_bar"
+                        android:layout_width="3dp"
+                        android:layout_height="12dp" />
+
+                    <TextView
+                        android:textColor="@color/roomkit_fg_primary"
+                        android:textSize="@dimen/roomkit_fs_lg"
+                        android:id="@+id/schedule_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/roomkit_pre_room_agenda"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="232dp"
+                        android:layout_height="116dp"
+                        android:contentDescription="@string/roomkit_calendar_empty_recent"
+                        android:src="@drawable/roomkit_illustration_agenda_empty" />
+
+                    <TextView
+                        android:textColor="@color/roomkit_fg_secondary"
+                        android:textSize="@dimen/roomkit_fs_lg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/roomkit_calendar_empty_recent" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</merge>

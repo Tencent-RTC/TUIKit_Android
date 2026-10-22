@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 设计稿 mobile .rk-info-copy：22x22、border-radius = radius-sm(8)、默认透明底。
+     这里只为圆角做裁剪容器，底色保持全透明（点击态由 selectableItemBackground 之类的前景承担）。 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:radius="8dp" />
+    <solid android:color="@android:color/transparent" />
+</shape>

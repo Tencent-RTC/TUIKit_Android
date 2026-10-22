@@ -1,5 +1,0 @@
-<?xml version="1.0" ?>
-<resources>
-    <string name="roomkit_barrage_text_hint">何か言ってみましょう…</string>
-    <string name="roomkit_barrage_btn_send">送信</string>
-</resources>

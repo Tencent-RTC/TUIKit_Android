@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/roomkit_bg_surface"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/top_bar_row"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <com.trtc.uikit.roomkit.inroom.features.roominfo.currentroominfo.RoomInfoView
+                    android:id="@+id/current_room_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <com.trtc.uikit.roomkit.inroom.features.roominfo.localnetworkinfo.LocalNetworkInfo
+                    android:id="@+id/local_network_info"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="4dp" />
+
+                <com.trtc.uikit.roomkit.inroom.features.recording.cloudrecordingstatus.CloudRecordingStatus
+                    android:id="@+id/cloud_recording_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/roomkit_bg_tag_recording"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="22dp"
+                    android:orientation="horizontal"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:visibility="gone" />
+
+                <Space
+                    android:id="@+id/top_bar_space"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <com.trtc.uikit.roomkit.inroom.features.roominfo.leaveroombutton.LeaveRoomButton
+                    android:id="@+id/leave_room_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.trtc.uikit.roomkit.inroom.features.roomview.RoomView
+                android:id="@+id/room_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.trtc.uikit.roomkit.inroom.features.screenshare.RoomScreenSharingPlaceholderView
+                android:id="@+id/screen_sharing_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
+
+        <com.trtc.uikit.roomkit.inroom.views.meeting.MeetingToolBar
+            android:id="@+id/meeting_tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <com.trtc.uikit.roomkit.inroom.views.meeting.RoomEnteringView
+        android:id="@+id/entering_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</merge>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <View
+        android:id="@+id/recording_dot"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/roomkit_bg_recording_dot" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/recording_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:text="@string/roomkit_cloud_recording_recording_label"
+        android:textColor="@color/roomkit_danger"
+        android:textSize="@dimen/roomkit_fs_sm" />
+</merge>

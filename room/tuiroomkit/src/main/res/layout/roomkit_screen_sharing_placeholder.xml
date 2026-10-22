@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 「正在共享手机屏幕」占位面板（对齐 iOS `RoomScreenSharingPlaceholderView` / 设计稿 mobile `.share-placeholder`）：
+     padding 24 / 40 / 36 且内容整体居中；图标 48 主色、下间距 14；标题 16 / 500、下间距 8；
+     live 行（6 圆点 + 12 文案，间距 6）下间距 8；说明 12 / 行高 1.6、最宽 248、下间距 22；
+     停止按钮高 36、最小宽 128、圆角 6、`#3a3d49` 白字 14。 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/roomkit_bg_share_placeholder"
+    android:paddingStart="40dp"
+    android:paddingTop="24dp"
+    android:paddingEnd="40dp"
+    android:paddingBottom="36dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/roomkit_icon_screen_share_accent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:includeFontPadding="false"
+            android:text="@string/roomkit_screen_share_sharing_phone"
+            android:textColor="@color/roomkit_fg_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/live_dot"
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@drawable/roomkit_bg_share_live_dot" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:includeFontPadding="false"
+                android:text="@string/roomkit_screen_share_live"
+                android:textColor="@color/roomkit_danger"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="5dp"
+            android:maxWidth="248dp"
+            android:text="@string/roomkit_screen_share_sharing_phone_hint"
+            android:textColor="@color/roomkit_fg_secondary"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/stop_button"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/roomkit_bg_share_stop"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:minWidth="128dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/roomkit_screen_share_stop"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>

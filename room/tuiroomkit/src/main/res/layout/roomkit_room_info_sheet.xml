@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 房间信息面板（对齐 iOS `RoomInfoSheet` / 设计稿 `rk-current-room-info` 的 mobile `.rk-info-card`）。
+     head：会议名 16sp medium 居中，上 8、左右 20；
+     分隔线：上 16、高 1、下 8，左右 20，色 fg-primary 6%；
+     body：左右 20，行高 42、行间距 0；行内 = 标签(text-2) + 值(text，尾部截断) + 复制按钮 22；
+     设计稿 mobile `.rk-info-fields` 是 `grid-template-columns: max-content minmax(0,1fr) 22px` + `column-gap: 16px`；
+     标签与值之间、值与复制按钮之间都是 16；冒号 `.rk-info-colon` 在 mobile 下 `display: none`，不显示。
+     邀请按钮：上 16、高 44、radius 8、实心 primary、白字 15sp、下 14、左右 20。
+     注：body 不套 ScrollView —— 父容器是 wrap_content，ScrollView 配 0dp + weight 会量出 0 高度，信息行会被压没。 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/info_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textColor="@color/roomkit_fg_primary"
+        android:textSize="@dimen/roomkit_fs_16" />
+
+    <View
+        android:id="@+id/info_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/roomkit_bg_info_divider" />
+
+    <LinearLayout
+        android:id="@+id/info_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="@string/roomkit_room_info_host"
+                android:textColor="@color/roomkit_fg_secondary"
+                android:textSize="@dimen/roomkit_fs_lg" />
+
+            <TextView
+                android:id="@+id/host_name"
+                android:layout_marginStart="16dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/roomkit_fg_primary"
+                android:textSize="@dimen/roomkit_fs_lg" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="@string/roomkit_invitation_room_id"
+                android:textColor="@color/roomkit_fg_secondary"
+                android:textSize="@dimen/roomkit_fs_lg" />
+
+            <TextView
+                android:id="@+id/id_value"
+                android:layout_marginStart="16dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/roomkit_fg_primary"
+                android:textSize="@dimen/roomkit_fs_lg" />
+
+            <ImageView
+                android:id="@+id/id_copy_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:background="@drawable/roomkit_bg_info_copy"
+                android:importantForAccessibility="no"
+                android:padding="3dp"
+                android:src="@drawable/roomkit_icon_copy_accent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/password_row"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="@string/roomkit_schedule_password"
+                android:textColor="@color/roomkit_fg_secondary"
+                android:textSize="@dimen/roomkit_fs_lg" />
+
+            <TextView
+                android:id="@+id/password_value"
+                android:layout_marginStart="16dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/roomkit_fg_primary"
+                android:textSize="@dimen/roomkit_fs_lg" />
+
+            <ImageView
+                android:id="@+id/password_copy_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:background="@drawable/roomkit_bg_info_copy"
+                android:importantForAccessibility="no"
+                android:padding="3dp"
+                android:src="@drawable/roomkit_icon_copy_accent" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/info_invite"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="14dp"
+        android:background="@drawable/roomkit_bg_info_invite"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:text="@string/roomkit_room_info_invitation"
+        android:textColor="@color/roomkit_fg_on_accent"
+        android:textSize="@dimen/roomkit_fs_lg" />
+</LinearLayout>

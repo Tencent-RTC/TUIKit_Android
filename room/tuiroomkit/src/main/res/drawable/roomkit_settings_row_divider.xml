@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 设置行之间的 1px 分隔线（对齐 iOS RoomSettingsSection 的 row 分隔）。 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/roomkit_border" />
+    <size android:width="1dp" android:height="1dp" />
+</shape>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:textColor="@color/roomkit_fg_primary"
+            android:textSize="@dimen/roomkit_fs_lg"
+            android:id="@+id/participant_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp"
+            android:text="@string/roomkit_participants_panel"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <EditText
+                android:id="@+id/participant_search_input"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@drawable/roomkit_input_search_bg"
+                android:drawableStart="@drawable/roomkit_icon_search"
+                android:drawablePadding="6dp"
+                android:hint="@string/roomkit_participants_search_placeholder"
+                android:imeOptions="actionDone"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="10dp"
+                android:singleLine="true"
+                android:textColor="@color/roomkit_fg_primary"
+                android:textColorHint="@color/roomkit_fg_tertiary"
+                android:textSize="@dimen/roomkit_fs_sm" />
+
+            <LinearLayout
+                android:background="@drawable/roomkit_bg_invite_button"
+                android:id="@+id/participant_invite_button"
+                android:visibility="gone"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/roomkit_icon_user_plus" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/participant_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingBottom="16dp" />
+
+        <LinearLayout
+            android:id="@+id/participant_search_empty"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="64dp"
+                android:layout_marginBottom="14dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/roomkit_ill_participant_search_empty" />
+
+            <TextView
+                android:id="@+id/search_empty_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/roomkit_participants_search_empty"
+                android:textColor="@color/roomkit_fg_primary"
+                android:textSize="@dimen/roomkit_fs_md"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/search_empty_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/roomkit_fg_tertiary"
+                android:textSize="@dimen/roomkit_fs_sm" />
+
+            <TextView
+                android:id="@+id/search_empty_clear_button"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/roomkit_bg_participant_empty_button"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="@string/roomkit_participants_clear_search"
+                android:textColor="@color/roomkit_fg_primary"
+                android:textSize="@dimen/roomkit_fs_sm" />
+        </LinearLayout>
+            android:overScrollMode="never"
+            android:paddingBottom="16dp" />
+
+        <LinearLayout
+            android:id="@+id/participant_footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/roomkit_bg_surface"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="14dp"
+            android:visibility="gone">
+
+            <TextView
+                android:textColor="@color/roomkit_footer_button_text"
+                android:textSize="@dimen/roomkit_fs_sm"
+                android:id="@+id/footer_mute_button"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:background="@drawable/roomkit_bg_footer_button"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textColor="@color/roomkit_footer_button_text"
+                android:textSize="@dimen/roomkit_fs_sm"
+                android:id="@+id/footer_camera_button"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/roomkit_bg_footer_button"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textColor="@color/roomkit_footer_button_text"
+                android:textSize="@dimen/roomkit_fs_sm"
+                android:id="@+id/footer_more_button"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/roomkit_bg_footer_button"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:text="@string/roomkit_room_more"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</merge>
