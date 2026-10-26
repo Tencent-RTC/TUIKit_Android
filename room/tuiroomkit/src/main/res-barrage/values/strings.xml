@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<resources>
+    <string name="roomkit_barrage_text_hint">Join Chat!</string>
+    <string name="roomkit_barrage_btn_send">Send</string>
+</resources>

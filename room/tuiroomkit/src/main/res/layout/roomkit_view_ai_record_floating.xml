@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_content"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/roomkit_bg_ai_record_floating"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingStart="5dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="5dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/iv_ai_record_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/roomkit_transcription_recording"
+        android:src="@drawable/roomkit_ic_ai_record" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_ai_record_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/roomkit_transcription_recording"
+            android:textColor="@color/roomkit_color_ai_record_text"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/iv_ai_record_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/roomkit_transcription_recording"
+            android:src="@drawable/roomkit_ic_ai_record_right_arrow" />
+    </LinearLayout>
+
+</LinearLayout>

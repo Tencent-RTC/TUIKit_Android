@@ -1,37 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.trtc.uikit.roomkit">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application>
         <activity
-            android:name=".inroom.features.setting.RoomSettingsActivity"
+            android:name=".RoomHomeActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".RoomCreateActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".inroom.views.meeting.MeetingActivity"
+            android:name=".RoomJoinActivity"
             android:exported="false"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".RoomMainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:exported="false"
+            android:screenOrientation="locked"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <activity
+            android:name=".aitranscription.AITranscriptionSettingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".aitranscription.AIMinutesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.schedule.RoomScheduleActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.schedule.RoomScheduledDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.invitation.RoomInvitationReceivedActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
         <provider
-            android:name="com.trtc.uikit.roomkit.base.ContextProvider"
-            android:authorities="${applicationId}.tuikit.roomkit.provider"
+            android:name=".RoomInitializer"
+            android:authorities="${applicationId}.RoomCallInitializer"
             android:enabled="true"
             android:exported="false" />
-
-        <service
-            android:name="com.trtc.uikit.roomkit.base.service.RoomForegroundService"
-            android:exported="false"
-            android:foregroundServiceType="camera|microphone" />
     </application>
+
 </manifest>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="53dp"
+    android:background="@drawable/roomkit_bg_top_view">
+
+    <RelativeLayout
+        android:id="@+id/rl_meeting_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="10dp">
+
+        <TextView
+            android:id="@+id/tv_room_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxEms="9"
+            android:maxLines="1"
+            android:textColor="@color/roomkit_color_text_light"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/iv_dropdown"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_above="@id/tv_duration"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/tv_room_name"
+            android:src="@drawable/roomkit_ic_arrow_down"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_room_name"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/roomkit_color_text_light"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_audio_route"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/roomkit_ic_speaker"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/iv_camera_switch"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@+id/iv_audio_route"
+        android:src="@drawable/roomkit_ic_camera_switch"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:id="@+id/ll_exit_room"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
+        tools:ignore="RelativeOverlap">
+
+        <ImageView
+            android:id="@+id/iv_end_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/roomkit_ic_exit"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_end_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:text="@string/roomkit_end"
+            android:textColor="@color/roomkit_color_end_room" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/roomkit_color_text_primary" />
+</RelativeLayout>

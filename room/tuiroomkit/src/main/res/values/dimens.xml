@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="roomkit_fs_xs">10sp</dimen>
-    <dimen name="roomkit_fs_sm">11sp</dimen>
-    <dimen name="roomkit_fs_md">13sp</dimen>
-    <dimen name="roomkit_fs_lg">15sp</dimen>
-    <dimen name="roomkit_fs_xl">17sp</dimen>
-    <dimen name="roomkit_fs_16">16sp</dimen>
+    <dimen name="roomkit_divider_height">1dp</dimen>
+
+    <dimen name="roomkit_wheel_indication_size">2dp</dimen>
+    <dimen name="roomkit_wheel_item_space">12dp</dimen>
+    <dimen name="roomkit_wheel_text_size">24sp</dimen>
+
+    <dimen name="roomkit_bottom_view_width">360dp</dimen>
+    <dimen name="roomkit_bottom_view_height">120dp</dimen>
+    <dimen name="roomkit_bottom_list_view_height">60dp</dimen>
+
+    <dimen name="roomkit_main_bottom_area_height">52dp</dimen>
+    <dimen name="roomkit_main_bottom_padding">10dp</dimen>
 </resources>

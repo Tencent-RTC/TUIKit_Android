@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <corners android:radius="8dp" />
-    <!-- 设计稿 .rk-info-wide.copied：success 12% 底（= #34C759 @ 12%）。 -->
-    <solid android:color="#1F34C759" />
-</shape>

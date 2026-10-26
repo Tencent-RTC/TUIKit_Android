@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Top shadow / gradient divider drawn above the bottom action bar.
+  Simulates the two soft drop-shadows in the design spec:
+    - offset (0,-2)  radius 6  color #46628C @ 8%
+    - offset (0,-8)  radius 24 color #46628C @ 3%
+  Represented as a top-to-bottom gradient: transparent -> tinted white.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="#00FFFFFF"
+        android:endColor="#1446628C" />
+</shape>

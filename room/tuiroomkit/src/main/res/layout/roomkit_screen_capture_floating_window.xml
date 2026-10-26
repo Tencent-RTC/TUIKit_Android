@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareFloatView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/roomkit_color_screen_capture_float_bg"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxEms="1"
+        android:text="@string/roomkit_screen_sharing_status"
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
+
+</com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareFloatView>

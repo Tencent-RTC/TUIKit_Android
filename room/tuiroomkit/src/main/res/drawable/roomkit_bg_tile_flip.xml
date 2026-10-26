@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 设计稿 mobile .rk-tile-flip：28x28 圆形、底 rgba(0,0,0,0.45)。 -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <solid android:color="@color/roomkit_bg_on_media" />
-    <size
-        android:width="28dp"
-        android:height="28dp" />
-</shape>
