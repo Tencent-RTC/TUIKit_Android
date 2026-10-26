@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/roomkit_bg_bottom_sheet_dialog_white"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <FrameLayout
+        android:id="@+id/drag_indicator_duration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="2dp"
+            android:padding="10dp"
+            android:src="@drawable/roomkit_bg_drag_indicator"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/btn_duration_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="8dp"
+            android:contentDescription="@string/roomkit_cancel"
+            android:src="@drawable/roomkit_ic_close" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/roomkit_scheduled_duration"
+            android:textColor="@color/roomkit_color_text_primary"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/btn_duration_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="8dp"
+            android:contentDescription="@string/roomkit_confirm"
+            android:src="@drawable/roomkit_ic_check" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:orientation="horizontal">
+
+        <com.trtc.uikit.roomkit.view.schedule.wheelpicker.WheelPicker
+            android:id="@+id/wp_duration_hour"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:wheel_atmospheric="true"
+            app:wheel_curved="false"
+            app:wheel_cyclic="true"
+            app:wheel_indicator="true"
+            app:wheel_indicator_color="@color/roomkit_color_wheel_indicator"
+            app:wheel_indicator_size="1dp"
+            app:wheel_item_text_color="@color/roomkit_color_text_primary"
+            app:wheel_item_text_size="16sp"
+            app:wheel_visible_item_count="5" />
+
+        <com.trtc.uikit.roomkit.view.schedule.wheelpicker.WheelPicker
+            android:id="@+id/wp_duration_minute"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:wheel_atmospheric="true"
+            app:wheel_curved="false"
+            app:wheel_cyclic="true"
+            app:wheel_indicator="true"
+            app:wheel_indicator_color="@color/roomkit_color_wheel_indicator"
+            app:wheel_indicator_size="1dp"
+            app:wheel_item_text_color="@color/roomkit_color_text_primary"
+            app:wheel_item_text_size="16sp"
+            app:wheel_visible_item_count="5" />
+    </LinearLayout>
+</LinearLayout>

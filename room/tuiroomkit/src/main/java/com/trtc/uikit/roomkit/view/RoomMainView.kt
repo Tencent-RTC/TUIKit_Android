@@ -1,0 +1,900 @@
+package com.trtc.uikit.roomkit.view
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.aitranscription.AIMinutesActivity
+import com.trtc.uikit.roomkit.aitranscription.AITranscriptionSettingActivity
+import com.trtc.uikit.roomkit.aitranscription.repository.AITranscriberRepository
+import com.trtc.uikit.roomkit.aitranscription.subtitleview.AISubtitleView
+import com.trtc.uikit.roomkit.base.error.ErrorLocalized
+import com.trtc.uikit.roomkit.base.event.RoomEventNotifier
+import com.trtc.uikit.roomkit.base.extension.getDisplayName
+import com.trtc.uikit.roomkit.base.extension.getSenderDisplayName
+import com.trtc.uikit.roomkit.base.log.RoomKitLogger
+import com.trtc.uikit.roomkit.base.operator.DeviceOperator
+import com.trtc.uikit.roomkit.base.operator.DeviceOperator.DeviceOperatorType
+import com.trtc.uikit.roomkit.base.report.RoomDataReporter
+import com.trtc.uikit.roomkit.base.ui.BaseView
+import com.trtc.uikit.roomkit.base.ui.EnterRoomPasswordDialog
+import com.trtc.uikit.roomkit.base.ui.RoomActionSheetDialog
+import com.trtc.uikit.roomkit.base.ui.RoomAlertDialog
+import com.trtc.uikit.roomkit.view.barrage.BarrageInputView
+import com.trtc.uikit.roomkit.view.barrage.BarrageStreamView
+import com.trtc.uikit.roomkit.view.chat.ChatView
+import com.trtc.uikit.roomkit.view.main.ParticipantManagerView
+import com.trtc.uikit.roomkit.view.main.RoomBottomBarView
+import com.trtc.uikit.roomkit.view.main.RoomBottomBarViewListener
+import com.trtc.uikit.roomkit.view.main.RoomRecordingFloatingView
+import com.trtc.uikit.roomkit.view.main.RoomTopBarView
+import com.trtc.uikit.roomkit.view.main.RoomView
+import com.trtc.uikit.roomkit.view.main.screenshare.ScreenShareOverlayView
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast.Style
+import io.trtc.tuikit.atomicxcore.api.CompletionHandler
+import io.trtc.tuikit.atomicxcore.api.ListResultCompletionHandler
+import io.trtc.tuikit.atomicxcore.api.device.AudioRoute
+import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
+import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
+import io.trtc.tuikit.atomicxcore.api.device.DeviceType
+import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import io.trtc.tuikit.atomicxcore.api.room.CreateRoomOptions
+import io.trtc.tuikit.atomicxcore.api.room.DeviceRequestInfo
+import io.trtc.tuikit.atomicxcore.api.room.KickedOutOfRoomReason
+import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
+import io.trtc.tuikit.atomicxcore.api.room.RecordingStatus
+import io.trtc.tuikit.atomicxcore.api.room.RecordingStopReason
+import io.trtc.tuikit.atomicxcore.api.room.RoomInfo
+import io.trtc.tuikit.atomicxcore.api.room.RoomListener
+import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
+import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantListener
+import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
+import io.trtc.tuikit.atomicxcore.api.room.RoomStore
+import io.trtc.tuikit.atomicxcore.api.room.RoomType
+import io.trtc.tuikit.atomicxcore.api.room.RoomUser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+
+/**
+ * Main room view orchestrating all room UI components and handling room lifecycle.
+ * Manages room connection, device controls, participant events, and dialog interactions.
+ */
+class RoomMainView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : BaseView(context, attrs, defStyleAttr), RoomBottomBarViewListener {
+
+    init {
+        LayoutInflater.from(context).inflate(R.layout.roomkit_main_view, this)
+        applyBottomInsets()
+    }
+
+    private fun applyBottomInsets() {
+        val bottomAreaBaseHeightPx =
+            resources.getDimensionPixelSize(R.dimen.roomkit_main_bottom_area_height)
+        val padding =
+            resources.getDimensionPixelSize(R.dimen.roomkit_main_bottom_padding)
+        ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+            val navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            bottomArea.updateLayoutParams { height = bottomAreaBaseHeightPx + navBarHeight + padding * 2 }
+            bottomBarView.setPadding(
+                bottomBarView.paddingLeft,
+                bottomBarView.paddingTop,
+                bottomBarView.paddingRight,
+                navBarHeight
+            )
+            insets
+        }
+        ViewCompat.requestApplyInsets(this)
+    }
+
+    sealed class RoomBehavior {
+        data class Create(val options: CreateRoomOptions) : RoomBehavior()
+        object Join : RoomBehavior()
+    }
+
+    data class ConnectConfig(
+        val autoEnableMicrophone: Boolean = true,
+        val autoEnableCamera: Boolean = true,
+        val autoEnableSpeaker: Boolean = false
+    )
+
+    companion object {
+        private const val ERR_ROOM_REQUIRES_PASSWORD = 100018
+        private const val ERR_ROOM_PASSWORD_INCORRECT = 100019
+    }
+
+    private val logger = RoomKitLogger.getLogger("RoomMainView")
+
+    private val scope = CoroutineScope(Dispatchers.Main)
+    private val deviceOperator by lazy { DeviceOperator(context) }
+
+    private val topBarView: RoomTopBarView by lazy { findViewById(R.id.room_top_bar) }
+    private val roomView: RoomView by lazy { findViewById(R.id.room_view) }
+    private val bottomArea: View by lazy { findViewById(R.id.room_bottom_area) }
+    private val bottomBarView: RoomBottomBarView by lazy { findViewById(R.id.room_bottom_bar) }
+    private val aiSubtitleView: AISubtitleView by lazy { findViewById(R.id.ai_subtitle_view) }
+    private val chatView: ChatView by lazy { findViewById(R.id.chat_view) }
+    private val barrageInputView: BarrageInputView by lazy { findViewById(R.id.barrage_input_view) }
+    private val barrageStreamView: BarrageStreamView by lazy { findViewById(R.id.barrage_stream_view) }
+    private val screenShareOverlayView: ScreenShareOverlayView by lazy { findViewById(R.id.screen_share_overlay_view) }
+    private val recordingFloatingView: RoomRecordingFloatingView by lazy { findViewById(R.id.recording_floating_view) }
+    private var currentScreenSharerID: String? = null
+
+    private var roomType = RoomType.STANDARD
+    private val roomStore = RoomStore.shared()
+    private val deviceStore = DeviceStore.shared()
+    private var participantStore: RoomParticipantStore? = null
+    private var cameraInvitationDialog: Dialog? = null
+    private var microphoneInvitationDialog: Dialog? = null
+    private var passwordDialog: EnterRoomPasswordDialog? = null
+    private var localUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID
+    private var connectConfig: ConnectConfig? = null
+    private var recordingNoticeDialog: RoomAlertDialog? = null
+    private var enableAiSubtitleView = false
+
+    private lateinit var repository: AITranscriberRepository
+
+    private val participantListener = object : RoomParticipantListener() {
+        override fun onDeviceInvitationReceived(invitation: DeviceRequestInfo) {
+            logger.info("Device invitation received: device=${invitation.device}, from=${invitation.senderUserID}")
+            when (invitation.device) {
+                DeviceType.MICROPHONE -> showMicrophoneInvitationDialog(invitation)
+                DeviceType.CAMERA -> showCameraInvitationDialog(invitation)
+                else -> Unit
+            }
+        }
+
+        override fun onDeviceInvitationCancelled(invitation: DeviceRequestInfo) {
+            logger.info("Device invitation cancelled: device=${invitation.device}, from=${invitation.senderUserID}")
+            when (invitation.device) {
+                DeviceType.MICROPHONE -> dismissMicrophoneInvitationDialog()
+                DeviceType.CAMERA -> dismissCameraInvitationDialog()
+                else -> Unit
+            }
+        }
+
+        override fun onDeviceInvitationTimeout(invitation: DeviceRequestInfo) {
+            logger.info("Device invitation timeout: device=${invitation.device}, from=${invitation.senderUserID}")
+            when (invitation.device) {
+                DeviceType.MICROPHONE -> dismissMicrophoneInvitationDialog()
+                DeviceType.CAMERA -> dismissCameraInvitationDialog()
+                else -> Unit
+            }
+        }
+
+        override fun onKickedFromRoom(reason: KickedOutOfRoomReason, message: String) {
+            logger.info("onKickedFromRoom: reason=$reason, from=$message")
+            showKickoutDialog()
+        }
+
+        override fun onOwnerChanged(newOwner: RoomUser, oldOwner: RoomUser) {
+            logger.info("onOwnerChanged: newOwner=${newOwner.userID} oldOwner=${oldOwner.userID}")
+            if (localUserID == newOwner.userID) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_you_are_owner), Style.INFO)
+            }
+            if (isAISubtitleVisible()) {
+                hideAISubtitleView()
+            }
+        }
+
+        override fun onAdminSet(userInfo: RoomUser) {
+            logger.info("onAdminSet: userInfo=$userInfo")
+            if (localUserID == userInfo.userID) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_you_are_admin), Style.INFO)
+            }
+        }
+
+        override fun onAdminRevoked(userInfo: RoomUser) {
+            logger.info("onAdminRevoked: userInfo=$userInfo")
+            if (localUserID == userInfo.userID) {
+                AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_toast_you_are_no_longer_admin),
+                    Style.INFO
+                )
+            }
+        }
+
+        override fun onParticipantDeviceClosed(device: DeviceType, operator: RoomUser) {
+            logger.info("onParticipantDeviceClosed: device=$device operator:$operator")
+            when (device) {
+                DeviceType.CAMERA -> AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_toast_camera_closed_by_host, operator.getDisplayName()),
+                    Style.WARNING
+                )
+
+                DeviceType.MICROPHONE -> AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_toast_muted_by_host, operator.getDisplayName()),
+                    Style.WARNING
+                )
+
+                DeviceType.SCREEN_SHARE -> AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_toast_screen_share_closed_by_host, operator.getDisplayName()),
+                    Style.WARNING
+                )
+            }
+        }
+
+        override fun onAllDevicesDisabled(device: DeviceType, disable: Boolean, operator: RoomUser) {
+            logger.info("onAllDevicesDisabled: device=$device disable:$disable operator:$operator")
+            when (device) {
+                DeviceType.CAMERA -> {
+                    if (disable) {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_toast_all_video_disabled),
+                            Style.WARNING
+                        )
+                    } else {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_toast_all_video_enabled),
+                            Style.INFO
+                        )
+                    }
+                }
+
+                DeviceType.MICROPHONE -> {
+                    if (disable) {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_toast_all_audio_disabled),
+                            Style.WARNING
+                        )
+                    } else {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_toast_all_audio_enabled),
+                            Style.INFO
+                        )
+                    }
+                }
+
+                DeviceType.SCREEN_SHARE -> {
+                    if (disable) {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_all_screen_share_disabled),
+                            Style.WARNING
+                        )
+                    } else {
+                        AtomicToast.show(
+                            context,
+                            context.getString(R.string.roomkit_all_screen_share_enabled),
+                            Style.INFO
+                        )
+                    }
+                }
+            }
+        }
+
+        override fun onAudiencePromotedToParticipant(userInfo: RoomUser) {
+            if (userInfo.userID == localUserID) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_switch_to_participant_byself), Style.INFO)
+            } else {
+                AtomicToast.show(
+                    context,
+                    context.getString(R.string.roomkit_switch_to_participant, userInfo.getDisplayName()), Style.INFO
+                )
+            }
+        }
+
+        override fun onParticipantDemotedToAudience(userInfo: RoomUser) {
+            if (userInfo.userID == localUserID) {
+                DeviceStore.shared().closeLocalMicrophone()
+                DeviceStore.shared().closeLocalCamera()
+            }
+        }
+
+        override fun onUserMessageDisabled(disable: Boolean, operator: RoomUser) {
+            if (disable) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_text_chat_disabled), Style.WARNING)
+            } else {
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_text_chat_enabled), Style.INFO)
+            }
+        }
+
+        override fun onDeviceRequestRejected(request: DeviceRequestInfo, operator: RoomUser) {
+            if (request.device == DeviceType.MICROPHONE) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_toast_raise_hand_rejected), Style.WARNING)
+            }
+        }
+    }
+
+    private val roomListener = object : RoomListener() {
+        override fun onRoomEnded(roomInfo: RoomInfo) {
+            logger.info("Room ended: roomID=${roomInfo.roomID}, roomName=${roomInfo.roomName}")
+            showRoomDismissedDialog()
+        }
+
+        override fun onRecordingStopped(roomInfo: RoomInfo, operator: RoomUser, reason: RecordingStopReason) {
+            logger.info("onRecordingStopped: roomInfo: $roomInfo, operator=${operator}, reason=$reason")
+            dismissRecordingNoticeDialog()
+            if (reason == RecordingStopReason.RECORDER_LEFT_ROOM) {
+                AtomicToast.show(context, context.getString(R.string.roomkit_cloud_record_end_abnormal), Style.WARNING)
+                return
+            }
+            if (reason == RecordingStopReason.STOPPED_BY_USER && operator.userID == localUserID) {
+                return
+            }
+            AtomicToast.show(context, context.getString(R.string.roomkit_cloud_record_ended), Style.INFO)
+        }
+
+        override fun onRecordingStarted(roomInfo: RoomInfo, operator: RoomUser) {
+            logger.info("onRecordingStarted: roomInfo: $roomInfo, operator=${operator}")
+            if (operator.userID.isEmpty() || operator.userID == localUserID) return
+            showRecordingStartedDialog(operator)
+        }
+    }
+
+    fun init(roomID: String, roomType: RoomType, behavior: RoomBehavior, config: ConnectConfig? = null) {
+        logger.info("init roomID=$roomID, roomType=$roomType behavior:$behavior config=$config")
+        this.roomType = roomType
+        connectConfig = config
+        repository = AITranscriberRepository(roomID)
+        ParticipantManagerView.bindRepository(repository) { hideAISubtitleView() }
+        super.init(roomID)
+        roomView.init(roomID, roomType)
+        roomView.onOrientationSwitchClick = { switchOrientation() }
+        topBarView.init(roomID, roomType)
+        bottomBarView.init(roomID, roomType)
+        recordingFloatingView.init(roomID, roomType)
+        bottomBarView.listener = this
+        chatView.init(roomID)
+        if (roomType == RoomType.WEBINAR) {
+            barrageInputView.init(roomID)
+            barrageStreamView.init(roomID)
+            barrageInputView.visibility = VISIBLE
+            barrageStreamView.visibility = VISIBLE
+        } else {
+            barrageInputView.visibility = GONE
+            barrageStreamView.visibility = GONE
+        }
+        RoomDataReporter.reportComponent()
+        updateOrientationVisibility(resources.configuration.orientation)
+        when (behavior) {
+            is RoomBehavior.Create -> createRoom(roomID, behavior.options)
+            is RoomBehavior.Join -> joinRoom(roomID)
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateOrientationVisibility(newConfig.orientation)
+    }
+
+    override fun initStore(roomID: String) {
+        participantStore = RoomParticipantStore.create(roomID)
+    }
+
+    override fun addObserver() {
+        val participantStore = participantStore ?: return
+        participantStore.addRoomParticipantListener(participantListener)
+        subscribeSourceLanguageChange()
+        roomStore.addRoomListener(roomListener)
+        scope.launch {
+            participantStore.state.localParticipant
+                .map { it?.screenShareStatus ?: DeviceStatus.OFF }
+                .distinctUntilChanged()
+                .collect { screenShareOverlayView.updateScreenStatus(it) }
+        }
+        scope.launch {
+            participantStore.state.participantWithScreen
+                .map { it?.userID }
+                .distinctUntilChanged()
+                .collect(::onScreenSharerChanged)
+        }
+    }
+
+    override fun removeObserver() {
+        participantStore?.removeRoomParticipantListener(participantListener)
+        roomStore.removeRoomListener(roomListener)
+        repository.stopTranscription()
+        repository.destroy()
+        ParticipantManagerView.unbindRepository()
+        dismissCameraInvitationDialog()
+        dismissMicrophoneInvitationDialog()
+        dismissPasswordDialog()
+        dismissRecordingNoticeDialog()
+        scope.cancel()
+    }
+
+    private fun dismissRecordingNoticeDialog() {
+        recordingNoticeDialog?.takeIf { it.isShowing }?.dismiss()
+        recordingNoticeDialog = null
+    }
+
+    private fun subscribeSourceLanguageChange() {
+        scope.launch {
+            repository.selectedSourceLanguage.collect {
+                val localParticipant = participantStore?.state?.localParticipant?.value ?: return@collect
+                if (localParticipant.userID.isNotEmpty() && localParticipant.role != ParticipantRole.OWNER) {
+                    AtomicToast.show(
+                        context,
+                        context.getString(R.string.roomkit_transcription_owner_changed_source_language),
+                        Style.INFO
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showRecordingStartedDialog(operator: RoomUser) {
+        dismissRecordingNoticeDialog()
+        val message = context.getString(R.string.roomkit_cloud_record_started_tips, operator.getDisplayName())
+        recordingNoticeDialog = RoomAlertDialog.Builder(topmostContext())
+            .setTitle(R.string.roomkit_cloud_record_started_title)
+            .setMessage(message)
+            .setNegativeButton(R.string.roomkit_leave_room) { handleLeaveRoom() }
+            .setPositiveButton(R.string.roomkit_i_know)
+            .show()
+    }
+
+    private fun handleLeaveRoom() {
+        logger.info("Leave room from recording-started notice")
+        RoomEventNotifier.notifyWillLeaveRoom()
+        roomStore.leaveRoom(object : CompletionHandler {
+            override fun onSuccess() {
+                (context as? Activity)?.finish()
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("leaveRoom failed: code=$code, desc=$desc")
+                ErrorLocalized.showError(context, code)
+                (context as? Activity)?.finish()
+            }
+        })
+    }
+
+    private fun createRoom(roomID: String, createRoomOptions: CreateRoomOptions) {
+        roomStore.createAndJoinRoom(roomID, roomType, createRoomOptions, object : CompletionHandler {
+            override fun onSuccess() {
+                val roomInfo = roomStore.state.currentRoom.value
+                logger.info("createAndJoinRoom success $roomInfo")
+                getParticipantList()
+                if (roomType == RoomType.WEBINAR) {
+                    getAudienceList()
+                }
+                bottomBarView.visibility = VISIBLE
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("createAndJoinRoom failed:error:$code,desc:$desc")
+                ErrorLocalized.showError(context, code)
+                (context as? Activity)?.finish()
+            }
+        })
+    }
+
+    private fun joinRoom(roomID: String, password: String? = "") {
+        roomStore.joinRoom(roomID = roomID, roomType, password, completion = object : CompletionHandler {
+            override fun onSuccess() {
+                val roomInfo = roomStore.state.currentRoom.value
+                logger.info("joinRoom success $roomInfo")
+                dismissPasswordDialog()
+                getParticipantList()
+                if (roomType == RoomType.WEBINAR) {
+                    getAudienceList()
+                }
+                bottomBarView.visibility = VISIBLE
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("joinRoom failed:error:$code,desc:$desc")
+                when (code) {
+                    ERR_ROOM_REQUIRES_PASSWORD -> showRoomPasswordDialog(roomID)
+                    ERR_ROOM_PASSWORD_INCORRECT -> showPasswordError()
+                    else -> {
+                        dismissPasswordDialog()
+                        ErrorLocalized.showError(context, code)
+                        (context as? Activity)?.finish()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun showRoomPasswordDialog(roomID: String) {
+        if (passwordDialog == null) {
+            passwordDialog = EnterRoomPasswordDialog(
+                context = context,
+                onCancel = {
+                    passwordDialog = null
+                    (context as? Activity)?.finish()
+                },
+                onConfirm = { password ->
+                    if (password.isEmpty()) {
+                        showEmptyPasswordError()
+                        return@EnterRoomPasswordDialog
+                    }
+                    joinRoom(roomID, password)
+                }
+            )
+        }
+        passwordDialog?.show()
+    }
+
+    private fun showPasswordError() {
+        AtomicToast.show(context, context.getString(R.string.roomkit_password_error), Style.ERROR)
+    }
+
+    private fun showEmptyPasswordError() {
+        AtomicToast.show(context, context.getString(R.string.roomkit_please_input_room_password), Style.ERROR)
+    }
+
+    private fun dismissPasswordDialog() {
+        passwordDialog?.takeIf { it.isShowing }?.dismiss()
+        passwordDialog = null
+    }
+
+    private fun getParticipantList() {
+        logger.info("Store instance: ${participantStore.hashCode()} getParticipantList")
+        val roomInfo = roomStore.state.currentRoom.value ?: return
+        participantStore?.getParticipantList("", object : ListResultCompletionHandler<RoomParticipant> {
+            override fun onSuccess(result: List<RoomParticipant>, cursor: String) {
+                logger.info("getParticipantList success result size:${result.size} cursor:$cursor")
+                if (localUserID == roomInfo.roomOwner.userID || result.any { it.userID == localUserID }) {
+                    connectConfig?.let {
+                        initConnectConfig(it)
+                    }
+                }
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("getParticipantList failed:error:$code,desc:$desc")
+                ErrorLocalized.showError(context, code)
+            }
+        })
+    }
+
+    private fun getAudienceList() {
+        logger.info("Store instance: ${participantStore.hashCode()} getAudienceList")
+        participantStore?.getAudienceList("", object : ListResultCompletionHandler<RoomUser> {
+            override fun onSuccess(result: List<RoomUser>, cursor: String) {
+                logger.info("getAudienceList success result size:${result.size} cursor:$cursor")
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("getAudienceList failed:error:$code,desc:$desc")
+                ErrorLocalized.showError(context, code)
+            }
+        })
+    }
+
+    private fun initConnectConfig(config: ConnectConfig) {
+        val roomInfo = roomStore.state.currentRoom.value ?: return
+        scope.launch {
+            if (config.autoEnableMicrophone && canOpenMicrophone(roomInfo)) {
+                try {
+                    deviceOperator.unmuteMicrophone(participantStore)
+                } catch (e: Exception) {
+                    logger.error("Failed to open microphone: ${e.message}")
+                }
+            }
+
+            if (config.autoEnableCamera && canOpenCamera(roomInfo)) {
+                try {
+                    deviceOperator.openCamera()
+                } catch (e: Exception) {
+                    logger.error("Failed to open camera: ${e.message}")
+                }
+            }
+        }
+        if (roomInfo.roomType == RoomType.STANDARD) {
+            enableSpeaker(config.autoEnableSpeaker)
+        }
+    }
+
+    private fun canOpenCamera(roomInfo: RoomInfo): Boolean {
+        if (localUserID == roomInfo.roomOwner.userID) {
+            return true
+        }
+        if (roomInfo.roomType == RoomType.STANDARD && participantStore?.state?.localParticipant?.value?.role == ParticipantRole.ADMIN) {
+            return true
+        }
+        return !roomInfo.isAllCameraDisabled
+    }
+
+    private fun canOpenMicrophone(roomInfo: RoomInfo): Boolean {
+        if (localUserID == roomInfo.roomOwner.userID) {
+            return true
+        }
+        if (participantStore?.state?.localParticipant?.value?.role == ParticipantRole.ADMIN) {
+            return true
+        }
+        return !roomInfo.isAllMicrophoneDisabled
+    }
+
+    private fun enableSpeaker(enableSpeaker: Boolean) {
+        val audioRoute = if (enableSpeaker) AudioRoute.SPEAKERPHONE else AudioRoute.EARPIECE
+        deviceStore.setAudioRoute(audioRoute)
+        logger.info("Speaker enabled (SPEAKERPHONE mode)")
+    }
+
+    private fun showCameraInvitationDialog(invitation: DeviceRequestInfo) {
+        if (cameraInvitationDialog != null) {
+            cameraInvitationDialog?.dismiss()
+            microphoneInvitationDialog = null
+        }
+        val title = context.getString(R.string.roomkit_msg_invite_start_video, invitation.getSenderDisplayName())
+        cameraInvitationDialog = buildDeviceInvitationDialog(title, invitation)
+        cameraInvitationDialog?.show()
+    }
+
+    private fun showMicrophoneInvitationDialog(invitation: DeviceRequestInfo) {
+        if (microphoneInvitationDialog != null) {
+            microphoneInvitationDialog?.dismiss()
+            microphoneInvitationDialog = null
+        }
+        val title = context.getString(R.string.roomkit_msg_invite_unmute_audio, invitation.getSenderDisplayName())
+        microphoneInvitationDialog = buildDeviceInvitationDialog(title, invitation)
+        microphoneInvitationDialog?.show()
+    }
+
+    private fun dismissCameraInvitationDialog() {
+        if (cameraInvitationDialog != null) {
+            cameraInvitationDialog?.dismiss()
+            cameraInvitationDialog = null
+        }
+    }
+
+    private fun dismissMicrophoneInvitationDialog() {
+        if (microphoneInvitationDialog != null) {
+            microphoneInvitationDialog?.dismiss()
+            microphoneInvitationDialog = null
+        }
+    }
+
+    private fun buildDeviceInvitationDialog(tile: String, invitation: DeviceRequestInfo): Dialog {
+        return RoomAlertDialog.Builder(context)
+            .setTitle(tile)
+            .setNegativeButton(R.string.roomkit_reject) { handleDeclineInvitation(invitation) }
+            .setPositiveButton(R.string.roomkit_agree) { handleAcceptInvitation(invitation) }
+            .build()
+    }
+
+    private fun handleAcceptInvitation(invitation: DeviceRequestInfo) {
+        val device = invitation.device
+        logger.info("Accepting $device invitation from ${invitation.senderUserID}")
+        scope.launch {
+            try {
+                val hasPermission = when (device) {
+                    DeviceType.MICROPHONE -> deviceOperator.requestPermission(DeviceOperatorType.MICROPHONE)
+                    DeviceType.CAMERA -> deviceOperator.requestPermission(DeviceOperatorType.CAMERA)
+                    else -> {
+                        logger.warn("Unsupported device type: $device")
+                        false
+                    }
+                }
+
+                logger.info("requestPermission result hasPermission: $hasPermission")
+
+                if (hasPermission) {
+                    val store = participantStore
+                    if (store == null) {
+                        logger.error("participantStore is null, cannot accept invitation")
+                        return@launch
+                    }
+
+                    store.acceptOpenDeviceInvitation(
+                        userID = invitation.senderUserID,
+                        device = device,
+                        completion = object : CompletionHandler {
+                            override fun onSuccess() {
+                                logger.info("Successfully accepted $device invitation")
+                            }
+
+                            override fun onFailure(code: Int, desc: String) {
+                                logger.error("Failed to accept $device invitation: code=$code, desc=$desc")
+                                ErrorLocalized.showError(context, code)
+                            }
+                        }
+                    )
+                } else {
+                    handleDeclineInvitation(invitation)
+                }
+            } catch (e: Exception) {
+                logger.error("Error handling invitation acceptance: ${e.message}")
+                handleDeclineInvitation(invitation)
+            }
+        }
+    }
+
+    private fun handleDeclineInvitation(invitation: DeviceRequestInfo) {
+        logger.info("Declining ${invitation.device} invitation from ${invitation.senderUserID}")
+        participantStore?.declineOpenDeviceInvitation(
+            userID = invitation.senderUserID,
+            device = invitation.device,
+            completion = object : CompletionHandler {
+                override fun onSuccess() {
+                    logger.info("Successfully declined ${invitation.device} invitation")
+                }
+
+                override fun onFailure(code: Int, desc: String) {
+                    logger.error("Failed to decline ${invitation.device} invitation: code=$code, desc=$desc")
+                    ErrorLocalized.showError(context, code)
+                }
+            }
+        )
+    }
+
+    private fun showRoomDismissedDialog() {
+        RoomAlertDialog.Builder(topmostContext())
+            .setTitle(R.string.roomkit_toast_room_closed)
+            .setPositiveButton(android.R.string.ok) {
+                AIMinutesActivity.finishIfExists()
+                (context as? Activity)?.finish()
+            }
+            .show()
+    }
+
+    private fun showKickoutDialog() {
+        RoomAlertDialog.Builder(topmostContext())
+            .setTitle(R.string.roomkit_toast_you_were_removed)
+            .setPositiveButton(android.R.string.ok) {
+                AIMinutesActivity.finishIfExists()
+                (context as? Activity)?.finish()
+            }
+            .show()
+    }
+
+    private fun topmostContext(): Context {
+        return AIMinutesActivity.getForegroundInstance() ?: context
+    }
+
+    private fun updateOrientationVisibility(orientation: Int) {
+        val isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE
+        if (isLandscape) {
+            topBarView.visibility = GONE
+            bottomBarView.visibility = GONE
+            bottomArea.visibility = GONE
+            aiSubtitleView.visibility = GONE
+        } else {
+            topBarView.visibility = VISIBLE
+            bottomBarView.visibility = VISIBLE
+            bottomArea.visibility = VISIBLE
+            aiSubtitleView.visibility = if (enableAiSubtitleView) VISIBLE else GONE
+        }
+        if (roomType == RoomType.WEBINAR) {
+            barrageInputView.visibility = if (isLandscape) GONE else VISIBLE
+            barrageStreamView.visibility = if (isLandscape) GONE else VISIBLE
+        }
+        recordingFloatingView.visibility = when {
+            isLandscape -> GONE
+            roomStore.state.currentRoom.value?.recordingInfo?.status == RecordingStatus.RECORDING -> VISIBLE
+            else -> GONE
+        }
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun switchOrientation() {
+        val activity = context as? Activity ?: return
+        val currentlyLandscape =
+            resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        activity.requestedOrientation = if (currentlyLandscape) {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun forcePortraitIfLandscape() {
+        val activity = context as? Activity ?: return
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+    }
+
+    private fun onScreenSharerChanged(newSharerID: String?) {
+        if (currentScreenSharerID == newSharerID) {
+            return
+        }
+        currentScreenSharerID = newSharerID
+        if (newSharerID.isNullOrEmpty()) {
+            forcePortraitIfLandscape()
+        }
+    }
+
+    fun isAISubtitleVisible(): Boolean {
+        return aiSubtitleView.visibility == VISIBLE
+    }
+
+    fun handleBackPressed(): Boolean {
+        return chatView.handleBackPressed()
+    }
+
+    fun showAISubtitleView() {
+        aiSubtitleView.visibility = VISIBLE
+        aiSubtitleView.bindRepository(repository)
+        aiSubtitleView.onTap = {
+            AITranscriptionSettingActivity.bindRepository(repository)
+            val intent = Intent(context, AITranscriptionSettingActivity::class.java)
+            context.startActivity(intent)
+        }
+        enableAiSubtitleView = true
+    }
+
+    fun hideAISubtitleView() {
+        aiSubtitleView.visibility = GONE
+        enableAiSubtitleView = false
+    }
+
+    // MARK: - RoomBottomBarViewListener
+
+    override fun onChatButtonTapped() {
+        logger.info("onChatButtonTapped")
+        chatView.show()
+    }
+
+    override fun onAIToolsButtonTapped() {
+        val isSubtitleVisible = isAISubtitleVisible()
+
+        val builder = RoomActionSheetDialog.Builder(context)
+        if (isSubtitleVisible) {
+            builder.addAction(
+                context.getString(R.string.roomkit_transcription_close_subtitle),
+                false,
+                R.drawable.roomkit_ic_ai_subtitle,
+                24f,
+                ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
+                14f
+            ) {
+                hideAISubtitleView()
+            }
+        } else {
+            builder.addAction(
+                context.getString(R.string.roomkit_transcription_open_subtitle),
+                false,
+                R.drawable.roomkit_ic_ai_subtitle,
+                24f,
+                ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
+                14f
+            ) {
+                showAISubtitleView()
+                val localParticipant = participantStore?.state?.localParticipant?.value
+                if (localParticipant != null && localParticipant.role == ParticipantRole.OWNER) {
+                    repository.startTranscription()
+                }
+            }
+        }
+        builder.addAction(
+            context.getString(R.string.roomkit_transcription_open_minutes),
+            false,
+            R.drawable.roomkit_ic_ai_minutes,
+            24f,
+            ContextCompat.getColor(context, R.color.roomkit_color_text_grey),
+            14f
+        ) {
+            val localParticipant = participantStore?.state?.localParticipant?.value
+            if (localParticipant != null && localParticipant.role == ParticipantRole.OWNER) {
+                repository.startTranscription()
+            }
+            AIMinutesActivity.bindRepository(repository)
+            val intent = Intent(context, AIMinutesActivity::class.java)
+            context.startActivity(intent)
+        }
+        builder.show()
+    }
+}

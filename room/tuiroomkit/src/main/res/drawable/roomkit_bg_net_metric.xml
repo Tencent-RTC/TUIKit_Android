@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <!-- 设计稿 mobile `.rk-net-metric`：底色取 bg-hover（前景 6%）。 -->
-    <corners android:radius="8dp" />
-    <solid android:color="@color/roomkit_bg_hover" />
-</shape>

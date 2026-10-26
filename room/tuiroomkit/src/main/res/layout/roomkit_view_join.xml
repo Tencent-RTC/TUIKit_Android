@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.trtc.uikit.roomkit.base.ui.KeyboardDismissLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/roomkit_color_background"
+    android:orientation="vertical">
+
+    <com.trtc.uikit.roomkit.base.ui.RoomTopBar
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/roomkit_join_room" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/roomkit_bg_card"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tv_room_id_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/roomkit_room_id"
+                    android:textColor="@color/roomkit_color_text_quaternary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/et_room_id"
+                    android:layout_width="0dp"
+                    app:layout_constraintHorizontal_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="21dp"
+                    android:background="@null"
+                    android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+                    android:hint="@string/roomkit_enter_room_id"
+                    android:inputType="textVisiblePassword"
+                    android:maxLength="18"
+                    android:maxLines="1"
+                    android:textColor="@color/roomkit_color_text_primary"
+                    android:textColorHint="@color/roomkit_color_text_hint"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_room_id_label"
+                    app:layout_constraintStart_toEndOf="@+id/tv_your_name_label"
+                    app:layout_constraintTop_toTopOf="@id/tv_room_id_label"
+                    tools:ignore="Autofill" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/roomkit_color_background"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/et_room_id" />
+
+                <TextView
+                    android:id="@+id/tv_your_name_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:maxLines="1"
+                    android:text="@string/roomkit_your_name"
+                    android:textColor="@color/roomkit_color_text_secondary"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/et_room_id" />
+
+                <TextView
+                    android:id="@+id/tv_your_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="21dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/roomkit_color_text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_your_name_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tv_your_name_label"
+                    app:layout_constraintTop_toTopOf="@id/tv_your_name_label" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/roomkit_bg_card"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <LinearLayout
+                    android:id="@+id/ll_audio"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    tools:ignore="UseCompoundDrawables">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/roomkit_enable_audio"
+                        android:textColor="@color/roomkit_color_text_secondary"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_audio_switch"
+                        android:layout_width="42dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/roomkit_ic_switch_on"
+                        tools:ignore="ContentDescription" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/roomkit_color_background" />
+
+                <LinearLayout
+                    android:id="@+id/ll_speaker"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    tools:ignore="UseCompoundDrawables">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/roomkit_enable_speaker"
+                        android:textColor="@color/roomkit_color_text_secondary"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_speaker_switch"
+                        android:layout_width="42dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/roomkit_ic_switch_on"
+                        tools:ignore="ContentDescription" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/roomkit_color_background" />
+
+                <LinearLayout
+                    android:id="@+id/ll_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    tools:ignore="UseCompoundDrawables">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/roomkit_enable_video"
+                        android:textColor="@color/roomkit_color_text_secondary"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_video_switch"
+                        android:layout_width="42dp"
+                        android:layout_height="24dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/roomkit_ic_switch_on" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="87dp"
+                android:layout_marginEnd="87dp"
+                android:paddingBottom="34dp">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_join_room"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/roomkit_bg_button_primary"
+                    android:gravity="center"
+                    android:text="@string/roomkit_join_room"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</com.trtc.uikit.roomkit.base.ui.KeyboardDismissLinearLayout>
