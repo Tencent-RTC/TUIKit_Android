@@ -5,6 +5,8 @@
     <string name="uikit_ai_select_agent">選擇助手</string>
     <string name="uikit_ai_agents_empty">暫無可用助手</string>
     <string name="uikit_ai_call_button">語音通話</string>
+    <string name="uikit_ai_call_handoff_waiting">正在排隊等待人工接入，請稍後再試</string>
+    <string name="uikit_ai_call_handoff_required">請先轉人工後再發起通話</string>
     <string name="uikit_ai_call_mode_free">自由對話</string>
     <string name="uikit_ai_call_listening">正在聽...</string>
     <string name="uikit_ai_call_thinking">思考中...</string>

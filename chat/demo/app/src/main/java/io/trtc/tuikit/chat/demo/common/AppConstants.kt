@@ -7,6 +7,7 @@ object AppConstants {
     const val KEY_CALLS_TAB_DEFAULT_OFF_MIGRATED = "calls_tab_default_off_migrated"
     const val KEY_APP_LANGUAGE = "app_language"
     const val KEY_LOGIN_USER = "LoginUser"
+    const val KEY_LOGIN_USER_SIG = "LoginUserSig"
     const val KEY_LOGIN_TOKEN = "LoginToken"
     const val KEY_LOGIN_TYPE = "LoginType"
     const val KEY_LAST_LOGIN_PHONE = "LastLoginPhone"

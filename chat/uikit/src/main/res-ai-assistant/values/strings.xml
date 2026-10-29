@@ -5,6 +5,8 @@
     <string name="uikit_ai_select_agent">Select assistant</string>
     <string name="uikit_ai_agents_empty">No assistants available</string>
     <string name="uikit_ai_call_button">Voice call</string>
+    <string name="uikit_ai_call_handoff_waiting">Waiting for an agent to connect, please try again later</string>
+    <string name="uikit_ai_call_handoff_required">Please transfer to an agent before making a call</string>
     <string name="uikit_ai_call_mode_free">Free talk</string>
     <string name="uikit_ai_call_listening">Listening...</string>
     <string name="uikit_ai_call_thinking">Thinking...</string>

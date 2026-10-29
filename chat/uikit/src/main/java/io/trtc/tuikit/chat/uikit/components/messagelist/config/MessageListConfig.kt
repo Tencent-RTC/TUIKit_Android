@@ -10,6 +10,7 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageContentRendere
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageMatcher
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderRule
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageSummaryProvider
+import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageModel
 import io.trtc.tuikit.chat.uikit.components.common.jsonData2Dictionary
 import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
@@ -61,6 +62,26 @@ interface MessageListConfigProtocol {
 
     val actionCustomizer: MessageActionCustomizer?
         get() = null
+
+    val callMessageClickListener: CallMessageClickListener?
+        get() = null
+}
+
+class CallMessageClickContext internal constructor(
+    val message: MessageInfo,
+    val callModel: CallMessageModel,
+    private val callStarter: (String) -> Unit,
+) {
+    fun startCall(targetUserId: String) {
+        val trimmed = targetUserId.trim()
+        if (trimmed.isNotEmpty()) {
+            callStarter(trimmed)
+        }
+    }
+}
+
+fun interface CallMessageClickListener {
+    fun onCallMessageClick(context: CallMessageClickContext): Boolean
 }
 
 internal interface DelegatingMessageListConfig {
@@ -369,6 +390,11 @@ class ChatMessageListConfig : MessageListConfigProtocol {
 
     override val enableChatbotReplyPlaceholder: Boolean
         get() = _enableChatbotReplyPlaceholder
+
+    private var _callMessageClickListener: CallMessageClickListener? = null
+
+    override val callMessageClickListener: CallMessageClickListener?
+        get() = _callMessageClickListener
 
     internal val customRenderRules: List<MessageRenderRule>
         get() = _customRenderRules.toList()
@@ -757,6 +783,11 @@ class ChatMessageListConfig : MessageListConfigProtocol {
 
     fun setEnableChatbotReplyPlaceholder(enable: Boolean): ChatMessageListConfig {
         _enableChatbotReplyPlaceholder = enable
+        return this
+    }
+
+    fun setCallMessageClickListener(listener: CallMessageClickListener?): ChatMessageListConfig {
+        _callMessageClickListener = listener
         return this
     }
 

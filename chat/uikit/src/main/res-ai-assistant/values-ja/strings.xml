@@ -5,6 +5,8 @@
     <string name="uikit_ai_select_agent">アシスタントを選択</string>
     <string name="uikit_ai_agents_empty">利用できるアシスタントがありません</string>
     <string name="uikit_ai_call_button">音声通話</string>
+    <string name="uikit_ai_call_handoff_waiting">オペレーターへの接続を待っています。しばらくしてから再試行してください</string>
+    <string name="uikit_ai_call_handoff_required">通話を行う前にオペレーターに接続してください</string>
     <string name="uikit_ai_call_mode_free">フリートーク</string>
     <string name="uikit_ai_call_listening">聞いています...</string>
     <string name="uikit_ai_call_thinking">考えています...</string>

@@ -1,6 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.chatbot
 
 import io.trtc.tuikit.chat.uikit.components.config.MessageAlignment
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.CallMessageClickListener
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.DelegatingMessageListConfig
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageActionCustomizer
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageBubbleAppearance
@@ -65,4 +66,6 @@ internal class ChatbotMessageListConfig(
     override val enableChatbotReplyPlaceholder: Boolean
         get() = delegateConfig.enableChatbotReplyPlaceholder
     override val actionCustomizer: MessageActionCustomizer? = null
+    override val callMessageClickListener: CallMessageClickListener?
+        get() = delegateConfig.callMessageClickListener
 }
