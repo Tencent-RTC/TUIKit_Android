@@ -352,6 +352,7 @@ class SettingsPageView @JvmOverloads constructor(
             LoginStore.shared.logout(object : CompletionHandler {
                 override fun onSuccess() {
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER, "")
+                    MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER_SIG, "")
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_TOKEN, "")
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_TYPE, "")
                     val activity = context

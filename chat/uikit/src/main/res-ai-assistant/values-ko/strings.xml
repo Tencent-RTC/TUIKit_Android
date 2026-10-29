@@ -5,6 +5,8 @@
     <string name="uikit_ai_select_agent">어시스턴트 선택</string>
     <string name="uikit_ai_agents_empty">사용 가능한 어시스턴트가 없습니다</string>
     <string name="uikit_ai_call_button">음성 통화</string>
+    <string name="uikit_ai_call_handoff_waiting">상담원 연결을 기다리는 중입니다. 잠시 후 다시 시도해 주세요</string>
+    <string name="uikit_ai_call_handoff_required">통화를 걸기 전에 먼저 상담원에게 연결해 주세요</string>
     <string name="uikit_ai_call_mode_free">자유 대화</string>
     <string name="uikit_ai_call_listening">듣고 있습니다...</string>
     <string name="uikit_ai_call_thinking">생각 중...</string>

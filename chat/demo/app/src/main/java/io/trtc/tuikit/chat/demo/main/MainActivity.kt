@@ -55,6 +55,7 @@ import io.trtc.tuikit.chat.demo.chat.ChatActivity
 import io.trtc.tuikit.chat.demo.search.SearchActivity
 import io.trtc.tuikit.chat.uikit.components.widgets.AvatarBadgeView
 import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantAgentLoader
+import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantHandoffStatusLoader
 import io.trtc.tuikit.chat.uikit.pages.AIAssistantPageView
 import io.trtc.tuikit.chat.uikit.pages.ContactsPageView
 import io.trtc.tuikit.chat.uikit.pages.ConversationsPageView
@@ -768,7 +769,10 @@ class MainActivity : BaseActivity() {
 
     private fun createAIPage(): View {
         val page = AIAssistantPageView(this)
-        page.setup(AIAssistantAgentLoader(SupportAgentCatalog::fetch))
+        page.setup(
+            agentLoader = AIAssistantAgentLoader(SupportAgentCatalog::fetch),
+            handoffStatusLoader = AIAssistantHandoffStatusLoader(SupportAgentCatalog::fetchHandoffStatus),
+        )
         return page
     }
 

@@ -51,6 +51,7 @@ class Application : Application() {
 
     private fun redirectToLogin(messageResId: Int) {
         MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER, "")
+        MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER_SIG, "")
         MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_TOKEN, "")
         MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_TYPE, "")
         Toast.makeText(this, getString(messageResId), Toast.LENGTH_LONG).show()

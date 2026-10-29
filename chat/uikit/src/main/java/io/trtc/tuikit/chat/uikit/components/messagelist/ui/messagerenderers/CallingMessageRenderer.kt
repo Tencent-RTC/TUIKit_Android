@@ -8,8 +8,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotConversationPolicy
 import io.trtc.tuikit.chat.uikit.components.common.AtomicCallEventPublisher
 import io.trtc.tuikit.chat.uikit.components.common.RtlUtils
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.CallMessageClickContext
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.MessageListConfigProtocol
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageRenderer
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageModel
@@ -142,6 +144,19 @@ class CallingMessageRenderer : MessageRenderer {
         if (canReCall) {
             container.isClickable = true
             container.setOnClickListener {
+                val clickListener = config.callMessageClickListener
+                if (clickListener != null) {
+                    val clickContext = CallMessageClickContext(
+                        message = message,
+                        callModel = callModel,
+                        callStarter = { targetUserId ->
+                            startCall(targetUserId, callModel)
+                        },
+                    )
+                    if (clickListener.onCallMessageClick(clickContext)) {
+                        return@setOnClickListener
+                    }
+                }
                 reInitiateCall(message, callModel)
             }
         } else {
@@ -202,9 +217,16 @@ class CallingMessageRenderer : MessageRenderer {
         } else {
             callModel.caller.trim()
         }
-        if (targetUserId.isBlank()) {
+        if (targetUserId.isBlank() || ChatbotConversationPolicy.isChatbotID(targetUserId)) {
             return
         }
+        startCall(targetUserId, callModel)
+    }
+
+    private fun startCall(
+        targetUserId: String,
+        callModel: CallMessageModel
+    ) {
         val mediaType = when (callModel.streamMediaType) {
             CallStreamMediaType.VIDEO -> AtomicCallEventPublisher.MEDIA_TYPE_VIDEO
             else -> AtomicCallEventPublisher.MEDIA_TYPE_AUDIO

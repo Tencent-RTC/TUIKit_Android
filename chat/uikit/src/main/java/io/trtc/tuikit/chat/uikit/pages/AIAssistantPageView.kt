@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import io.trtc.tuikit.chat.uikit.components.common.AtomicCallEventPublisher
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
@@ -20,6 +21,7 @@ import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantAgent
 import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantAgentLoader
 import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantControlMessages
+import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantHandoffStatusLoader
 import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantUsageReporter
 import io.trtc.tuikit.chat.uikit.components.aiassistant.AIConstants
 import io.trtc.tuikit.chat.uikit.components.aiassistant.AgentWelcomeInserter
@@ -27,6 +29,7 @@ import io.trtc.tuikit.chat.uikit.components.aiassistant.audio.SystemOpusDecoder
 import io.trtc.tuikit.chat.uikit.components.aiassistant.call.AICallActivity
 import io.trtc.tuikit.chat.uikit.components.messageinput.asr.RealtimeAsrAudioCapture
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.CallMessageClickContext
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,10 +51,13 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
         RealtimeAsrAudioCapture.isSupported() && SystemOpusDecoder.isSupported()
     private var scope: CoroutineScope? = null
     private var agentLoader: AIAssistantAgentLoader? = null
+    private var handoffStatusLoader: AIAssistantHandoffStatusLoader? = null
     private var agents: List<AIAssistantAgent> = emptyList()
     private var selectedAgent: AIAssistantAgent? = null
     private var boundConversationID: String? = null
     private var fetchGeneration = 0
+    private var callCheckGeneration = 0
+    private var isCheckingHandoffStatus = false
 
     private val root: LinearLayout
     private val header: LinearLayout
@@ -113,16 +119,14 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
         chatPageView.setOnTextMessageSentListener(usageReporter::onMessageSent)
     }
 
-    fun setup(agentLoader: AIAssistantAgentLoader) {
+    @JvmOverloads
+    fun setup(
+        agentLoader: AIAssistantAgentLoader,
+        handoffStatusLoader: AIAssistantHandoffStatusLoader? = null,
+    ) {
         this.agentLoader = agentLoader
-        btnCall.setOnClickListener {
-            val agent = selectedAgent ?: return@setOnClickListener
-            if (!isVoiceCallSupported) {
-                return@setOnClickListener
-            }
-            usageReporter.onVoiceEntered()
-            AICallActivity.start(context, agent.imUserId)
-        }
+        this.handoffStatusLoader = handoffStatusLoader
+        btnCall.setOnClickListener { onCallClicked() }
         titleRow.setOnClickListener { showAgentPicker() }
         applyColors(themeStore.themeState.value.currentTheme.tokens.color)
         if (isAttachedToWindow) {
@@ -147,6 +151,8 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         fetchGeneration++
+        callCheckGeneration++
+        isCheckingHandoffStatus = false
         scope?.cancel()
         scope = null
     }
@@ -192,6 +198,10 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
     }
 
     private fun bindAgent(agent: AIAssistantAgent, agents: List<AIAssistantAgent>) {
+        if (selectedAgent?.id != agent.id) {
+            callCheckGeneration++
+            isCheckingHandoffStatus = false
+        }
         selectedAgent = agent
         title.text = agent.displayName
         val canSwitch = agents.size > 1
@@ -214,7 +224,11 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
                     isShowRightAvatar = false,
                 ).addMessageExclusion { AIAssistantControlMessages.isControlMessage(it) }
                     // 回复可能来自人工客服，客户端分不清，等服务端下发「正在输入」再展示
-                    .setEnableChatbotReplyPlaceholder(false),
+                    .setEnableChatbotReplyPlaceholder(false)
+                    .setCallMessageClickListener { clickContext ->
+                        onCallMessageClicked(clickContext)
+                        true
+                    },
                 messageInputConfig = ChatMessageInputConfig(
                     isShowAudioCall = false,
                     isShowVideoCall = false,
@@ -230,6 +244,104 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
             boundConversationID = agent.conversationID
             chatPageView.visibility = View.VISIBLE
         }
+    }
+
+    private fun onCallClicked() {
+        val agent = selectedAgent ?: return
+        val statusLoader = handoffStatusLoader
+        if (statusLoader == null) {
+            startAiVoiceCall(agent)
+            return
+        }
+        if (isCheckingHandoffStatus) {
+            return
+        }
+        isCheckingHandoffStatus = true
+        val generation = ++callCheckGeneration
+        statusLoader.load { status ->
+            post {
+                if (generation != callCheckGeneration) {
+                    return@post
+                }
+                isCheckingHandoffStatus = false
+                if (!isAttachedToWindow || selectedAgent?.id != agent.id) {
+                    return@post
+                }
+                when {
+                    status.isSeatCallable -> {
+                        AtomicCallEventPublisher.publishStartCall(
+                            participantIds = listOf(status.seatImUserId.trim()),
+                            mediaType = AtomicCallEventPublisher.MEDIA_TYPE_AUDIO,
+                            chatGroupId = null,
+                        )
+                    }
+                    status.isWaitingForSeat -> {
+                        Toast.makeText(
+                            context,
+                            R.string.uikit_ai_call_handoff_waiting,
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                    else -> startAiVoiceCall(agent)
+                }
+            }
+        }
+    }
+
+    private fun onCallMessageClicked(clickContext: CallMessageClickContext) {
+        val agent = selectedAgent ?: return
+        val statusLoader = handoffStatusLoader
+        if (statusLoader == null) {
+            Toast.makeText(
+                context,
+                R.string.uikit_ai_call_handoff_required,
+                Toast.LENGTH_SHORT,
+            ).show()
+            return
+        }
+        if (isCheckingHandoffStatus) {
+            return
+        }
+        isCheckingHandoffStatus = true
+        val generation = ++callCheckGeneration
+        statusLoader.load { status ->
+            post {
+                if (generation != callCheckGeneration) {
+                    return@post
+                }
+                isCheckingHandoffStatus = false
+                if (!isAttachedToWindow || selectedAgent?.id != agent.id) {
+                    return@post
+                }
+                when {
+                    status.isSeatCallable -> {
+                        clickContext.startCall(status.seatImUserId)
+                    }
+                    status.isWaitingForSeat -> {
+                        Toast.makeText(
+                            context,
+                            R.string.uikit_ai_call_handoff_waiting,
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                    else -> {
+                        Toast.makeText(
+                            context,
+                            R.string.uikit_ai_call_handoff_required,
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startAiVoiceCall(agent: AIAssistantAgent) {
+        if (!isVoiceCallSupported) {
+            return
+        }
+        usageReporter.onVoiceEntered()
+        AICallActivity.start(context, agent.imUserId)
     }
 
     private fun sendTransferToHuman() {

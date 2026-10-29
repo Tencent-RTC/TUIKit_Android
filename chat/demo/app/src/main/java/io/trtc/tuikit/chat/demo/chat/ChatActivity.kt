@@ -51,6 +51,7 @@ import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.message.MessageInputStore
 import io.trtc.tuikit.atomicxcore.api.message.SendMessageOption
 import io.trtc.tuikit.atomicxcore.api.message.SendMessagePayload
+import io.trtc.tuikit.chat.demo.ai.SupportAgentCatalog
 import io.trtc.tuikit.chat.demo.common.AppConstants
 import io.trtc.tuikit.chat.demo.common.BaseActivity
 import io.trtc.tuikit.chat.demo.common.Event
@@ -60,6 +61,7 @@ import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputActionIDs
 import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.CallMessageClickContext
 import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
 import io.trtc.tuikit.chat.uikit.pages.ChatPageView
 import kotlinx.coroutines.CoroutineScope
@@ -93,6 +95,7 @@ class ChatActivity : BaseActivity() {
     private lateinit var leftContainer: LinearLayout
     private lateinit var btnMultiSelectCancel: TextView
     private lateinit var chatPageView: ChatPageView
+    private var isCheckingHandoffStatus = false
 
     private var isPeerTyping = false
     private var latestChatTitle: String = ""
@@ -182,6 +185,13 @@ class ChatActivity : BaseActivity() {
             }
         ).addMessageExclusion {
             AIAssistantControlMessages.isControlMessage(it)
+        }.apply {
+            if (isChatbotConversation) {
+                setCallMessageClickListener { clickContext ->
+                    handleChatbotCallMessageClick(clickContext)
+                    true
+                }
+            }
         }
 
         val sdkAppID = LoginStore.shared.sdkAppID
@@ -472,5 +482,37 @@ class ChatActivity : BaseActivity() {
                 action.onClick()
             }
         )
+    }
+
+    private fun handleChatbotCallMessageClick(clickContext: CallMessageClickContext) {
+        if (isCheckingHandoffStatus) {
+            return
+        }
+        isCheckingHandoffStatus = true
+        SupportAgentCatalog.fetchHandoffStatus { status ->
+            isCheckingHandoffStatus = false
+            if (isFinishing || isDestroyed) {
+                return@fetchHandoffStatus
+            }
+            when {
+                status.isSeatCallable -> {
+                    clickContext.startCall(status.seatImUserId)
+                }
+                status.isWaitingForSeat -> {
+                    Toast.makeText(
+                        this,
+                        io.trtc.tuikit.chat.uikit.R.string.uikit_ai_call_handoff_waiting,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+                else -> {
+                    Toast.makeText(
+                        this,
+                        io.trtc.tuikit.chat.uikit.R.string.uikit_ai_call_handoff_required,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+            }
+        }
     }
 }

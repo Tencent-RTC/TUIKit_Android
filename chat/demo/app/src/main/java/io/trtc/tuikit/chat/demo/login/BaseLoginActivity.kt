@@ -112,6 +112,7 @@ abstract class BaseLoginActivity : BaseActivity() {
                     CustomerServiceManager.initAndStart(this@BaseLoginActivity, sdkAppId, userId, userSig)
                     WelcomeMessageSender.scheduleWelcomeMessage(this@BaseLoginActivity)
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER, userId)
+                    MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER_SIG, userSig)
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_TYPE, loginType)
                     if (token != null) {
                         MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_TOKEN, token)

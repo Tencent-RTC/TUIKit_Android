@@ -5,6 +5,8 @@
     <string name="uikit_ai_select_agent">اختيار المساعد</string>
     <string name="uikit_ai_agents_empty">لا يوجد مساعدون متاحون</string>
     <string name="uikit_ai_call_button">مكالمة صوتية</string>
+    <string name="uikit_ai_call_handoff_waiting">في انتظار اتصال الموظف، يرجى المحاولة لاحقًا</string>
+    <string name="uikit_ai_call_handoff_required">يرجى التحويل إلى موظف أولاً قبل إجراء المكالمة</string>
     <string name="uikit_ai_call_mode_free">محادثة حرة</string>
     <string name="uikit_ai_call_listening">...جارٍ الاستماع</string>
     <string name="uikit_ai_call_thinking">...جارٍ التفكير</string>
