@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="42dp">
+        <FrameLayout
+            android:id="@+id/livekit_pusher_status_device_icon_bg"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/livekit_pusher_status_icon_bg"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="4dp">
+            <ImageView
+                android:id="@+id/livekit_pusher_status_device_icon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no" />
+        </FrameLayout>
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_status_device_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            app:liveTextEmphasized="true"
+            app:liveTextRole="body"
+            app:liveTextTone="secondary"
+            android:minHeight="19dp"
+            android:layout_marginStart="43dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <com.trtc.uikit.livekit.common.theme.LiveText
+            android:id="@+id/livekit_pusher_status_device_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            app:liveTextRole="control"
+            app:liveTextTone="disabled"
+            android:minHeight="15dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="@id/livekit_pusher_status_device_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/livekit_pusher_status_device_title"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Content of the start-live button, from the Ardot 直播指示点 / 开始直播文案 nodes: the dot
+  and the caption sit centred with an 8pt gap between the dot edge and the text.
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.trtc.uikit.livekit.pusher.prepare.PusherLiveDotView
+        android:layout_width="@dimen/livekit_pusher_prepare_start_dot_box"
+        android:layout_height="@dimen/livekit_pusher_prepare_start_dot_box"
+        android:layout_marginEnd="@dimen/livekit_pusher_prepare_start_dot_margin_end" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:includeFontPadding="false"
+        android:text="@string/livekit_pusher_prepare_start_live"
+        android:textColor="@color/common_design_standard_flowkit_white"
+        android:textSize="@dimen/livekit_pusher_prepare_start_text_size" />
+</merge>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One volume row of the audio-effect page, from the Ardot 耳返音量行 / 人声音量卡 nodes: the
+  label sits 16dp from the leading edge, the value ends 10dp before the slider, and the
+  slider spans from 176dp to 16dp before the trailing edge.
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_volume_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="@dimen/livekit_pusher_audio_row_inset"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/livekit_pusher_volume_value"
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        app:liveTextRole="itemTitle"
+        app:liveTextTone="secondary" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:id="@+id/livekit_pusher_volume_value"
+        android:layout_width="@dimen/livekit_pusher_audio_value_width"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toStartOf="@id/livekit_pusher_volume_slider"
+        android:gravity="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        app:liveTextRole="action"
+        app:liveTextTone="secondary" />
+
+    <com.trtc.uikit.livekit.common.theme.LiveSlider
+        android:id="@+id/livekit_pusher_volume_slider"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/livekit_pusher_audio_slider_height"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="@dimen/livekit_pusher_audio_slider_start"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/livekit_pusher_audio_row_inset"
+        app:liveSliderMaximumValue="100" />
+</merge>

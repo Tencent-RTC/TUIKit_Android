@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_live_list_title">直播列表</string>
+    <string name="app_live_list_start_live">开始直播</string>
+    <string name="app_livelist_loading">加载中…</string>
+    <string name="app_livelist_click_own_live_hint">不能以观众身份进入自己的直播间</string>
+    <string name="app_live_back">返回</string>
+    <string name="app_live_version">版本</string>
+    <string name="app_live_version_format">版本：%1$s</string>
+</resources>

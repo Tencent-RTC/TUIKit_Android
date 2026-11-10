@@ -1,0 +1,25 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M4,20L11,20Q11.419,20.012 11.707,19.707Q12.012,19.419 12,19Q12.012,18.581 11.707,18.293Q11.419,17.988 11,18L4,18Q3.586,18 3.293,17.707Q3,17.414 3,17L3,7Q3,6.586 3.293,6.293Q3.586,6 4,6L9,6Q9.419,6.012 9.707,5.707Q10.012,5.419 10,5Q10.012,4.581 9.707,4.293Q9.419,3.988 9,4L4,4Q2.757,4 1.879,4.879Q1,5.757 1,7L1,17Q1,18.243 1.879,19.121Q2.757,20 4,20Z"
+      android:fillColor="@color/livekit_pusher_living_toolbar_icon"/>
+  <path
+      android:pathData="M20,4L13,4Q12.581,3.988 12.293,4.293Q11.988,4.581 12,5Q11.988,5.419 12.293,5.707Q12.581,6.012 13,6L20,6Q20.414,6 20.707,6.293Q21,6.586 21,7L21,17Q21,17.414 20.707,17.707Q20.414,18 20,18L15,18Q14.581,17.988 14.293,18.293Q13.988,18.581 14,19Q13.988,19.419 14.293,19.707Q14.581,20.012 15,20L20,20Q21.243,20 22.121,19.121Q23,18.243 23,17L23,7Q23,5.757 22.121,4.879Q21.243,4 20,4Z"
+      android:fillColor="@color/livekit_pusher_living_toolbar_icon"/>
+  <path
+      android:pathData="M12,12m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/livekit_pusher_living_toolbar_icon"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M14.293,19.707L17.293,22.707Q17.581,23.012 18,23Q18.419,23.012 18.707,22.707Q19.012,22.419 19,22Q19.012,21.581 18.707,21.293L16.414,19L18.707,16.707Q19.012,16.419 19,16Q19.012,15.581 18.707,15.293Q18.419,14.988 18,15Q17.581,14.988 17.293,15.293L14.293,18.293Q13.988,18.581 14,19Q13.988,19.419 14.293,19.707Z"
+      android:fillColor="@color/livekit_pusher_living_toolbar_icon"/>
+  <path
+      android:pathData="M9.707,4.293L6.707,1.293Q6.419,0.988 6,1Q5.581,0.988 5.293,1.293Q4.988,1.581 5,2Q4.988,2.419 5.293,2.707L7.586,5L5.293,7.293Q4.988,7.581 5,8Q4.988,8.419 5.293,8.707Q5.581,9.012 6,9Q6.419,9.012 6.707,8.707L9.707,5.707Q10.012,5.419 10,5Q10.012,4.581 9.707,4.293Z"
+      android:fillColor="@color/livekit_pusher_living_toolbar_icon"/>
+</vector>

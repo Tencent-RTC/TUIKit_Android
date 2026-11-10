@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#E6000000" />
+
+    <FrameLayout
+        android:id="@+id/livekit_pause_overlay_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="29dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/livekit_pause_overlay_title"
+            android:textColor="#FFFFFFFF"
+            android:textSize="21sp" />
+        <TextView
+            android:id="@+id/livekit_pause_overlay_timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:gravity="center"
+            android:includeFontPadding="true"
+            android:minHeight="37dp"
+            android:text="00:00"
+            android:textColor="#FFFFFFFF"
+            android:textSize="36sp" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/livekit_pause_overlay_resume"
+        android:layout_width="205dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="42dp"
+        android:background="@drawable/livekit_pause_overlay_resume_bg"
+        android:elevation="14dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/livekit_pause_overlay_resume"
+        android:textColor="#111111"
+        android:textSize="17sp" />
+</merge>

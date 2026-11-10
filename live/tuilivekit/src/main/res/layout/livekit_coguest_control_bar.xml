@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <ImageView
+        android:id="@+id/livekit_coguest_ctrl_hide"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/livekit_coguest_control_btn_compact_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="6dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/livekit_ic_coguest_chevron_down" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/livekit_coguest_ctrl_mic"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/livekit_coguest_control_btn_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="13dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/livekit_ic_player_connected_mic_on" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/livekit_coguest_ctrl_camera"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/livekit_coguest_control_btn_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="13dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/livekit_ic_player_connected_camera_on" />
+
+    <View
+        android:id="@+id/livekit_coguest_ctrl_settings_gap"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/livekit_coguest_ctrl_settings"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/livekit_coguest_control_btn_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="13dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/livekit_ic_player_connected_adjust" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/livekit_coguest_ctrl_hangup"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/livekit_coguest_control_btn_danger_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="13dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/livekit_ic_player_connected_disconnect" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</merge>

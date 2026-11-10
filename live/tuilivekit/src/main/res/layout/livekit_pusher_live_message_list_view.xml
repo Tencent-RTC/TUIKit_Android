@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <com.trtc.uikit.livekit.common.barrage.LiveMessageRecyclerView
+        android:id="@+id/livekit_pusher_message_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:overScrollMode="ifContentScrolls"
+        android:paddingTop="@dimen/livekit_comment_fade_height"
+        android:scrollbars="none" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/livekit_pusher_message_new_count"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/livekit_comment_new_message_height"
+        android:layout_gravity="start|bottom"
+        android:background="@drawable/livekit_pusher_message_new_background"
+        android:clickable="true"
+        android:elevation="@dimen/livekit_comment_new_message_elevation"
+        android:focusable="true"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:minWidth="0dp"
+        android:paddingStart="@dimen/livekit_comment_new_message_horizontal_inset"
+        android:paddingEnd="@dimen/livekit_comment_new_message_horizontal_inset"
+        android:textColor="@color/livekit_pusher_message_new_text"
+        android:textSize="@dimen/livekit_comment_new_message_text_size"
+        android:visibility="gone"
+        tools:text="3 new messages"
+        tools:visibility="visible" />
+
+</FrameLayout>

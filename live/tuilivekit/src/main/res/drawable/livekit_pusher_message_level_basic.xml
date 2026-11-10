@@ -1,0 +1,5 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="10dp" android:height="10dp" android:viewportWidth="10" android:viewportHeight="10">
+    <path android:pathData="M5,1.25L8.75,5L5,8.75L1.25,5L5,1.25Z" android:fillColor="@color/livekit_pusher_message_level_icon_light" />
+    <path android:pathData="M5,2.917L7.083,5L5,7.083L2.917,5L5,2.917Z" android:fillColor="@color/livekit_pusher_message_level_icon_basic" />
+</vector>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Countdown dial of the host entry, from the Ardot 倒计时圆盘 150 node. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/livekit_pusher_countdown_circle" />
+</shape>

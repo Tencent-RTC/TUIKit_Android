@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Audio-effect icon of the settings panel. Exported from the Ardot 音效设置图标 node (77:75),
+  22x22 viewport, solid white.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="22dp"
+    android:height="22dp"
+    android:viewportWidth="22"
+    android:viewportHeight="22">
+
+    <group
+        android:translateX="2.10833"
+        android:translateY="2.29167">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M5.8667,2.3833L16.5917,0L16.5917,11.0917C16.5917,13.3375 14.8317,15.125 12.65,15.125C10.4683,15.125 8.7083,13.5667 8.7083,11.6417C8.7083,9.7167 10.4683,8.1583 12.65,8.1583C13.365,8.1583 14.025,8.3233 14.575,8.6167L14.575,3.2083L7.8833,4.7208L7.8833,13.0167C7.8833,15.2625 6.1233,17.05 3.9417,17.05C1.76,17.05 0,15.4917 0,13.5667C0,11.6417 1.76,10.0833 3.9417,10.0833C4.6567,10.0833 5.3167,10.2483 5.8667,10.5417L5.8667,2.3833Z" />
+    </group>
+</vector>

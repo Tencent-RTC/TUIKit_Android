@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_live_list_title">Live List</string>
+    <string name="app_live_list_start_live">Start Live</string>
+    <string name="app_livelist_loading">Loading…</string>
+    <string name="app_livelist_click_own_live_hint">You cannot enter your own live room as a viewer.</string>
+    <string name="app_live_back">Back</string>
+    <string name="app_live_version">Version</string>
+    <string name="app_live_version_format">Version: %1$s</string>
+    <color name="app_livelist_loading_color">#8F9AB2</color>
+    <color name="app_livelist_loading_bg_color">#FFFFFF</color>
+    <color name="app_livelist_text_primary">#E6FFFFFF</color>
+    <color name="app_livelist_text_secondary">#8CFFFFFF</color>
+</resources>

@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M22,4L22,6L2,6L2,4L22,4ZM19,9L23.9,9L23.9,11L21,11L21,18C21,19.657 19.657,21 18,21C16.343,21 15,19.657 15,18C15,16.343 16.343,15 18,15C18.351,15 18.687,15.06 19,15.171L19,9ZM16,11L16,13L2,13L2,11L16,11ZM19,18C19,17.448 18.552,17 18,17C17.448,17 17,17.448 17,18C17,18.552 17.448,19 18,19C18.552,19 19,18.552 19,18ZM12,18L12,20L2,20L2,18L12,18Z"
+      android:fillColor="@color/livekit_pusher_living_toolbar_icon"
+      android:fillType="evenOdd"/>
+</vector>

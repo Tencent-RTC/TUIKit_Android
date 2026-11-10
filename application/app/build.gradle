@@ -38,6 +38,9 @@ android {
 
 dependencies {
     api project(':debug')
+    implementation project(':tuilivekit')
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
     api rootProject.ext.imSdk
     api rootProject.ext.atomicxCoreSdk
     api rootProject.ext.liteavSdk

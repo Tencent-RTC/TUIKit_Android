@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="25dp"
+    android:height="25dp"
+    android:viewportWidth="25"
+    android:viewportHeight="25">
+  <path
+      android:pathData="M12,4L12,4A3,3 0,0 1,15 7L15,12A3,3 0,0 1,12 15L12,15A3,3 0,0 1,9 12L9,7A3,3 0,0 1,12 4z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1.6"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/livekit_coguest_seat_muted_icon"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M6.8,12Q6.8,14.154 8.323,15.677Q9.846,17.2 12,17.2Q14.154,17.2 15.677,15.677Q17.2,14.154 17.2,12Q17.19,11.665 17.434,11.434Q17.665,11.19 18,11.2Q18.335,11.19 18.566,11.434Q18.81,11.665 18.8,12Q18.8,14.817 16.808,16.808Q14.817,18.8 12,18.8Q9.183,18.8 7.192,16.808Q5.2,14.817 5.2,12Q5.19,11.665 5.434,11.434Q5.665,11.19 6,11.2Q6.335,11.19 6.566,11.434Q6.81,11.665 6.8,12Z"
+      android:fillColor="@color/livekit_coguest_seat_muted_icon"/>
+  <path
+      android:pathData="M12.8,18L12.8,22Q12.81,22.335 12.566,22.566Q12.335,22.81 12,22.8Q11.665,22.81 11.434,22.566Q11.19,22.335 11.2,22L11.2,18Q11.19,17.665 11.434,17.434Q11.665,17.19 12,17.2Q12.335,17.19 12.566,17.434Q12.81,17.665 12.8,18Z"
+      android:fillColor="@color/livekit_coguest_seat_muted_icon"/>
+  <path
+      android:pathData="M8.5,21.2L15.5,21.2Q15.835,21.19 16.066,21.434Q16.31,21.665 16.3,22Q16.31,22.335 16.066,22.566Q15.835,22.81 15.5,22.8L8.5,22.8Q8.165,22.81 7.934,22.566Q7.69,22.335 7.7,22Q7.69,21.665 7.934,21.434Q8.165,21.19 8.5,21.2Z"
+      android:fillColor="@color/livekit_coguest_seat_muted_icon"/>
+</vector>

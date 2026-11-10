@@ -1,6 +1,7 @@
 package com.tencent.uikit.app.main
 
 import com.tencent.uikit.app.R
+import com.tencent.uikit.app.live.WaterfallActivity
 
 class TRTCMainData {
     val itemDataList = ArrayList<MainItemData?>()
@@ -15,7 +16,7 @@ class TRTCMainData {
         itemDataList.add(
             MainItemData(
                 MainTypeEnum.TYPE_ITEM_LIVE, R.drawable.app_ic_main_live, R.string.app_main_item_live,
-                R.string.app_main_item_live_sub, ComingActivity::class.java, MainItemData.Category.KIT
+                R.string.app_main_item_live_sub, WaterfallActivity::class.java, MainItemData.Category.KIT
             )
         )
         itemDataList.add(

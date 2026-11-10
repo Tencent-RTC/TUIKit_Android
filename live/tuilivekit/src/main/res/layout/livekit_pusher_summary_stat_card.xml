@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:id="@+id/livekit_pusher_summary_stat_value"
+        android:includeFontPadding="false"
+        android:gravity="center_vertical"
+        android:textSize="26sp"
+        android:textColor="@color/livekit_pusher_summary_text_primary"
+        android:maxLines="1" />
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:id="@+id/livekit_pusher_summary_stat_title"
+        android:includeFontPadding="false"
+        android:gravity="center_vertical"
+        android:textSize="13sp"
+        android:textColor="@color/livekit_pusher_summary_text_secondary"
+        android:maxLines="1"
+        android:layout_marginTop="8dp" />
+</merge>

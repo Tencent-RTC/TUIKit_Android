@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Beauty icon of the prepare action group. Exported from the Ardot 美化图标 node (18:18),
+  24x24 viewport, white at 92% opacity.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M11,12m-7.5,0a7.5,7.5 0 1,0 15,0a7.5,7.5 0 1,0 -15,0"
+        android:strokeAlpha="0.92"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1.6" />
+
+    <path
+        android:fillAlpha="0.92"
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M11,15.1Q9.7095,15.1 8.891,13.6969Q8.7304,13.4024 8.4036,13.3263Q8.0817,13.2317 7.7969,13.409Q7.5024,13.5696 7.4263,13.8964Q7.3317,14.2183 7.509,14.5031Q8.1213,15.5527 9.0456,16.1289Q9.9617,16.7 11,16.7Q12.0383,16.7 12.9545,16.1289Q13.8787,15.5527 14.491,14.5031Q14.6683,14.2183 14.5737,13.8964Q14.4976,13.5696 14.2031,13.409Q13.9183,13.2317 13.5964,13.3263Q13.2696,13.4024 13.109,13.6969Q12.2905,15.1 11,15.1Z" />
+
+    <path
+        android:fillAlpha="0.92"
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M22.1157,5.8843Q21.9258,5.6879 21.6544,5.6568Q19.391,5.359 19.0932,3.0956Q19.059,2.7619 18.7871,2.5654Q18.5269,2.3535 18.1956,2.4068Q17.9242,2.4379 17.7343,2.6343Q17.5379,2.8242 17.5068,3.0956Q17.209,5.359 14.9456,5.6568Q14.6119,5.691 14.4154,5.9629Q14.2035,6.2231 14.2568,6.5544Q14.2879,6.8258 14.4843,7.0157Q14.6742,7.2121 14.9456,7.2432Q17.209,7.541 17.5068,9.8044Q17.541,10.1381 17.8129,10.3346Q18.0731,10.5465 18.4044,10.4932Q18.6758,10.4621 18.8657,10.2657Q19.0621,10.0758 19.0932,9.8044Q19.391,7.541 21.6544,7.2432Q21.9881,7.209 22.1846,6.9371Q22.3965,6.6769 22.3432,6.3456Q22.3121,6.0742 22.1157,5.8843ZM19.2662,6.45Q18.9836,6.2525 18.7406,6.0094Q18.4975,5.7664 18.3,5.4838Q18.1025,5.7664 17.8594,6.0094Q17.6164,6.2525 17.3338,6.45Q17.6164,6.6475 17.8594,6.8906Q18.1025,7.1336 18.3,7.4162Q18.4975,7.1336 18.7406,6.8906Q18.9836,6.6475 19.2662,6.45Z" />
+
+    <path
+        android:fillAlpha="0.92"
+        android:fillColor="#FFFFFF"
+        android:pathData="M8.5,10.5m-0.8,0a0.8,0.8 0 1,0 1.6,0a0.8,0.8 0 1,0 -1.6,0" />
+
+    <path
+        android:fillAlpha="0.92"
+        android:fillColor="#FFFFFF"
+        android:pathData="M13.5,10.5m-0.8,0a0.8,0.8 0 1,0 1.6,0a0.8,0.8 0 1,0 -1.6,0" />
+</vector>

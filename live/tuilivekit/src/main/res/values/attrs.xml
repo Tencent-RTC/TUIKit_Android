@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <declare-styleable name="LiveText">
+        <attr name="liveTextRole" format="enum">
+            <enum name="sheetTitle" value="0" />
+            <enum name="dialogTitle" value="1" />
+            <enum name="pageTitle" value="2" />
+            <enum name="sectionTitle" value="3" />
+            <enum name="itemTitle" value="4" />
+            <enum name="listTitle" value="5" />
+            <enum name="body" value="6" />
+            <enum name="prominent" value="7" />
+            <enum name="caption" value="8" />
+            <enum name="metadata" value="9" />
+            <enum name="control" value="10" />
+            <enum name="action" value="11" />
+        </attr>
+        <attr name="liveTextTone" format="enum">
+            <enum name="primary" value="0" />
+            <enum name="secondary" value="1" />
+            <enum name="tertiary" value="2" />
+            <enum name="disabled" value="3" />
+        </attr>
+        <attr name="liveTextEmphasized" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="LiveSlider">
+        <attr name="liveSliderMinimumValue" format="integer" />
+        <attr name="liveSliderMaximumValue" format="integer" />
+        <attr name="liveSliderStep" format="integer" />
+    </declare-styleable>
     <declare-styleable name="SVGAPlayerView">
         <attr name="svga_scaleType" format="enum">
             <enum name="fitCenter" value="0" />
@@ -8,5 +38,45 @@
         </attr>
         <attr name="svga_loopCount" format="integer" />
         <attr name="svga_autoPlay" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="LiveKitGiftHeartLayout">
+        <attr name="initX" format="dimension" />
+        <attr name="initY" format="dimension" />
+        <attr name="xRand" format="dimension" />
+        <attr name="animLengthRand" format="dimension" />
+        <attr name="xPointFactor" format="dimension" />
+        <attr name="animLength" format="dimension" />
+        <attr name="heart_width" format="dimension" />
+        <attr name="heart_height" format="dimension" />
+        <attr name="bezierFactor" format="integer" />
+        <attr name="anim_duration" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="SVGAImageView">
+        <attr name="source" format="string" />
+        <attr name="autoPlay" format="boolean" />
+        <attr name="antiAlias" format="boolean" />
+        <attr name="loopCount" format="integer" />
+        <attr name="clearsAfterStop" format="boolean" />
+        <attr name="clearsAfterDetached" format="boolean" />
+        <attr name="fillMode" format="enum">
+            <enum name="Backward" value="0" />
+            <enum name="Forward" value="1" />
+            <enum name="Clear" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="LiveStatusMetricView">
+        <attr name="metricTitle" format="string|reference" />
+        <attr name="metricUnit" format="string|reference" />
+        <attr name="metricTopRow" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="LiveStatusDeviceRow">
+        <attr name="deviceTitle" format="string|reference" />
+        <attr name="deviceDetail" format="string|reference" />
+        <attr name="deviceTrailing" format="string|reference" />
+        <attr name="deviceIcon" format="reference" />
     </declare-styleable>
 </resources>

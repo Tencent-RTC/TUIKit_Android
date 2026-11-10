@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Icon plate of a beauty option, from the Ardot 美颜内容 / offSelectedBackground and
+  smoothSkinIconBackground nodes: a 44dp circle whose fill and border change with selection.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_selected="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/livekit_pusher_beauty_plate_selected_fill" />
+            <stroke
+                android:width="@dimen/livekit_pusher_beauty_plate_border_width"
+                android:color="@color/livekit_pusher_beauty_plate_selected_border" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/livekit_pusher_beauty_plate_fill" />
+            <stroke
+                android:width="@dimen/livekit_pusher_beauty_plate_border_width"
+                android:color="@color/livekit_pusher_beauty_plate_border" />
+        </shape>
+    </item>
+</selector>

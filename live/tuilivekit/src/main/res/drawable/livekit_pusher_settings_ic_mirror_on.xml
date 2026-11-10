@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Mirror-on icon of the settings panel. Exported from the Ardot icon · mirrorOn node
+  (77:354): the left half is filled, the right half outlined. Rendered at 22dp inside the
+  settings item, matching the 24pt design viewport.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="22dp"
+    android:height="22dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <group
+        android:translateX="4"
+        android:translateY="3.5">
+        <path
+            android:fillAlpha="0.92"
+            android:fillColor="#FFFFFF"
+            android:pathData="M7,0L0,3.5L0,13.5L7,17L7,0Z" />
+    </group>
+
+    <group
+        android:translateX="13"
+        android:translateY="3.5">
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M7.638,3.1057Q7.5275,2.9228 7.3354,2.8292L0.3354,-0.6708Q0.0582,-0.8195 -0.2372,-0.7115Q-0.5383,-0.6207 -0.6708,-0.3354Q-0.7099,-0.2573 -0.7299,-0.1723Q-0.7501,-0.0873 -0.75,0L-0.75,17Q-0.759,17.3144 -0.5303,17.5303Q-0.3144,17.7591 0,17.75Q0.0873,17.7501 0.1723,17.7299Q0.2573,17.7099 0.3354,17.6708L7.3354,14.1708Q7.5275,14.0772 7.638,13.8943Q7.7522,13.7137 7.75,13.5L7.75,3.5Q7.7522,3.2863 7.638,3.1057ZM6.25,3.9635L0.75,1.2135L0.75,15.7865L6.25,13.0365L6.25,3.9635Z" />
+    </group>
+</vector>

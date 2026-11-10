@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.trtc.uikit.livekit.common.theme.LiveText
+        android:layout_width="150dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="40dp"
+        android:includeFontPadding="false"
+        android:text="@string/livekit_pusher_status_title"
+        app:liveTextRole="pageTitle" />
+    <View
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="49dp"
+        android:layout_marginEnd="91dp"
+        android:background="@drawable/livekit_pusher_status_blue_dot" />
+    <TextView
+        android:id="@+id/livekit_pusher_status_duration"
+        android:layout_width="79dp"
+        android:layout_height="24dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="41dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textColor="#E6E6E6"
+        android:textSize="12sp" />
+    <FrameLayout
+        android:id="@+id/livekit_pusher_status_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="81dp"
+        android:layout_marginEnd="18dp"
+        android:background="@drawable/livekit_pusher_status_tab_bg">
+        <View
+            android:id="@+id/livekit_pusher_status_tab_selection"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/livekit_pusher_status_tab_selection_bg" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/livekit_pusher_status_realtime_tab"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/livekit_pusher_status_realtime_data"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/livekit_pusher_status_device_tab"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/livekit_pusher_status_device_status"
+                android:textColor="#80FFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </FrameLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="141dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        android:id="@+id/livekit_pusher_status_scroll">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.trtc.uikit.livekit.pusher.living.status.PusherLiveStatisticsView
+                android:id="@+id/livekit_pusher_status_metrics_page"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <com.trtc.uikit.livekit.pusher.living.status.PusherDeviceStatusView
+                android:id="@+id/livekit_pusher_status_device_page"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>
