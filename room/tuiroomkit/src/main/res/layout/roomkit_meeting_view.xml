@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/roomkit_bg_surface"
+        android:orientation="vertical">
+
+        <com.trtc.uikit.roomkit.inroom.views.RoomTopBar
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.trtc.uikit.roomkit.inroom.features.roomview.RoomView
+                android:id="@+id/room_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.trtc.uikit.roomkit.inroom.features.screenshare.RoomScreenSharingPlaceholderView
+                android:id="@+id/screen_sharing_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
+
+        <com.trtc.uikit.roomkit.inroom.views.MeetingToolBar
+            android:id="@+id/meeting_tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <com.trtc.uikit.roomkit.inroom.views.widgets.RoomLoadingView
+        android:id="@+id/entering_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</merge>

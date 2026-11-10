@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14dp"
+    android:height="14dp"
+    android:viewportWidth="14"
+    android:viewportHeight="14">
+    <path
+        android:fillColor="@color/roomkit_warning"
+        android:pathData="M0.75,7 A6.25,6.25 0 1 1 13.25,7 A6.25,6.25 0 1 1 0.75,7" />
+    <path
+        android:strokeColor="@color/roomkit_bg_surface"
+        android:strokeWidth="1.5"
+        android:pathData="M0.75,7 A6.25,6.25 0 1 1 13.25,7 A6.25,6.25 0 1 1 0.75,7" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M6.1875,3.5 H7.8125 L7.5602,8.2561 C7.5497,8.4699 7.3747,8.6275 7.1604,8.6275 H6.8396 C6.6253,8.6275 6.4503,8.4699 6.4398,8.2561 L6.1875,3.5 Z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M6.625,9.5 A0.375,0.375 0 1 1 7.375,9.5 A0.375,0.375 0 1 1 6.625,9.5" />
+</vector>

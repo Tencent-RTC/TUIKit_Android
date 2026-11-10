@@ -14,15 +14,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.tencent.uikit.app.login.LoginActivity
 import com.tencent.uikit.app.setting.LanguageSelectActivity
-import com.tencent.uikit.app.setting.LocaleManager
 import io.trtc.tuikit.atomicxcore.api.login.LoginStatus
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 
 open class BaseActivity : AppCompatActivity() {
-
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LocaleManager.attachLanguageContext(newBase))
-    }
 
     private val languageChangedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
