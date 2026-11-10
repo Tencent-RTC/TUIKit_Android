@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="app_popup_card_padding">20dp</dimen>
+    <dimen name="app_popup_card_line_margin">16dp</dimen>
+    <dimen name="app_popup_card_line_height">0.48dp</dimen>
+    <dimen name="app_popup_card_line_margin_left_right">-25dp</dimen>
+    <dimen name="app_popup_card_edit_height">38.4dp</dimen>
+    <dimen name="app_popup_card_title_size">16.32sp</dimen>
+    <dimen name="app_popup_card_edit_text_size">15.36sp</dimen>
+    <dimen name="app_popup_card_desc_text_size">12.48sp</dimen>
+    <dimen name="app_popup_card_desc_margin_top">10.48dp</dimen>
+    <dimen name="app_popup_card_btn_margin_top">18.8dp</dimen>
+    <dimen name="app_popup_card_btn_margin_bottom">48.8dp</dimen>
+    <dimen name="app_popup_card_btn_margin_left_right">22.8dp</dimen>
+    <dimen name="app_popup_card_btn_height">44.16dp</dimen>
+    <dimen name="app_popup_card_btn_text_size">17.28sp</dimen>
+    <dimen name="app_popup_card_edit_padding_left_right">15.36dp</dimen>
+</resources>
