@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="42dp"
+    android:orientation="horizontal"
+    android:paddingStart="12dp"
+    android:paddingTop="9dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="9dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/action_icon"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:duplicateParentState="true" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/action_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:includeFontPadding="false"
+        android:textColor="@color/roomkit_fg_primary"
+        android:textSize="@dimen/roomkit_fs_md" />
+</LinearLayout>

@@ -20,4 +20,15 @@
     <color name="app_color_popup_card_line_bg">#E4E5E9</color>
     <color name="app_color_navigation_bar">#F7F7F7</color>
     <color name="app_color_read_dot_bg">#f74c31</color>
+    <color name="app_accent">#FF0071E3</color>
+    <color name="app_bg_canvas">#FFF5F4F5</color>
+    <color name="app_bg_hover">#0F1C1B1C</color>
+    <color name="app_bg_press">#1F1C1B1C</color>
+    <color name="app_bg_surface">#FFFFFFFF</color>
+    <color name="app_danger">#FFFF453A</color>
+    <color name="app_danger_soft">#24FF453A</color>
+    <color name="app_danger_soft_strong">#2EFF453A</color>
+    <color name="app_fg_on_accent">#FFFFFFFF</color>
+    <color name="app_fg_primary">#FF1C1B1C</color>
+    <color name="app_fg_secondary">#FF636263</color>
 </resources>

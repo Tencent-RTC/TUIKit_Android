@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.trtc.uikit.roomkit.inroom.features.device.micbutton.RoomMicLevelView
+        android:id="@+id/mic_level"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:contentDescription="@null"
+        android:src="@drawable/roomkit_icon_microphone_on" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/permission_badge"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="4dp"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no"
+        android:src="@drawable/roomkit_ic_permission_badge"
+        android:visibility="gone" />
+</merge>

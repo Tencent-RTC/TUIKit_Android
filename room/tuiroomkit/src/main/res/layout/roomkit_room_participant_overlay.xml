@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:room="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/flip_camera"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="top|start"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/roomkit_room_view_flip_camera"
+        android:scaleType="fitCenter"
+        android:src="@drawable/roomkit_icon_flip_camera_button"
+        android:visibility="gone" />
+
+    <com.trtc.uikit.roomkit.base.avatar.RoomAvatar
+        android:id="@+id/tile_avatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/share_who"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/roomkit_bg_tile_footer"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:visibility="gone">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/share_who_icon"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/roomkit_icon_screen_share"
+            android:tint="@color/roomkit_fg_on_media_muted" />
+
+        <TextView
+            android:id="@+id/share_who_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/roomkit_fg_on_media_muted"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tile_footer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="6dp"
+        android:background="@drawable/roomkit_bg_tile_footer"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="2dp"
+        android:showDividers="middle"
+        android:divider="@drawable/roomkit_space_name_row">
+
+        <FrameLayout
+            android:layout_width="12dp"
+            android:layout_height="12dp">
+
+            <ImageView
+                android:id="@+id/microphone_icon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no" />
+
+            <com.trtc.uikit.roomkit.inroom.features.device.micbutton.RoomMicLevelView
+                android:id="@+id/mic_level"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/role_badge"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/roomkit_fg_on_media"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/local_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:minWidth="16dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/roomkit_participants_me"
+            android:textSize="10sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@drawable/roomkit_bg_tile_border"
+        android:id="@+id/speaking_border"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/net_mark"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+</merge>
