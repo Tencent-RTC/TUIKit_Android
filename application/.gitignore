@@ -13,7 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
-.idea/
-app/build/
-login/build/
-assembly/build/
+.idea/*
+.kotlin/*
