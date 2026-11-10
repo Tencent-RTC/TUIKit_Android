@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/livekit_comment_row_radius" />
+    <solid android:color="@color/livekit_pusher_gift_message_background" />
+</shape>

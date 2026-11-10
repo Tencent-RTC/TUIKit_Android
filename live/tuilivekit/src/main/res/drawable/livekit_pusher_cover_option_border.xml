@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Border of a cover candidate: the picked candidate gets the blue stroke, every other one keeps
+  the white 14% hairline, mirroring the iOS option borderColor switch.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="@dimen/livekit_pusher_cover_picker_option_border_width"
+                android:color="@color/livekit_pusher_cover_option_border_selected" />
+
+            <corners android:radius="@dimen/livekit_pusher_cover_picker_option_radius" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="@dimen/livekit_pusher_cover_picker_option_border_width"
+                android:color="@color/livekit_pusher_cover_option_border" />
+
+            <corners android:radius="@dimen/livekit_pusher_cover_picker_option_radius" />
+        </shape>
+    </item>
+</selector>

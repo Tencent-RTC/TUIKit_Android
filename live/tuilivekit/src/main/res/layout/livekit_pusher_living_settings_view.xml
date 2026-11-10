@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+        <include
+            android:id="@+id/livekit_pusher_living_settings_main"
+            layout="@layout/livekit_pusher_living_settings_main" />
+        <com.trtc.uikit.livekit.pusher.settings.AudioEffectView
+            android:id="@+id/livekit_pusher_living_settings_audio" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_marginTop="74dp"
+            android:layout_marginEnd="16dp" />
+</merge>

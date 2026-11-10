@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Content of the Prepare cover picker bottom panel: the title plus the five preset candidates,
+  equally sharing the available width like the iOS fillEqually stack.
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/livekit_pusher_cover_picker_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/livekit_pusher_cover_picker_horizontal_inset"
+        android:layout_marginTop="@dimen/livekit_pusher_cover_picker_options_top"
+        android:layout_marginEnd="@dimen/livekit_pusher_cover_picker_horizontal_inset"
+        android:baselineAligned="false"
+        android:orientation="horizontal" />
+</merge>

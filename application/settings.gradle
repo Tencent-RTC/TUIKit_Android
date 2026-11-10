@@ -17,3 +17,6 @@ dependencyResolutionManagement {
 include ':app'
 
 include ':debug'
+
+include ':tuilivekit'
+project(':tuilivekit').projectDir = file('../live/tuilivekit')

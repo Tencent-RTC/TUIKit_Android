@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Content of the Prepare "more settings" bottom panel. -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <LinearLayout
+            android:id="@+id/livekit_pusher_settings_main_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/livekit_pusher_settings_item_height"
+            android:layout_marginStart="@dimen/livekit_pusher_settings_panel_horizontal_inset"
+            android:layout_marginTop="@dimen/livekit_pusher_settings_main_content_top"
+            android:layout_marginEnd="@dimen/livekit_pusher_settings_panel_horizontal_inset"
+            android:orientation="horizontal">
+
+
+            <com.trtc.uikit.livekit.pusher.settings.PusherSettingsItemView
+                android:id="@+id/livekit_pusher_settings_mirror"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <com.trtc.uikit.livekit.pusher.settings.PusherSettingsItemView
+                android:id="@+id/livekit_pusher_settings_audio_effect"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+
+        <com.trtc.uikit.livekit.pusher.settings.AudioEffectView
+            android:id="@+id/livekit_pusher_settings_audio_effect_page"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/livekit_pusher_settings_panel_horizontal_inset"
+            android:layout_marginTop="@dimen/livekit_pusher_audio_content_top"
+            android:layout_marginEnd="@dimen/livekit_pusher_settings_panel_horizontal_inset" />
+</merge>
