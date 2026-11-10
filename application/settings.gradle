@@ -20,3 +20,6 @@ include ':debug'
 
 include ':tuilivekit'
 project(':tuilivekit').projectDir = file('../live/tuilivekit')
+
+include ':tuiroomkit'
+project(':tuiroomkit').projectDir = file("../room/tuiroomkit")

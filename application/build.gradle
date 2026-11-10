@@ -31,5 +31,5 @@ ext {
     liteavSdk = "com.tencent.liteav:LiteAVSDK_Professional:latest.release"
     liteavScreenCaptureSdk = "com.tencent.liteav:LiteAVSDK_ScreenCapture:latest.release"
     atomicxCoreSdk = buildAtomicxCoreSource.toBoolean() ? project(":atomicxcore") : "io.trtc.uikit:atomicx-core:latest.release"
-    imSdk = "com.tencent.imsdk:imsdk-plus:8.7.7201"
+    imSdk = "com.tencent.imsdk:imsdk-plus:9.1.7824"
 }
