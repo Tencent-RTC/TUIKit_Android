@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/main_fragment">
+
+    <fragment
+        android:id="@+id/main_fragment"
+        android:name="com.tencent.uikit.app.main.MainFragment"
+        android:label="@string/app_main">
+        <action
+            android:id="@+id/action_main_to_mine"
+            app:destination="@id/mine_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mine_fragment"
+        android:name="com.tencent.uikit.app.mine.MineFragment" />
+
+</navigation>

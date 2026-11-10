@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="UnreadCountTextView">
+        <attr name="paint_color" format="color|reference" />
+    </declare-styleable>
+
+    <declare-styleable name="TitleBarLayout">
+        <attr name="title_bar_middle_title" format="string" />
+        <attr name="title_bar_can_return" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundCornerImageView" parent="RoundFrameLayout">
+        <attr name="corner_radius" />
+        <attr name="left_top_corner_radius" />
+        <attr name="right_top_corner_radius" />
+        <attr name="right_bottom_corner_radius" />
+        <attr name="left_bottom_corner_radius" />
+    </declare-styleable>
+
+    <declare-styleable name="SynthesizedImageView">
+        <attr name="synthesized_image_bg" format="color" />
+        <attr name="synthesized_default_image" format="reference" />
+        <attr name="synthesized_image_size" format="dimension" />
+        <attr name="synthesized_image_gap" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundFrameLayout">
+        <attr name="corner_radius" format="dimension" />
+        <attr name="left_top_corner_radius" format="dimension" />
+        <attr name="right_top_corner_radius" format="dimension" />
+        <attr name="right_bottom_corner_radius" format="dimension" />
+        <attr name="left_bottom_corner_radius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundRectImageStyle">
+        <attr name="round_radius" format="dimension" />
+    </declare-styleable>
+</resources>

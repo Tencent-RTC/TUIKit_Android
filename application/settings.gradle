@@ -1,23 +1,19 @@
-rootProject.name = 'RTCubeV2'
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        flatDir {
+            dirs 'app/libs'
+        }
+        maven { url 'https://jitpack.io' }
+        maven { url "https://mirrors.tencent.com/repository/maven/thirdparty" }
+        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
+        maven { url "https://mirrors.tencent.com/nexus/repository/gradle-plugins/" }
+        maven { url "https://mirrors.tencent.com/repository/maven/liteavsdk" }
+    }
+}
 
 include ':app'
-include ':login'
-include ':assembly'
 
-// ---------------- client_uikit start ----------------
-def clientUikitPath = '../'
-include ':tuicallkit-kt'
-project(':tuicallkit-kt').projectDir = file("${clientUikitPath}/call/tuicallkit-kt")
-
-include ':tuiroomkit'
-project(':tuiroomkit').projectDir = file("${clientUikitPath}/room/tuiroomkit")
-
-include ':tuilivekit'
-project(':tuilivekit').projectDir = file("${clientUikitPath}/live/tuilivekit")
-
-include ':chatuikit'
-project(':chatuikit').projectDir = file("${clientUikitPath}/chat/uikit")
-
-include ':atomic_x'
-project(':atomic_x').projectDir = file("${clientUikitPath}/atomic_x")
-// ---------------- client_uikit end ----------------
+include ':debug'
