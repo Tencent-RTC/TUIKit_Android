@@ -1,8 +1,8 @@
 package com.trtc.uikit.livekit.common
 
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import android.widget.Toast
 import com.trtc.uikit.livekit.R
-import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import com.trtc.uikit.livekit.common.log.LiveKitLog
 
 class ErrorLocalized {
     companion object {
@@ -108,7 +108,6 @@ class ErrorLocalized {
         const val LIVE_CONNECTION_ERROR_RETRY = 5
         const val LIVE_CONNECTION_ROOM_MISMATCH = 6
 
-
         const val LIVE_IM_ERROR_INVALID_PARAM = 6017
         const val LIVE_IM_ERROR_FREQ_LIMIT = 7008
         const val LIVE_IM_ERROR_GROUP_SHUTUP_DENY = 10017
@@ -128,8 +127,9 @@ class ErrorLocalized {
         const val LIVE_IM_ERROR_NET_SEND_REMAINING_TIMEOUT_NO_NETWORK = 9525
         const val LIVE_IM_ERROR_SENSITIVE_WORDS_BAN = 80001
 
-        private val INTERCEPT_TOAST_ONLY_PRINT_LOG = setOf(LIVE_CLIENT_ERROR_ROOM_MISMATCH, LIVE_IM_ERROR_FREQ_LIMIT, LIVE_CLIENT_ERROR_FREQ_LIMIT)
-        private val LOGGER = LiveKitLogger.getCommonLogger("ErrorLocalized")
+        private val INTERCEPT_TOAST_ONLY_PRINT_LOG =
+            setOf(LIVE_CLIENT_ERROR_ROOM_MISMATCH, LIVE_IM_ERROR_FREQ_LIMIT, LIVE_CLIENT_ERROR_FREQ_LIMIT)
+        private val LOGGER = LiveKitLog.Companion.getCommonLogger("ErrorLocalized")
 
         @JvmStatic
         fun onError(error: Int) {
@@ -137,15 +137,15 @@ class ErrorLocalized {
             convertToErrorMessage(error).also { message ->
                 LOGGER.info("[error:$error,value:${error},message:$message]")
                 if (!INTERCEPT_TOAST_ONLY_PRINT_LOG.contains(error)) {
-                    ContextProvider.getApplicationContext()?.apply {
-                        AtomicToast.show(this, message, AtomicToast.Style.ERROR)
+                    ContextProvider.applicationContext.apply {
+                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
 
         private fun convertToErrorMessage(error: Int): String {
-            val context = ContextProvider.getApplicationContext() ?: return ""
+            val context = ContextProvider.applicationContext ?: return ""
             return when (error) {
                 LIVE_CLIENT_ERROR_SUCCESS ->
                     context.getString(R.string.common_client_error_success)

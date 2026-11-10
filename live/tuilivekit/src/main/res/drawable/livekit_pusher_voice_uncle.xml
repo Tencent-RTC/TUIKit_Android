@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Uncle-voice icon. Exported from the Ardot icon · voiceUncle node (77:305). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="25dp"
+    android:height="25dp"
+    android:viewportWidth="25"
+    android:viewportHeight="25">
+
+    <group
+        android:translateX="6.45833"
+        android:translateY="3.64583">
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M11.0006,0.79Q9.1451,-0.8594 6.0417,-0.8594Q2.9382,-0.8594 1.0827,0.79Q-0.8594,2.5163 -0.8594,5.5208L-0.8594,11.1458Q-0.8594,14.4332 1.064,16.4973Q2.9932,18.5677 6.0417,18.5677Q9.0901,18.5677 11.0193,16.4973Q12.9427,14.4332 12.9427,11.1458L12.9427,5.5208Q12.9427,2.5163 11.0006,0.79ZM2.2246,2.0746Q3.5917,0.8594 6.0417,0.8594Q8.4916,0.8594 9.8588,2.0746Q11.224,3.2881 11.224,5.5208L11.224,11.1458Q11.224,13.7566 9.7619,15.3256Q8.3424,16.849 6.0417,16.849Q3.7409,16.849 2.3214,15.3256Q0.8594,13.7566 0.8594,11.1458L0.8594,5.5208Q0.8594,3.2881 2.2246,2.0746Z" />
+    </group>
+
+    <group
+        android:translateX="8.95833"
+        android:translateY="11.0417">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M0.625,0.625m-0.625,0a0.625,0.625 0 1,0 1.25,0a0.625,0.625 0 1,0 -1.25,0" />
+    </group>
+
+    <group
+        android:translateX="14.7917"
+        android:translateY="11.0417">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M0.625,0.625m-0.625,0a0.625,0.625 0 1,0 1.25,0a0.625,0.625 0 1,0 -1.25,0" />
+    </group>
+
+    <group
+        android:translateX="7.5"
+        android:translateY="13.6546">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M0,0.9287C2.0833,-0.6338 3.6458,-0.113 5,1.6579C6.3542,-0.113 7.9167,-0.6338 10,0.9287C9.7917,2.8037 8.5417,3.7412 6.4583,3.3245L5,6.137L3.5417,3.3245C1.4583,3.7412 0.2083,2.8037 0,0.9287Z" />
+    </group>
+</vector>

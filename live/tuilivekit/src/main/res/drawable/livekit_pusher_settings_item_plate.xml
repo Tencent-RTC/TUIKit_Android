@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Icon plate of a settings item, from the Ardot 清晰度图标底座 44 nodes: white at 8% with a
+  22pt corner radius.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/livekit_pusher_settings_item_plate" />
+</shape>

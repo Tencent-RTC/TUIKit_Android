@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.trtc.uikit.livekit">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -21,45 +22,22 @@
 
     <application>
         <activity
-            android:name=".livestream.VideoLiveListActivity"
-            android:exported="true"
+            android:name="com.trtc.uikit.livekit.common.theme.permission.PermissionActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
+            android:theme="@style/CommonActivityTranslucent"
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden"
+            tools:ignore="NewApi" />
 
-        <activity
-            android:name=".livestream.VideoLiveAnchorActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode|locale|layoutDirection|fontScale"
+        <provider
+            android:name="com.trtc.uikit.livekit.common.ContextProvider"
+            android:authorities="${applicationId}.tuikit.engine.provider"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name="com.trtc.uikit.livekit.common.theme.foregroundservice.AudioForegroundService"
             android:exported="false"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:supportsPictureInPicture="true"
-            android:taskAffinity="com.trtc.uikit.livekit.pip.live.stream"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
-        <activity
-            android:name=".voiceroom.VoiceRoomListActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".livestream.VideoLiveAudienceActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode|locale|layoutDirection|fontScale"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:supportsPictureInPicture="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:taskAffinity="com.trtc.uikit.livekit.pip.live.stream"
-            android:windowSoftInputMode="adjustNothing" />
-
-        <activity
-            android:name=".voiceroom.view.VoiceRoomActivity"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:configChanges="uiMode"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:foregroundServiceType="microphone" />
     </application>
-
 </manifest>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Original-voice icon. Exported from the Ardot icon · voiceOriginal node (77:292). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="25dp"
+    android:height="25dp"
+    android:viewportWidth="25"
+    android:viewportHeight="25">
+
+    <group
+        android:translateX="3.64583"
+        android:translateY="3.64583">
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M8.8542,8.8542m-8.8542,0a8.8542,8.8542 0 1,0 17.7084,0a8.8542,8.8542 0 1,0 -17.7084,0"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="1.7187" />
+    </group>
+
+    <group
+        android:translateX="7.08333"
+        android:translateY="9.16667">
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M1.4878,2.474L0,2.474Q-0.3603,2.4636 -0.6077,2.7257Q-0.8697,2.9731 -0.8594,3.3333Q-0.8697,3.6936 -0.6077,3.941Q-0.3603,4.2031 0,4.1927L2.0833,4.1927Q2.3531,4.1964 2.5728,4.0397Q2.7967,3.889 2.888,3.6351L3.2982,2.5413L4.8123,6.946Q4.9196,7.2901 5.2479,7.4389Q5.567,7.6063 5.9044,7.4794Q6.0787,7.4203 6.2125,7.2939Q6.3474,7.1686 6.4177,6.9985L7.6021,4.1693L7.9955,4.8907Q8.1068,5.0993 8.3113,5.2181Q8.5135,5.3408 8.75,5.3385L10.8333,5.3385Q11.1936,5.3489 11.441,5.0868Q11.7031,4.8394 11.6927,4.4792Q11.7031,4.1189 11.441,3.8715Q11.1936,3.6094 10.8333,3.6198L9.2602,3.6198L8.2545,1.776Q8.1846,1.6472 8.0756,1.5494Q7.9671,1.451 7.8318,1.3948Q7.5035,1.2461 7.1741,1.3923Q6.8368,1.5193 6.7073,1.8557L5.7039,4.2526L4.146,-0.2794Q4.0844,-0.4618 3.9493,-0.5992Q3.8158,-0.738 3.6351,-0.8047Q3.3014,-0.9409 2.9777,-0.7823Q2.6455,-0.6427 2.5287,-0.3018L1.4878,2.474Z" />
+    </group>
+</vector>

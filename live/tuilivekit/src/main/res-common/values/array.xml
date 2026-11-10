@@ -1,6 +1,0 @@
-<resources>
-    <string-array name="common_stream_privacy_status">
-        <item>@string/common_stream_privacy_status_default</item>
-        <item>@string/common_stream_privacy_status_privacy</item>
-    </string-array>
-</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Card background of the audio-effect page, from the Ardot 耳返卡片 / 人声音量卡 nodes:
+  white at 4.5% with a 1px white 14% border and a 14pt corner radius.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/livekit_pusher_audio_card_fill" />
+    <stroke
+        android:width="@dimen/livekit_pusher_audio_card_border_width"
+        android:color="@color/livekit_pusher_audio_card_border" />
+    <corners android:radius="@dimen/livekit_pusher_audio_card_radius" />
+</shape>

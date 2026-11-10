@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="72dp">
+    <FrameLayout android:id="@+id/livekit_music_cover" android:layout_width="50dp" android:layout_height="50dp"
+        android:layout_marginStart="16dp" android:background="@drawable/livekit_pusher_music_cover_bg"
+        app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView android:layout_width="18dp" android:layout_height="21dp" android:layout_gravity="center"
+            android:contentDescription="@null" android:importantForAccessibility="no"
+            android:src="@drawable/livekit_pusher_living_setting_music" />
+        <com.trtc.uikit.livekit.pusher.living.music.MusicWaveView
+            android:id="@+id/livekit_music_wave" android:layout_width="match_parent" android:layout_height="match_parent"
+            android:background="@drawable/livekit_pusher_music_cover_overlay" />
+    </FrameLayout>
+    <com.trtc.uikit.livekit.common.theme.LiveText android:id="@+id/livekit_music_name" android:layout_width="0dp" android:layout_height="19dp"
+        android:layout_marginStart="12dp" android:layout_marginTop="17dp" android:layout_marginEnd="12dp"
+        android:ellipsize="end" android:includeFontPadding="false" android:maxLines="1"
+        app:layout_constraintEnd_toStartOf="@id/livekit_music_control"
+        app:layout_constraintStart_toEndOf="@id/livekit_music_cover"
+        app:layout_constraintTop_toTopOf="parent" app:liveTextRole="body" />
+    <com.trtc.uikit.livekit.common.theme.LiveText android:id="@+id/livekit_music_duration" android:layout_width="wrap_content" android:layout_height="15dp"
+        android:layout_marginTop="7dp" android:includeFontPadding="false"
+        app:layout_constraintStart_toStartOf="@id/livekit_music_name"
+        app:layout_constraintTop_toBottomOf="@id/livekit_music_name"
+        app:liveTextRole="caption" app:liveTextTone="tertiary" />
+    <com.trtc.uikit.livekit.pusher.living.music.MusicPlaybackControlView
+        android:id="@+id/livekit_music_control" android:layout_width="28dp" android:layout_height="28dp"
+        android:layout_marginEnd="16dp" app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

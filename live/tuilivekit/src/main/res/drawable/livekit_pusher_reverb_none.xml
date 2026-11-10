@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No-reverb icon. Exported from the Ardot icon · reverbNone node (77:313). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="25dp"
+    android:height="25dp"
+    android:viewportWidth="25"
+    android:viewportHeight="25">
+
+    <group
+        android:translateX="3.64583"
+        android:translateY="3.64583">
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M8.8542,8.8542m-8.8542,0a8.8542,8.8542 0 1,0 17.7084,0a8.8542,8.8542 0 1,0 -17.7084,0"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="1.7187" />
+    </group>
+
+    <group
+        android:translateX="6.25"
+        android:translateY="6.25">
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillType="evenOdd"
+            android:pathData="M11.8923,-0.6077L-0.6077,11.8923Q-0.8697,12.1397 -0.8594,12.5Q-0.8697,12.8603 -0.6077,13.1077Q-0.3603,13.3697 0,13.3594Q0.3603,13.3697 0.6077,13.1077L13.1077,0.6077Q13.3697,0.3603 13.3594,0Q13.3697,-0.3603 13.1077,-0.6077Q12.8603,-0.8697 12.5,-0.8594Q12.1397,-0.8697 11.8923,-0.6077Z" />
+    </group>
+</vector>
