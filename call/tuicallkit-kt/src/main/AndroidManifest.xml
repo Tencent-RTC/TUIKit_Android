@@ -1,54 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-
-    <uses-permission
-        android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
 
     <application>
         <activity
-            android:name=".view.CallMainActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:launchMode="singleTask"
-            android:supportsPictureInPicture="true"
-            android:taskAffinity="${applicationId}.callkit"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity
-            android:name=".view.component.inviteuser.SelectGroupMemberActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:name=".call.callview.CallActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:exported="false"
+            android:launchMode="singleTask" />
 
-        <provider
-            android:name="com.tencent.qcloud.tuikit.tuicallkit.manager.bridge.Initializer"
-            android:authorities="${applicationId}.Initializer"
-            android:enabled="true"
-            android:exported="false" />
-
-        <receiver
-            android:name=".view.component.incomingbanner.IncomingCallReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="reject_call_action" />
-            </intent-filter>
-        </receiver>
+        <service
+            android:name=".call.CallKeepAliveService"
+            android:exported="false"
+            android:foregroundServiceType="microphone|camera" />
     </application>
+
 </manifest>

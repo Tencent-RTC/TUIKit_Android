@@ -1,6 +1,7 @@
 package com.tencent.uikit.app.main
 
 import com.tencent.uikit.app.R
+import com.tencent.uikit.app.call.entry.CallEntryActivity
 import com.tencent.uikit.app.live.WaterfallActivity
 import com.tencent.uikit.app.room.RoomHomeActivity
 
@@ -11,7 +12,7 @@ class TRTCMainData {
         itemDataList.add(
             MainItemData(
                 MainTypeEnum.TYPE_ITEM_CALL, R.drawable.app_ic_main_call, R.string.app_main_item_call,
-                R.string.app_main_item_call_sub, ComingActivity::class.java, MainItemData.Category.KIT
+                R.string.app_main_item_call_sub, CallEntryActivity::class.java, MainItemData.Category.KIT
             )
         )
         itemDataList.add(

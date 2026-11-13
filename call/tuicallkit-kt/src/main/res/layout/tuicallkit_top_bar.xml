@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="44dp">
+
+    <ImageView
+        android:id="@+id/pip_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@null"
+        android:padding="7.3dp"
+        android:src="@drawable/tuicallkit_icon_pip" />
+
+    <TextView
+        android:id="@+id/timer_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:alpha="0"
+        android:fontFeatureSettings="tnum"
+        android:textColor="@android:color/white"
+        android:textSize="17sp" />
+
+    <ImageView
+        android:id="@+id/invite_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@null"
+        android:padding="7.35dp"
+        android:src="@drawable/tuicallkit_icon_adduser" />
+
+</FrameLayout>

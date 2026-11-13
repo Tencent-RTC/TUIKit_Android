@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="callaccess_brand">#1C66E6</color>
+    <color name="callaccess_brand_hover">#1557C9</color>
+    <color name="callaccess_brand_soft">#2E1C66E6</color>
+    <color name="callaccess_brand_65">#A61C66E6</color>
+    <color name="callaccess_page_background">#F2F3F5</color>
+    <color name="callaccess_card">#FFFFFF</color>
+    <color name="callaccess_text">#18191C</color>
+    <color name="callaccess_text2">#8F959E</color>
+    <color name="callaccess_text3">#A6ABB3</color>
+    <color name="callaccess_text4">#B7BDC2</color>
+    <color name="callaccess_line">#EEF0F2</color>
+    <color name="callaccess_arrow">#C3C7CC</color>
+    <color name="callaccess_green">#07C160</color>
+    <color name="callaccess_red">#FA5151</color>
+    <color name="callaccess_call_red">#ED4651</color>
+    <color name="callaccess_switch_off">#E3E5E9</color>
+    <color name="callaccess_caption_switch_off">#C9CDD4</color>
+    <color name="callaccess_cta_disabled">#A9BEDE</color>
+    <color name="callaccess_close_background">#EEF0F4</color>
+    <color name="callaccess_mask">#6B0A0C10</color>
+    <color name="callaccess_input_border">#E3E6EB</color>
+    <color name="callaccess_pro_gradient_start">#F9DA93</color>
+    <color name="callaccess_pro_gradient_end">#EFC463</color>
+    <color name="callaccess_pro_text">#3D2B04</color>
+    <color name="callaccess_toast_background">#E014161C</color>
+    <color name="callaccess_nav_title">#181A1C</color>
+</resources>
