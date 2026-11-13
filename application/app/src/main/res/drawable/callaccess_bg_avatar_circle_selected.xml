@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 内缩 1dp 使 2dp 描边完整落在圆内（clipToOutline 会裁掉贴边描边的外半圈） -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android" android:inset="1dp">
+    <shape android:shape="oval">
+        <solid android:color="@android:color/transparent" />
+        <stroke android:width="2dp" android:color="@color/callaccess_brand" />
+    </shape>
+</inset>

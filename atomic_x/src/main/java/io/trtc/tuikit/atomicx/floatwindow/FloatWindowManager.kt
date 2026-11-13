@@ -13,7 +13,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import io.trtc.tuikit.atomicx.common.permission.PermissionRequester
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.atomicx.common.util.ScreenUtil
 import io.trtc.tuikit.atomicx.common.util.TUIBuild
 import java.util.concurrent.CopyOnWriteArrayList

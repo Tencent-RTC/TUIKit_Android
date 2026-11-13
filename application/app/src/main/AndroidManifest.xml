@@ -42,6 +42,18 @@
             android:name=".main.ComingActivity"
             android:exported="false" />
         <activity
+            android:name=".call.entry.CallEntryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/CallAccessTheme"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".call.settings.CallSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/CallAccessTheme"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
             android:name=".main.MainActivity"
             android:exported="false" />
         <activity

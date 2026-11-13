@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 对齐 iOS callkit_icon_chevron.svg：5×9 折线箭头 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="5dp" android:height="9dp" android:viewportWidth="5" android:viewportHeight="9">
+    <path
+        android:pathData="M1,1 L4,4.5 L1,8"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

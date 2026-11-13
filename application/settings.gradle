@@ -23,3 +23,9 @@ project(':tuilivekit').projectDir = file('../live/tuilivekit')
 
 include ':tuiroomkit'
 project(':tuiroomkit').projectDir = file("../room/tuiroomkit")
+
+include ':tuicallkit-kt'
+project(':tuicallkit-kt').projectDir = file('../call/tuicallkit-kt')
+
+include ':atomic_x'
+project(':atomic_x').projectDir = file('../atomic_x')

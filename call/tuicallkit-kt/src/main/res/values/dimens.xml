@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="callkit_small_image_size">30dp</dimen>
-    <dimen name="callkit_small_image_left_margin">8dp</dimen>
-    <dimen name="callkit_text_size_hint">12sp</dimen>
-    <dimen name="callkit_video_small_view_width">120dp</dimen>
-    <dimen name="callkit_video_small_view_height">180dp</dimen>
+    <dimen name="tuicallkit_control_button_size">58dp</dimen>
+    <dimen name="tuicallkit_control_cell_width">72dp</dimen>
+    <dimen name="tuicallkit_control_label_gap">10dp</dimen>
+    <dimen name="tuicallkit_top_bar_height">44dp</dimen>
+    <dimen name="tuicallkit_top_bar_button_size">36dp</dimen>
 </resources>
