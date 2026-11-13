@@ -157,7 +157,7 @@ class ImageSelectActivity : BaseLightActivity() {
                 override fun onLoadFailed(
                     e: GlideException?,
                     model: Any?,
-                    target: Target<File>?,
+                    target: Target<File>,
                     isFirstResource: Boolean
                 ): Boolean {
                     dialog.cancel()
@@ -167,14 +167,14 @@ class ImageSelectActivity : BaseLightActivity() {
                 }
 
                 override fun onResourceReady(
-                    resource: File?,
-                    model: Any?,
+                    resource: File,
+                    model: Any,
                     target: Target<File>?,
-                    dataSource: DataSource?,
+                    dataSource: DataSource,
                     isFirstResource: Boolean
                 ): Boolean {
                     dialog.cancel()
-                    val path = resource?.absolutePath
+                    val path = resource.absolutePath
                     Log.e(TAG, "DownloadUrl resource path = $path")
                     finalBean.setLocalPath(path)
                     setResult(finalBean)

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/avatar_cell_image"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center"
+        android:background="@drawable/callaccess_bg_avatar_circle"
+        android:clipToOutline="true"
+        android:contentDescription="@null"
+        android:outlineProvider="background"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/avatar_cell_badge"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="23dp"
+        android:background="@drawable/callaccess_bg_badge_brand"
+        android:gravity="center"
+        android:text="@string/callaccess_symbol_check"
+        android:textColor="@android:color/white"
+        android:textSize="11sp"
+        android:visibility="gone" />
+
+</FrameLayout>
