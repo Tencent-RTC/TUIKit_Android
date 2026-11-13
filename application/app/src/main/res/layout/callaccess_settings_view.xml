@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settings_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:overScrollMode="ifContentScrolls"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/callaccess_settings_profile"
+            android:textColor="@color/callaccess_text2"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/callaccess_bg_card"
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
+
+            <com.tencent.uikit.app.call.common.CallAccessTapRow
+                android:id="@+id/avatar_row"
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/callaccess_settings_avatar"
+                        android:textColor="@color/callaccess_text"
+                        android:textSize="15sp" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/avatar_image"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/callaccess_bg_avatar"
+                        android:clipToOutline="true"
+                        android:contentDescription="@null"
+                        android:outlineProvider="background"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="4dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/callaccess_icon_chevron"
+                        app:tint="@color/callaccess_arrow" />
+                </LinearLayout>
+            </com.tencent.uikit.app.call.common.CallAccessTapRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/callaccess_line" />
+
+            <com.tencent.uikit.app.call.common.CallAccessTapRow
+                android:id="@+id/nickname_row"
+                android:layout_width="match_parent"
+                android:layout_height="52dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/callaccess_settings_nickname"
+                        android:textColor="@color/callaccess_text"
+                        android:textSize="15sp" />
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <EditText
+                        android:id="@+id/nickname_input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:gravity="end"
+                        android:imeOptions="actionDone"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/callaccess_text2"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/callaccess_icon_chevron"
+                        app:tint="@color/callaccess_arrow" />
+                </LinearLayout>
+            </com.tencent.uikit.app.call.common.CallAccessTapRow>
+
+            <TextView
+                android:id="@+id/nickname_hint"
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:text="@string/callaccess_settings_nickname_hint"
+                android:textColor="@color/callaccess_text3"
+                android:textSize="11sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/callaccess_settings_incoming"
+            android:textColor="@color/callaccess_text2"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/callaccess_bg_card"
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
+
+            <com.tencent.uikit.app.call.common.CallAccessTapRow
+                android:id="@+id/ringtone_row"
+                android:layout_width="match_parent"
+                android:layout_height="52dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/callaccess_settings_ringtone"
+                        android:textColor="@color/callaccess_text"
+                        android:textSize="15sp" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/ringtone_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/callaccess_text2"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="4dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/callaccess_icon_chevron"
+                        app:tint="@color/callaccess_arrow" />
+                </LinearLayout>
+            </com.tencent.uikit.app.call.common.CallAccessTapRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/callaccess_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/callaccess_settings_mute_mode"
+                    android:textColor="@color/callaccess_text"
+                    android:textSize="15sp" />
+
+                <com.tencent.uikit.app.call.common.CallAccessToggle
+                    android:id="@+id/mute_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/callaccess_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/callaccess_settings_banner"
+                        android:textColor="@color/callaccess_text"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="@string/callaccess_settings_banner_copy"
+                        android:textColor="@color/callaccess_text4"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <com.tencent.uikit.app.call.common.CallAccessToggle
+                    android:id="@+id/banner_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/callaccess_settings_call_ui"
+            android:textColor="@color/callaccess_text2"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/callaccess_bg_card"
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/callaccess_settings_float_button"
+                    android:textColor="@color/callaccess_text"
+                    android:textSize="15sp" />
+
+                <com.tencent.uikit.app.call.common.CallAccessToggle
+                    android:id="@+id/float_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/callaccess_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/callaccess_settings_blur_background"
+                    android:textColor="@color/callaccess_text"
+                    android:textSize="15sp" />
+
+                <com.tencent.uikit.app.call.common.CallAccessToggle
+                    android:id="@+id/blur_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/callaccess_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/callaccess_settings_pro_beauty"
+                        android:textColor="@color/callaccess_text"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="22dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/callaccess_bg_pro_badge"
+                        android:fontFamily="serif"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="@string/callaccess_symbol_pro"
+                        android:textColor="@color/callaccess_pro_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <com.tencent.uikit.app.call.common.CallAccessToggle
+                    android:id="@+id/pro_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.tencent.uikit.app.call.common.CallAccessTapRow
+            android:id="@+id/advanced_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/callaccess_settings_advanced"
+                    android:textColor="@color/callaccess_text2"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/advanced_chevron"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="4dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/callaccess_icon_chevron"
+                    app:tint="@color/callaccess_arrow" />
+            </LinearLayout>
+        </com.tencent.uikit.app.call.common.CallAccessTapRow>
+
+        <LinearLayout
+            android:id="@+id/advanced_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/callaccess_bg_card"
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:visibility="gone">
+
+            <com.tencent.uikit.app.call.common.CallAccessTapRow
+                android:id="@+id/room_id_row"
+                android:layout_width="match_parent"
+                android:layout_height="62dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/callaccess_settings_room_id"
+                            android:textColor="@color/callaccess_text"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="@string/callaccess_settings_room_id_sub"
+                            android:textColor="@color/callaccess_text4"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <EditText
+                        android:id="@+id/room_id_input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:gravity="end"
+                        android:hint="@string/callaccess_settings_room_auto_assign"
+                        android:imeOptions="actionDone"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/callaccess_text2"
+                        android:textColorHint="@color/callaccess_text4"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/callaccess_icon_chevron"
+                        app:tint="@color/callaccess_arrow" />
+                </LinearLayout>
+            </com.tencent.uikit.app.call.common.CallAccessTapRow>
+
+            <TextView
+                android:id="@+id/room_id_hint"
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:text="@string/callaccess_settings_room_id_hint"
+                android:textColor="@color/callaccess_text3"
+                android:textSize="11sp"
+                android:visibility="gone" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/callaccess_line" />
+
+            <com.tencent.uikit.app.call.common.CallAccessTapRow
+                android:id="@+id/timeout_row"
+                android:layout_width="match_parent"
+                android:layout_height="62dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/callaccess_settings_timeout"
+                            android:textColor="@color/callaccess_text"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="@string/callaccess_settings_timeout_sub"
+                            android:textColor="@color/callaccess_text4"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <EditText
+                        android:id="@+id/timeout_input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:gravity="end"
+                        android:imeOptions="actionDone"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:textColor="@color/callaccess_text2"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/callaccess_icon_chevron"
+                        app:tint="@color/callaccess_arrow" />
+                </LinearLayout>
+            </com.tencent.uikit.app.call.common.CallAccessTapRow>
+
+            <TextView
+                android:id="@+id/timeout_hint"
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:text="@string/callaccess_settings_timeout_hint"
+                android:textColor="@color/callaccess_text3"
+                android:textSize="11sp"
+                android:visibility="gone" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/callaccess_line" />
+
+            <com.tencent.uikit.app.call.common.CallAccessTapRow
+                android:id="@+id/extended_info_row"
+                android:layout_width="match_parent"
+                android:layout_height="62dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/callaccess_settings_extended_info"
+                            android:textColor="@color/callaccess_text"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="@string/callaccess_settings_extended_info_sub"
+                            android:textColor="@color/callaccess_text4"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="0dp" />
+
+                    <EditText
+                        android:id="@+id/extended_info_input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:gravity="end"
+                        android:imeOptions="actionDone"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/callaccess_text2"
+                        android:textColorHint="@color/callaccess_text4"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/callaccess_icon_chevron"
+                        app:tint="@color/callaccess_arrow" />
+                </LinearLayout>
+            </com.tencent.uikit.app.call.common.CallAccessTapRow>
+
+            <TextView
+                android:id="@+id/extended_info_hint"
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:gravity="center_vertical"
+                android:text="@string/callaccess_settings_extended_info_hint"
+                android:textColor="@color/callaccess_text3"
+                android:textSize="11sp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

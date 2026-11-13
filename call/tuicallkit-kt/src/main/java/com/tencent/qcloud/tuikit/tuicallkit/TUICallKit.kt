@@ -1,115 +1,104 @@
 package com.tencent.qcloud.tuikit.tuicallkit
 
+import android.app.Application
 import android.content.Context
-import com.tencent.cloud.tuikit.engine.call.TUICallDefine
-import com.tencent.cloud.tuikit.engine.common.TUICommonDefine.RoomId
+import com.tencent.qcloud.tuikit.tuicallkit.call.CallKitConfig
+import com.tencent.qcloud.tuikit.tuicallkit.call.CallLauncher
+import com.tencent.qcloud.tuikit.tuicallkit.common.CallKitContext
+import com.tencent.qcloud.tuikit.tuicallkit.common.CallKitLogger
+import com.tencent.qcloud.tuikit.tuicallkit.common.CallKitToast
 import com.tencent.qcloud.tuikit.tuicallkit.common.data.Constants
+import com.tencent.qcloud.tuikit.tuicallkit.bridge.ChatCallEventSubscriber
 import com.tencent.qcloud.tuikit.tuicallkit.view.CallAdapter
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.call.CallMediaType
 import io.trtc.tuikit.atomicxcore.api.call.CallParams
+import io.trtc.tuikit.atomicxcore.api.call.CallStore
+import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import io.trtc.tuikit.atomicxcore.api.login.UserProfile
 
-abstract class TUICallKit {
+open class TUICallKit {
+
+    private val config: CallKitConfig
+        get() = CallKitConfig.shared
+    private val logger = CallKitLogger.getLogger("TUICallKit")
+
     companion object {
+        @Volatile
+        private var instance: TUICallKit? = null
+
         @JvmStatic
-        fun createInstance(context: Context): TUICallKit = TUICallKitImpl.createInstance(context)
+        fun createInstance(context: Context): TUICallKit {
+            return instance ?: synchronized(this) {
+                instance ?: run {
+                    val applicationContext = context.applicationContext
+                    CallKitContext.install(applicationContext)
+                    CallKitConfig.install(applicationContext)
+                    (applicationContext as? Application)?.let { CallKitToast.install(it) }
+                    CallLauncher.init()
+                    ChatCallEventSubscriber.ensureSubscribed(applicationContext)
+                    TUICallKit().also { instance = it }
+                }
+            }
+        }
     }
 
-    /**
-     * Set user profile
-     *
-     * @param nickname User name, which can contain up to 500 bytes
-     * @param avatar   User profile photo URL, which can contain up to 500 bytes
-     * For example: https://liteav.sdk.qcloud.com/app/res/picture/voiceroom/avatar/user_avatar1.png
-     * @param callback Set the result callback
-     */
-    open fun setSelfInfo(nickname: String?, avatar: String?, completion: CompletionHandler?) {}
+    open fun setSelfInfo(nickname: String?, avatar: String?, completion: CompletionHandler?) {
+        val userID = LoginStore.shared.loginState.loginUserInfo.value?.userID.orEmpty()
+        val profile = UserProfile(userID = userID, nickname = nickname.orEmpty(), avatarURL = avatar.orEmpty())
+        LoginStore.shared.setSelfInfo(profile, completion)
+    }
 
-    /**
-     * Make a 1VN calls
-     *
-     * @param userIdList    List of userId
-     * @param mediaType     Call type
-     * @param params        Extension param: eg: offlinePushInfo
-     */
     open fun calls(
         userIdList: List<String>, mediaType: CallMediaType,
         params: CallParams?, completion: CompletionHandler?
     ) {
+        CallStore.shared.calls(userIdList, mediaType, params, completion)
     }
 
-    /**
-     * Join a current call
-     *
-     * @param callId call Id
-     */
-    open fun join(callId: String?, completion: CompletionHandler?) {}
+    open fun join(callId: String?, completion: CompletionHandler?) {
+        CallStore.shared.join(callId.orEmpty(), completion)
+    }
 
+    open fun setCallingBell(filePath: String?) {
+        config.updateCallingBell(filePath.orEmpty())
+    }
 
-    /**
-     * Set the ringtone (preferably shorter than 30s)
-     *
-     * @param filePath Callee ringtone path
-     */
-    open fun setCallingBell(filePath: String?) {}
+    open fun enableMuteMode(enable: Boolean) {
+        config.updateMuteMode(enable)
+    }
 
-    /**
-     * Enable the mute mode (the callee doesn't ring)
-     */
-    open fun enableMuteMode(enable: Boolean) {}
+    open fun enableFloatWindow(enable: Boolean) {
+        config.updateFloatWindow(enable)
+    }
 
-    /**
-     * Enable the floating window
-     */
-    open fun enableFloatWindow(enable: Boolean) {}
+    open fun enableVirtualBackground(enable: Boolean) {
+        config.updateVirtualBackground(enable)
+    }
 
-    /**
-     * Enable Virtual Background
-     */
-    open fun enableVirtualBackground(enable: Boolean) {}
+    open fun enableAITranscriber(enable: Boolean) {
+        config.updateAITranscriber(enable)
+    }
 
-    open fun enableAITranscriber(enable: Boolean) {}
+    open fun enableIncomingBanner(enable: Boolean) {
+        config.updateIncomingBanner(enable)
+    }
 
-    /**
-     * Enable callee show banner view when received an new invitation
-     * default: false
-     */
-    open fun enableIncomingBanner(enable: Boolean) {}
+    open fun callExperimentalAPI(jsonStr: String) {
+        CallStore.shared.callExperimentalAPI(jsonStr)
+    }
 
-    /**
-     * Set the display direction of the CallKit interface. The default value is portrait
-     * @param orientation:  0-Portrait, 1-LandScape, 2-Auto;   default value: 0
-     * Note: You are advised to use portrait mode to avoid abnormal display for small screen devices such as mobile phone
-     */
-    open fun setScreenOrientation(orientation: Int) {}
+    open fun setScreenOrientation(orientation: Int) {
+        if (orientation !in 0..2) {
+            logger.warn("setScreenOrientation invalid value: $orientation")
+            return
+        }
+        config.updateScreenOrientation(orientation)
+    }
 
-    /**
-     * Disable the control button
-     *
-     * @param button value: microphone, audioDevice, camera, switchCamera, inviteUser.
-     */
+    @Deprecated("Deprecated compatibility API; no longer supported.")
     open fun disableControlButton(button: Constants.ControlButton?) {}
 
-    /**
-     * set call adapter to customize call ui
-     */
+    @Deprecated("Deprecated compatibility API; no longer supported.")
     open fun setAdapter(adapter: CallAdapter?) {}
-
-    /**
-     * Call experimental API
-     *
-     * @param jsonStr
-     */
-    open fun callExperimentalAPI(jsonStr: String) {}
-
-    /**
-     * Join a current call
-     *
-     * @param roomId        current call room ID
-     * @param callMediaType call type
-     */
-    @Deprecated("Use NewInterface instead", ReplaceWith("join"))
-    open fun joinInGroupCall(roomId: RoomId?, groupId: String?, callMediaType: TUICallDefine.MediaType?) {
-    }
-
 }

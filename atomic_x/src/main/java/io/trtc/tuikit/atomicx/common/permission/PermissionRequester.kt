@@ -21,7 +21,7 @@ import androidx.core.content.ContextCompat
 import io.trtc.tuikit.atomicx.R
 import io.trtc.tuikit.atomicx.common.event.EventManager
 import io.trtc.tuikit.atomicx.common.event.INotification
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.atomicx.common.util.TUIBuild
 import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
 import java.util.concurrent.atomic.AtomicBoolean
