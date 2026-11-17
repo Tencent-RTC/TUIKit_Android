@@ -175,7 +175,7 @@ class AddContactAndGroupViewModel(
                     _uiState.value = _uiState.value.copy(
                         isAddingContact = false,
                         requestResult = RequestResult(
-                            isSuccess = false,
+                            isSuccess = ContactRequestResultPolicy.isSuccessfulAddFriendResponse(errorCode),
                             message = failureMessageMapper(errorCode, errorMessage),
                             type = AddType.CONTACT
                         )

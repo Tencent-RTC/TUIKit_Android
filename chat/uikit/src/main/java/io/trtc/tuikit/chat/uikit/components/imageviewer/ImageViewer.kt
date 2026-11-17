@@ -4,7 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.imageviewer.ui.ImageViewerActivity
 import java.util.concurrent.atomic.AtomicLong
 import kotlinx.coroutines.flow.MutableStateFlow

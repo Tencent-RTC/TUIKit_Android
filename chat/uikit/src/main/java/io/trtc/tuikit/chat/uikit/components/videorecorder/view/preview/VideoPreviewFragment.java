@@ -22,7 +22,7 @@ import io.trtc.tuikit.chat.uikit.components.videorecorder.view.preview.PreviewCo
 
 public class VideoPreviewFragment extends Fragment {
     private final String TAG = VideoPreviewFragment.class.getSimpleName() + "_" + hashCode();
-    private final Context mContext;
+    private Context mContext;
 
     private PreviewCommonCtrlView mPreviewCommonCtrlView;
     private View mRootView;
@@ -32,15 +32,12 @@ public class VideoPreviewFragment extends Fragment {
     private String mSourceFilePath;
     private VideoPreviewCore mVideoPreviewCore;
 
-    public VideoPreviewFragment(Context context) {
-        mContext = context;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
-        initExternalParameters();
         super.onCreate(savedInstanceState);
+        mContext = requireContext();
+        initExternalParameters();
         mVideoPreviewCore = new VideoPreviewCore(mContext);
     }
 

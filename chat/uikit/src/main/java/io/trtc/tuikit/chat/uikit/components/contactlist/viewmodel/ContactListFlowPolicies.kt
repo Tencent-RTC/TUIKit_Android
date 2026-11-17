@@ -1,4 +1,8 @@
 package io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel
+
+import com.tencent.imsdk.BaseConstants
+import com.tencent.qcloud.tuicore.util.ErrorMessageConverter
+
 private const val GROUP_NAME_PREVIEW_COUNT = 3
 
 internal data class SearchRequestToken(
@@ -31,6 +35,13 @@ internal class LatestSearchRequestTracker {
 
 internal object ContactRequestResultPolicy {
     fun shouldDismissAfterRequest(isSuccess: Boolean): Boolean = isSuccess
+
+    fun isSuccessfulAddFriendResponse(errorCode: Int): Boolean =
+        errorCode == BaseConstants.ERR_SVR_FRIENDSHIP_ALREADY_FRIENDS ||
+            errorCode == BaseConstants.ERR_SVR_FRIENDSHIP_ALLOW_TYPE_NEED_CONFIRM
+
+    fun getErrorMessage(errorCode: Int, errorMessage: String, getString: (Int) -> String): String =
+        ErrorMessageConverter.ERROR_CODE_MAP[errorCode]?.let(getString) ?: errorMessage
 }
 
 internal object ContactListGroupNameFormatter {

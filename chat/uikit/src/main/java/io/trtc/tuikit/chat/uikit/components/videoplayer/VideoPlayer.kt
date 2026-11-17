@@ -2,8 +2,8 @@ package io.trtc.tuikit.chat.uikit.components.videoplayer
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.common.util.ActivityLauncher
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.videoplayer.ui.VideoPlayerActivity
 
 data class VideoData(

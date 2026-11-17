@@ -456,6 +456,11 @@ internal class MessageInputVoiceTranscriptionOverlay(
                         onTranslateChipClicked()
                     }
                 )
+                chipRow.addView(
+                    buildChip(context.getString(R.string.voice_message_switch_language), enabled = !isTranslating) {
+                        onSwitchLanguageClicked()
+                    }
+                )
             }
             else -> {
                 chipRow.addView(
@@ -512,7 +517,6 @@ internal class MessageInputVoiceTranscriptionOverlay(
         val lang = VoiceMessageConfig.getRecordTranslateTargetLanguage(context)
         if (lang.isEmpty()) {
             showLanguageSelector { picked ->
-                VoiceMessageConfig.setRecordTranslateTargetLanguage(context, picked)
                 translateWith(picked)
             }
         } else {
@@ -523,7 +527,6 @@ internal class MessageInputVoiceTranscriptionOverlay(
     private fun onSwitchLanguageClicked() {
         if (isTranslating) return
         showLanguageSelector { picked ->
-            VoiceMessageConfig.setRecordTranslateTargetLanguage(context, picked)
             translateWith(picked)
         }
     }
@@ -593,6 +596,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
                     )
                     return@onTranslate
                 }
+                VoiceMessageConfig.setRecordTranslateTargetLanguage(context, languageCode)
                 translatedText = translated
                 setBubbleText(translated)
                 renderChipRow()
@@ -982,7 +986,7 @@ internal class MessageInputVoiceTranscriptionOverlay(
         private const val CHIP_ROW_HEIGHT_DP = 32
         private val TRANSLATE_LANGUAGE_OPTIONS = listOf(
             RecordTranslateLanguage("zh", "简体中文"),
-            RecordTranslateLanguage("zh-TW", "繁體中文"),
+            RecordTranslateLanguage("zh-TR", "繁體中文"),
             RecordTranslateLanguage("en", "English"),
             RecordTranslateLanguage("ja", "日本語"),
             RecordTranslateLanguage("ko", "한국어"),

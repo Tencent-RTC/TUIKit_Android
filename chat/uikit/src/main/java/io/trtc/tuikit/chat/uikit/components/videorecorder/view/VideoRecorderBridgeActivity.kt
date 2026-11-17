@@ -57,8 +57,10 @@ class VideoRecorderBridgeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(android.R.style.Theme_Translucent_NoTitleBar)
-        val intent = Intent(this, VideoRecorderActivity::class.java)
-        cameraLauncher.launch(intent)
+        if (savedInstanceState == null) {
+            val intent = Intent(this, VideoRecorderActivity::class.java)
+            cameraLauncher.launch(intent)
+        }
     }
 
     private fun getRecodeResult(result: ActivityResult?): VideoRecordResult? {

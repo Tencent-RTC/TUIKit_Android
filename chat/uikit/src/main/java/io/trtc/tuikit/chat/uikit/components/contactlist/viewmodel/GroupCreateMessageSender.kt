@@ -1,11 +1,11 @@
 package io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.group.GroupType
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.message.MessageInputStore
 import io.trtc.tuikit.atomicxcore.api.message.SendMessagePayload
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

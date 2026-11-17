@@ -1137,6 +1137,8 @@ class AICallController(
 
     /**
      * 调试浮层的状态快照。主线程调用；VAD 数字来自采集线程，允许稍旧。
+     *
+     * 一项一行，字段说明见 demo/docs/ai-call-debug-overlay.md。
      */
     fun debugSnapshot(): String {
         fun n(value: Double): String = if (value.isNaN()) "NaN" else "%.0f".format(value)

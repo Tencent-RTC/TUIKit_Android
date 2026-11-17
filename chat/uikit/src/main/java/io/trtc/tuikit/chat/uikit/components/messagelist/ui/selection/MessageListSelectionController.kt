@@ -3,6 +3,7 @@ import android.content.Context
 import android.view.View
 import android.widget.FrameLayout
 import io.trtc.tuikit.chat.uikit.R
+import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageParser
 import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.FORWARD_MESSAGE_COUNT_LIMIT
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
 import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
@@ -72,6 +73,13 @@ internal class MessageListSelectionController(
                     style = AtomicToast.Style.WARNING
                 )
             }
+            MessageListSelectionPolicy.ForwardValidation.CONTAINS_CALL_MESSAGE -> {
+                AtomicToast.show(
+                    context,
+                    context.getString(R.string.message_list_forward_call_message_tip),
+                    style = AtomicToast.Style.WARNING
+                )
+            }
             MessageListSelectionPolicy.ForwardValidation.EXCEEDS_SEPARATE_FORWARD_LIMIT -> {
                 AtomicToast.show(
                     context,
@@ -108,6 +116,7 @@ internal object MessageListSelectionPolicy {
         ALLOWED,
         EMPTY_SELECTION,
         CONTAINS_UNSENT_MESSAGE,
+        CONTAINS_CALL_MESSAGE,
         EXCEEDS_SEPARATE_FORWARD_LIMIT
     }
 
@@ -123,6 +132,9 @@ internal object MessageListSelectionPolicy {
         }
         if (hasUnsentMessage) {
             return ForwardValidation.CONTAINS_UNSENT_MESSAGE
+        }
+        if (selectedMessages.any { CallMessageParser.isCallMessage(it) }) {
+            return ForwardValidation.CONTAINS_CALL_MESSAGE
         }
         if (forwardType == MessageForwardType.SEPARATE &&
             selectedMessages.size > FORWARD_MESSAGE_COUNT_LIMIT

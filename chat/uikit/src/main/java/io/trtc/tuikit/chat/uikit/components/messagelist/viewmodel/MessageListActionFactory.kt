@@ -18,6 +18,7 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActio
 import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActionContext
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.popups.withDeleteConfirmation
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.AuxiliaryTextVisibilityStore
+import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageParser
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.MessageListMessageSummaryFormatter
 import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageProtocol
 import io.trtc.tuikit.chat.uikit.components.chatbot.ChatbotMessageSource
@@ -308,7 +309,8 @@ internal fun resolveMessageListActionCapability(
     return MessageListActionCapability(
         isSupportMultiSelect = config.isSupportMultiSelect,
         isSupportForward = config.isSupportForward &&
-            message.status == MessageStatus.SEND_SUCCESS,
+            message.status == MessageStatus.SEND_SUCCESS &&
+            !CallMessageParser.isCallMessage(message),
         isSupportQuote = config.isSupportQuote &&
             message.status == MessageStatus.SEND_SUCCESS &&
             message.status != MessageStatus.VIOLATION,

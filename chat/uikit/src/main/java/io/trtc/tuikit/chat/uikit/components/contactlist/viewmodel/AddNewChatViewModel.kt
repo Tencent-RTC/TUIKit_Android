@@ -2,7 +2,6 @@ package io.trtc.tuikit.chat.uikit.components.contactlist.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.displayName
@@ -14,6 +13,7 @@ import io.trtc.tuikit.atomicxcore.api.group.CreateGroupCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.group.GroupCreateParams
 import io.trtc.tuikit.atomicxcore.api.group.GroupStore
 import io.trtc.tuikit.atomicxcore.api.group.GroupType
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

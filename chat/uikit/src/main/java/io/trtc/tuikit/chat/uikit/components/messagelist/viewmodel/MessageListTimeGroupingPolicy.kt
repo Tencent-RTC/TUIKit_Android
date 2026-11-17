@@ -1,8 +1,8 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils
 import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs

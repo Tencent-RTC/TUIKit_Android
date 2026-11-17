@@ -30,9 +30,9 @@ import io.trtc.tuikit.chat.uikit.components.videorecorder.view.recordview.beauty
 public class VideoRecorderFragment extends Fragment {
 
     private final String TAG = VideoRecorderFragment.class.getSimpleName() + "_" + hashCode();
-    private final Context mContext;
-    private final VideoRecorderRecordCore mVideoRecorderRecordCore;
-    private final RecordInfo mRecordInfo;
+    private Context mContext;
+    private VideoRecorderRecordCore mVideoRecorderRecordCore;
+    private RecordInfo mRecordInfo;
     private final VideoRecorderDataObserver<RecordStatus> mRecordStatusObserver = new VideoRecorderDataObserver<RecordStatus>() {
         @Override
         public void onChanged(RecordStatus recordStatus) {
@@ -49,15 +49,12 @@ public class VideoRecorderFragment extends Fragment {
     private RelativeLayout mRecordFunctionContainer;
     private boolean isFlashOnWhenPause;
 
-    public VideoRecorderFragment(Context context) {
-        mContext = context;
-        mRecordInfo = new RecordInfo();
-        mVideoRecorderRecordCore = new VideoRecorderRecordCore(context, mRecordInfo);
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = requireContext();
+        mRecordInfo = new RecordInfo();
+        mVideoRecorderRecordCore = new VideoRecorderRecordCore(mContext, mRecordInfo);
         initParameters();
     }
 
@@ -139,9 +136,9 @@ public class VideoRecorderFragment extends Fragment {
         Log.i(TAG,"editRecordFile file path: " + recordResult.path);
         Fragment fragment;
         if (recordResult.type == VideoRecorderConstants.RECORD_TYPE_PHOTO) {
-            fragment = new PicturePreviewFragment(mContext);
+            fragment = new PicturePreviewFragment();
         } else {
-            fragment = new VideoPreviewFragment(mContext);
+            fragment = new VideoPreviewFragment();
         }
 
         Bundle bundle = new Bundle();

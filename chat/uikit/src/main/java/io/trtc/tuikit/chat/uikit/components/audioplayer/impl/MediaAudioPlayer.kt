@@ -7,7 +7,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.audioplayer.AudioOutputDevice
 import io.trtc.tuikit.chat.uikit.components.audioplayer.AudioPlayer
 import io.trtc.tuikit.chat.uikit.components.audioplayer.AudioPlayerListener

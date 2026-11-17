@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMUserFullInfo
 import com.tencent.imsdk.v2.V2TIMValueCallback
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.common.ConversationIDUtil
 import io.trtc.tuikit.chat.uikit.components.common.EventBus
@@ -28,6 +27,7 @@ import io.trtc.tuikit.chat.uikit.components.messagelist.model.MessageCustomActio
 import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListActionCallbacks
 import io.trtc.tuikit.chat.uikit.components.messagelist.viewmodel.MessageListActionFactory
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.MessageQuoteLocatePolicy
+import io.trtc.tuikit.chat.uikit.components.messagelist.ui.reactions.MessageReactionErrorPolicy
 import io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers.CallMessageDisplayPolicy
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.AuxiliaryTextVisibilityStore
 import io.trtc.tuikit.chat.uikit.components.messagelist.utils.CallMessageParser
@@ -65,6 +65,7 @@ import io.trtc.tuikit.atomicxcore.api.message.SendMessageOption
 import io.trtc.tuikit.atomicxcore.api.message.SendMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.TextMessagePayload
 import io.trtc.tuikit.atomicxcore.api.message.VideoMessagePayload
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -1389,9 +1390,21 @@ class MessageListViewModel(
             val actionStore = MessageActionStore.create(message)
             actionStore.addReaction(reactionID, object : CompletionHandler {
                 override fun onSuccess() {}
-                override fun onFailure(code: Int, desc: String) {}
+
+                override fun onFailure(code: Int, desc: String) {
+                    showReactionFailureToast(code, desc)
+                }
             })
         }
+    }
+
+    private fun showReactionFailureToast(code: Int, desc: String) {
+        val appContext = ContextProvider.getApplicationContext() ?: return
+        val message = appContext.getString(
+            MessageReactionErrorPolicy.resolveAddFailureMessageResId(code)
+        )
+        Log.i(TAG, "add reaction failed. code:$code desc:$desc")
+        AtomicToast.show(appContext, message, style = AtomicToast.Style.WARNING)
     }
 
     fun removeMessageReaction(message: MessageInfo, reactionID: String) {

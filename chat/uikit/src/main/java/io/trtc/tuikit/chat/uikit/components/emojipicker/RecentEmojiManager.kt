@@ -1,8 +1,8 @@
 package io.trtc.tuikit.chat.uikit.components.emojipicker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.mmkv.MMKV
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
