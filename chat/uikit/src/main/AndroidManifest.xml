@@ -38,13 +38,16 @@
 
         <activity
             android:name=".components.videorecorder.view.VideoRecorderBridgeActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/Chat_UIKit_Theme.Translucent" />
 
         <activity
             android:name=".components.videorecorder.view.VideoRecorderActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Chat_UIKit_Theme.FullscreenMedia" />
 
         <activity

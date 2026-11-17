@@ -37,7 +37,6 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.tencent.mmkv.MMKV
-import com.tencent.qcloud.tuikit.tuicallkit.view.component.recents.RecentCallsFragment
 import io.trtc.tuikit.chat.uikit.components.contactlist.ui.ContactFlowLauncher
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -170,7 +169,7 @@ class MainActivity : BaseActivity() {
                 iconResId = R.drawable.demo_ic_tab_me
             )
         )
-        val showCallsTab = MMKV.defaultMMKV().decodeBool(AppConstants.KEY_SHOW_CALLS_TAB, false)
+        val showCallsTab = false
         bottomTabs = filterVisibleTabs(showCallsTab)
         allBottomTabs.first { it.tabId == R.id.demo_tab_calls }.root.visibility =
             if (showCallsTab) View.VISIBLE else View.GONE
@@ -369,7 +368,7 @@ class MainActivity : BaseActivity() {
                 return typedValue.data
             }
         }
-        return ContextCompat.getColor(this, com.tencent.qcloud.tuikit.tuicallkit.R.color.callkit_color_white)
+        return android.graphics.Color.WHITE
     }
 
     private fun updateSelectedTabColors(colors: ColorTokens) {
@@ -888,7 +887,6 @@ class MainActivity : BaseActivity() {
                 // is never attached to this new container, so replace it with a fresh one.
                 fragmentManager.beginTransaction().apply {
                     existing?.let { remove(it) }
-                    add(container.id, RecentCallsFragment())
                 }.commit()
             }
 

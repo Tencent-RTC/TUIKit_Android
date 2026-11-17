@@ -2,7 +2,6 @@ package io.trtc.tuikit.chat.uikit.components.videorecorder.impl
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
 import io.trtc.tuikit.chat.uikit.components.videorecorder.VideoRecordListener
 import io.trtc.tuikit.chat.uikit.components.videorecorder.RecordMode
@@ -10,6 +9,7 @@ import io.trtc.tuikit.chat.uikit.components.videorecorder.VideoRecorderConfig
 import io.trtc.tuikit.chat.uikit.components.videorecorder.config.VideoRecorderConfigInternal
 import io.trtc.tuikit.chat.uikit.components.videorecorder.core.VideoRecorderSignatureChecker
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.common.ChatPermissionHelper
 import io.trtc.tuikit.chat.uikit.components.videorecorder.view.VideoRecorderBridgeActivity
 

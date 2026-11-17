@@ -9,7 +9,6 @@ import android.webkit.MimeTypeMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.atomicx.albumpicker.AlbumMedia
 import io.trtc.tuikit.atomicx.albumpicker.AlbumMediaType
@@ -51,6 +50,7 @@ import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
 import io.trtc.tuikit.atomicxcore.api.message.OfflinePushInfo
 import io.trtc.tuikit.atomicxcore.api.message.SendMessageOption
 import io.trtc.tuikit.atomicxcore.api.message.SendMessagePayload
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

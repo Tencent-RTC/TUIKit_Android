@@ -92,6 +92,7 @@
     <string name="message_list_forward_by_separate">Individually</string>
     <string name="message_list_forward_oneByOne_limit_number_tip">Too many messages selected, individual forwarding is not supported</string>
     <string name="message_list_forward_failed_tip">Failed messages cannot be forwarded!</string>
+    <string name="message_list_forward_call_message_tip">Call messages cannot be forwarded!</string>
     <string name="message_list_forward_chat_record">Chat History</string>
     <string name="message_list_forward_chats">Group Chat History</string>
     <string name="message_list_and_text">and</string>
@@ -102,9 +103,9 @@
     <string name="message_list_forward_compatible_text">Combined message forwarding is not supported. Please upgrade to the latest version.</string>
     <string name="message_list_read_receipt_detail">Read Receipt</string>
     <string name="message_list_read_receipt_read_by">Read</string>
-    <string name="message_list_read_receipt_read_by_count">Read by %d</string>
+    <string name="message_list_read_receipt_read_by_count">%d read</string>
     <string name="message_list_read_receipt_delivered_to">Unread</string>
-    <string name="message_list_read_receipt_all_read">Read by All</string>
+    <string name="message_list_read_receipt_all_read">All read</string>
     <string name="message_list_loading_more">Loading more</string>
     <string name="message_list_floating_back_to_latest">Back to latest</string>
     <string name="message_list_floating_someone_mentioned_me">Someone mentioned me</string>
@@ -119,6 +120,9 @@
     <string name="message_list_reaction_recent_used">Recently Used</string>
     <string name="message_list_reaction_all_emojis">All</string>
     <string name="message_list_reaction_tap_to_delete">Tap to remove</string>
+    <string name="message_list_reaction_failed">Failed to add reaction</string>
+    <string name="message_list_reaction_count_limit">This message has reached the reaction limit</string>
+    <string name="message_list_reaction_user_count_limit">This reaction has reached the user limit</string>
 
     <string name="message_list_menu_convert_to_text">Convert to Text</string>
     <string name="message_list_menu_hide">Hide</string>

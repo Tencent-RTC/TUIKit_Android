@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -107,6 +108,17 @@ class ReactionDetailDialog(
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
+        val reactionTabScrollView = HorizontalScrollView(context).apply {
+            isHorizontalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_NEVER
+            addView(
+                reactionTabContainer,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
         recyclerView = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@ReactionDetailDialog.adapter
@@ -156,7 +168,7 @@ class ReactionDetailDialog(
             ).apply {
                 topMargin = 12.dp
             })
-            addView(reactionTabContainer, LinearLayout.LayoutParams(
+            addView(reactionTabScrollView, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {

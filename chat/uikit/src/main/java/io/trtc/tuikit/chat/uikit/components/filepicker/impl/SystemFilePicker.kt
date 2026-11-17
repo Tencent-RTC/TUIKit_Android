@@ -1,6 +1,6 @@
 package io.trtc.tuikit.chat.uikit.components.filepicker.impl
 import android.content.Intent
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.filepicker.AbstractFilePicker
 import io.trtc.tuikit.chat.uikit.components.filepicker.FilePickerConfig
 import io.trtc.tuikit.chat.uikit.components.filepicker.FilePickerListener

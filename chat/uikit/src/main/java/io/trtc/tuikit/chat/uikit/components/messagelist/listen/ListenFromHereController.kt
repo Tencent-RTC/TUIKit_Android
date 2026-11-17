@@ -1,7 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.messagelist.listen
 import android.os.Handler
 import android.os.Looper
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.ai.tts.TtsPlaybackHelper
 import io.trtc.tuikit.chat.uikit.components.ai.tts.VoiceMessageConfig
 import io.trtc.tuikit.chat.uikit.components.audioplayer.AudioPlayer

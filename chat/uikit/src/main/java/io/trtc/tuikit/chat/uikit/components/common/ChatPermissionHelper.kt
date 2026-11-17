@@ -2,9 +2,9 @@ package io.trtc.tuikit.chat.uikit.components.common
 
 import android.Manifest
 import android.os.Build
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
 import io.trtc.tuikit.atomicx.common.permission.PermissionRequester
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
 
 object ChatPermissionHelper {

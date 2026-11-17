@@ -20,7 +20,6 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 private const val REACTION_FADE_IN_DURATION_MS = 200L
-private const val MAX_DISPLAY_REACTIONS = 5
 private const val CHIP_HORIZONTAL_SPACING_DP = 8
 private const val CHIP_VERTICAL_SPACING_DP = 6
 private const val CHIP_HORIZONTAL_PADDING_DP = 8
@@ -53,7 +52,6 @@ class MessageReactionBarView(
     fun bind(
         message: MessageInfo,
         maxWidth: Int,
-        rowHorizontalGravity: Int = Gravity.START,
         onClick: (MessageInfo) -> Unit
     ) {
         removeAllViews()
@@ -73,16 +71,13 @@ class MessageReactionBarView(
         lastBoundMsgId = message.msgID
         lastReactionSignature = signature
         visibility = View.VISIBLE
-        gravity = rowHorizontalGravity
         setOnClickListener { onClick(message) }
 
         val availableWidth = maxWidth.coerceAtLeast(160.dp)
-        val displayReactions = message.reactionList.take(MAX_DISPLAY_REACTIONS)
         buildReactionRows(
-            reactions = displayReactions,
+            reactions = message.reactionList,
             isSelf = message.isSentBySelf,
-            maxRowWidth = availableWidth,
-            rowHorizontalGravity = rowHorizontalGravity
+            maxRowWidth = availableWidth
         )
 
         animate().cancel()
@@ -103,8 +98,7 @@ class MessageReactionBarView(
     private fun buildReactionRows(
         reactions: List<MessageReaction>,
         isSelf: Boolean,
-        maxRowWidth: Int,
-        rowHorizontalGravity: Int
+        maxRowWidth: Int
     ) {
         var currentRow: LinearLayout? = null
         var currentRowWidth = 0
@@ -133,7 +127,7 @@ class MessageReactionBarView(
                         if (childCount > 0) {
                             topMargin = CHIP_VERTICAL_SPACING_DP.dp
                         }
-                        gravity = rowHorizontalGravity
+                        gravity = Gravity.START
                     }
                 )
                 currentRowWidth = 0

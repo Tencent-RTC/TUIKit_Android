@@ -90,6 +90,7 @@
     <string name="message_list_forward_by_separate">逐條轉發</string>
     <string name="message_list_forward_oneByOne_limit_number_tip">轉發訊息過多，暫不支援逐條轉發</string>
     <string name="message_list_forward_failed_tip">發送失敗的訊息不支援轉發！</string>
+    <string name="message_list_forward_call_message_tip">音視訊通話訊息不支援轉發！</string>
     <string name="message_list_forward_chat_record">聊天記錄</string>
     <string name="message_list_forward_chats">群聊的聊天記錄</string>
     <string name="message_list_and_text">和</string>
@@ -116,6 +117,9 @@
     <string name="message_list_reaction_recent_used">最近使用</string>
     <string name="message_list_reaction_all_emojis">全部</string>
     <string name="message_list_reaction_tap_to_delete">點擊刪除</string>
+    <string name="message_list_reaction_failed">新增表情回應失敗</string>
+    <string name="message_list_reaction_count_limit">該訊息的表情回應數量已達上限</string>
+    <string name="message_list_reaction_user_count_limit">該表情的回應人數已達上限</string>
 
     <string name="message_list_menu_convert_to_text">轉文字</string>
     <string name="message_list_menu_hide">隱藏</string>

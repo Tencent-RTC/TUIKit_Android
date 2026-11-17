@@ -1,7 +1,6 @@
 package io.trtc.tuikit.chat.uikit.components.audiorecorder.audiorecorderimpl
 import android.os.Looper
 import android.util.Log
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.AudioRecorderListener
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.AudioRecorderResult
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.AudioRecorderResultCode
@@ -9,6 +8,7 @@ import io.trtc.tuikit.chat.uikit.components.audiorecorder.audiorecordercore.Audi
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.audiorecordercore.AudioRecorderSystem
 import io.trtc.tuikit.chat.uikit.components.audiorecorder.audiorecordercore.AudioRecorderTXUGC
 import io.trtc.tuikit.atomicx.common.permission.PermissionCallback
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.components.common.ChatPermissionHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +49,7 @@ class AudioRecorderImpl {
             recorder = AudioRecorderTXUGC(context).also { it.init() }
         } catch (e: Exception) {
             Log.i(TAG, "can not create ugc audio recorder. ${e.message}")
-            recorder = AudioRecorderSystem(context)
+            if (context != null) recorder = AudioRecorderSystem(context)
         }
         recorder?.setListener(RecorderListenerImpl())
     }

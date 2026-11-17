@@ -90,6 +90,7 @@
     <string name="message_list_forward_by_separate">توجيه فردي</string>
     <string name="message_list_forward_oneByOne_limit_number_tip">تم تحديد عدد كبير جدًا من الرسائل، ولا يتم دعم إعادة التوجيه الفردي</string>
     <string name="message_list_forward_failed_tip">لا يمكن إعادة توجيه الرسائل الفاشلة!</string>
+    <string name="message_list_forward_call_message_tip">لا يمكن إعادة توجيه رسائل المكالمات الصوتية والمرئية!</string>
     <string name="message_list_forward_chat_record">سجل الدردشة</string>
     <string name="message_list_forward_chats">سجل دردشة المجموعة</string>
     <string name="message_list_and_text">و</string>
@@ -100,9 +101,9 @@
     <string name="message_list_forward_compatible_text">إعادة توجيه الرسائل المدمجة غير مدعومة. يرجى الترقية إلى أحدث إصدار.</string>
     <string name="message_list_read_receipt_detail">إيصال القراءة</string>
     <string name="message_list_read_receipt_read_by">مقروء</string>
-    <string name="message_list_read_receipt_read_by_count">قرأها %d أشخاص</string>
+    <string name="message_list_read_receipt_read_by_count">قرأها %d</string>
     <string name="message_list_read_receipt_delivered_to">غير مقروء</string>
-    <string name="message_list_read_receipt_all_read">تمت القراءة من الجميع</string>
+    <string name="message_list_read_receipt_all_read">قرأها الجميع</string>
     <string name="message_list_loading_more">جارٍ تحميل المزيد</string>
     <string name="message_list_floating_back_to_latest">العودة إلى الأحدث</string>
     <string name="message_list_floating_someone_mentioned_me">أشار إليك شخص</string>
@@ -117,6 +118,9 @@
     <string name="message_list_reaction_recent_used">المستخدمة مؤخرًا</string>
     <string name="message_list_reaction_all_emojis">الكل</string>
     <string name="message_list_reaction_tap_to_delete">انقر للإزالة</string>
+    <string name="message_list_reaction_failed">تعذّر إضافة التفاعل</string>
+    <string name="message_list_reaction_count_limit">بلغت التفاعلات على هذه الرسالة الحد الأقصى</string>
+    <string name="message_list_reaction_user_count_limit">بلغ عدد المستخدمين لهذا التفاعل الحد الأقصى</string>
 
     <string name="message_list_menu_convert_to_text">تحويل إلى نص</string>
     <string name="message_list_menu_hide">إخفاء</string>

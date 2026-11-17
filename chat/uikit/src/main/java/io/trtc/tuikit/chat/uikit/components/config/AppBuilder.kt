@@ -3,10 +3,10 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
 import com.tencent.mmkv.MMKV
 import io.trtc.tuikit.atomicx.theme.Theme
 import io.trtc.tuikit.atomicx.theme.ThemeStore
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import java.util.Locale
 
 enum class ThemeMode {

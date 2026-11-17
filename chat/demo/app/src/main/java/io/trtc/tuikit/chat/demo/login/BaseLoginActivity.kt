@@ -12,13 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
-import com.tencent.cloud.tuikit.engine.call.TUICallEngine
-import com.tencent.cloud.tuikit.engine.common.TUICommonDefine
 import com.tencent.mmkv.MMKV
 import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
-import com.tencent.qcloud.tuikit.tuicallkit.manager.feature.CallingBellFeature
-import com.tencent.qcloud.tuikit.tuicallkit.manager.feature.CallingVibratorFeature
-import com.tencent.qcloud.tuikit.tuicallkit.manager.feature.NotificationFeature
 import io.trtc.tuikit.atomicx.theme.Theme
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
@@ -38,6 +33,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 abstract class BaseLoginActivity : BaseActivity() {
 
@@ -108,7 +104,7 @@ abstract class BaseLoginActivity : BaseActivity() {
             this, sdkAppId, userId, userSig,
             object : CompletionHandler {
                 override fun onSuccess() {
-                    initCall(sdkAppId, userId, userSig)
+                    initCall()
                     CustomerServiceManager.initAndStart(this@BaseLoginActivity, sdkAppId, userId, userSig)
                     WelcomeMessageSender.scheduleWelcomeMessage(this@BaseLoginActivity)
                     MMKV.defaultMMKV().encode(AppConstants.KEY_LOGIN_USER, userId)
@@ -180,23 +176,16 @@ abstract class BaseLoginActivity : BaseActivity() {
         return (value * resources.displayMetrics.density).toInt()
     }
 
-    private fun initCall(sdkAppId: Int, userId: String, userSig: String?) {
-        TUICallEngine.createInstance(this).init(
-            sdkAppId, userId, userSig,
-            object : TUICommonDefine.Callback {
-                override fun onSuccess() {
-                    Log.i(TAG, "callEngine init success")
-                    NotificationFeature(this@BaseLoginActivity).registerNotificationBannerChannel()
-                    CallingBellFeature(this@BaseLoginActivity)
-                    CallingVibratorFeature(this@BaseLoginActivity)
-                    TUICallEngine.createInstance(this@BaseLoginActivity).enableMultiDeviceAbility(true, null)
-                    TUICallKit.createInstance(this@BaseLoginActivity).enableIncomingBanner(true)
-                }
-
-                override fun onError(errCode: Int, errMsg: String) {
-                    Log.e(TAG, "callEngine init failed, errCode: $errCode, errMsg: $errMsg")
-                }
-            })
+    private fun initCall() {
+        val innerJson = JSONObject()
+            .put("api", "enableMultiDeviceAbility")
+            .put("params", JSONObject().put("enabled", true))
+            .toString()
+        val payload = JSONObject()
+            .put("api", "CallModule.callExperimentalAPI")
+            .put("params", JSONObject().put("jsonStr", innerJson))
+            .toString()
+        TUICallKit.createInstance(this).callExperimentalAPI(payload)
     }
 
     private fun showThemeSelector() {

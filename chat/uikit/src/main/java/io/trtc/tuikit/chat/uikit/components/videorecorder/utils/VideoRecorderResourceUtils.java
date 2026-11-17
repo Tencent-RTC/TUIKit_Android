@@ -12,8 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import com.tencent.cloud.tuikit.engine.common.ContextProvider;
 import io.trtc.tuikit.chat.uikit.components.common.ChatDateTimeUtils;
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider;
 
 public class VideoRecorderResourceUtils {
     public static final String DRAWABLE_RESOURCE_PREFIX = "@drawable/";

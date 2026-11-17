@@ -29,19 +29,16 @@ public class PicturePreviewFragment extends Fragment {
     private final String TAG = PicturePreviewFragment.class.getSimpleName() + "_" + hashCode();
     private static final int EDITED_IMAGE_QUALITY = 90;
 
-    private final Context mContext;
+    private Context mContext;
 
     private String mPictureFilePath;
     private ImageEditView mImageEditView;
-
-    public PicturePreviewFragment(Context context) {
-        mContext = context;
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        mContext = requireContext();
     }
 
     @Override

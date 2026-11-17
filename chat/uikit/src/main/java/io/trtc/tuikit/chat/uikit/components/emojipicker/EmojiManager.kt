@@ -8,7 +8,7 @@ import androidx.core.os.ConfigurationCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.tencent.cloud.tuikit.engine.common.ContextProvider
+import io.trtc.tuikit.atomicxcore.impl.common.ContextProvider
 import io.trtc.tuikit.chat.uikit.R
 import io.trtc.tuikit.chat.uikit.components.emojipicker.model.Emoji
 import io.trtc.tuikit.chat.uikit.components.emojipicker.model.EmojiGroup

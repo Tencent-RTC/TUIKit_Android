@@ -22,12 +22,14 @@ public class VideoRecorderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         enableEdgeToEdgeDisplay();
         setContentView(R.layout.video_recorder_activity);
-        VideoRecorderFragment fragment = new VideoRecorderFragment(this);
-        fragment.setArguments(getIntent().getExtras());
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.video_recorder_record_fragment_container, fragment)
-                .commit();
+        if (savedInstanceState == null) {
+            VideoRecorderFragment fragment = new VideoRecorderFragment();
+            fragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.video_recorder_record_fragment_container, fragment)
+                    .commit();
+        }
     }
 
     private void enableEdgeToEdgeDisplay() {

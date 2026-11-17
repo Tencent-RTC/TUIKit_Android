@@ -341,8 +341,7 @@ class MessageItemView(
             message = message,
             viewModel = viewModel,
             bubbleStyle = renderConfig.bubbleStyle,
-            hasReactions = hasReactions,
-            isLeftAligned = isLeftAligned
+            hasReactions = hasReactions
         )
 
         if (message.status == MessageStatus.VIOLATION) {
@@ -682,8 +681,7 @@ class MessageItemView(
         message: MessageInfo,
         viewModel: MessageListViewModel,
         bubbleStyle: BubbleStyle,
-        hasReactions: Boolean,
-        isLeftAligned: Boolean
+        hasReactions: Boolean
     ) {
         reactionBarView.visibility = View.GONE
         reactionBarView.setOnClickListener(null)
@@ -693,9 +691,8 @@ class MessageItemView(
             return
         }
 
-        val rowHorizontalGravity = if (isLeftAligned) Gravity.START else Gravity.END
         reactionBarView.visibility = View.VISIBLE
-        reactionBarView.bind(message, maxBubbleWidth, rowHorizontalGravity) {
+        reactionBarView.bind(message, maxBubbleWidth) {
             viewModel.showReactionDetail(it)
         }
 
@@ -711,7 +708,7 @@ class MessageItemView(
                         bottomMargin = (6 * density).toInt()
                         marginStart = (8 * density).toInt()
                         marginEnd = (8 * density).toInt()
-                        gravity = rowHorizontalGravity
+                        gravity = Gravity.START
                     }
                 )
             }
@@ -727,7 +724,7 @@ class MessageItemView(
                         bottomMargin = (10 * density).toInt()
                         marginStart = (12 * density).toInt()
                         marginEnd = (12 * density).toInt()
-                        gravity = rowHorizontalGravity
+                        gravity = Gravity.START
                     }
                 )
             }
@@ -740,7 +737,7 @@ class MessageItemView(
                         LayoutParams.WRAP_CONTENT
                     ).apply {
                         topMargin = (MEDIA_BUBBLE_REACTION_TOP_MARGIN_DP * density).toInt()
-                        gravity = rowHorizontalGravity
+                        gravity = Gravity.START
                     }
                 )
             }
@@ -756,7 +753,7 @@ class MessageItemView(
                         bottomMargin = (6 * density).toInt()
                         marginStart = (8 * density).toInt()
                         marginEnd = (8 * density).toInt()
-                        gravity = rowHorizontalGravity
+                        gravity = Gravity.START
                     }
                 )
             }

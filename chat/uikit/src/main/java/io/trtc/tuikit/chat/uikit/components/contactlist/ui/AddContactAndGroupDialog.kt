@@ -469,7 +469,9 @@ internal class AddContactAndGroupDialog(
                     addWording = wordingInput.second.text.toString(),
                     remark = remarkInput.second.text.toString(),
                     successMessage = context.getString(R.string.contact_list_add_friend_success),
-                    failureMessageMapper = { _, desc -> desc }
+                    failureMessageMapper = { errorCode, errorMessage ->
+                        ContactRequestResultPolicy.getErrorMessage(errorCode, errorMessage, context::getString)
+                    }
                 )
             }
         )
