@@ -203,6 +203,13 @@
                 android:textSize="14sp"
                 android:visibility="gone" />
 
+            <View
+                android:id="@+id/message_input_btn_send_red_dot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_gravity="top|end"
+                android:visibility="gone" />
+
         </FrameLayout>
 
         <!-- Only visible when keepSendButtonVisible puts the send and more buttons side by side. -->

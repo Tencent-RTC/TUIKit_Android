@@ -49,13 +49,11 @@ import io.trtc.tuikit.atomicxcore.api.group.GroupInfo
 import io.trtc.tuikit.atomicxcore.api.group.GroupStore
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.chat.app.R
-import io.trtc.tuikit.chat.demo.ai.SupportAgentCatalog
+import io.trtc.tuikit.chat.demo.ai.AIVoiceHomeView
+import io.trtc.tuikit.chat.demo.ai.AIStayReporter
 import io.trtc.tuikit.chat.demo.chat.ChatActivity
 import io.trtc.tuikit.chat.demo.search.SearchActivity
 import io.trtc.tuikit.chat.uikit.components.widgets.AvatarBadgeView
-import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantAgentLoader
-import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantHandoffStatusLoader
-import io.trtc.tuikit.chat.uikit.pages.AIAssistantPageView
 import io.trtc.tuikit.chat.uikit.pages.ContactsPageView
 import io.trtc.tuikit.chat.uikit.pages.ConversationsPageView
 import io.trtc.tuikit.chat.uikit.pages.PopupMenuHelper
@@ -102,6 +100,8 @@ class MainActivity : BaseActivity() {
     private var contactsAddButton: ImageView? = null
     private var selectedTabIndex = 0
     private var currentTabId = R.id.demo_tab_ai
+    private val aiStayReporter = AIStayReporter()
+    private var isActivityStarted = false
     private val tabPageCache = mutableMapOf<Int, View>()
     private var isDraggingMessageBadge = false
     private var messageBadgeDragStartRawX = 0f
@@ -194,6 +194,8 @@ class MainActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
+        isActivityStarted = true
+        updateAiStay()
         mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         refreshUnreadCounts()
 
@@ -236,6 +238,8 @@ class MainActivity : BaseActivity() {
 
     override fun onStop() {
         super.onStop()
+        isActivityStarted = false
+        updateAiStay()
         mainScope?.cancel()
         mainScope = null
     }
@@ -318,14 +322,25 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    /** AI tab 在前台且应用可见时才计停留时长。 */
+    private fun updateAiStay() {
+        if (isActivityStarted && currentTabId == R.id.demo_tab_ai) {
+            aiStayReporter.onEnter()
+        } else {
+            aiStayReporter.onLeave()
+        }
+    }
+
     private fun selectTab(index: Int, updatePager: Boolean) {
         if (index !in bottomTabs.indices) {
             return
         }
         selectedTabIndex = index
         currentTabId = bottomTabs[index].tabId
+        updateAiStay()
+        (tabPageCache[R.id.demo_tab_ai] as? AIVoiceHomeView)?.isCurrentTab = currentTabId == R.id.demo_tab_ai
         if (currentTabId == R.id.demo_tab_ai) {
-            (tabPageCache[currentTabId] as? AIAssistantPageView)?.onPageVisible()
+            (tabPageCache[currentTabId] as? AIVoiceHomeView)?.onPageVisible()
         }
         if (updatePager && viewPager.currentItem != index) {
             viewPager.setCurrentItem(index, false)
@@ -767,12 +782,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun createAIPage(): View {
-        val page = AIAssistantPageView(this)
-        page.setup(
-            agentLoader = AIAssistantAgentLoader(SupportAgentCatalog::fetch),
-            handoffStatusLoader = AIAssistantHandoffStatusLoader(SupportAgentCatalog::fetchHandoffStatus),
-        )
-        return page
+        return AIVoiceHomeView(this).also { it.isCurrentTab = currentTabId == R.id.demo_tab_ai }
     }
 
     private fun createConversationsPage(): View {

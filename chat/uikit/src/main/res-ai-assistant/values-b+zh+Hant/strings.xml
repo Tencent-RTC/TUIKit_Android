@@ -24,4 +24,11 @@
     <string name="uikit_ai_call_audio_unavailable">麥克風不可用</string>
     <string name="uikit_ai_call_playback_unavailable">語音播放不可用，回覆將以文字顯示</string>
     <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">試試說：「%1$s」</string>
+    <string name="uikit_ai_call_duration">通話中 %1$s</string>
+    <string name="uikit_ai_call_connecting">正在接通…</string>
+    <string name="uikit_ai_call_label_mute">靜音</string>
+    <string name="uikit_ai_call_label_unmute">取消靜音</string>
+    <string name="uikit_ai_call_label_subtitle">字幕</string>
+    <string name="uikit_ai_call_label_hangup">掛斷</string>
 </resources>

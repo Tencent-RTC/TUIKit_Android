@@ -37,4 +37,26 @@
     <string name="demo_confirm">지우기</string>
     <string name="demo_cancel">취소</string>
     <string name="demo_tab_ai">AI</string>
+    <string name="demo_ai_home_input_prompt">먼저 당신이 누구인지 소개하고, 무엇을 도와줄 수 있는지 알려 주세요.</string>
+    <string name="demo_custom_bot_dialog_title">사용자 지정 AI 어시스턴트</string>
+    <string name="demo_custom_bot_dialog_desc">체험 워크벤치에서 AI 어시스턴트를 만든 뒤, 어시스턴트 IM ID에서 @RBT# 뒤의 부분을 아래에 입력하세요.</string>
+    <string name="demo_custom_bot_dialog_doc_link">연동 가이드 보기 ›</string>
+    <string name="demo_custom_bot_input_hint">AIAssistant</string>
+    <string name="demo_custom_bot_not_found">봇을 찾을 수 없습니다. 워크벤치에서 AI 어시스턴트가 활성화되어 있고 IM 봇이 연결되었는지 확인하세요.</string>
+    <string name="demo_custom_bot_network_error">네트워크 오류입니다. 잠시 후 다시 시도하세요</string>
+    <string name="demo_ai_quick_start_title">AI 어시스턴트를 설정하세요</string>
+    <string name="demo_ai_quick_start_intro">AI 어시스턴트는 가져온 지식 자료를 바탕으로 1:1 채팅에서 텍스트나 음성으로 사용자 질문에 답하고, 해결하지 못하면 상담원에게 연결합니다.</string>
+    <string name="demo_ai_quick_start_step1">체험 워크벤치에서 AI 어시스턴트를 만들고 IM 앱에 연결하세요</string>
+    <string name="demo_ai_quick_start_step2">IM 콘솔에 워크벤치에서 제공하는 콜백 URL과 Token을 입력하세요</string>
+    <string name="demo_ai_quick_start_step3">왼쪽 위의 어시스턴트 이름을 탭하고 \'사용자 지정 AI 어시스턴트\'를 선택해 어시스턴트 ID를 입력하세요</string>
+    <string name="demo_ai_quick_start_doc_hint">자세한 단계는 공식 문서의 \'UIKit 빠른 체험(서버 불필요)\'을 참고하세요</string>
+    <string name="demo_ai_quick_start_doc">연동 가이드 보기</string>
+    <string name="demo_ai_quick_start_cancel">확인</string>
+    <string name="demo_custom_bot_cancel">취소</string>
+    <string name="demo_custom_bot_confirm">확인</string>
+    <string name="demo_ai_agent_picker_title">AI 어시스턴트 선택</string>
+    <string name="demo_ai_agent_custom_title">사용자 지정 AI 어시스턴트</string>
+    <string name="demo_ai_agent_custom_desc">어시스턴트 ID 입력</string>
+    <string name="demo_ai_agent_custom_edit">수정</string>
+    <string name="demo_ai_agent_custom_go">체험하기</string>
 </resources>

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -13,6 +14,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
+import android.util.TypedValue
+import android.view.Gravity
+import android.widget.Space
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.util.Log
@@ -84,6 +89,43 @@ class AICallActivity : AppCompatActivity() {
     private var currentState = AICallState.IDLE
 
     private var isMuted = false
+
+    /** 外观与引导选项，见 [AICallUiOptions]。默认值即原样。 */
+    private var uiOptions = AICallUiOptions()
+    private lateinit var modePill: TextView
+    private var hintText: TextView? = null
+    private var micLabel: TextView? = null
+    private var hintIndex = 0
+    private var callStartedAt = 0L
+
+    private val callTimerTicker = object : Runnable {
+        override fun run() {
+            if (callStartedAt == 0L) {
+                return
+            }
+            val seconds = (SystemClock.elapsedRealtime() - callStartedAt) / 1000
+            modePill.text = getString(
+                R.string.uikit_ai_call_duration,
+                String.format(java.util.Locale.US, "%02d:%02d", seconds / 60, seconds % 60),
+            )
+            modePill.postDelayed(this, 1000L)
+        }
+    }
+
+    private val hintRotator = object : Runnable {
+        override fun run() {
+            val hint = hintText ?: return
+            val hints = uiOptions.sampleHints
+            if (hints.size > 1) {
+                hint.animate().alpha(0f).setDuration(200L).withEndAction {
+                    hintIndex = (hintIndex + 1) % hints.size
+                    hint.text = getString(R.string.uikit_ai_call_try_saying, hints[hintIndex])
+                    hint.animate().alpha(1f).setDuration(240L).start()
+                }.start()
+            }
+            hint.postDelayed(this, HINT_INTERVAL_MS)
+        }
+    }
 
     /**
      * ASR 会话起不来，通话停在 IDLE 等用户手动重试。
@@ -184,6 +226,17 @@ class AICallActivity : AppCompatActivity() {
         }
 
         orb = findViewById(R.id.uikit_ai_call_orb)
+        modePill = findViewById(R.id.uikit_ai_call_mode_pill)
+        @Suppress("DEPRECATION")
+        uiOptions = (intent.getSerializableExtra(EXTRA_UI_OPTIONS) as? AICallUiOptions) ?: AICallUiOptions()
+        if (uiOptions.auroraStyle) {
+            orb.auroraStyle = true
+            orb.auroraOnDark = true
+            windowRoot.background = GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                intArrayOf(0xFF1B1540.toInt(), 0xFF0B0B18.toInt(), 0xFF08080F.toInt()),
+            )
+        }
         statusText = findViewById(R.id.uikit_ai_call_status)
         btnMic = findViewById(R.id.uikit_ai_call_mic)
         btnSubtitle = findViewById(R.id.uikit_ai_call_subtitle)
@@ -193,6 +246,7 @@ class AICallActivity : AppCompatActivity() {
         transcriptContainer = findViewById(R.id.uikit_ai_transcript_container)
         debugOverlay = findViewById(R.id.uikit_ai_call_debug_overlay)
 
+        applyUiOptions()
         btnHangup.setOnClickListener { finish() }
         btnSubtitle.setOnClickListener { toggleSubtitle() }
         btnMic.setOnClickListener { onMicClicked() }
@@ -231,6 +285,11 @@ class AICallActivity : AppCompatActivity() {
             finish()
             return
         }
+        if (uiOptions.showCallTimer) {
+            callStartedAt = SystemClock.elapsedRealtime()
+            modePill.removeCallbacks(callTimerTicker)
+            callTimerTicker.run()
+        }
         val newController = AICallController(robotUserId, object : AICallController.Callbacks {
             override fun onStateChanged(state: AICallState) {
                 if (state != AICallState.IDLE) {
@@ -242,6 +301,7 @@ class AICallActivity : AppCompatActivity() {
             override fun onTranscriptChanged(entries: List<TranscriptEntry>) {
                 latestEntries = entries
                 transcriptView?.submit(entries)
+                updateHintVisibility()
                 // 第一条非空文本到达时才把光球让到上方；空列表时保持居中
                 applySubtitleVisibility()
             }
@@ -335,8 +395,81 @@ class AICallActivity : AppCompatActivity() {
             if (isMuted) R.drawable.uikit_ai_ic_call_mic_off else R.drawable.uikit_ai_ic_call_mic
         )
         controller?.setMuted(isMuted)
+        micLabel?.setText(if (isMuted) R.string.uikit_ai_call_label_unmute else R.string.uikit_ai_call_label_mute)
         renderState(currentState)
     }
+
+    /** 按 [uiOptions] 补上按钮文字、示例话术和通话计时。默认选项下什么都不做。 */
+    private fun applyUiOptions() {
+        if (uiOptions.showCallTimer) {
+            modePill.setText(R.string.uikit_ai_call_connecting)
+        }
+        val buttonRow = btnMic.parent as? LinearLayout ?: return
+        val column = buttonRow.parent as? LinearLayout ?: return
+        if (uiOptions.showButtonLabels) {
+            val labels = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER
+                setPadding(buttonRow.paddingLeft, 0, buttonRow.paddingRight, 0)
+            }
+            fun label(@StringRes res: Int) = TextView(this).apply {
+                setText(res)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                setTextColor(LABEL_COLOR)
+                gravity = Gravity.CENTER
+                maxLines = 1
+            }
+            val width = dp(72)
+            micLabel = label(R.string.uikit_ai_call_label_mute)
+            labels.addView(micLabel, LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT))
+            labels.addView(label(R.string.uikit_ai_call_label_subtitle), LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT))
+            labels.addView(label(R.string.uikit_ai_call_label_hangup), LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT))
+            column.addView(
+                labels,
+                column.indexOfChild(buttonRow) + 1,
+                LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    topMargin = dp(8)
+                },
+            )
+        }
+        val hints = uiOptions.sampleHints
+        if (hints.isNotEmpty()) {
+            (statusText.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
+                it.bottomMargin = dp(6)
+                statusText.layoutParams = it
+            }
+            hintText = TextView(this).apply {
+                text = getString(R.string.uikit_ai_call_try_saying, hints.first())
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                setTextColor(HINT_COLOR)
+                gravity = Gravity.CENTER
+                maxLines = 2
+                setPadding(dp(32), 0, dp(32), 0)
+            }
+            column.addView(
+                hintText,
+                column.indexOfChild(statusText) + 1,
+                LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    bottomMargin = dp(26)
+                },
+            )
+            hintText?.postDelayed(hintRotator, HINT_INTERVAL_MS)
+        }
+    }
+
+    /** 用户开口之后、静音或启动失败时，不再提示「试试说」。 */
+    private fun updateHintVisibility() {
+        val hint = hintText ?: return
+        val userSpoke = latestEntries.any { it.isFromUser && it.text.isNotBlank() }
+        val show = !userSpoke && !isMuted && !listeningFailed
+        // 用 INVISIBLE 而不是 GONE：占位不变，按钮不会跟着跳
+        hint.visibility = if (show) View.VISIBLE else View.INVISIBLE
+        if (userSpoke) {
+            hint.removeCallbacks(hintRotator)
+        }
+    }
+
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
     /**
      * 申请独占的通话音频焦点。
@@ -427,6 +560,7 @@ class AICallActivity : AppCompatActivity() {
         val showPanel = shouldShowTranscriptPanel()
         if (showPanel && transcriptView == null) {
             transcriptView = TranscriptView(this).also {
+                it.plainText = uiOptions.plainTranscript
                 transcriptContainer.addView(
                     it,
                     FrameLayout.LayoutParams(
@@ -507,6 +641,7 @@ class AICallActivity : AppCompatActivity() {
             }
         }
         statusText.setText(textRes)
+        updateHintVisibility()
     }
 
     /**
@@ -543,6 +678,8 @@ class AICallActivity : AppCompatActivity() {
         // 虽然 release() 之后每个入口都有 released 守卫，少一次无谓的往返总是好的
         TransitionManager.endTransitions(root)
         debugOverlay.removeCallbacks(debugTicker)
+        modePill.removeCallbacks(callTimerTicker)
+        hintText?.removeCallbacks(hintRotator)
         asrUnavailableDialog?.dismiss()
         asrUnavailableDialog = null
         abandonAudioFocus()
@@ -562,14 +699,23 @@ class AICallActivity : AppCompatActivity() {
         private const val DEBUG_TOGGLE_OFF = 0xFF8A9099.toInt()
 
         private const val EXTRA_ROBOT_USER_ID = "robot_user_id"
+        private const val EXTRA_UI_OPTIONS = "ui_options"
+        private const val HINT_INTERVAL_MS = 3200L
+        private const val LABEL_COLOR = 0xFFB8BDC4.toInt()
+        private const val HINT_COLOR = 0xFF9FA6FF.toInt()
 
-        fun start(context: Context, robotUserId: String) {
+        /** [uiOptions] 控制通话页的可选外观与引导，不传时保持原样。 */
+        @JvmOverloads
+        fun start(context: Context, robotUserId: String, uiOptions: AICallUiOptions? = null) {
             if (robotUserId.isBlank()) {
                 return
             }
-            context.startActivity(
-                Intent(context, AICallActivity::class.java).putExtra(EXTRA_ROBOT_USER_ID, robotUserId)
-            )
+            val intent = Intent(context, AICallActivity::class.java)
+                .putExtra(EXTRA_ROBOT_USER_ID, robotUserId)
+            if (uiOptions != null) {
+                intent.putExtra(EXTRA_UI_OPTIONS, uiOptions.forIntent())
+            }
+            context.startActivity(intent)
         }
     }
 }

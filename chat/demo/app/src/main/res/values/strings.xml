@@ -129,4 +129,81 @@
     <string name="demo_voice_delete">Delete</string>
     <string name="demo_voice_delete_failed">Delete failed</string>
     <string name="demo_tab_ai">AI</string>
+    <string name="demo_ai_home_input_prompt">First tell me who you are, then what you can help me with.</string>
+    <string name="demo_ai_voice_title">AI Assistant</string>
+    <string name="demo_ai_voice_history">History</string>
+    <string name="demo_ai_voice_headline">Talk to AI in real time</string>
+    <string name="demo_ai_voice_subtitle">Knows all Tencent Cloud Chat docs · Interrupt anytime</string>
+    <string name="demo_ai_voice_subtitle_aircon">Knows air conditioner usage and after-sales guides · Interrupt anytime</string>
+    <string name="demo_ai_voice_subtitle_default">Just ask out loud · Interrupt anytime</string>
+    <string name="demo_ai_voice_try_label">Try asking</string>
+    <string-array name="demo_ai_voice_samples">
+        <item>Why are group messages not received?</item>
+        <item>How do I configure message roaming?</item>
+        <item>Why are offline push notifications not arriving?</item>
+        <item>How do I recall a sent message?</item>
+        <item>How can I add an AI agent to my app?</item>
+    </string-array>
+    <string-array name="demo_ai_voice_samples_aircon">
+        <item>My air conditioner is not cooling. How do I check it?</item>
+        <item>Is white mist from the air outlet normal?</item>
+        <item>What size unit fits a 20 square meter west-facing bedroom?</item>
+        <item>What temperature does sleep mode reach at midnight?</item>
+        <item>Can I still return the air conditioner after installation?</item>
+    </string-array>
+    <string-array name="demo_ai_quick_questions_aircon">
+        <item>What does error code E4 mean?</item>
+        <item>Do I need repair when H1 shows in winter?</item>
+        <item>Is white mist from the air outlet normal?</item>
+        <item>What size unit for a 20 m² west-facing bedroom?</item>
+        <item>Can a 3 HP unit use a power strip?</item>
+    </string-array>
+    <string-array name="demo_ai_voice_samples_default">
+        <item>What can you help me with?</item>
+        <item>What questions can you answer?</item>
+        <item>How do I reach a human agent?</item>
+    </string-array>
+    <string name="demo_ai_voice_start">Tap to start a call</string>
+    <string name="demo_ai_voice_use_text">Ask by text instead ›</string>
+    <string name="demo_ai_voice_back">‹ Voice</string>
+    <string name="demo_ai_voice_unavailable">AI assistant is not ready yet. Please try again later.</string>
+    <string name="demo_ai_mic_title">Microphone access needed</string>
+    <string name="demo_ai_mic_desc">AI needs to hear you to answer.\nOnly used during the call and stops when you hang up.</string>
+    <string name="demo_ai_mic_tip">● Works best in a quiet place or with earphones</string>
+    <string name="demo_ai_mic_allow">Allow and start call</string>
+    <string name="demo_ai_mic_text">Ask by text first</string>
+    <string-array name="demo_ai_quick_questions">
+        <item>Why does UserSig expire?</item>
+        <item>How long should ExpireTime be?</item>
+        <item>Group messages not received?</item>
+        <item>How to set up message roaming?</item>
+    </string-array>
+    <string name="demo_ai_cta_title">Bring the same AI agent to your app</string>
+    <string name="demo_ai_cta_desc">Built on Tencent Cloud Chat + Conversational AI</string>
+    <string name="demo_ai_cta_action">Learn more</string>
+    <string name="demo_ai_mic_denied_desc">Microphone access is turned off.\nTurn it on in Settings to talk to AI.</string>
+    <string name="demo_ai_mic_open_settings">Open Settings</string>
+    <string name="demo_ai_cta_close">Close</string>
+    <string name="demo_custom_bot_dialog_title">Custom AI assistant</string>
+    <string name="demo_custom_bot_dialog_desc">After creating an AI assistant in the experience workbench, enter the part of its assistant IM ID after @RBT# below.</string>
+    <string name="demo_custom_bot_dialog_doc_link">View integration guide ›</string>
+    <string name="demo_custom_bot_input_hint">AIAssistant</string>
+    <string name="demo_custom_bot_not_found">Bot not found. Make sure the AI assistant is enabled and the IM bot is connected in the workbench.</string>
+    <string name="demo_custom_bot_network_error">Network error, please try again later</string>
+    <string name="demo_ai_quick_start_title">Set up your AI assistant</string>
+    <string name="demo_ai_quick_start_intro">The AI assistant answers your users\' questions by text or voice in one-to-one chats, based on the knowledge you import, and hands over to a human agent when needed.</string>
+    <string name="demo_ai_quick_start_step1">Create an AI assistant in the experience workbench and connect it to your IM app</string>
+    <string name="demo_ai_quick_start_step2">Enter the callback URL and token from the workbench in the IM console</string>
+    <string name="demo_ai_quick_start_step3">Tap the assistant name in the upper-left corner, choose \"Custom AI assistant\", and enter the assistant ID</string>
+    <string name="demo_ai_quick_start_doc_hint">For details, see \"Quick start with UIKit (no server required)\" in the official documentation</string>
+    <string name="demo_ai_quick_start_doc">View integration guide</string>
+    <string name="demo_ai_quick_start_cancel">Got it</string>
+    <string name="demo_custom_bot_cancel">Cancel</string>
+    <string name="demo_custom_bot_confirm">OK</string>
+    <string name="demo_ai_agent_picker_title">Choose an AI assistant</string>
+    <string name="demo_ai_agent_custom_title">Custom AI assistant</string>
+    <string name="demo_ai_agent_custom_desc">Enter your assistant ID</string>
+    <string name="demo_ai_agent_custom_edit">Edit</string>
+    <string name="demo_ai_agent_custom_go">Try it</string>
+    <string name="demo_ai_agent_new_badge" translatable="false">NEW</string>
 </resources>

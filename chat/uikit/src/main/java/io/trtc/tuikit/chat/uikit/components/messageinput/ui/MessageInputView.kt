@@ -78,6 +78,7 @@ class MessageInputView @JvmOverloads constructor(
     private lateinit var textController: MessageInputTextController
     private lateinit var mentionController: MessageInputMentionController
     private val draftPolicy = MessageInputDraftPolicy()
+    private var untouchedInitialInput: String? = null
 
     private var config: MessageInputConfigProtocol = ChatMessageInputConfig()
     private var isKeyboardBridgePausedForVoiceOverlay = false
@@ -114,6 +115,7 @@ class MessageInputView @JvmOverloads constructor(
     private lateinit var btnSend: FrameLayout
     private lateinit var btnSendIcon: ImageView
     private lateinit var btnSendText: TextView
+    private lateinit var btnSendRedDot: View
     private lateinit var btnChatbotStop: FrameLayout
     private lateinit var btnChatbotStopIcon: ImageView
     private lateinit var btnPressToTalk: AudioRecorderView
@@ -183,6 +185,7 @@ class MessageInputView @JvmOverloads constructor(
         draftCollectorJob?.cancel()
         draftCollectorJob = null
         draftPolicy.reset()
+        untouchedInitialInput = null
         textController.resetInputText()
 
         val newViewModel = createBusinessViewModel(conversationID)
@@ -305,7 +308,22 @@ class MessageInputView @JvmOverloads constructor(
 
     private fun handleIncomingDraft(draft: String?) {
         if (draftPolicy.shouldApplyIncomingDraft(textController.inputText, draft)) {
+            untouchedInitialInput = null
             textController.applyDraftIfEmpty(draft.orEmpty())
+            return
+        }
+        if (viewModel?.conversationInfo?.value != null) {
+            applyInitialInputIfNeeded()
+        }
+    }
+
+    private fun applyInitialInputIfNeeded() {
+        if (textController.hasUserEditedText || textController.inputText.isNotEmpty()) return
+        if (config.shouldShowSendButtonRedDot?.invoke() == false) return
+        val prompt = config.initialInputText?.takeIf { it.isNotEmpty() } ?: return
+        textController.applyDraftIfEmpty(prompt)
+        if (textController.inputText == prompt) {
+            untouchedInitialInput = prompt
         }
     }
 
@@ -315,6 +333,12 @@ class MessageInputView @JvmOverloads constructor(
     }
 
     private fun saveDraftIfNeeded(targetViewModel: MessageInputViewModel) {
+        if (untouchedInitialInput != null &&
+            textController.inputText == untouchedInitialInput &&
+            !textController.hasUserEditedText
+        ) {
+            return
+        }
         if (draftPolicy.shouldSaveDraft(textController.inputText, textController.hasUserEditedText)) {
             targetViewModel.setDraft(textController.inputText)
         }
@@ -577,12 +601,32 @@ class MessageInputView @JvmOverloads constructor(
         btnMore.visibility = if (visibility.showMore) View.VISIBLE else View.GONE
         btnSend.visibility = if (visibility.showSend) View.VISIBLE else View.GONE
         btnChatbotStop.visibility = if (visibility.showStop) View.VISIBLE else View.GONE
+        updateSendButtonRedDotVisibility()
         spaceAfterSend.visibility = if (visibility.showSend && visibility.showMore) {
             View.VISIBLE
         } else {
             View.GONE
         }
         updateMoreButtonRedDotVisibility()
+    }
+
+    private fun updateSendButtonRedDotVisibility() {
+        if (!hasBoundViews) return
+        val colors = lastColors
+            ?: ThemeStore.shared(context).themeState.value.currentTheme.tokens.color
+        btnSendRedDot.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(colors.textColorError)
+        }
+        val shouldShow = btnSend.visibility == View.VISIBLE &&
+            config.shouldShowSendButtonRedDot?.invoke() == true
+        btnSendRedDot.visibility = if (shouldShow) View.VISIBLE else View.GONE
+    }
+
+    private fun consumeSendButtonRedDot() {
+        if (!hasBoundViews || config.shouldShowSendButtonRedDot?.invoke() != true) return
+        btnSendRedDot.visibility = View.GONE
+        config.onSendButtonRedDotClick?.invoke()
     }
 
     private fun updateMoreButtonRedDotVisibility() {
@@ -649,6 +693,7 @@ class MessageInputView @JvmOverloads constructor(
         btnSend = findViewById(R.id.message_input_btn_send)
         btnSendIcon = findViewById(R.id.message_input_btn_send_icon)
         btnSendText = findViewById(R.id.message_input_btn_send_text)
+        btnSendRedDot = findViewById(R.id.message_input_btn_send_red_dot)
         btnChatbotStop = findViewById(R.id.message_input_btn_chatbot_stop)
         btnChatbotStopIcon = findViewById(R.id.message_input_btn_chatbot_stop_icon)
         btnPressToTalk = findViewById<AudioRecorderView>(R.id.message_input_btn_press_to_talk).apply {
@@ -715,7 +760,12 @@ class MessageInputView @JvmOverloads constructor(
             coordinatorProvider = { coordinator },
             viewModelProvider = { viewModel },
             isLongPressToTalkEnabled = { config.enableLongPressToTalk },
-            sendCurrentText = { textController.sendCurrentText(onSubmitted = ::handleTextSubmitted) },
+            sendCurrentText = {
+                if (textController.inputText.isNotEmpty()) {
+                    consumeSendButtonRedDot()
+                }
+                textController.sendCurrentText(onSubmitted = ::handleTextSubmitted)
+            },
             openVoiceTranscriptionDraft = { audioPath, duration, initialText ->
                 openVoiceTranscriptionDraft(audioPath, duration, initialText)
             },
@@ -958,6 +1008,7 @@ class MessageInputView @JvmOverloads constructor(
             shape = GradientDrawable.OVAL
             setColor(colors.textColorError)
         }
+        updateSendButtonRedDotVisibility()
 
         applyInputFieldAppearance(appearance?.field, colors)
         applyToolbarButtonAppearance(appearance, colors)
