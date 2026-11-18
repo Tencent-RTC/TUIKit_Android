@@ -5,7 +5,37 @@ package io.trtc.tuikit.chat.uikit.components.messagelist.ui.messagerenderers
  */
 internal fun prepareMarkdown(source: String, isStreaming: Boolean): String {
     val sanitized = if (isStreaming) sanitizeIncompleteMarkdown(source) else source
-    return padCjkAdjacentEmphasis(sanitized)
+    return padCjkAdjacentEmphasis(dedupeLinkOnlyLines(sanitized))
+}
+
+private val linkOnlyLine = Regex("^\\s*(?:[-*+]|\\d+[.)])?\\s*\\[[^\\]]*]\\(\\s*([^)\\s]+)[^)]*\\)\\s*$")
+
+/**
+ * 知识库回答的「参考资料」常把同一篇文档列好几次（多个片段命中同一页）。
+ * 只删除「整行只有一个链接、且 URL 与前面某行完全相同」的重复行；代码围栏内原样保留。
+ */
+internal fun dedupeLinkOnlyLines(source: String): String {
+    if (!source.contains("](")) {
+        return source
+    }
+    val seen = HashSet<String>()
+    var inFence = false
+    var changed = false
+    val out = ArrayList<String>()
+    for (line in source.split('\n')) {
+        if (line.trimStart().startsWith("```")) {
+            inFence = !inFence
+        }
+        if (!inFence) {
+            val url = linkOnlyLine.find(line)?.groupValues?.get(1)
+            if (url != null && !seen.add(url)) {
+                changed = true
+                continue
+            }
+        }
+        out.add(line)
+    }
+    return if (changed) out.joinToString("\n") else source
 }
 
 internal fun sanitizeIncompleteMarkdown(source: String): String {

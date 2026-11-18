@@ -128,4 +128,26 @@
     <string name="demo_voice_delete">حذف</string>
     <string name="demo_voice_delete_failed">فشل الحذف</string>
     <string name="demo_tab_ai">AI</string>
+    <string name="demo_ai_home_input_prompt">عرّفني بنفسك أولاً، ثم أخبرني بما يمكنك مساعدتي فيه.</string>
+    <string name="demo_custom_bot_dialog_title">مساعد ذكاء اصطناعي مخصص</string>
+    <string name="demo_custom_bot_dialog_desc">بعد إنشاء مساعد ذكاء اصطناعي في منصة التجربة، أدخل الجزء الذي يلي @RBT# من معرّف IM للمساعد أدناه.</string>
+    <string name="demo_custom_bot_dialog_doc_link">عرض دليل الدمج ›</string>
+    <string name="demo_custom_bot_input_hint">AIAssistant</string>
+    <string name="demo_custom_bot_not_found">لم يتم العثور على الروبوت. تأكد من تفعيل مساعد الذكاء الاصطناعي وربط روبوت IM في منصة العمل.</string>
+    <string name="demo_custom_bot_network_error">خطأ في الشبكة، يرجى المحاولة لاحقًا</string>
+    <string name="demo_ai_quick_start_title">أعدّ مساعد الذكاء الاصطناعي الخاص بك</string>
+    <string name="demo_ai_quick_start_intro">يجيب مساعد الذكاء الاصطناعي عن أسئلة المستخدمين نصيًا أو صوتيًا في المحادثات الفردية استنادًا إلى المعرفة التي تستوردها، ويحوّل المحادثة إلى موظف خدمة عند الحاجة.</string>
+    <string name="demo_ai_quick_start_step1">أنشئ مساعد ذكاء اصطناعي في منصة التجربة واربطه بتطبيق IM الخاص بك</string>
+    <string name="demo_ai_quick_start_step2">أدخل عنوان رد الاستدعاء والرمز المميز من منصة التجربة في وحدة تحكم IM</string>
+    <string name="demo_ai_quick_start_step3">انقر على اسم المساعد في الزاوية العلوية، وحدد \"مساعد ذكاء اصطناعي مخصص\"، ثم أدخل معرّف المساعد</string>
+    <string name="demo_ai_quick_start_doc_hint">لمزيد من التفاصيل، راجع قسم \"تجربة سريعة مع UIKit (بدون خادم)\" في الوثائق الرسمية</string>
+    <string name="demo_ai_quick_start_doc">عرض دليل الدمج</string>
+    <string name="demo_ai_quick_start_cancel">حسنًا</string>
+    <string name="demo_custom_bot_cancel">إلغاء</string>
+    <string name="demo_custom_bot_confirm">موافق</string>
+    <string name="demo_ai_agent_picker_title">اختر مساعد الذكاء الاصطناعي</string>
+    <string name="demo_ai_agent_custom_title">مساعد ذكاء اصطناعي مخصص</string>
+    <string name="demo_ai_agent_custom_desc">أدخل معرّف المساعد</string>
+    <string name="demo_ai_agent_custom_edit">تعديل</string>
+    <string name="demo_ai_agent_custom_go">جرّب</string>
 </resources>

@@ -24,4 +24,11 @@
     <string name="uikit_ai_call_audio_unavailable">Microphone is unavailable</string>
     <string name="uikit_ai_call_playback_unavailable">Audio playback is unavailable, replies will be shown as text</string>
     <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">Try saying: \"%1$s\"</string>
+    <string name="uikit_ai_call_duration">In call %1$s</string>
+    <string name="uikit_ai_call_connecting">Connecting…</string>
+    <string name="uikit_ai_call_label_mute">Mute</string>
+    <string name="uikit_ai_call_label_unmute">Unmute</string>
+    <string name="uikit_ai_call_label_subtitle">Subtitles</string>
+    <string name="uikit_ai_call_label_hangup">Hang up</string>
 </resources>

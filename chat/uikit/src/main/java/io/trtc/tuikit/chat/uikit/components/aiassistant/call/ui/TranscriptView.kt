@@ -20,6 +20,9 @@ class TranscriptView(context: Context) : RecyclerView(context) {
 
     private val entries = mutableListOf<TranscriptEntry>()
 
+    /** 为 true 时 AI 的回答去掉 Markdown 和参考链接后再显示，见 [SpokenText]。 */
+    var plainText: Boolean = false
+
     private val internalAdapter = object : RecyclerView.Adapter<TranscriptViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TranscriptViewHolder {
@@ -39,7 +42,7 @@ class TranscriptView(context: Context) : RecyclerView(context) {
 
         override fun onBindViewHolder(holder: TranscriptViewHolder, position: Int) {
             val entry = entries[position]
-            holder.textView.text = entry.text
+            holder.textView.text = if (plainText && !entry.isFromUser) SpokenText.from(entry.text) else entry.text
             // 用户说的话用灰色弱化，AI 的回答用白色强调，发送失败的标红
             holder.textView.setTextColor(
                 when {

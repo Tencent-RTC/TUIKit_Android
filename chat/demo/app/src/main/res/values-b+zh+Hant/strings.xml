@@ -98,7 +98,7 @@
     <string name="demo_close">關閉</string>
 
     <string name="demo_about_confirm">確定</string>
-    <string name="demo_customer_service_summary">[客服消息]請及時查看</string>
+    <string name="demo_customer_service_summary">[人工消息]請及時查看</string>
     <string name="demo_welcome_message">歡迎體驗 Chat Demo！你可以先發送一則訊息，體驗基礎聊天功能。\n如果想新增好友，可以前往聯絡人頁面點擊首頁加號。\n如果想體驗音視訊通話，可以點擊下方加號按鈕 -> 語音通話/視訊通話。</string>
     <string name="demo_voice_message_settings">語音訊息設定</string>
     <string name="demo_voice_clone">音色克隆</string>
@@ -128,4 +128,26 @@
     <string name="demo_voice_delete">刪除</string>
     <string name="demo_voice_delete_failed">刪除失敗</string>
     <string name="demo_tab_ai">AI</string>
+    <string name="demo_ai_home_input_prompt">先介紹一下你是誰，再說說你能幫我做什麼。</string>
+    <string name="demo_custom_bot_dialog_title">自訂 AI 助手</string>
+    <string name="demo_custom_bot_dialog_desc">在體驗工作台建立 AI 助手後，將助手 IM&#160;ID 中 @RBT# 之後的部分填到下方。</string>
+    <string name="demo_custom_bot_dialog_doc_link">查看接入文件 ›</string>
+    <string name="demo_custom_bot_input_hint">AIAssistant</string>
+    <string name="demo_custom_bot_not_found">未找到該機器人，請確認已在工作台啟用 AI 助手並完成「連接 IM 機器人」</string>
+    <string name="demo_custom_bot_network_error">網路異常，請稍後重試</string>
+    <string name="demo_ai_quick_start_title">設定您的 AI 助手</string>
+    <string name="demo_ai_quick_start_intro">AI 助手會根據您匯入的知識資料，在單聊中以文字或語音解答用戶問題，無法解決時可轉人工。</string>
+    <string name="demo_ai_quick_start_step1">在體驗工作台建立 AI 助手，並連接您的 IM 應用</string>
+    <string name="demo_ai_quick_start_step2">在 IM 控制台填寫工作台提供的回調地址和 Token</string>
+    <string name="demo_ai_quick_start_step3">點擊左上角的助手名稱，選擇「自訂 AI 助手」並填入助手 ID</string>
+    <string name="demo_ai_quick_start_doc_hint">詳細步驟請參閱官網文件「接入 UIKit 快速體驗（無需伺服器）」</string>
+    <string name="demo_ai_quick_start_doc">查看接入文件</string>
+    <string name="demo_ai_quick_start_cancel">知道了</string>
+    <string name="demo_custom_bot_cancel">取消</string>
+    <string name="demo_custom_bot_confirm">確定</string>
+    <string name="demo_ai_agent_picker_title">選擇 AI 助手</string>
+    <string name="demo_ai_agent_custom_title">自訂 AI 助手</string>
+    <string name="demo_ai_agent_custom_desc">填入工作台的助手 ID</string>
+    <string name="demo_ai_agent_custom_edit">修改</string>
+    <string name="demo_ai_agent_custom_go">去體驗</string>
 </resources>

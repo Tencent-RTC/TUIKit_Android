@@ -37,4 +37,26 @@
     <string name="demo_confirm">消去</string>
     <string name="demo_cancel">キャンセル</string>
     <string name="demo_tab_ai">AI</string>
+    <string name="demo_ai_home_input_prompt">まずあなたが誰かを紹介してから、何を手伝えるか教えてください。</string>
+    <string name="demo_custom_bot_dialog_title">カスタム AI アシスタント</string>
+    <string name="demo_custom_bot_dialog_desc">体験ワークベンチで AI アシスタントを作成したら、アシスタント IM ID の @RBT# 以降を下に入力してください。</string>
+    <string name="demo_custom_bot_dialog_doc_link">接続ガイドを見る ›</string>
+    <string name="demo_custom_bot_input_hint">AIAssistant</string>
+    <string name="demo_custom_bot_not_found">ボットが見つかりません。ワークベンチでAIアシスタントが有効で、IMボットが接続済みであることを確認してください。</string>
+    <string name="demo_custom_bot_network_error">ネットワークエラーです。後でもう一度お試しください</string>
+    <string name="demo_ai_quick_start_title">AI アシスタントを設定してください</string>
+    <string name="demo_ai_quick_start_intro">AI アシスタントは、インポートしたナレッジをもとに、1対1チャットでユーザーの質問にテキストまたは音声で回答します。解決できない場合は有人オペレーターに引き継げます。</string>
+    <string name="demo_ai_quick_start_step1">体験ワークベンチで AI アシスタントを作成し、IM アプリに接続します</string>
+    <string name="demo_ai_quick_start_step2">IM コンソールで、ワークベンチに表示されたコールバック URL と Token を設定します</string>
+    <string name="demo_ai_quick_start_step3">左上のアシスタント名をタップし、「カスタム AI アシスタント」を選んでアシスタント ID を入力します</string>
+    <string name="demo_ai_quick_start_doc_hint">詳しい手順は公式ドキュメントの「UIKit クイック体験（サーバー不要）」をご覧ください</string>
+    <string name="demo_ai_quick_start_doc">接続ガイドを見る</string>
+    <string name="demo_ai_quick_start_cancel">OK</string>
+    <string name="demo_custom_bot_cancel">キャンセル</string>
+    <string name="demo_custom_bot_confirm">OK</string>
+    <string name="demo_ai_agent_picker_title">AIアシスタントを選択</string>
+    <string name="demo_ai_agent_custom_title">カスタムAIアシスタント</string>
+    <string name="demo_ai_agent_custom_desc">アシスタント ID を入力</string>
+    <string name="demo_ai_agent_custom_edit">変更</string>
+    <string name="demo_ai_agent_custom_go">試す</string>
 </resources>

@@ -41,6 +41,21 @@ interface MessageInputConfigProtocol {
     val keepSendButtonVisible: Boolean
         get() = false
 
+    /**
+     * 输入框还是空的、并且没有会话草稿时填入的引导文案。
+     * 用户已经输入过，或发送按钮红点已经被点掉时，不再填入。
+     */
+    val initialInputText: String?
+        get() = null
+
+    /** 发送按钮右上角是否还要显示红点。返回 false 后红点消失，并停止填入 [initialInputText]。 */
+    val shouldShowSendButtonRedDot: (() -> Boolean)?
+        get() = null
+
+    /** 用户点了带红点的发送按钮，或用键盘发送当前文字时回调，方便宿主把红点记成本地已点过。 */
+    val onSendButtonRedDotClick: (() -> Unit)?
+        get() = null
+
 }
 
 class ChatMessageInputConfig : MessageInputConfigProtocol {
@@ -59,6 +74,9 @@ class ChatMessageInputConfig : MessageInputConfigProtocol {
     private var _actionCustomizer: MessageInputActionCustomizer? = null
     private var _appearance: MessageInputAppearance? = null
     private var _keepSendButtonVisible: Boolean? = null
+    private var _initialInputText: String? = null
+    private var _shouldShowSendButtonRedDot: (() -> Boolean)? = null
+    private var _onSendButtonRedDotClick: (() -> Unit)? = null
     constructor(
         isShowAudioRecorder: Boolean? = null,
         isShowPhotoTaker: Boolean? = null,
@@ -164,6 +182,24 @@ class ChatMessageInputConfig : MessageInputConfigProtocol {
         get() = _keepSendButtonVisible ?: false
         set(value) {
             _keepSendButtonVisible = value
+        }
+
+    override var initialInputText: String?
+        get() = _initialInputText
+        set(value) {
+            _initialInputText = value?.takeIf { it.isNotEmpty() }
+        }
+
+    override var shouldShowSendButtonRedDot: (() -> Boolean)?
+        get() = _shouldShowSendButtonRedDot
+        set(value) {
+            _shouldShowSendButtonRedDot = value
+        }
+
+    override var onSendButtonRedDotClick: (() -> Unit)?
+        get() = _onSendButtonRedDotClick
+        set(value) {
+            _onSendButtonRedDotClick = value
         }
 
     fun customizeActions(block: MessageInputActionEditor.() -> Unit): ChatMessageInputConfig = apply {

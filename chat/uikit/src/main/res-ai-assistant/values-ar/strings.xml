@@ -24,4 +24,11 @@
     <string name="uikit_ai_call_audio_unavailable">الميكروفون غير متاح</string>
     <string name="uikit_ai_call_playback_unavailable">تشغيل الصوت غير متاح، وسيتم عرض الردود كنص</string>
     <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">جرّب أن تقول: \"%1$s\"</string>
+    <string name="uikit_ai_call_duration">في مكالمة %1$s</string>
+    <string name="uikit_ai_call_connecting">جارٍ الاتصال…</string>
+    <string name="uikit_ai_call_label_mute">كتم</string>
+    <string name="uikit_ai_call_label_unmute">إلغاء الكتم</string>
+    <string name="uikit_ai_call_label_subtitle">الترجمة</string>
+    <string name="uikit_ai_call_label_hangup">إنهاء</string>
 </resources>

@@ -24,4 +24,11 @@
     <string name="uikit_ai_call_audio_unavailable">マイクを利用できません</string>
     <string name="uikit_ai_call_playback_unavailable">音声再生を利用できません。返信はテキストで表示されます</string>
     <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">話しかけてみよう：「%1$s」</string>
+    <string name="uikit_ai_call_duration">通話中 %1$s</string>
+    <string name="uikit_ai_call_connecting">接続中…</string>
+    <string name="uikit_ai_call_label_mute">ミュート</string>
+    <string name="uikit_ai_call_label_unmute">ミュート解除</string>
+    <string name="uikit_ai_call_label_subtitle">字幕</string>
+    <string name="uikit_ai_call_label_hangup">終了</string>
 </resources>

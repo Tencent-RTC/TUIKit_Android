@@ -32,4 +32,10 @@ internal class ChatbotMessageInputConfig(
         get() = base.appearance
     override val keepSendButtonVisible: Boolean
         get() = base.keepSendButtonVisible
+    override val initialInputText: String?
+        get() = base.initialInputText
+    override val shouldShowSendButtonRedDot: (() -> Boolean)?
+        get() = base.shouldShowSendButtonRedDot
+    override val onSendButtonRedDotClick: (() -> Unit)?
+        get() = base.onSendButtonRedDotClick
 }

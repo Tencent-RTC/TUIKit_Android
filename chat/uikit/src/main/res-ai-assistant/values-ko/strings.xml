@@ -24,4 +24,11 @@
     <string name="uikit_ai_call_audio_unavailable">마이크를 사용할 수 없습니다</string>
     <string name="uikit_ai_call_playback_unavailable">음성 재생을 사용할 수 없어 답변이 텍스트로 표시됩니다</string>
     <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">이렇게 말해 보세요: \"%1$s\"</string>
+    <string name="uikit_ai_call_duration">통화 중 %1$s</string>
+    <string name="uikit_ai_call_connecting">연결 중…</string>
+    <string name="uikit_ai_call_label_mute">음소거</string>
+    <string name="uikit_ai_call_label_unmute">음소거 해제</string>
+    <string name="uikit_ai_call_label_subtitle">자막</string>
+    <string name="uikit_ai_call_label_hangup">끊기</string>
 </resources>

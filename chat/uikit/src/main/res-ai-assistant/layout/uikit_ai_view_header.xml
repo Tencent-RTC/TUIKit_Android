@@ -16,7 +16,20 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/uikit_ai_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:maxLines="1"
+                android:paddingVertical="8dp"
+                android:paddingEnd="8dp"
+                android:textSize="15sp"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/uikit_ai_title_row"
@@ -54,15 +67,33 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:clipChildren="false">
 
-            <ImageView
-                android:id="@+id/uikit_ai_call"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+            <FrameLayout
+                android:id="@+id/uikit_ai_call_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
-                android:contentDescription="@string/uikit_ai_call_button"
-                android:src="@drawable/uikit_ai_ic_call" />
+                android:clipChildren="false"
+                android:contentDescription="@string/uikit_ai_call_button">
+
+                <ImageView
+                    android:id="@+id/uikit_ai_call"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/uikit_ai_ic_call" />
+
+                <View
+                    android:id="@+id/uikit_ai_call_red_dot"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_gravity="top|end"
+                    android:importantForAccessibility="no"
+                    android:visibility="gone" />
+
+            </FrameLayout>
 
         </FrameLayout>
 
