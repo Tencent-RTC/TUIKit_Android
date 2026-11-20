@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 对位 iOS livekit_voicebgm_pause.svg（单曲条暂停：两条竖条）。 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M5.5,4h4.6a1.6,1.6 0,0 1,1.6 1.6v12.8a1.6,1.6 0,0 1,-1.6 1.6h-4.6a1.6,1.6 0,0 1,-1.6 -1.6v-12.8a1.6,1.6 0,0 1,1.6 -1.6z"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M13.9,4h4.6a1.6,1.6 0,0 1,1.6 1.6v12.8a1.6,1.6 0,0 1,-1.6 1.6h-4.6a1.6,1.6 0,0 1,-1.6 -1.6v-12.8a1.6,1.6 0,0 1,1.6 -1.6z"
+        android:fillColor="#FFFFFF" />
+</vector>

@@ -22,6 +22,16 @@ class PlayerUnitView(
     internal var onGeometryChanged: (() -> Unit)? = null
     internal val representedLiveID: String get() = liveInfo?.liveID.orEmpty()
     private var currentUnitInfo: UnitInfo = unitInfo.copy()
+    internal val isRemoteHost: Boolean
+        get() = currentUnitInfo.userID.isNotEmpty() && currentUnitInfo.liveID.isNotEmpty() && currentUnitInfo.liveID != representedLiveID
+    private var isCoHostConnected = false
+
+    internal fun setCoHostConnected(connected: Boolean) {
+        if (isCoHostConnected == connected) return
+        isCoHostConnected = connected
+        apply()
+    }
+
     private var currentStatus: PlayerStatus = initialStatus
 
     init {
@@ -94,7 +104,7 @@ class PlayerUnitView(
         updateVisibility(
             isEmpty = info.userID.isEmpty(),
             showsNoVideo = info.cameraStatus != DeviceStatus.ON || info.userSuspendStatus == SuspendStatus.IN_BACKGROUND,
-            showsOverlay = !isOwner && roomActive,
+            showsOverlay = (!isOwner || isCoHostConnected) && roomActive,
         )
     }
 }

@@ -72,10 +72,24 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
-        android:id="@+id/livekit_overlay_gift_view"
+        android:id="@+id/livekit_living_more_view"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginEnd="56dp"
+        android:layout_marginBottom="40dp"
+        android:clickable="true"
+        android:contentDescription="@string/livekit_common_more"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/livekit_player_floating"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/livekit_overlay_gift_view"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="100dp"
         android:layout_marginBottom="40dp"
         android:clickable="true"
         android:contentDescription="@null"
@@ -111,7 +125,7 @@
         android:background="@drawable/livekit_coguest_entry_idle_bg"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_marginEnd="100dp"
+        android:layout_marginEnd="144dp"
         android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -139,4 +153,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/livekit_player_cohost_status"
+        android:layout_width="0dp"
+        android:layout_height="22dp"
+        android:background="@drawable/livekit_cohost_status_scrim"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="@string/livekit_player_cohost_connected"
+        android:textColor="@color/livekit_cohost_status_text"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </merge>
