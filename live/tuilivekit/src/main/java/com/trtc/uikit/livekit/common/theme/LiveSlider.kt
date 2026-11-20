@@ -81,6 +81,14 @@ internal class LiveSlider @JvmOverloads constructor(
         invalidate()
     }
 
+    /** Tint of the filled (minimum) track, mirroring iOS `minimumTrackTintColor`. */
+    var minimumTrackColor: Int
+        get() = progressPaint.color
+        set(value) {
+            progressPaint.color = value
+            invalidate()
+        }
+
     fun setValue(value: Int) {
         val snappedValue = snap(value)
         if (this.value == snappedValue) return

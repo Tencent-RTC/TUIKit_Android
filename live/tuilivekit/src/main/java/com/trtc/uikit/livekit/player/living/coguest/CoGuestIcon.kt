@@ -9,12 +9,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.trtc.uikit.livekit.common.beauty.BeautyPreferences
-import com.trtc.uikit.livekit.common.theme.foregroundservice.AudioForegroundService
+import com.trtc.uikit.livekit.common.theme.LiveForegroundService
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.theme.imageloader.ImageLoader
 import com.trtc.uikit.livekit.common.theme.imageloader.ImageOptions
-import com.trtc.uikit.livekit.common.theme.permission.PermissionCallback
-import com.trtc.uikit.livekit.common.theme.permission.PermissionRequest
+import com.trtc.uikit.livekit.common.theme.LiveDevicePermission
 import com.trtc.uikit.livekit.common.setDebounceClickListener
 import com.trtc.uikit.livekit.common.theme.LiveToast
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
@@ -26,16 +25,17 @@ import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.NoResponseReason
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.logging.Logger
 
 enum class CoGuestStatus {
-    IDLE,
-    REQUESTING,
-    COGUESTING
+    IDLE, REQUESTING, COGUESTING
 }
 
 class CoGuestIcon @JvmOverloads constructor(
@@ -78,20 +78,18 @@ class CoGuestIcon @JvmOverloads constructor(
     }
 
     fun startAudioServiceIfNeeded() {
-        if (!microphoneOpened || !isAttachedToWindow ||
-            uiState.value != CoGuestStatus.COGUESTING || liveInfo == null ||
-            findViewTreeLifecycleOwner()?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.RESUMED) != true) return
-        AudioForegroundService.start(
-            context, context.applicationInfo.loadLabel(context.packageManager).toString(),
-            context.getString(R.string.livekit_coguest_service_description), R.drawable.livekit_coguest_idle
-        )
+        if (!microphoneOpened || !isAttachedToWindow || uiState.value != CoGuestStatus.COGUESTING || liveInfo == null || findViewTreeLifecycleOwner()?.lifecycle?.currentState?.isAtLeast(
+                Lifecycle.State.RESUMED
+            ) != true
+        ) return
+        LiveForegroundService.start(context)
         audioServiceStarted = true
     }
 
     private fun stopAudioService() {
         if (!audioServiceStarted) return
         audioServiceStarted = false
-        AudioForegroundService.stop(context)
+        LiveForegroundService.stop(context)
     }
 
     private val guestListener = object : GuestListener() {
@@ -102,15 +100,14 @@ class CoGuestIcon @JvmOverloads constructor(
                 val openCamera = openCameraAfterAccept.value
                 val selfUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID.orEmpty()
                 val currentLiveID = liveInfo?.liveID
-                awaitingAcceptedSeat = selfUserID.isEmpty() || currentLiveID == null ||
-                    CoGuestStore.create(currentLiveID).coGuestState.connected.value.none { it.userID == selfUserID }
+                awaitingAcceptedSeat = selfUserID.isEmpty() || currentLiveID == null || CoGuestStore.create(
+                    currentLiveID
+                ).coGuestState.connected.value.none { it.userID == selfUserID }
                 updateUiState(CoGuestStatus.COGUESTING)
                 requestMicThenCameraPermissions(openCamera)
             } else {
                 LiveToast.show(
-                    context,
-                    context.getString(R.string.livekit_coguest_apply_rejected),
-                    LiveToast.Style.INFO
+                    context, context.getString(R.string.livekit_coguest_apply_rejected), LiveToast.Style.INFO
                 )
                 openCameraAfterAccept.value = false
                 updateUiState(CoGuestStatus.IDLE)
@@ -133,9 +130,7 @@ class CoGuestIcon @JvmOverloads constructor(
             invalidateCameraRequests(false)
             invalidateMicrophoneRequests()
             LiveToast.show(
-                context,
-                context.getString(R.string.livekit_coguest_kicked_off),
-                LiveToast.Style.INFO
+                context, context.getString(R.string.livekit_coguest_kicked_off), LiveToast.Style.INFO
             )
             DeviceStore.shared().closeLocalMicrophone()
             DeviceStore.shared().closeLocalCamera()
@@ -146,40 +141,34 @@ class CoGuestIcon @JvmOverloads constructor(
     private fun requestMicThenCameraPermissions(openCameraAfterMic: Boolean) {
         if (openCameraAfterMic) isOpeningCamera = true
         isOpeningMicrophone = true
-        PermissionRequest.requestMicrophonePermissions(context, object : PermissionCallback() {
-            override fun onGranted() {
-                if (isAttachedToWindow && uiState.value == CoGuestStatus.COGUESTING && liveInfo != null &&
-                    findViewTreeLifecycleOwner()?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true) {
-                    DeviceStore.shared().openLocalMicrophone(object : CompletionHandler {
-                        override fun onSuccess() {
-                            mainHandler.post {
-                                isOpeningMicrophone = false
-                                if (!isAttachedToWindow || liveInfo == null ||
-                                    uiState.value != CoGuestStatus.COGUESTING) {
-                                    DeviceStore.shared().closeLocalMicrophone()
-                                } else {
-                                    microphoneOpened = true
-                                    startAudioServiceIfNeeded()
-                                }
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).launch {
+            val granted = LiveDevicePermission.requestMicrophonePermission(context)
+            if (granted && isAttachedToWindow && uiState.value == CoGuestStatus.COGUESTING && liveInfo != null && findViewTreeLifecycleOwner()?.lifecycle?.currentState?.isAtLeast(
+                    Lifecycle.State.STARTED
+                ) == true
+            ) {
+                DeviceStore.shared().openLocalMicrophone(object : CompletionHandler {
+                    override fun onSuccess() {
+                        mainHandler.post {
+                            isOpeningMicrophone = false
+                            if (!isAttachedToWindow || liveInfo == null || uiState.value != CoGuestStatus.COGUESTING) {
+                                DeviceStore.shared().closeLocalMicrophone()
+                            } else {
+                                microphoneOpened = true
+                                startAudioServiceIfNeeded()
                             }
                         }
+                    }
 
-                        override fun onFailure(code: Int, desc: String) {
-                            mainHandler.post { isOpeningMicrophone = false }
-                        }
-                    })
-                } else {
-                    isOpeningMicrophone = false
-                }
-                if (openCameraAfterAccept.value) requestCameraPermissionThenOpen()
-            }
-
-            override fun onDenied() {
-                super.onDenied()
+                    override fun onFailure(code: Int, desc: String) {
+                        mainHandler.post { isOpeningMicrophone = false }
+                    }
+                })
+            } else {
                 isOpeningMicrophone = false
-                if (openCameraAfterAccept.value) requestCameraPermissionThenOpen()
             }
-        })
+            if (openCameraAfterAccept.value) requestCameraPermissionThenOpen()
+        }
     }
 
     private fun requestCameraPermissionThenOpen() {
@@ -187,39 +176,29 @@ class CoGuestIcon @JvmOverloads constructor(
             isOpeningCamera = false
             return
         }
-        PermissionRequest.requestCameraPermissions(context, object : PermissionCallback() {
-            override fun onGranted() {
-                if (!isAttachedToWindow || uiState.value != CoGuestStatus.COGUESTING ||
-                    liveInfo == null || !openCameraAfterAccept.value) {
-                    isOpeningCamera = false
-                    return
-                }
-                BeautyPreferences.restore(context)
-                DeviceStore.shared().openLocalCamera(
-                    DeviceStore.shared().deviceState.isFrontCamera.value,
-                    object : CompletionHandler {
-                        override fun onSuccess() {
-                            mainHandler.post {
-                                isOpeningCamera = false
-                                if (!isAttachedToWindow || uiState.value != CoGuestStatus.COGUESTING ||
-                                    liveInfo == null || !openCameraAfterAccept.value) {
-                                    if (!allowCameraRestore) DeviceStore.shared().closeLocalCamera()
-                                }
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).launch {
+            val granted = LiveDevicePermission.requestCameraPermission(context)
+            if (!granted || !isAttachedToWindow || uiState.value != CoGuestStatus.COGUESTING || liveInfo == null || !openCameraAfterAccept.value) {
+                isOpeningCamera = false
+                return@launch
+            }
+            BeautyPreferences.restore(context)
+            DeviceStore.shared().openLocalCamera(
+                DeviceStore.shared().deviceState.isFrontCamera.value, object : CompletionHandler {
+                    override fun onSuccess() {
+                        mainHandler.post {
+                            isOpeningCamera = false
+                            if (!isAttachedToWindow || uiState.value != CoGuestStatus.COGUESTING || liveInfo == null || !openCameraAfterAccept.value) {
+                                if (!allowCameraRestore) DeviceStore.shared().closeLocalCamera()
                             }
                         }
-
-                        override fun onFailure(code: Int, desc: String) {
-                            mainHandler.post { isOpeningCamera = false }
-                        }
                     }
-                )
-            }
 
-            override fun onDenied() {
-                super.onDenied()
-                isOpeningCamera = false
-            }
-        })
+                    override fun onFailure(code: Int, desc: String) {
+                        mainHandler.post { isOpeningCamera = false }
+                    }
+                })
+        }
     }
 
     init {
@@ -265,9 +244,7 @@ class CoGuestIcon @JvmOverloads constructor(
         controlDialog = null
         openCameraAfterAccept.value = false
         setImageResource(R.drawable.livekit_coguest_idle)
-        DeviceStore.shared().closeLocalMicrophone()
         DeviceStore.shared().closeLocalCamera()
-        updateUiState(CoGuestStatus.IDLE)
     }
 
     override fun onDetachedFromWindow() {
@@ -370,6 +347,7 @@ class CoGuestIcon @JvmOverloads constructor(
                 setImageResource(R.drawable.livekit_coguest_idle)
                 controlDialog?.dismiss()
             }
+
             CoGuestStatus.COGUESTING -> {
                 applyDialog?.dismissAll()
                 val options = ImageOptions.Builder().asGif(true).build()

@@ -13,8 +13,7 @@ import com.trtc.uikit.livekit.common.beauty.BeautyPreferences
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.theme.BottomSheetView
 import com.trtc.uikit.livekit.common.setDebounceClickListener
-import com.trtc.uikit.livekit.common.theme.permission.PermissionCallback
-import com.trtc.uikit.livekit.common.theme.permission.PermissionRequest
+import com.trtc.uikit.livekit.common.theme.LiveDevicePermission
 import com.trtc.uikit.livekit.common.beauty.BeautyPanel
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.device.MirrorType
@@ -32,8 +31,7 @@ class SettingsPanel(
 ) : BottomSheetView(context) {
 
     enum class Mode {
-        PREVIEW,
-        CONNECTED,
+        PREVIEW, CONNECTED,
     }
 
     var onDismissRequest: (() -> Unit)? = null
@@ -130,27 +128,25 @@ class SettingsPanel(
         if (cameraStarted || requestingCameraPermission) return
         val generation = ++previewGeneration
         requestingCameraPermission = true
-        PermissionRequest.requestCameraPermissions(context, object : PermissionCallback() {
-            override fun onGranted() {
-                if (generation != previewGeneration) return
+        panelScope.launch {
+            val cameraGranted = LiveDevicePermission.requestCameraPermission(context)
+            if (generation != previewGeneration) return@launch
+            if (!cameraGranted || cameraStarted || !isShowing) {
                 requestingCameraPermission = false
-                if (cameraStarted) return
-                if (!isShowing) return
-                cameraStarted = true
-                if (mode == Mode.PREVIEW) {
-                    DeviceStore.shared().switchCamera(true)
-                    DeviceStore.shared().switchMirror(MirrorType.ENABLE)
-                }
-                BeautyPreferences.restore(context)
-                DeviceStore.shared().startCameraTest(cameraView, null)
+                return@launch
             }
-
-            override fun onDenied() {
-                if (generation != previewGeneration) return
-                super.onDenied()
-                requestingCameraPermission = false
+            val microphoneGranted = LiveDevicePermission.requestMicrophonePermission(context)
+            if (generation != previewGeneration) return@launch
+            requestingCameraPermission = false
+            if (!microphoneGranted || cameraStarted || !isShowing) return@launch
+            cameraStarted = true
+            if (mode == Mode.PREVIEW) {
+                DeviceStore.shared().switchCamera(true)
+                DeviceStore.shared().switchMirror(MirrorType.ENABLE)
             }
-        })
+            BeautyPreferences.restore(context)
+            DeviceStore.shared().startCameraTest(cameraView, null)
+        }
     }
 
     private fun stopCameraTest() {

@@ -31,6 +31,7 @@ class PlayerVideoView @JvmOverloads constructor(
     internal val coreView = AtomicLiveView(context)
     internal var onGeometryChanged: (() -> Unit)? = null
     private var backgroundView = AppCompatImageView(context)
+    private val connectionBackgroundView = AppCompatImageView(context)
     private var liveInfo: LiveInfo = LiveInfo()
     private val logger = LiveKitLog.Companion.getComponentLogger("VideoView")
     private var currentStatus: PlayerStatus = PlayerStatus.IDLE
@@ -44,7 +45,6 @@ class PlayerVideoView @JvmOverloads constructor(
     val unitAdapter = object : AtomicLiveViewChangeAdapter {
         override fun onCreateUnitView(unitInfo: UnitInfo?): View? {
             unitInfo ?: return null
-            if (unitInfo.liveID.isNotEmpty() && unitInfo.liveID != liveInfo.liveID) return null
             logger.info("onCreateUnitView: $unitInfo")
             return PlayerUnitView(context, unitInfo, liveInfo, currentStatus).also(::track)
         }
@@ -56,10 +56,7 @@ class PlayerVideoView @JvmOverloads constructor(
             val unit = view as? PlayerUnitView ?: return
             val snapshot = unitInfo?.copy()
             updateOnMain {
-                if (snapshot == null && unit.representedLiveID != liveInfo.liveID) return@updateOnMain
-                if (snapshot != null && snapshot.liveID.isNotEmpty() && snapshot.liveID != liveInfo.liveID) {
-                    return@updateOnMain
-                }
+                if (unit.representedLiveID != liveInfo.liveID) return@updateOnMain
                 unit.setUnitInfo(snapshot ?: UnitInfo(), liveInfo)
                 unit.setPlayerStatus(currentStatus)
                 track(unit)
@@ -84,8 +81,22 @@ class PlayerVideoView @JvmOverloads constructor(
     init {
         addView(backgroundView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
 
+        connectionBackgroundView.setImageResource(R.drawable.livekit_cohost_stage_background)
+        connectionBackgroundView.scaleType = android.widget.ImageView.ScaleType.FIT_XY
+        connectionBackgroundView.visibility = GONE
+        addView(connectionBackgroundView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        coreView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         coreView.setViewChangeAdapter(unitAdapter)
         addView(coreView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+    }
+
+    internal val isCoHostConnected: Boolean
+        get() = activeUnits.any { it.representedLiveID == liveInfo.liveID && it.isRemoteHost && it.isAttachedToWindow && it.isShown }
+
+    internal fun refreshConnectionPresentation() {
+        val connected = isCoHostConnected
+        connectionBackgroundView.visibility = if (connected) VISIBLE else GONE
+        activeUnits.toList().forEach { it.setCoHostConnected(connected) }
     }
 
     fun setLiveInfo(liveInfo: LiveInfo) {
@@ -180,8 +191,9 @@ class PlayerVideoView @JvmOverloads constructor(
             liveInfo.coverURL.ifEmpty { LiveKitResources.defaultBackgroundURL }
         }
 
-        val config = ImageOptions.Builder().setBlurEffect(80f).setPlaceImage(R.drawable.livekit_video_background)
+        val config = ImageOptions.Builder().setPlaceImage(R.drawable.livekit_video_background)
             .setErrorImage(R.drawable.livekit_video_background).build()
         ImageLoader.load(context, backgroundView, url, config = config)
+        ImageLoader.applyBlur(backgroundView)
     }
 }

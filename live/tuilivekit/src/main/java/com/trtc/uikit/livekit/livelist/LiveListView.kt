@@ -13,22 +13,26 @@ open class LiveListView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     liveID: String = "",
+    autoEnterRoom: Boolean = false,
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val pagerView: PagerView = PagerView(
         context = context,
         initialLiveID = liveID,
+        initialAutoEnterRoom = autoEnterRoom,
         onLoadMoreCallback = { onLoadMore() },
+        onCloseClickCallback = { onCloseClick() }
     ).also {
         addView(
-            it,
-            LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            it, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         )
     }
 
     fun setData(liveList: List<LiveInfo>) = pagerView.setData(liveList)
     fun appendData(liveList: List<LiveInfo>) = pagerView.appendData(liveList)
     open fun onLoadMore() {}
+
+    open fun onCloseClick() {}
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()

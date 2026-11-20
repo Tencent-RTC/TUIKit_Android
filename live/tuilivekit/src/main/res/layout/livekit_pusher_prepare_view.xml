@@ -12,20 +12,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/livekit_pusher_prepare_exit"
             android:layout_width="@dimen/livekit_pusher_prepare_exit_size"
             android:layout_height="@dimen/livekit_pusher_prepare_exit_size"
             android:layout_gravity="top|start"
             android:layout_marginStart="@dimen/livekit_pusher_prepare_exit_margin_start"
             android:layout_marginTop="@dimen/livekit_pusher_prepare_exit_margin_top"
-            android:contentDescription="@string/common_cancel"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:text="@string/livekit_pusher_prepare_exit"
-            android:textColor="@color/common_design_standard_flowkit_white"
-            android:textSize="@dimen/livekit_pusher_prepare_exit_text_size" />
+            android:contentDescription="@string/common_cancel" android:src="@drawable/livekit_prepare_close"
+            android:background="@android:color/transparent"
+            android:padding="0dp" />
+        <FrameLayout
+            android:id="@+id/livekit_prepare_accessory"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/livekit_prepare_accessory_height"
+            android:layout_marginStart="@dimen/livekit_prepare_accessory_inset"
+            android:layout_marginEnd="@dimen/livekit_prepare_accessory_inset"
+            android:visibility="gone" />
+
 
         <com.trtc.uikit.livekit.pusher.prepare.PusherLiveInfoEditorView
             android:id="@+id/livekit_pusher_prepare_setup"

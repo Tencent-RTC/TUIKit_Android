@@ -58,6 +58,9 @@ class WaterfallActivity : BaseActivity() {
         findViewById<View>(R.id.btn_start_live).setOnClickListener {
             if (requireLoggedIn()) startActivity(Intent(this, PusherActivity::class.java))
         }
+        findViewById<View>(R.id.btn_voice_lounge).setOnClickListener {
+            if (requireLoggedIn()) startActivity(VoiceLoungeActivity.createIntent(this))
+        }
         findViewById<View>(R.id.btn_version).setOnClickListener {
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.app_live_version_format, BuildConfig.VERSION_NAME))
@@ -177,6 +180,10 @@ class WaterfallActivity : BaseActivity() {
             return
         }
         if (liveInfo.liveID.isEmpty()) return
+        if (liveInfo.liveID.startsWith(VoiceLoungeActivity.LIVE_ID_PREFIX)) {
+            startActivity(VoiceLoungeActivity.joinIntent(this, liveInfo.liveID))
+            return
+        }
         startActivity(Intent(this, PlayerActivity::class.java).apply {
             putExtra(PlayerActivity.EXTRA_LIVE_ID, liveInfo.liveID)
         })

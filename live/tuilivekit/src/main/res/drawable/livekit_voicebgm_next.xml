@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 对位 iOS livekit_voicebgm_next.svg（下一首：右三角 + 竖条）。 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M17.1,5h2.4a1.2,1.2 0,0 1,1.2 1.2v11.6a1.2,1.2 0,0 1,-1.2 1.2h-2.4a1.2,1.2 0,0 1,-1.2 -1.2v-11.6a1.2,1.2 0,0 1,1.2 -1.2z"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M4.5,6.6v10.8c0,0.9 1,1.4 1.7,0.9l8,-5.4a1.1,1.1 0,0 0,0 -1.8l-8,-5.4c-0.7,-0.5 -1.7,0 -1.7,0.9z"
+        android:fillColor="#FFFFFF" />
+</vector>

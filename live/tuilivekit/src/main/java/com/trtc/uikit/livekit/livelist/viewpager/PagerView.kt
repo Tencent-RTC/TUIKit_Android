@@ -1,6 +1,7 @@
 package com.trtc.uikit.livekit.livelist.viewpager
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
@@ -20,8 +21,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 internal enum class SwipeBehavior {
-    PREVIEW_ONLY,
-    AUTO_ENTER_ROOM
+    PREVIEW_ONLY, AUTO_ENTER_ROOM
 }
 
 @SuppressLint("ViewConstructor")
@@ -30,7 +30,9 @@ internal class PagerView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     private val initialLiveID: String = "",
+    private val initialAutoEnterRoom: Boolean = false,
     private val onLoadMoreCallback: () -> Unit = {},
+    private val onCloseClickCallback: () -> Unit = {},
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     companion object {
@@ -50,7 +52,7 @@ internal class PagerView @JvmOverloads constructor(
 
     private var currentPlayerView: PlayerView? = null
     private var currentPlayerStatusJob: Job? = null
-    private var swipeBehavior = SwipeBehavior.PREVIEW_ONLY
+    private var swipeBehavior = if (initialAutoEnterRoom) SwipeBehavior.AUTO_ENTER_ROOM else SwipeBehavior.PREVIEW_ONLY
         set(value) {
             if (field == value) return
             field = value
@@ -125,8 +127,7 @@ internal class PagerView @JvmOverloads constructor(
     private fun createViewPager(): ViewPager2 {
         return ViewPager2(context).apply {
             layoutParams = RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
             )
             offscreenPageLimit = 1
             orientation = ViewPager2.ORIENTATION_VERTICAL
@@ -176,9 +177,7 @@ internal class PagerView @JvmOverloads constructor(
                 }
 
                 override fun onPageScrolled(
-                    position: Int,
-                    positionOffset: Float,
-                    positionOffsetPixels: Int
+                    position: Int, positionOffset: Float, positionOffsetPixels: Int
                 ) {
                     if (positionOffset <= 0) return
                     if (didSettleCurrentGesture) return
@@ -268,7 +267,9 @@ internal class PagerView @JvmOverloads constructor(
     }
 
     private fun handleCloseClicked() {
-        swipeBehavior = SwipeBehavior.PREVIEW_ONLY
+        onCloseClickCallback()
+// 说明：抖音效果需要切换到预览状态，而不是退房，需要将本方法实现修改为 swipeBehavior = SwipeBehavior.PREVIEW_ONLY 即可，其余逻辑删除。
+//        swipeBehavior = SwipeBehavior.PREVIEW_ONLY
     }
 
     private fun handleJoinClicked() {

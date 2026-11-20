@@ -14,8 +14,7 @@ import com.trtc.uikit.livekit.common.theme.ScreenUtil
 import com.trtc.uikit.livekit.common.log.LiveKitLog
 import com.trtc.uikit.livekit.common.setDebounceClickListener
 import com.trtc.uikit.livekit.common.theme.BottomSheetView
-import com.trtc.uikit.livekit.common.theme.permission.PermissionCallback
-import com.trtc.uikit.livekit.common.theme.permission.PermissionRequest
+import com.trtc.uikit.livekit.common.theme.LiveDevicePermission
 import com.trtc.uikit.livekit.common.theme.LiveToast
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
@@ -73,8 +72,7 @@ class CoGuestingPanel(
             val paddingH = ScreenUtil.dip2px(12f)
             setPadding(paddingH, 0, paddingH, 0)
         }
-        LayoutInflater.from(context)
-            .inflate(R.layout.livekit_coguest_control_bar, container, true)
+        LayoutInflater.from(context).inflate(R.layout.livekit_coguest_control_bar, container, true)
 
         val lp = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
@@ -88,8 +86,7 @@ class CoGuestingPanel(
         settingsGap = container.findViewById(R.id.livekit_coguest_ctrl_settings_gap)
         hangupButton = container.findViewById(R.id.livekit_coguest_ctrl_hangup)
 
-        container.findViewById<ImageView>(R.id.livekit_coguest_ctrl_hide).visibility =
-            android.view.View.GONE
+        container.findViewById<ImageView>(R.id.livekit_coguest_ctrl_hide).visibility = android.view.View.GONE
 
         micButton.setDebounceClickListener { toggleMic() }
         cameraButton.setDebounceClickListener { toggleCamera() }
@@ -126,8 +123,7 @@ class CoGuestingPanel(
             }
             launch {
                 openCameraAfterAccept.collectLatest { showVideo ->
-                    val visibility =
-                        if (showVideo) android.view.View.VISIBLE else android.view.View.GONE
+                    val visibility = if (showVideo) android.view.View.VISIBLE else android.view.View.GONE
                     cameraButton.visibility = visibility
                     settingsButton.visibility = visibility
                     settingsGap.visibility = visibility
@@ -178,9 +174,7 @@ class CoGuestingPanel(
             LiveSeatStore.create(liveID).unmuteMicrophone(null)
         } else if (seatInfo?.allowOpenMicrophone == false) {
             LiveToast.show(
-                context,
-                context.getString(R.string.livekit_player_coguest_microphone_locked),
-                LiveToast.Style.WARNING
+                context, context.getString(R.string.livekit_player_coguest_microphone_locked), LiveToast.Style.WARNING
             )
         }
     }
@@ -199,45 +193,36 @@ class CoGuestingPanel(
         val requestID = ++cameraRequestID
         requestingCameraPermission = true
         isOpeningCamera = true
-        PermissionRequest.requestCameraPermissions(context, object : PermissionCallback() {
-            override fun onGranted() {
-                if (requestID != cameraRequestID) return
-                requestingCameraPermission = false
-                if (!isShowing) {
-                    isOpeningCamera = false
-                    return
-                }
-                BeautyPreferences.restore(context)
-                DeviceStore.shared().openLocalCamera(
-                    DeviceStore.shared().deviceState.isFrontCamera.value,
-                    object : CompletionHandler {
-                        override fun onSuccess() {
-                            mainHandler.post {
-                                if (requestID == cameraRequestID) {
-                                    isOpeningCamera = false
-                                    if (!isShowing) {
-                                        DeviceStore.shared().closeLocalCamera()
-                                    }
-                                } else if (!allowCameraRestore && !isOpeningCamera) {
+        val scope = panelScope ?: CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        scope.launch {
+            val granted = LiveDevicePermission.requestCameraPermission(context)
+            if (requestID != cameraRequestID) return@launch
+            requestingCameraPermission = false
+            if (!granted || !isShowing) {
+                isOpeningCamera = false
+                return@launch
+            }
+            BeautyPreferences.restore(context)
+            DeviceStore.shared().openLocalCamera(
+                DeviceStore.shared().deviceState.isFrontCamera.value, object : CompletionHandler {
+                    override fun onSuccess() {
+                        mainHandler.post {
+                            if (requestID == cameraRequestID) {
+                                isOpeningCamera = false
+                                if (!isShowing) {
                                     DeviceStore.shared().closeLocalCamera()
                                 }
+                            } else if (!allowCameraRestore && !isOpeningCamera) {
+                                DeviceStore.shared().closeLocalCamera()
                             }
                         }
-
-                        override fun onFailure(code: Int, desc: String) {
-                            mainHandler.post { if (requestID == cameraRequestID) isOpeningCamera = false }
-                        }
                     }
-                )
-            }
 
-            override fun onDenied() {
-                if (requestID != cameraRequestID) return
-                super.onDenied()
-                requestingCameraPermission = false
-                isOpeningCamera = false
-            }
-        })
+                    override fun onFailure(code: Int, desc: String) {
+                        mainHandler.post { if (requestID == cameraRequestID) isOpeningCamera = false }
+                    }
+                })
+        }
     }
 
     private fun showSettingsDialog() {
@@ -258,7 +243,9 @@ class CoGuestingPanel(
                 logger.error("disconnect failed: code=$code, desc=$desc")
                 activeScope?.launch {
                     if (panelScope !== activeScope || !isShowing) return@launch
-                    LiveToast.show(context, context.getString(R.string.livekit_coguest_disconnect_failed), LiveToast.Style.WARNING)
+                    LiveToast.show(
+                        context, context.getString(R.string.livekit_coguest_disconnect_failed), LiveToast.Style.WARNING
+                    )
                 }
             }
         })
