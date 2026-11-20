@@ -60,6 +60,7 @@ open class AtomicPopover(
     private var isAnimating = false
     private val showAnimation: Boolean = panelGravity == PanelGravity.BOTTOM
     private var useTransparentBackground: Boolean = false
+    internal var isDismissibleByTappingOutside: Boolean = true
     private var showMask: Boolean = true
 
     enum class PanelGravity {
@@ -104,7 +105,7 @@ open class AtomicPopover(
                 )
             }
             setOnClickListener {
-                dismiss()
+                if (isDismissibleByTappingOutside) dismiss()
             }
             setBackgroundColor(Color.TRANSPARENT)
             addView(contentContainer)

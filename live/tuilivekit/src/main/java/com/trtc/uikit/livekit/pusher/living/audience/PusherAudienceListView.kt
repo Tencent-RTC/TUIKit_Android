@@ -117,6 +117,8 @@ private class PusherAudienceListAdapter(
             this.user = user
             bindRank(rank, rankDigits)
             ImageLoader.loadAvatar(avatarView, user.avatarURL, R.drawable.livekit_livelist_default_avatar)
+            nameView.text = user.userName.ifEmpty { user.userID }
+            levelView.setImageDrawable(LevelBadgeDrawable.forLevel(itemView.context, user.level))
             giftView.text = "0"
         }
 

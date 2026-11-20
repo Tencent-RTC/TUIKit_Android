@@ -266,4 +266,7 @@
     <dimen name="livekit_pusher_living_toolbar_pk_gap">14dp</dimen>
     <dimen name="livekit_pusher_living_toolbar_action_gap">12dp</dimen>
     <dimen name="livekit_pusher_living_toolbar_label_size">11sp</dimen>
+    <dimen name="livekit_cohost_actions_height">148dp</dimen>
+    <dimen name="livekit_prepare_accessory_height">48dp</dimen>
+    <dimen name="livekit_prepare_accessory_inset">60dp</dimen>
 </resources>

@@ -238,4 +238,17 @@
     <color name="livekit_pusher_ending_scrim">#8C000000</color>
     <color name="livekit_pusher_prepare_hint">#BFBFBF</color>
     <color name="livekit_pusher_prepare_cover_hint_background">#66000000</color>
+    <color name="livekit_cohost_status_text">#F6FAFF</color>
+    <color name="livekit_cohost_white">#FFFFFFFF</color>
+    <color name="livekit_cohost_secondary">#C7FFFFFF</color>
+    <color name="livekit_cohost_end">#FF9ECFFF</color>
+    <color name="livekit_cohost_accept_start">#FF43D5FF</color>
+    <color name="livekit_cohost_accept_end">#FF5379FF</color>
+    <color name="livekit_cohost_invite_start">#FF1F7AFF</color>
+    <color name="livekit_cohost_invite_end">#FF0052D9</color>
+    <color name="livekit_cohost_border">#6462ABFF</color>
+    <color name="livekit_cohost_reject">#17FFFFFF</color>
+    <color name="livekit_cohost_action">#771963DD</color>
+    <color name="livekit_cohost_separator">#12FFFFFF</color>
+    <color name="livekit_cohost_disabled">#47FFFFFF</color>
 </resources>

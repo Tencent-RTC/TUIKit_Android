@@ -22,21 +22,21 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
-import com.trtc.uikit.livekit.common.theme.foregroundservice.AudioForegroundService
+import com.trtc.uikit.livekit.common.theme.LiveForegroundService
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.LiveKitResources
 import com.trtc.uikit.livekit.common.COMPONENT_LIVE_STREAM
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.log.LiveKitLog
 import com.trtc.uikit.livekit.common.LIVE_INTEGRATION_SUCCESSFUL
-import com.trtc.uikit.livekit.common.theme.permission.PermissionCallback
-import com.trtc.uikit.livekit.common.theme.permission.PermissionRequest
+import com.trtc.uikit.livekit.common.theme.LiveDevicePermission
 import com.trtc.uikit.livekit.common.reportAtomicMetrics
 import com.trtc.uikit.livekit.common.setComponent
 import com.trtc.uikit.livekit.common.theme.LiveToast
 import com.trtc.uikit.livekit.pusher.living.PusherLivingView
 import com.trtc.uikit.livekit.pusher.prepare.PusherPrepareView
 import com.trtc.uikit.livekit.pusher.video.PusherVideoView
+import com.trtc.uikit.livekit.pusher.living.cohost.PusherCoHostStore
 import com.trtc.uikit.livekit.pusher.living.coguest.PusherCoGuestStore
 import com.trtc.uikit.livekit.pusher.living.status.PusherDeviceStatusState
 import com.trtc.uikit.livekit.pusher.summary.PusherSummaryView
@@ -108,6 +108,24 @@ class PusherView @JvmOverloads constructor(
     /** Raised when the host leaves the broadcast, from either the prepare or the summary stage. */
     var onExit: (() -> Unit)? = null
 
+    /** Host-owned header content, displayed only with the preparation controls. */
+    var prepareAccessoryView: View?
+        get() = prepareView.accessoryView
+        set(value) {
+            if (phase == Phase.PREPARE && !didReleaseSession) prepareView.accessoryView = value
+        }
+
+    /** End editing before reading. Writes retain the editor's existing UTF-8 limit. */
+    var prepareTitle: String
+        get() = if (phase == Phase.PREPARE) prepareView.title else liveTitle
+        set(value) {
+            if (phase != Phase.PREPARE || didReleaseSession || prepareView.isCountingDown) return
+            prepareView.clearFocus()
+            prepareView.bind(value, coverURL)
+            liveTitle = prepareView.title
+        }
+
+
     private val videoView = PusherVideoView(context)
     private val coGuestBackgroundView = ImageView(context).apply {
         setImageResource(R.drawable.livekit_video_background)
@@ -130,6 +148,9 @@ class PusherView @JvmOverloads constructor(
     private val mainHandler = Handler(Looper.getMainLooper())
     private val logger = LiveKitLog.getComponentLogger("PusherView")
     private var seatStore: LiveSeatStore? = null
+    private var coHostStore: PusherCoHostStore? = null
+    private var coHostStateJob: Job? = null
+    private var usesCoHostBackground = false
     private var coGuestStore: PusherCoGuestStore? = null
     private var presentationState = PusherPresentationState()
     private val settingsActionHandler = object : PusherSettingsActionHandling {
@@ -272,7 +293,9 @@ class PusherView @JvmOverloads constructor(
     fun bind(liveID: String) {
         if (didReleaseSession) return
         coGuestStore?.deactivate()
+        coHostStore?.deactivate()
         coGuestStateJob?.cancel()
+        coHostStateJob?.cancel()
         coGuestStateJob = null
         this.liveID = liveID
         if (!didInitializeVideoQuality) {
@@ -292,15 +315,20 @@ class PusherView @JvmOverloads constructor(
                 seatStore = seatStore,
             )
             coGuestStore = store
+            coHostStore = PusherCoHostStore(liveID)
+            livingView.coHostStore = coHostStore
             livingView.coGuestActionHandler = store
             livingView.updateCoGuest(store.state.value)
         } else {
             seatStore = null
             coGuestStore = null
+            coHostStore = null
+            livingView.coHostStore = null
             livingView.coGuestActionHandler = null
             livingView.updateCoGuest(PusherCoGuestStore.State())
         }
         subscribeCoGuestState()
+        subscribeCoHostState()
         subscribePresentationState()
         updateCoGuestPresentation()
     }
@@ -329,6 +357,7 @@ class PusherView @JvmOverloads constructor(
         LoginStore.shared.addLoginListener(loginListener)
         subscribePresentationState()
         subscribeCoGuestState()
+        subscribeCoHostState()
 
         val lifecycleOwner = findViewTreeLifecycleOwner() ?: return
         this.lifecycleOwner = lifecycleOwner
@@ -385,8 +414,21 @@ class PusherView @JvmOverloads constructor(
         summaryView.onExit = { exitPage() }
     }
 
+    private fun subscribeCoHostState() {
+        coHostStateJob?.cancel()
+        val store = coHostStore ?: return
+        coHostStateJob = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).launch {
+            launch { store.errors.collect { if (phase == Phase.LIVING) livingView.showCoGuestToast(it) } }
+            store.state.collectLatest { state ->
+                livingView.updateCoHost(state)
+                updateCoGuestPresentation()
+            }
+        }
+    }
+
     private fun subscribeCoGuestState() {
         coGuestStateJob?.cancel()
+        coHostStateJob?.cancel()
         coGuestStateJob = null
         val store = coGuestStore ?: return
         coGuestStateJob = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).launch {
@@ -532,28 +574,26 @@ class PusherView @JvmOverloads constructor(
             requestMicrophoneAccess(operationID)
             return
         }
-        PermissionRequest.requestCameraPermissions(context, object : PermissionCallback() {
-            override fun onGranted() {
-                mainHandler.post {
-                    if (!validatePreviewOperation(operationID)) return@post
-                    val isFront = backgroundDevices?.isFront
-                        ?: if (didInitializePreviewSettings) DeviceStore.shared().deviceState.isFrontCamera.value else true
-                    if (!didInitializePreviewSettings) {
-                        didInitializePreviewSettings = true
-                        DeviceStore.shared().switchMirror(MirrorType.ENABLE)
-                        updateSettings { copy(isMirrorEnabled = true) }
-                    }
-                    BeautyPreferences.restore(context)
-                    needsDeviceCleanup = true
-                    DeviceStore.shared().openLocalCamera(isFront, cameraPreviewHandler(operationID))
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).launch {
+            val granted = LiveDevicePermission.requestCameraPermission(context)
+            mainHandler.post {
+                if (!granted) {
+                    finishPreview(operationID)
+                    return@post
                 }
+                if (!validatePreviewOperation(operationID)) return@post
+                val isFront = backgroundDevices?.isFront
+                    ?: if (didInitializePreviewSettings) DeviceStore.shared().deviceState.isFrontCamera.value else true
+                if (!didInitializePreviewSettings) {
+                    didInitializePreviewSettings = true
+                    DeviceStore.shared().switchMirror(MirrorType.ENABLE)
+                    updateSettings { copy(isMirrorEnabled = true) }
+                }
+                BeautyPreferences.restore(context)
+                needsDeviceCleanup = true
+                DeviceStore.shared().openLocalCamera(isFront, cameraPreviewHandler(operationID))
             }
-
-            override fun onDenied() {
-                super.onDenied()
-                mainHandler.post { finishPreview(operationID) }
-            }
-        })
+        }
     }
 
     private fun cameraPreviewHandler(operationID: UUID): CompletionHandler = object : CompletionHandler {
@@ -580,30 +620,28 @@ class PusherView @JvmOverloads constructor(
             backgroundDevices = null
             return
         }
-        PermissionRequest.requestMicrophonePermissions(context, object : PermissionCallback() {
-            override fun onGranted() {
-                mainHandler.post {
-                    if (!validatePreviewOperation(operationID)) return@post
-                    needsDeviceCleanup = true
-                    val callback = microphonePreviewHandler(operationID)
-                    if (DeviceStore.shared().deviceState.microphoneStatus.value == DeviceStatus.ON) {
-                        if (presentationState.settings.isMuted) {
-                            callback.onSuccess()
-                        } else {
-                            seatStore?.unmuteMicrophone(callback)
-                        }
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).launch {
+            val granted = LiveDevicePermission.requestMicrophonePermission(context)
+            mainHandler.post {
+                if (!granted) {
+                    finishPreview(operationID)
+                    return@post
+                }
+                if (!validatePreviewOperation(operationID)) return@post
+                needsDeviceCleanup = true
+                val callback = microphonePreviewHandler(operationID)
+                if (DeviceStore.shared().deviceState.microphoneStatus.value == DeviceStatus.ON) {
+                    if (presentationState.settings.isMuted) {
+                        callback.onSuccess()
                     } else {
-                        if (presentationState.settings.isMuted) seatStore?.muteMicrophone()
-                        DeviceStore.shared().openLocalMicrophone(callback)
+                        seatStore?.unmuteMicrophone(callback)
                     }
+                } else {
+                    if (presentationState.settings.isMuted) seatStore?.muteMicrophone()
+                    DeviceStore.shared().openLocalMicrophone(callback)
                 }
             }
-
-            override fun onDenied() {
-                super.onDenied()
-                mainHandler.post { finishPreview(operationID) }
-            }
-        })
+        }
     }
 
     private fun microphonePreviewHandler(operationID: UUID): CompletionHandler = object : CompletionHandler {
@@ -691,16 +729,13 @@ class PusherView @JvmOverloads constructor(
             ) != true || DeviceStore.shared().deviceState.microphoneStatus.value != DeviceStatus.ON
         ) return
         ownsAudioService = true
-        AudioForegroundService.start(
-            context, context.applicationInfo.loadLabel(context.packageManager).toString(),
-            context.getString(R.string.livekit_coguest_service_description), R.drawable.livekit_coguest_idle,
-        )
+        LiveForegroundService.start(context)
     }
 
     private fun stopAudioService() {
         if (!ownsAudioService) return
         ownsAudioService = false
-        AudioForegroundService.stop(context)
+        LiveForegroundService.stop(context)
     }
 
     private fun refreshSettings() {
@@ -732,6 +767,7 @@ class PusherView @JvmOverloads constructor(
         livingView.activateComments()
         livingView.activateMusic()
         coGuestStore?.activate()
+        coHostStore?.activate()
         liveStartTimeMillis = System.currentTimeMillis()
         liveEndTimeMillis = 0L
         elapsedSeconds = 0
@@ -875,6 +911,7 @@ class PusherView @JvmOverloads constructor(
         interruptionMessage = null
         livingView.resetAfterStartFailure()
         coGuestStore?.deactivate()
+        coHostStore?.deactivate()
         prepareView.deactivate()
         render()
         // Existing or in-flight preview is retained; paused/background capture resumes
@@ -1016,6 +1053,7 @@ class PusherView @JvmOverloads constructor(
         livingView.deactivateComments(resetState = false)
         livingView.deactivateMusic()
         coGuestStore?.deactivate()
+        coHostStore?.deactivate()
         finishPause()
         elapsedTimer?.cancel()
         elapsedTimer = null
@@ -1055,8 +1093,10 @@ class PusherView @JvmOverloads constructor(
         presentationStateScope?.cancel()
         presentationStateScope = null
         coGuestStateJob?.cancel()
+        coHostStateJob?.cancel()
         coGuestStateJob = null
         coGuestStore?.deactivate()
+        coHostStore?.deactivate()
         livingView.deactivateAudience(resetState = true)
         livingView.deactivateLikes(resetState = true)
         livingView.deactivateComments(resetState = true)
@@ -1192,8 +1232,18 @@ class PusherView @JvmOverloads constructor(
 
     private fun updateCoGuestPresentation() {
         val isLiving = phase == Phase.LIVING
-        val isStageActive = isLiving && (connectedGuestCount > 0 || coGuestLayout != CoGuestLayoutTemplate.floatLayout)
-        videoView.updateCoGuestVideoState(isLiving, coGuestLayout, connectedGuestCount)
+        val isStageActive =
+            isLiving && (coHostStore?.state?.value?.isConnected == true || connectedGuestCount > 0 || coGuestLayout != CoGuestLayoutTemplate.floatLayout)
+        videoView.updateCoGuestVideoState(
+            isLiving, coGuestLayout, connectedGuestCount, coHostStore?.state?.value?.isConnected == true
+        )
+        val coHostBackground = coHostStore?.state?.value?.isConnected == true
+        if (usesCoHostBackground != coHostBackground) {
+            usesCoHostBackground = coHostBackground
+            coGuestBackgroundView.setImageResource(
+                if (coHostBackground) R.drawable.livekit_cohost_stage_background else R.drawable.livekit_video_background
+            )
+        }
         coGuestBackgroundView.isVisible = isStageActive
         livingView.setCoGuestStageActive(isStageActive)
     }

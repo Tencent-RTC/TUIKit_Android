@@ -25,6 +25,7 @@ open class BottomSheetView(context: Context) : AtomicPopover(context) {
     }
     private var heightAnimator: ValueAnimator? = null
     private var dismissRequested = false
+    private val dismissCompletions = mutableListOf<() -> Unit>()
 
     /** Optional 15sp standard title shared by sheets with the same title geometry. */
     protected var sheetTitle: String? = null
@@ -63,6 +64,9 @@ open class BottomSheetView(context: Context) : AtomicPopover(context) {
             heightAnimator = null
             dismissRequested = false
             sheetDidDismiss()
+            val completions = dismissCompletions.toList()
+            dismissCompletions.clear()
+            completions.forEach { it() }
         }
     }
 
@@ -96,6 +100,14 @@ open class BottomSheetView(context: Context) : AtomicPopover(context) {
         sheetWillPresent()
         applySheetHeight()
         super.show()
+    }
+
+    internal fun dismiss(completion: () -> Unit) {
+        if (!isShowing) {
+            completion(); return
+        }
+        dismissCompletions += completion
+        dismiss()
     }
 
     override fun dismiss() {

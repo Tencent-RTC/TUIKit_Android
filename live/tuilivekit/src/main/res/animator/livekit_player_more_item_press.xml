@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <objectAnimator
+            android:duration="200"
+            android:propertyName="alpha"
+            android:valueTo="0.65"
+            android:valueType="floatType" />
+    </item>
+    <item>
+        <objectAnimator
+            android:duration="200"
+            android:propertyName="alpha"
+            android:valueTo="1"
+            android:valueType="floatType" />
+    </item>
+</selector>
