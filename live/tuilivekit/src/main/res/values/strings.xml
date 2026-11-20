@@ -92,6 +92,7 @@
     <string name="livekit_pusher_music_happy">Upbeat</string>
     <string name="livekit_pusher_music_sad">Melancholy</string>
     <string name="livekit_pusher_music_wonder_world">Wonder World</string>
+    <string name="livekit_pusher_music_rain">Rain</string>
     <string name="common_people_volume">Voice volume</string>
     <string name="common_reverb">Reverb</string>
     <string name="common_reverb_metallic_sound">Metallic</string>
@@ -152,12 +153,6 @@
     <string name="common_video_settings_item_flip">Flip</string>
     <string name="common_video_settings_item_mirror">Mirror</string>
     <string name="live_barrage_btn_send">Send</string>
-    <string name="common_permission_camera">Camera</string>
-    <string name="common_permission_camera_reason">Needs access to your camera, and it can be used for functions such as Live etc. For beauty filters to work, we will collect the facial information captured by your camera in real time to detect your facial features.</string>
-    <string name="common_permission_mic_reason">Needs access to your microphone, and it can be used for functions such as Live etc. such as Live etc.</string>
-    <string name="common_permission_microphone">Microphone</string>
-    <string name="common_permission_tips">Please turn on the %1$s permission first</string>
-    <string name="common_permission_title">%1$s applies for access to the %2$s</string>
     <string name="common_gift_combo_long_press">Hold to</string>
     <string name="common_gift_combo">combo</string>
     <string name="livekit_edittopicview_default_title">Welcome to my live stream</string>
@@ -326,8 +321,6 @@
     <string name="livekit_pusher_audience_muted_toast">%1$s has been muted</string>
     <string name="livekit_pusher_audience_unmuted_toast">%1$s has been unmuted</string>
     <string name="livekit_pusher_audience_removed_toast">%1$s has been removed</string>
-    <string name="common_permission_dialog_title">Authorization Request</string>
-    <string name="common_permission_dialog_positive_setting_text">Settings</string>
     <string name="common_float_permission_hint">Please enable both \"Display pop-up window while running in the background\" and \"Display pop-up Window\" permissions</string>
 
     <string name="livekit_comment_send_failed">Failed to send comment. Please try again later.</string>
@@ -347,6 +340,11 @@
     <!-- These limits are fixed at 200 and 100; neither prompt has a singular case. -->
     <string name="livekit_comment_character_limit" tools:ignore="PluralsCandidate">Comments can contain up to %1$d characters</string>
     <string name="livekit_topic_byte_limit">Live title can contain up to %1$d bytes</string>
+    <string name="livekit_player_more_auto">Auto</string>
+    <string name="livekit_player_more_floating">Mini player</string>
+    <string name="livekit_player_more_quality">Video quality</string>
+    <string name="livekit_player_more_quality_fhd">Full HD</string>
+    <string name="livekit_player_more_quality_hd">HD</string>
     <string name="livekit_player_coguest_microphone_locked">The host has muted your microphone</string>
     <string name="livekit_pusher_coguest_microphone_manual_open">The viewer must unmute their microphone</string>
     <string name="livekit_pusher_coguest_microphone_closed">Muted %1$s’s microphone</string>
@@ -403,7 +401,6 @@
     <string name="livekit_coguest_disconnect_failed">Failed to disconnect. Please try again.</string>
     <string name="livekit_pusher_error_seat_mode">Failed to set the seat mode. Please try again later.</string>
     <string name="livekit_pusher_coguest_error_operation_failed">The co-guest operation failed. Please try again.</string>
-    <string name="livekit_rtc_channel_name">Video Communications Foreground Service</string>
     <string name="livekit_coguest_service_description">Running</string>
     <string name="livekit_beauty_advanced_unavailable">Advanced beauty is unavailable. Using basic beauty.</string>
     <string name="livekit_pusher_system_announcement">This platform promotes safe, healthy live streaming. Hosts are expected to maintain appropriate content and interactions. Inducing minors to send gifts or tips, fraud, gambling, illegal asset transfers, vulgar or pornographic content, smoking, excessive drinking, acts that cause physical harm, and other inappropriate conduct are strictly prohibited on and off the platform. Please respect the rights of others, protect personal privacy, and help maintain a respectful, safe, and orderly live streaming community.</string>
@@ -420,4 +417,37 @@
     <string name="livekit_summaryview_duration_hours">%1$dh</string>
     <string name="livekit_summaryview_duration_minutes">%1$dm</string>
     <string name="livekit_summaryview_duration_seconds">%1$ds</string>
+    <string name="livekit_player_cohost_connected">Connected</string>
+    <string name="livekit_cohost_request_timeout">Connection invitation timed out</string>
+    <string name="livekit_cohost_request_rejected">Connection invitation declined</string>
+    <string name="livekit_cohost_follow_query_failed">Could not load follow status. Pull to refresh to retry.</string>
+    <string name="livekit_cohost_title">Connect</string>
+    <string name="livekit_cohost_invite_title">Invite hosts</string>
+    <string name="livekit_cohost_empty">No hosts available</string>
+    <string name="livekit_cohost_retry">Could not load. Tap to retry</string>
+    <string name="livekit_cohost_load_more">Load more</string>
+    <string name="livekit_cohost_recommended">Recommended hosts</string>
+    <string name="livekit_cohost_mutual">Mutual follows</string>
+    <string name="livekit_cohost_following">Following</string>
+    <string name="livekit_cohost_connected">Connected</string>
+    <string name="livekit_cohost_cancel_invitation">Cancel invite</string>
+    <string name="livekit_cohost_invite">Invite</string>
+    <string name="livekit_cohost_connected_with">Connected with %1$s</string>
+    <string name="livekit_cohost_connected_count">%1$d hosts connected</string>
+    <string name="livekit_cohost_end">End connection</string>
+    <string name="livekit_cohost_invite_more">Find more hosts</string>
+    <string name="livekit_cohost_duration">Connected %1$s</string>
+    <string name="livekit_cohost_interaction_title">Host interaction</string>
+    <string name="livekit_cohost_incoming_mutual">Connection invitation from a mutual follow</string>
+    <string name="livekit_cohost_incoming">Host connection invitation</string>
+    <string name="livekit_cohost_reject_countdown">Decline (%1$ds)</string>
+    <string name="livekit_cohost_accept">Accept</string>
+    <string name="livekit_cohost_random_title">Random connection</string>
+    <string name="livekit_cohost_random_subtitle">Find a host to connect with</string>
+    <string name="livekit_cohost_random_button">Connect with a random host</string>
+    <string name="livekit_cohost_random_developing">Random connection is under development</string>
+    <string name="livekit_cohost_operation_failed">Operation failed. Please try again.</string>
+    <string name="livekit_cohost_processing">Processing</string>
+    <string name="livekit_cohost_back">Back</string>
+    <string name="livekit_stay_tuned">Stay tuned</string>
 </resources>

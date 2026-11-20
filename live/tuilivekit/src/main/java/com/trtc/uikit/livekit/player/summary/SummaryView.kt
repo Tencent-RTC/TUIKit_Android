@@ -56,8 +56,9 @@ class SummaryView @JvmOverloads constructor(
             liveInfo.coverURL.ifEmpty { LiveKitResources.defaultBackgroundURL }
         }
 
-        val config = ImageOptions.Builder().setBlurEffect(80f).setPlaceImage(R.drawable.livekit_video_background)
+        val config = ImageOptions.Builder().setPlaceImage(R.drawable.livekit_video_background)
             .setErrorImage(R.drawable.livekit_video_background).build()
         ImageLoader.load(context, backgroundView, url, config = config)
+        ImageLoader.applyBlur(backgroundView)
     }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 对位 iOS livekit_voicebgm_shuffle.svg（随机播放：两条带箭头的交叉线）。 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M3.5,7h3.2c1.3,0 2.5,0.7 3.2,1.8l4.2,6.4c0.7,1.1 1.9,1.8 3.2,1.8h3.2"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M3.5,17h3.2c1.3,0 2.5,-0.7 3.2,-1.8l0.5,-0.8M13.6,9.6l0.5,-0.8c0.7,-1.1 1.9,-1.8 3.2,-1.8h3.2"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M18,4l3,3 -3,3M18,14l3,3 -3,3"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

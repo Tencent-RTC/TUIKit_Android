@@ -49,6 +49,7 @@ class PusherVideoView @JvmOverloads constructor(
     private var showsHostOverlay = false
     private var usesSmallWindows = false
     private var usesGrid = false
+    private var isCoHostConnected = false
     private var localCameraStatus: DeviceStatus? = null
     private val cornerRadius = resources.getDimension(R.dimen.livekit_pusher_stage_corner_radius)
 
@@ -135,18 +136,23 @@ class PusherVideoView @JvmOverloads constructor(
         isLiving: Boolean,
         layout: CoGuestLayoutTemplate,
         connectedGuestCount: Int,
+        isCoHostConnected: Boolean = false,
     ) {
-        usesSmallWindows = layout == CoGuestLayoutTemplate.floatLayout || layout == CoGuestLayoutTemplate.columnLayout
+        this.isCoHostConnected = isCoHostConnected
+        usesSmallWindows =
+            !isCoHostConnected && (layout == CoGuestLayoutTemplate.floatLayout || layout == CoGuestLayoutTemplate.columnLayout)
         usesGrid =
-            layout == CoGuestLayoutTemplate.gridLayout || (layout == CoGuestLayoutTemplate.dynamicLayout && connectedGuestCount > 0)
+            isCoHostConnected || layout == CoGuestLayoutTemplate.gridLayout || (layout == CoGuestLayoutTemplate.dynamicLayout && connectedGuestCount > 0)
         this.isLiving = isLiving
         this.connectedGuestCount = connectedGuestCount
-        showsEmptySeats = layout.pusherShowsEmptySeats
+        showsEmptySeats = !isCoHostConnected && layout.pusherShowsEmptySeats
         showsHostOverlay =
-            layout == CoGuestLayoutTemplate.gridLayout || (layout == CoGuestLayoutTemplate.dynamicLayout && connectedGuestCount > 0)
+            isCoHostConnected || layout == CoGuestLayoutTemplate.gridLayout || (layout == CoGuestLayoutTemplate.dynamicLayout && connectedGuestCount > 0)
         currentViews().forEach(::updatePresentation)
         notifyGeometryChanged()
-        updateCoGuestStageVisible(isLiving && (connectedGuestCount > 0 || layout != CoGuestLayoutTemplate.floatLayout))
+        updateCoGuestStageVisible(
+            isLiving && (isCoHostConnected || connectedGuestCount > 0 || layout != CoGuestLayoutTemplate.floatLayout)
+        )
     }
 
     internal fun updateLocalCameraStatus(status: DeviceStatus) {
@@ -170,7 +176,7 @@ class PusherVideoView @JvmOverloads constructor(
     }
 
     fun coGuestUserIDAt(point: PointF): String? {
-        if (!isLiving || connectedGuestCount == 0) return null
+        if (!isLiving || isCoHostConnected || connectedGuestCount == 0) return null
         return currentViews().asReversed().firstOrNull { view ->
             view.isGuest && isVisible(view, this) && region(view, this).contains(point.x, point.y)
         }?.unitInfo?.userID
@@ -202,7 +208,9 @@ class PusherVideoView @JvmOverloads constructor(
     }
 
     private fun updatePresentation(view: PusherUnitView) {
-        view.setPresentation(isLiving, showsEmptySeats, connectedGuestCount > 0, showsHostOverlay, localCameraStatus)
+        view.setPresentation(
+            isLiving, showsEmptySeats, isCoHostConnected || connectedGuestCount > 0, showsHostOverlay, localCameraStatus
+        )
     }
 
     private fun notifyGeometryChanged() {

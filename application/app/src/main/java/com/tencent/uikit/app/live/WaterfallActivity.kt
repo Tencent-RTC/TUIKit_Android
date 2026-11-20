@@ -58,6 +58,9 @@ class WaterfallActivity : BaseActivity() {
         findViewById<View>(R.id.btn_start_live).setOnClickListener {
             if (requireLoggedIn()) startActivity(Intent(this, PusherActivity::class.java))
         }
+        findViewById<View>(R.id.btn_voice_lounge).setOnClickListener {
+            if (requireLoggedIn()) openVoiceLounge()
+        }
         findViewById<View>(R.id.btn_version).setOnClickListener {
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.app_live_version_format, BuildConfig.VERSION_NAME))
@@ -177,9 +180,26 @@ class WaterfallActivity : BaseActivity() {
             return
         }
         if (liveInfo.liveID.isEmpty()) return
+        // 语聊房主播开播时 liveID 固定为 `voice_<userID>`，按前缀分流到语聊房。
+        if (liveInfo.liveID.startsWith(VoiceLoungeActivity.LIVE_ID_PREFIX)) {
+            startActivity(VoiceLoungeActivity.joinIntent(this, liveInfo.liveID))
+            return
+        }
         startActivity(Intent(this, PlayerActivity::class.java).apply {
             putExtra(PlayerActivity.EXTRA_LIVE_ID, liveInfo.liveID)
         })
+    }
+
+    private fun openVoiceLounge() {
+        val userID = LoginStore.shared.loginState.loginUserInfo.value?.userID.orEmpty()
+        if (userID.isEmpty()) {
+            AlertDialog.Builder(this)
+                .setMessage(R.string.app_login_user_missing)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+            return
+        }
+        startActivity(VoiceLoungeActivity.createIntent(this))
     }
 
     override fun onResume() {

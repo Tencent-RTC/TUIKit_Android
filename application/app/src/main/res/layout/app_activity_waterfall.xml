@@ -90,5 +90,21 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/btn_voice_lounge"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/app_bg_voice_lounge"
+            android:gravity="center"
+            android:paddingHorizontal="24dp"
+            android:text="@string/app_live_list_voice_room"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/btn_start_live"
+            app:layout_constraintEnd_toStartOf="@id/btn_start_live"
+            app:layout_constraintTop_toTopOf="@id/btn_start_live" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.tencent.uikit.app.live.SwipeBackLayout>

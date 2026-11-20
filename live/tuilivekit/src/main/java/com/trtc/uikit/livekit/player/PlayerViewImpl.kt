@@ -24,6 +24,7 @@ import com.trtc.uikit.livekit.common.beauty.BeautyPreferences
 import com.trtc.uikit.livekit.common.theme.popover.AtomicPopover
 import com.trtc.uikit.livekit.common.theme.LiveToast
 import com.trtc.uikit.livekit.player.living.LivingView
+import com.trtc.uikit.livekit.player.floating.FloatingPlayerManager
 import com.trtc.uikit.livekit.player.living.coguest.CoGuestStatus
 import com.trtc.uikit.livekit.player.preview.PreviewView
 import com.trtc.uikit.livekit.player.summary.SummaryView
@@ -54,10 +55,9 @@ internal class PlayerViewImpl(
     private val summaryView: SummaryView
     private val previewView: PreviewView
     private val closeButton: ImageButton
-    private val player: AtomicPlayer = AtomicPlayer()
-
     private var isPlaying = false
     private var isJoinedChannel = false
+    private var isPlayerHandedOver = false
     private var liveInfo: LiveInfo? = null
     private var joinLiveEntranceEnabled = true
     private var isEntranceInitiatedJoin = false
@@ -72,6 +72,10 @@ internal class PlayerViewImpl(
     private val screenAwake = LiveScreenAwake(host)
     private var screenActive = true
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val player: AtomicPlayer = FloatingPlayerManager.getAtomicPlayer(liveID) { playing, joined ->
+        isPlaying = playing
+        isJoinedChannel = joined
+    } ?: AtomicPlayer()
     private val captureLifecycleObserver = LifecycleEventObserver { _, event ->
         when (event) {
             Lifecycle.Event.ON_STOP -> {
@@ -92,7 +96,13 @@ internal class PlayerViewImpl(
         }
     }
 
-    private val _status: MutableStateFlow<PlayerStatus> = MutableStateFlow(PlayerStatus.IDLE)
+    private val _status: MutableStateFlow<PlayerStatus> = MutableStateFlow(
+        when {
+            isJoinedChannel -> PlayerStatus.IN_ROOM
+            isPlaying -> PlayerStatus.PLAYING
+            else -> PlayerStatus.IDLE
+        }
+    )
     val status: StateFlow<PlayerStatus> = _status.asStateFlow()
 
     init {
@@ -111,6 +121,7 @@ internal class PlayerViewImpl(
             handleJoinLiveEntranceTap()
         }
         overlayView.onCoGuestUiStateChanged = ::handleCoGuestUiState
+        overlayView.onFloatingWindowRequested = ::handleFloatingWindowRequested
         overlayView.videoSeatRegions = {
             val status = currentStatus()
             if (isJoinedChannel && (status == PlayerStatus.IN_ROOM || status == PlayerStatus.CO_GUEST)) {
@@ -119,7 +130,11 @@ internal class PlayerViewImpl(
                 emptyList()
             }
         }
-        videoView.onGeometryChanged = { overlayView.refreshVideoGeometry() }
+        videoView.onGeometryChanged = {
+            videoView.refreshConnectionPresentation()
+            overlayView.setCoHostConnected(videoView.isCoHostConnected)
+            overlayView.refreshVideoGeometry()
+        }
         applyStatusPresentation()
     }
 
@@ -133,6 +148,7 @@ internal class PlayerViewImpl(
         videoView.setLiveInfo(liveInfo)
         previewView.bind(liveInfo)
         overlayView.bind(liveInfo)
+        overlayView.setJoinedChannel(isJoinedChannel)
     }
 
     fun setJoinLiveEntranceEnabled(enabled: Boolean) {
@@ -142,6 +158,7 @@ internal class PlayerViewImpl(
     }
 
     fun startPlay() {
+        if (isPlayerHandedOver) return
         val currentLiveInfo = liveInfo ?: run {
             logger.error("startPlay failed, liveInfo is null")
             return
@@ -171,6 +188,7 @@ internal class PlayerViewImpl(
     }
 
     fun stopPlay() {
+        if (isPlayerHandedOver) return
         val currentLiveInfo = liveInfo ?: run {
             logger.error("stopPlay failed, liveInfo is null")
             return
@@ -193,6 +211,7 @@ internal class PlayerViewImpl(
     }
 
     fun joinChannel(callback: LiveInfoCompletionHandler?) {
+        if (isPlayerHandedOver) return
         val currentLiveInfo = liveInfo ?: run {
             logger.error("joinChannel failed, liveInfo is null")
             return
@@ -206,6 +225,7 @@ internal class PlayerViewImpl(
         setComponent(COMPONENT_LIVE_STREAM)
         player.joinChannel(joiningLiveID, object : CompletionHandler {
             override fun onSuccess() {
+                if (isPlayerHandedOver) return
                 if (liveInfo?.liveID != joiningLiveID) {
                     logger.info("joinChannel succeeded for outdated room, leaving, roomId:$joiningLiveID")
                     player.leaveChannel()
@@ -224,6 +244,7 @@ internal class PlayerViewImpl(
             }
 
             override fun onFailure(code: Int, desc: String) {
+                if (isPlayerHandedOver) return
                 logger.error("joinChannel failed, code:$code, desc:$desc")
                 if (liveInfo?.liveID != joiningLiveID) return
                 isEntranceInitiatedJoin = false
@@ -238,13 +259,16 @@ internal class PlayerViewImpl(
     }
 
     fun setVolume(volume: Int) {
+        if (isPlayerHandedOver) return
         player.setVolume(volume)
     }
 
     fun onAttached() {
+        if (isPlayerHandedOver) return
         screenActive = true
         AdvancedBeautySession.acquire(host)
         player.addListener(playerListener)
+        if (isPlaying || isJoinedChannel) player.setView(videoView.coreView)
         host.findViewTreeLifecycleOwner()?.let { owner ->
             lifecycleOwner = owner
             screenActive = owner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
@@ -266,8 +290,10 @@ internal class PlayerViewImpl(
         cameraRestoreID = null
         clearBackgroundMicrophone()
         player.removeListener(playerListener)
-        overlayView.deactivateCoGuest()
-        overlayView.deactivateRoomFeatures()
+        if (!isPlayerHandedOver) {
+            overlayView.deactivateCoGuest()
+            overlayView.deactivateRoomFeatures()
+        }
     }
 
     private fun handleJoinLiveEntranceTap() {
@@ -403,6 +429,7 @@ internal class PlayerViewImpl(
     }
 
     private fun handleCoGuestUiState(uiState: CoGuestStatus) {
+        if (isPlayerHandedOver) return
         if (liveInfo == null) return
         if (!isJoinedChannel) return
         when (uiState) {
@@ -429,6 +456,7 @@ internal class PlayerViewImpl(
     }
 
     private fun performLeave() {
+        if (isPlayerHandedOver) return
         backgroundCamera = null
         cameraRestoreID = null
         clearBackgroundMicrophone()
@@ -453,6 +481,17 @@ internal class PlayerViewImpl(
     private fun clearEndedState() {
         if (currentStatus() != PlayerStatus.END) return
         updateStatus(if (isPlaying) PlayerStatus.PLAYING else PlayerStatus.IDLE)
+    }
+
+    private fun handleFloatingWindowRequested() {
+        val currentLiveID = liveInfo?.liveID?.takeIf { it.isNotEmpty() } ?: liveID
+        FloatingPlayerManager.enterFloatingView(context, player, currentLiveID, isPlaying, isJoinedChannel) {
+            isPlayerHandedOver = true
+            player.removeListener(playerListener)
+            lifecycleOwner?.lifecycle?.removeObserver(captureLifecycleObserver)
+            overlayView.deactivateCoGuest()
+            setJoinedChannel(false)
+        }
     }
 
     private fun handleCloseClick() {
@@ -498,6 +537,7 @@ internal class PlayerViewImpl(
 
     private val playerListener = object : PlayerListener() {
         override fun liveEnded(reason: EndedReason) {
+            if (isPlayerHandedOver) return
             logger.info("onLiveEnded, liveId:$liveID, reason:$reason,")
             if (currentStatus() == PlayerStatus.END) return
             finishRoom()
@@ -506,6 +546,7 @@ internal class PlayerViewImpl(
         }
 
         override fun kickedOut(reason: KickedOutReason, message: String) {
+            if (isPlayerHandedOver) return
             logger.info("onKickedOut, liveId:$liveID, reason:$reason, message:$message")
             if (!isJoinedChannel) return
             val messageResID = when (reason) {
@@ -524,6 +565,7 @@ internal class PlayerViewImpl(
     }
 
     private fun finishRoom() {
+        if (isPlayerHandedOver) return
         isEntranceInitiatedJoin = false
         backgroundCamera = null
         cameraRestoreID = null
