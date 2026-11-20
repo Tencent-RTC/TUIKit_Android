@@ -62,4 +62,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <androidx.appcompat.widget.AppCompatTextView android:id="@+id/livekit_pusher_cohost_status" android:layout_width="match_parent" android:layout_height="22dp" android:layout_gravity="top" android:background="@drawable/livekit_cohost_status_scrim" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:ellipsize="end" android:textColor="@color/livekit_cohost_status_text" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:visibility="gone" />
 </merge>

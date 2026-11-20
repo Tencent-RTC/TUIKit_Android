@@ -40,6 +40,7 @@ class LiveBottomToolbarView @JvmOverloads constructor(
     /** Raised when the host taps the more action. Ignored until a broadcast is bound. */
     var onShowLivingSettings: (() -> Unit)? = null
 
+    internal var onShowCoHost: (() -> Unit)? = null
     internal var onFlipCamera: (() -> Unit)? = null
     internal var onShowMusic: (() -> Unit)? = null
 
@@ -62,7 +63,7 @@ class LiveBottomToolbarView @JvmOverloads constructor(
             R.id.livekit_pusher_living_toolbar_more_label,
         ).map { findViewById(it) }
         pkAction.setOnClickListener {
-            if (liveID.isNotEmpty()) LiveToast.show(context, context.getString(R.string.livekit_pusher_pk_developing))
+            if (liveID.isNotEmpty()) onShowCoHost?.invoke()
         }
         flipAction.setOnClickListener { if (liveID.isNotEmpty()) onFlipCamera?.invoke() }
         musicAction.setOnClickListener { if (liveID.isNotEmpty()) onShowMusic?.invoke() }

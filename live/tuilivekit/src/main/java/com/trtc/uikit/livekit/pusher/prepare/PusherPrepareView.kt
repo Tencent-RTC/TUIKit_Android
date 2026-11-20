@@ -51,10 +51,25 @@ class PusherPrepareView @JvmOverloads constructor(
             moreSettingsView.actionHandler = value
         }
 
+    internal val title: String get() = liveInfoEditorView.draftTitle
+    internal val isCountingDown: Boolean get() = countdownOperationID != null
+    internal var accessoryView: View? = null
+        set(value) {
+            if (field === value) return
+            field?.let { (it.parent as? android.view.ViewGroup)?.removeView(it) }
+            field = value
+            val slot = findViewById<FrameLayout>(R.id.livekit_prepare_accessory)
+            slot.visibility = if (value == null) GONE else VISIBLE
+            value?.let {
+                (it.parent as? android.view.ViewGroup)?.removeView(it)
+                slot.addView(it, LayoutParams(-1, -1))
+            }
+        }
+
     private val liveInfoEditorView: PusherLiveInfoEditorView
     private val editingContentView: View
     private val countdownView: CountdownView
-    private val exitView: TextView
+    private val exitView: View
     private val actionsView: View
     private val startButton: GradientButton
     private val coverPickerView = PusherCoverPickerView(context)
@@ -229,6 +244,9 @@ class PusherPrepareView @JvmOverloads constructor(
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val navigationBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             val startBottom = navigationBottom + startGap
+            findViewById<View>(R.id.livekit_prepare_accessory).updateLayoutParams<MarginLayoutParams> {
+                topMargin = exitTop + systemBars.top
+            }
             exitView.updateLayoutParams<MarginLayoutParams> {
                 topMargin = exitTop + systemBars.top
             }

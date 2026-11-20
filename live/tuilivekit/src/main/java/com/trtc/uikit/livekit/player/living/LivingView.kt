@@ -36,6 +36,7 @@ import com.trtc.uikit.livekit.common.audience.AudienceWelcome
 import com.trtc.uikit.livekit.player.living.coguest.CoGuestIcon
 import com.trtc.uikit.livekit.player.living.coguest.CoGuestStatus
 import com.trtc.uikit.livekit.player.living.hostinfo.HostInfoView
+import com.trtc.uikit.livekit.player.living.more.MorePanel
 import com.trtc.uikit.livekit.common.like.LikeUIStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import kotlinx.coroutines.CoroutineScope
@@ -55,6 +56,7 @@ class LivingView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     var onCoGuestUiStateChanged: ((CoGuestStatus) -> Unit)? = null
+    var onFloatingWindowRequested: (() -> Unit)? = null
     internal var videoSeatRegions: (() -> List<RectF>)? = null
 
     companion object {
@@ -85,6 +87,7 @@ class LivingView @JvmOverloads constructor(
     private val commentEntryView: View
     private val commentComposerView: BarrageInputView
     private val likeView: ImageView
+    private val moreView: ImageView
     private val giftView: ImageView
     private val coGuestView: CoGuestIcon
     private val controlsRestoreView: ImageView
@@ -96,6 +99,7 @@ class LivingView @JvmOverloads constructor(
     private val giftBarrageStore = GiftBarrageStore()
     private var giftPresentationGeneration = 0L
     private var giftPanelTopOnScreen: Int? = null
+    private var morePanel: MorePanel? = null
     private var lifecycleOwner: LifecycleOwner? = null
     private val lifecycleObserver = LifecycleEventObserver { _, event ->
         when (event) {
@@ -103,16 +107,34 @@ class LivingView @JvmOverloads constructor(
             Lifecycle.Event.ON_STOP -> {
                 giftBarrageStore.setApplicationActive(false)
                 GiftSendPanelView.stopCombo()
+                morePanel?.dismissAll()
             }
 
             Lifecycle.Event.ON_DESTROY -> {
                 giftBarrageStore.setApplicationActive(false)
                 dismissGiftPresentation()
+                morePanel?.dismissAll()
             }
 
             else -> Unit
         }
     }
+    private val coHostStatusView: androidx.appcompat.widget.AppCompatTextView
+    private var isCoHostConnected = false
+
+    internal fun setCoHostConnected(connected: Boolean) {
+        isCoHostConnected = connected
+        updateCoHostStatus()
+    }
+
+    private fun updateCoHostStatus() {
+        val top = videoSeatRegions?.invoke()?.filter { !it.isEmpty && it.bottom > 0 && it.top < height }
+            ?.minOfOrNull { it.top }
+        coHostStatusView.visibility =
+            if (isCoHostConnected && isJoinedChannel && !isCleanMode && top != null && top >= dp(22)) VISIBLE else GONE
+        if (top != null) coHostStatusView.translationY = top - dp(22)
+    }
+
     private val cleanableViews: List<View>
     private val cleanTranslationX: Float = resources.displayMetrics.widthPixels.toFloat()
     private val touchSlop: Int = ViewConfiguration.get(context).scaledTouchSlop
@@ -133,6 +155,7 @@ class LivingView @JvmOverloads constructor(
 
     init {
         LayoutInflater.from(context).inflate(R.layout.livekit_player_overlay_view, this, true)
+        coHostStatusView = findViewById(R.id.livekit_player_cohost_status)
         giftDisplayView = findViewById(R.id.livekit_overlay_gift_overlay)
         likeAnimationView = findViewById(R.id.livekit_overlay_like_animation)
         likeUIStore = LikeUIStore { count -> likeAnimationView.emit(count) }
@@ -143,6 +166,7 @@ class LivingView @JvmOverloads constructor(
         commentEntryView = findViewById(R.id.livekit_overlay_comment_entry)
         commentComposerView = findViewById(R.id.livekit_overlay_comment_composer)
         likeView = findViewById(R.id.livekit_overlay_like_view)
+        moreView = findViewById(R.id.livekit_living_more_view)
         giftView = findViewById(R.id.livekit_overlay_gift_view)
         coGuestView = findViewById(R.id.livekit_overlay_coguest_view)
         coGuestView.onUiStateChanged = { onCoGuestUiStateChanged?.invoke(it) }
@@ -150,7 +174,7 @@ class LivingView @JvmOverloads constructor(
 
         cleanableViews = listOf(
             giftDisplayView, likeAnimationView, hostInfoView, audienceListView, audienceWelcomeView, messageListView,
-            commentEntryView, likeView, giftView, coGuestView
+            commentEntryView, likeView, moreView, giftView, coGuestView, coHostStatusView
         )
 
         commentEntryView.setDebounceClickListener {
@@ -191,6 +215,22 @@ class LivingView @JvmOverloads constructor(
             likeAnimationView.showButtonLike(PointF(likeView.x + likeView.width / 2, likeView.y))
             likeUIStore.sendLike()
         }
+        moreView.setDebounceClickListener {
+            if (!isJoinedChannel || isCleanMode || !isAttachedToWindow || !isShown || morePanel?.isShowing == true) {
+                return@setDebounceClickListener
+            }
+            commentComposerView.dismiss()
+            dismissGiftPresentation()
+            if (morePanel == null) {
+                val roomID = activatedLiveID
+                morePanel = MorePanel(context) {
+                    if (activatedLiveID == roomID && isJoinedChannel && !isCleanMode && isAttachedToWindow && isShown) {
+                        onFloatingWindowRequested?.invoke()
+                    }
+                }
+            }
+            morePanel?.show()
+        }
         likeAnimationView.enableTouchInteraction { _, _ -> likeUIStore.sendLike() }
         controlsRestoreView.setDebounceClickListener {
             setCleanMode(false)
@@ -222,10 +262,6 @@ class LivingView @JvmOverloads constructor(
     }
 
     fun setJoinedChannel(isJoinedChannel: Boolean) {
-        if (this.isJoinedChannel == isJoinedChannel) {
-            refresh()
-            return
-        }
         this.isJoinedChannel = isJoinedChannel
         if (isJoinedChannel) {
             liveInfo?.liveID?.let(::activateRoomFeatures)
@@ -251,9 +287,11 @@ class LivingView @JvmOverloads constructor(
         messageListView.visibility = businessVisibility
         commentEntryView.visibility = businessVisibility
         likeView.visibility = businessVisibility
+        moreView.visibility = businessVisibility
         giftView.visibility = businessVisibility
         coGuestView.visibility = businessVisibility
 
+        updateCoHostStatus()
         controlsRestoreView.visibility = if (isJoinedChannel && isCleanMode) VISIBLE else GONE
         updateInteractionLayout()
     }
@@ -264,7 +302,10 @@ class LivingView @JvmOverloads constructor(
         lifecycleOwner = findViewTreeLifecycleOwner()
         lifecycleOwner?.lifecycle?.addObserver(lifecycleObserver)
         if (isJoinedChannel) {
-            liveInfo?.liveID?.let(::activateRoomFeatures)
+            liveInfo?.let {
+                coGuestView.bind(it)
+                activateRoomFeatures(it.liveID)
+            }
         }
         giftBarrageStore.setApplicationActive(
             lifecycleOwner?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true
@@ -281,6 +322,7 @@ class LivingView @JvmOverloads constructor(
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
+        updateCoHostStatus()
         updateInteractionLayout()
         // Resume normal measurement only after its width, height and crop have actually been laid out.
         if (!isComposerPresented && !messageListView.isLayoutRequested) {
@@ -335,6 +377,9 @@ class LivingView @JvmOverloads constructor(
     fun startCoGuestAudioServiceIfNeeded() = coGuestView.startAudioServiceIfNeeded()
 
     fun deactivateRoomFeatures() {
+        morePanel?.dismissAll()
+        morePanel = null
+        setCoHostConnected(false)
         dismissGiftPresentation()
         isComposerPresented = false
         composerBottom = 0
@@ -368,7 +413,7 @@ class LivingView @JvmOverloads constructor(
     private fun dismissGiftPresentation() {
         giftPresentationGeneration++
         giftPanelTopOnScreen = null
-        GiftSendPanelView.dismiss()
+        if (activatedLiveID.isNotEmpty()) GiftSendPanelView.dismiss()
         updateInteractionLayout()
     }
 
@@ -410,6 +455,7 @@ class LivingView @JvmOverloads constructor(
     }
 
     internal fun refreshVideoGeometry() {
+        updateCoHostStatus()
         updateInteractionLayout()
     }
 
@@ -597,6 +643,7 @@ class LivingView @JvmOverloads constructor(
         giftDisplayView.setSuspended(clean || !isJoinedChannel)
         giftBarrageStore.setCollectionEnabled(!clean && isJoinedChannel)
         if (clean) {
+            morePanel?.dismissAll()
             commentComposerView.dismiss()
             giftPresentationGeneration++
             giftPanelTopOnScreen = null

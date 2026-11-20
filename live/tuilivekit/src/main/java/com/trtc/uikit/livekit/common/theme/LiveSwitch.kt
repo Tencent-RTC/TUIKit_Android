@@ -25,7 +25,11 @@ class LiveSwitch @JvmOverloads constructor(
 
     private val knobInset = resources.getDimension(R.dimen.livekit_pusher_audio_switch_knob_inset)
     private val offTrackColor = ContextCompat.getColor(context, R.color.livekit_pusher_audio_switch_off_track)
-    private val onTrackColor = ContextCompat.getColor(context, R.color.livekit_switch_on_track)
+    var onTrackColor = ContextCompat.getColor(context, R.color.livekit_switch_on_track)
+        set(value) {
+            field = value
+            invalidate()
+        }
     private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val knobPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.WHITE }
     private val trackBounds = RectF()

@@ -1,5 +1,11 @@
 package com.trtc.uikit.livekit.pusher.living
 
+import com.trtc.uikit.livekit.pusher.living.cohost.PusherCoHostStore
+import com.trtc.uikit.livekit.pusher.living.cohost.PusherCoHostActionsView
+import com.trtc.uikit.livekit.pusher.living.cohost.PusherCoHostCandidateListView
+import com.trtc.uikit.livekit.pusher.living.cohost.PusherCoHostIncomingInviteView
+import com.trtc.uikit.livekit.common.theme.BottomSheetView
+
 import io.trtc.tuikit.atomicxcore.api.live.CoGuestLayoutTemplate
 import com.trtc.uikit.livekit.common.audience.AudienceWelcome
 import android.content.Context
@@ -120,6 +126,98 @@ class PusherLivingView @JvmOverloads constructor(
     private val pauseOverlay: PusherPauseOverlayView
     private val endConfirmationView = PusherEndConfirmationView(context)
     private val liveStatusView = PusherLiveStatusView(context)
+    internal var coHostStore: PusherCoHostStore? = null
+    private var coHostState = PusherCoHostStore.State()
+    private val coHostCandidates = PusherCoHostCandidateListView(context)
+    private val coHostActions = PusherCoHostActionsView(context)
+    private val coHostIncoming = PusherCoHostIncomingInviteView(context)
+    private val coHostStatus: androidx.appcompat.widget.AppCompatTextView
+    private var coHostTransitioning = false
+    private var coHostPresentationGeneration = 0L
+
+    internal fun updateCoHost(state: PusherCoHostStore.State) {
+        val connectionChanged = coHostState.isConnected != state.isConnected
+        coHostState = state
+        coHostCandidates.bind(state)
+        coHostActions.bind(state)
+        coHostIncoming.bind(state)
+        updateCoHostStatus()
+        if (connectionChanged) dismissCoHost()
+        showPendingCoHostInvitation()
+    }
+
+    private fun updateCoHostStatus() {
+        val start = coHostState.connectionStartedAt
+        val top = coGuestGridRegions?.invoke()?.filter { !it.isEmpty && it.bottom > 0 && it.top < height }
+            ?.minOfOrNull { it.top }
+        coHostStatus.isVisible = coHostState.isConnected && start != null && top != null && top >= dp(22)
+        if (top != null) coHostStatus.translationY = top - dp(22)
+        if (start != null) {
+            val seconds = ((System.currentTimeMillis() - start) / 1000).coerceAtLeast(0)
+            val duration = String.format(java.util.Locale.US, "%02d:%02d", seconds / 60, seconds % 60)
+            coHostStatus.text = context.getString(R.string.livekit_cohost_duration, duration)
+        }
+    }
+
+    private fun coHostSheets() = listOf<BottomSheetView>(coHostCandidates, coHostActions, coHostIncoming)
+    private fun normalSheets() = listOf<BottomSheetView>(
+        settingsView, musicView, audienceListView, audienceManageView, endConfirmationView, liveStatusView,
+        coGuestSettingsView, coGuestAudienceManageView
+    )
+
+    private fun showCoHost() {
+        if (coHostStore == null) return
+        if (coHostState.applicant != null) {
+            showPendingCoHostInvitation(); return
+        }
+        if (coHostState.isConnected) transitionCoHost { coHostActions.show() }
+        else transitionCoHost { coHostCandidates.show(false); coHostStore?.refresh() }
+    }
+
+    private fun transitionCoHost(present: () -> Unit) {
+        if (coHostTransitioning || !isAttachedToWindow || !isShown) return
+        coHostTransitioning = true
+        val generation = ++coHostPresentationGeneration
+        val showing = (coHostSheets() + normalSheets()).filter { it.isShowing }
+        commentComposerView.dismiss()
+        fun finish() {
+            if (generation != coHostPresentationGeneration) return
+            coHostTransitioning = false
+            if (isAttachedToWindow && isShown) present()
+        }
+        if (showing.isEmpty()) {
+            finish(); return
+        }
+        var count = showing.size
+        showing.forEach { it.dismiss { if (--count == 0) finish() } }
+    }
+
+    internal fun showPendingCoHostInvitation() {
+        if (coHostState.applicant == null) {
+            if (coHostIncoming.isShowing) coHostIncoming.dismiss(); return
+        }
+        if (!isAttachedToWindow || !isShown || windowVisibility != VISIBLE || coHostIncoming.isShowing || coHostTransitioning) return
+        val activityState = findViewTreeLifecycleOwner()?.lifecycle?.currentState
+        if (activityState != null && !activityState.isAtLeast(Lifecycle.State.RESUMED)) return
+        transitionCoHost {
+            if (coHostState.applicant != null && (coHostState.applicantDeadline
+                    ?: 0) > System.currentTimeMillis()
+            ) coHostIncoming.show()
+        }
+    }
+
+    private fun dismissCoHostIfShowing(sheet: BottomSheetView): Boolean {
+        if (!sheet.isShowing) return false
+        sheet.dismiss()
+        return true
+    }
+
+    private fun dismissCoHost() {
+        coHostPresentationGeneration++
+        coHostTransitioning = false
+        coHostSheets().forEach { it.dismiss() }
+    }
+
     private val coGuestSettingsView = PusherCoGuestSettingsView(context)
     private val coGuestAudienceManageView = PusherCoGuestAudienceManageView(context)
     private val commentComposerView: BarrageInputView
@@ -197,6 +295,7 @@ class PusherLivingView @JvmOverloads constructor(
         headerView = findViewById(R.id.livekit_pusher_living_header)
         messageListView = findViewById(R.id.livekit_pusher_living_message_list)
         audienceWelcomeView = findViewById(R.id.livekit_pusher_living_audience_welcome)
+        coHostStatus = findViewById(R.id.livekit_pusher_cohost_status)
         bottomToolbarView = findViewById(R.id.livekit_pusher_living_bottom_toolbar)
         likeAnimationView = findViewById(R.id.livekit_pusher_living_like_animation)
         giftDisplayView = findViewById(R.id.livekit_pusher_living_gift_overlay)
@@ -216,6 +315,16 @@ class PusherLivingView @JvmOverloads constructor(
             audienceStore?.toggleMessagePermission(it)
         }
         audienceManageView.onRemoveFromRoom = { audienceStore?.removeFromRoom(it) }
+        bottomToolbarView.onShowCoHost = { showCoHost() }
+        coHostCandidates.onInvite = { coHostStore?.invite(it) }
+        coHostCandidates.onCancel = { coHostStore?.cancelInvitation(it) }
+        coHostCandidates.onRefresh = { coHostStore?.refresh() }
+        coHostCandidates.onLoadMore = { coHostStore?.loadMore() }
+        coHostCandidates.onBack = { transitionCoHost { coHostActions.show() } }
+        coHostActions.onInviteMore = { transitionCoHost { coHostCandidates.show(true); coHostStore?.refresh() } }
+        coHostActions.onEnd = { coHostStore?.exitConnection() }
+        coHostIncoming.onAccept = { coHostStore?.acceptInvitation() }
+        coHostIncoming.onReject = { coHostStore?.rejectInvitation() }
         bottomToolbarView.onShowCoGuest = {
             coGuestSettingsView.show()
             coGuestActionHandler?.markApplicantsSeen()
@@ -290,6 +399,7 @@ class PusherLivingView @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         updateInteractionLayout()
+        updateCoHostStatus()
         if (!isComposerPresented && !messageListView.isLayoutRequested) {
             val contentHeight = messageListView.contentHeight
             if (normalCommentContentHeight != contentHeight) {
@@ -342,9 +452,12 @@ class PusherLivingView @JvmOverloads constructor(
     }
 
     fun handleBackPressed(): Boolean =
-        pauseOverlay.isVisible || coGuestAudienceManageView.dismissIfShowing() || coGuestSettingsView.dismissIfShowing() || liveStatusView.dismissIfShowing() || endConfirmationView.dismissIfShowing() || audienceManageView.dismissIfShowing() || audienceListView.dismissIfShowing() || musicView.dismissIfShowing() || settingsView.dismissIfShowing() || commentComposerView.dismiss()
+        dismissCoHostIfShowing(coHostIncoming) || dismissCoHostIfShowing(coHostCandidates) || dismissCoHostIfShowing(
+            coHostActions
+        ) || pauseOverlay.isVisible || coGuestAudienceManageView.dismissIfShowing() || coGuestSettingsView.dismissIfShowing() || liveStatusView.dismissIfShowing() || endConfirmationView.dismissIfShowing() || audienceManageView.dismissIfShowing() || audienceListView.dismissIfShowing() || musicView.dismissIfShowing() || settingsView.dismissIfShowing() || commentComposerView.dismiss()
 
     fun dismissTransientUi() {
+        dismissCoHost()
         lastStageTapTimeMillis = 0L
         settingsView.cancelPendingAction()
         audienceListView.cancelPendingSelection()
@@ -379,6 +492,7 @@ class PusherLivingView @JvmOverloads constructor(
     }
 
     internal fun updateHost(name: String, avatarURL: String) {
+        coHostCandidates.bindHostAvatar(avatarURL)
         headerView.updateHost(name, avatarURL)
     }
 
@@ -406,6 +520,8 @@ class PusherLivingView @JvmOverloads constructor(
     }
 
     internal fun updateElapsedSeconds(seconds: Int) {
+        updateCoHostStatus()
+        showPendingCoHostInvitation()
         headerView.updateElapsedSeconds(seconds)
         liveStatusView.updateElapsedSeconds(seconds)
     }
@@ -504,6 +620,7 @@ class PusherLivingView @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
+        dismissCoHost()
         lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
         lifecycleOwner = null
         giftBarrageStore.setApplicationActive(false)
@@ -739,6 +856,7 @@ class PusherLivingView @JvmOverloads constructor(
     }
 
     internal fun refreshCoGuestGeometry() {
+        updateCoHostStatus()
         updateInteractionLayout()
     }
 
