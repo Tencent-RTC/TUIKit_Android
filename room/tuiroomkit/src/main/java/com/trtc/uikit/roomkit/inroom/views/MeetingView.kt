@@ -9,6 +9,7 @@ import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
 import com.trtc.uikit.roomkit.base.service.RoomForegroundService
 import com.trtc.uikit.roomkit.base.toast.RoomToast
+import com.trtc.uikit.roomkit.base.util.RoomDataReporter
 import com.trtc.uikit.roomkit.base.util.RoomDevicePermission
 import com.trtc.uikit.roomkit.base.util.applyTopWindowInsets
 import com.trtc.uikit.roomkit.inroom.features.recording.cloudrecordingstatus.CloudRecordingStatus
@@ -85,6 +86,7 @@ class MeetingView @JvmOverloads constructor(
     }
 
     private fun enterRoom(behavior: RoomBehavior) {
+        RoomDataReporter.reportComponent()
         loadingView.setShown(true)
         when (behavior) {
             is RoomBehavior.CreateAndJoinRoom -> createRoom(behavior.options)
