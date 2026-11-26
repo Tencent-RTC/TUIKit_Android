@@ -12,7 +12,7 @@ class RoomDataReporter {
         fun reportComponent() {
             val jsonStr = """
                 {
-                    "api":"setFramework",
+                    "api":"LoginModule.setFramework",
                     "params":{
                         "framework":$FRAMEWORK_NATIVE,
                         "component":$COMPONENT_ROOM,
