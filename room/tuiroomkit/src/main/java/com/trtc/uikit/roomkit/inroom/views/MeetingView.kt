@@ -6,30 +6,38 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.base.dialog.RoomDialog
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
+import com.trtc.uikit.roomkit.base.popup.RoomPopup
 import com.trtc.uikit.roomkit.base.service.RoomForegroundService
 import com.trtc.uikit.roomkit.base.toast.RoomToast
 import com.trtc.uikit.roomkit.base.util.RoomDataReporter
 import com.trtc.uikit.roomkit.base.util.RoomDevicePermission
-import com.trtc.uikit.roomkit.base.util.applyTopWindowInsets
-import com.trtc.uikit.roomkit.inroom.features.recording.cloudrecordingstatus.CloudRecordingStatus
-import com.trtc.uikit.roomkit.inroom.features.roominfo.currentroominfo.RoomInfoView
+import com.trtc.uikit.roomkit.base.util.getDisplayName
+import com.trtc.uikit.roomkit.base.util.getSenderName
+import com.trtc.uikit.roomkit.inroom.features.recording.CloudRecordingConfirm
 import com.trtc.uikit.roomkit.inroom.features.roomview.RoomView
 import com.trtc.uikit.roomkit.inroom.features.screenshare.RoomScreenSharingPlaceholderView
-import com.trtc.uikit.roomkit.inroom.views.roomevent.RoomEventHandler
-import com.trtc.uikit.roomkit.inroom.views.widgets.RoomLoadingView
-import com.trtc.uikit.roomkit.inroom.views.widgets.RoomPasswordDialog
+import com.trtc.uikit.roomkit.inroom.features.transcription.captionoverlay.CaptionOverlay
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.ListResultCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.device.AudioRoute
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
+import io.trtc.tuikit.atomicxcore.api.device.DeviceType
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.room.CreateRoomOptions
+import io.trtc.tuikit.atomicxcore.api.room.DeviceRequestInfo
+import io.trtc.tuikit.atomicxcore.api.room.KickedOutOfRoomReason
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
+import io.trtc.tuikit.atomicxcore.api.room.RecordingStopReason
+import io.trtc.tuikit.atomicxcore.api.room.RoomInfo
+import io.trtc.tuikit.atomicxcore.api.room.RoomListener
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
+import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantListener
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomStore
 import io.trtc.tuikit.atomicxcore.api.room.RoomType
+import io.trtc.tuikit.atomicxcore.api.room.RoomUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,23 +49,28 @@ class MeetingView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val topBar: MeetingTopBar
+    private val toolBar: MeetingToolBar
     private val roomView: RoomView
     private val sharingPlaceholder: RoomScreenSharingPlaceholderView
-    private val loadingView: RoomLoadingView
+    private val captionOverlay: CaptionOverlay
+    private val loadingView: MeetingLoadingView
 
     private val roomStore = RoomStore.shared()
+    private lateinit var participantStore: RoomParticipantStore
     private var roomID: String = ""
     private var connectConfig: ConnectConfig? = null
-    private lateinit var eventHandler: RoomEventHandler
+    private var observingRoomEvents = false
+    private val invitationDialogs = mutableMapOf<DeviceType, RoomDialog>()
+    private var recordingDialog: RoomDialog? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.roomkit_meeting_view, this, true)
         topBar = findViewById(R.id.top_bar)
+        toolBar = findViewById(R.id.meeting_tool_bar)
         roomView = findViewById(R.id.room_view)
         loadingView = findViewById(R.id.entering_view)
         sharingPlaceholder = findViewById(R.id.screen_sharing_placeholder)
-
-        findViewById<FrameLayout>(R.id.top_bar).applyTopWindowInsets()
+        captionOverlay = findViewById(R.id.caption_overlay)
     }
 
     fun init(roomID: String, behavior: RoomBehavior, config: ConnectConfig) {
@@ -65,47 +78,49 @@ class MeetingView @JvmOverloads constructor(
         this.roomID = roomID
         topBar.init(roomID)
         roomView.init(roomID)
-        val currentRoomInfo = findViewById<RoomInfoView>(R.id.current_room_info)
-        currentRoomInfo.init(roomID)
-        findViewById<CloudRecordingStatus>(R.id.cloud_recording_status).init(roomID)
         sharingPlaceholder.init(roomID)
-        findViewById<MeetingToolBar>(R.id.meeting_tool_bar).init(roomID)
-        setupEventHandler(roomID)
-        enterRoom(behavior)
-    }
-
-    override fun onDetachedFromWindow() {
-        if (::eventHandler.isInitialized) eventHandler.stop()
-        RoomForegroundService.stop(context)
-        super.onDetachedFromWindow()
-    }
-
-    private fun setupEventHandler(roomID: String) {
-        eventHandler = RoomEventHandler(context, roomID)
-        eventHandler.start()
-    }
-
-    private fun enterRoom(behavior: RoomBehavior) {
+        toolBar.init(roomID)
+        captionOverlay.init(roomID)
+        participantStore = RoomParticipantStore.create(roomID)
+        participantStore.addRoomParticipantListener(participantListener)
+        roomStore.addRoomListener(roomListener)
+        observingRoomEvents = true
+        loadingView.show()
         RoomDataReporter.reportComponent()
-        loadingView.setShown(true)
         when (behavior) {
-            is RoomBehavior.CreateAndJoinRoom -> createRoom(behavior.options)
+            is RoomBehavior.CreateAndJoinRoom -> quickStart(behavior.options)
             RoomBehavior.Join -> joinRoom()
         }
     }
 
-    private fun createRoom(options: CreateRoomOptions) {
+    override fun onDetachedFromWindow() {
+        stopObservingRoomEvents()
+        RoomForegroundService.stop(context)
+        super.onDetachedFromWindow()
+    }
+
+    private fun quickStart(options: CreateRoomOptions) {
         roomStore.createAndJoinRoom(
             roomID,
             RoomType.STANDARD,
             options,
             object : CompletionHandler {
                 override fun onSuccess() {
-                    handleEnterResult(success = true)
+                    loadingView.hide()
+                    applyConnectConfig()
+                    RoomParticipantStore.create(roomID).getParticipantList(
+                        null,
+                        object : ListResultCompletionHandler<RoomParticipant> {
+                            override fun onSuccess(list: List<RoomParticipant>, nextCursor: String) {}
+                            override fun onFailure(code: Int, desc: String) {}
+                        },
+                    )
                 }
 
                 override fun onFailure(code: Int, desc: String) {
-                    handleEnterResult(success = false, code, desc)
+                    loadingView.hide()
+                    ErrorLocalized.showError(context, code, desc)
+                    closeMeetingPage()
                 }
             },
         )
@@ -118,17 +133,29 @@ class MeetingView @JvmOverloads constructor(
             password,
             object : CompletionHandler {
                 override fun onSuccess() {
-                    handleEnterResult(success = true)
+                    loadingView.hide()
+                    applyConnectConfig()
+                    RoomParticipantStore.create(roomID).getParticipantList(
+                        null,
+                        object : ListResultCompletionHandler<RoomParticipant> {
+                            override fun onSuccess(list: List<RoomParticipant>, nextCursor: String) {}
+                            override fun onFailure(code: Int, desc: String) {}
+                        },
+                    )
                 }
 
                 override fun onFailure(code: Int, desc: String) {
                     when (val rule = ErrorLocalized.rule(code)) {
                         ErrorLocalized.Rule.PASSWORD_REQUIRED, ErrorLocalized.Rule.WRONG_PASSWORD -> {
-                            loadingView.setShown(false)
+                            loadingView.hide()
                             showPasswordDialog(wrongPassword = rule == ErrorLocalized.Rule.WRONG_PASSWORD)
                         }
 
-                        else -> handleEnterResult(success = false, code, desc)
+                        else -> {
+                            loadingView.hide()
+                            ErrorLocalized.showError(context, code, desc)
+                            closeMeetingPage()
+                        }
                     }
                 }
             },
@@ -136,43 +163,20 @@ class MeetingView @JvmOverloads constructor(
     }
 
     private fun showPasswordDialog(wrongPassword: Boolean) {
-        RoomPasswordDialog(
+        MeetingPasswordDialog(
             context = context,
             wrongPassword = wrongPassword,
             onSubmit = { password ->
-                loadingView.setShown(true)
+                loadingView.show()
                 joinRoom(password)
             },
-            onCancel = { (context as? Activity)?.finish() },
+            onCancel = { closeMeetingPage() },
         ).show()
     }
 
-    private fun handleEnterResult(success: Boolean, code: Int = 0, desc: String = "") {
-        if (success) {
-            finishEnter()
-        } else {
-            loadingView.setShown(false)
-            ErrorLocalized.showError(context, code, desc)
-            leaveFromMeeting()
-        }
-    }
-
-    private fun leaveFromMeeting() {
-        if (::eventHandler.isInitialized) eventHandler.stop()
+    private fun closeMeetingPage() {
+        stopObservingRoomEvents()
         (context as? Activity)?.finish()
-    }
-
-    private fun finishEnter() {
-        loadingView.setShown(false)
-        applyConnectConfig()
-        RoomParticipantStore.create(roomID).getParticipantList(
-            null,
-            object : ListResultCompletionHandler<RoomParticipant> {
-                override fun onSuccess(list: List<RoomParticipant>, nextCursor: String) {}
-
-                override fun onFailure(code: Int, desc: String) {}
-            },
-        )
     }
 
     private fun applyConnectConfig() {
@@ -237,6 +241,231 @@ class MeetingView @JvmOverloads constructor(
 
     private fun canOpenCamera(): Boolean =
         isLocalOwnerOrAdmin() || roomStore.state.currentRoom.value?.isAllCameraDisabled != true
+
+    // RoomEvent
+    private val roomListener = object : RoomListener() {
+        override fun onRoomEnded(roomInfo: RoomInfo) {
+            RoomToast.show(context, context.getString(R.string.roomkit_room_ended_by_host))
+            closeMeetingPage()
+        }
+
+        override fun onRecordingStarted(roomInfo: RoomInfo, operator: RoomUser) {
+            presentRecordingNotice(operator)
+        }
+
+        override fun onRecordingStopped(roomInfo: RoomInfo, operator: RoomUser, reason: RecordingStopReason) {
+            recordingDialog?.dismiss()
+            if (reason == RecordingStopReason.RECORDER_LEFT_ROOM) {
+                toast(R.string.roomkit_cloud_recording_ended_abnormal)
+                return
+            }
+            if (reason == RecordingStopReason.STOPPED_BY_USER && isLocal(operator.userID)) return
+            toast(R.string.roomkit_cloud_recording_end_title)
+        }
+    }
+
+    // RoomParticipantEvent
+    private val participantListener = object : RoomParticipantListener() {
+        override fun onAdminSet(userInfo: RoomUser) {
+            if (isLocal(userInfo.userID)) toast(R.string.roomkit_room_notifications_become_admin)
+        }
+
+        override fun onAdminRevoked(userInfo: RoomUser) {
+            if (isLocal(userInfo.userID)) toast(R.string.roomkit_room_notifications_admin_revoked)
+        }
+
+        override fun onOwnerChanged(newOwner: RoomUser, oldOwner: RoomUser) {
+            if (isLocal(newOwner.userID)) toast(R.string.roomkit_room_notifications_become_owner)
+        }
+
+        override fun onKickedFromRoom(reason: KickedOutOfRoomReason, message: String) {
+            val messageRes = when (reason) {
+                KickedOutOfRoomReason.KICKED_BY_ADMIN -> R.string.roomkit_room_notifications_kicked_by_admin
+                KickedOutOfRoomReason.KICKED_BY_SERVER -> R.string.roomkit_room_notifications_kicked_by_server
+                KickedOutOfRoomReason.REPLACED_BY_ANOTHER_DEVICE ->
+                    R.string.roomkit_room_notifications_replaced_by_another_device
+
+                KickedOutOfRoomReason.CONNECTION_TIMEOUT -> R.string.roomkit_room_notifications_connection_timeout
+                KickedOutOfRoomReason.INVALID_STATUS_ON_RECONNECT ->
+                    R.string.roomkit_room_notifications_invalid_status_on_reconnect
+
+                KickedOutOfRoomReason.ROOM_LIMIT_EXCEEDED -> R.string.roomkit_room_notifications_room_limit_exceeded
+                else -> R.string.roomkit_room_notifications_default_kicked_out
+            }
+            RoomToast.show(context, context.getString(messageRes))
+            closeMeetingPage()
+        }
+
+        override fun onParticipantDeviceClosed(device: DeviceType, operator: RoomUser) {
+            val name = operator.getDisplayName()
+            when (device) {
+                DeviceType.MICROPHONE -> {
+                    toast(R.string.roomkit_room_notifications_microphone_closed, name)
+                }
+
+                DeviceType.CAMERA -> {
+                    toast(R.string.roomkit_room_notifications_camera_closed, name)
+                }
+
+                DeviceType.SCREEN_SHARE -> {
+                    toast(R.string.roomkit_room_notifications_screen_share_closed, name)
+                }
+            }
+        }
+
+        override fun onUserMessageDisabled(disable: Boolean, operator: RoomUser) {
+            toast(
+                if (disable) R.string.roomkit_room_notifications_message_muted
+                else R.string.roomkit_room_notifications_message_unmuted
+            )
+        }
+
+        override fun onAllDevicesDisabled(device: DeviceType, disable: Boolean, operator: RoomUser) {
+            if (isLocal(operator.userID)) return
+            val res = when (device) {
+                DeviceType.MICROPHONE -> if (disable) {
+                    R.string.roomkit_room_notifications_all_microphones_disabled
+                } else {
+                    R.string.roomkit_room_notifications_all_microphones_enabled
+                }
+
+                DeviceType.CAMERA -> if (disable) {
+                    R.string.roomkit_room_notifications_all_cameras_disabled
+                } else {
+                    R.string.roomkit_room_notifications_all_cameras_enabled
+                }
+
+                DeviceType.SCREEN_SHARE -> if (disable) {
+                    R.string.roomkit_room_notifications_all_screen_shares_disabled
+                } else {
+                    R.string.roomkit_room_notifications_all_screen_shares_enabled
+                }
+            }
+            toast(res)
+        }
+
+        override fun onAllMessagesDisabled(disable: Boolean, operator: RoomUser) {
+            if (isLocal(operator.userID)) return
+            toast(
+                if (disable) R.string.roomkit_room_notifications_all_messages_disabled
+                else R.string.roomkit_room_notifications_all_messages_enabled
+            )
+        }
+
+        override fun onDeviceInvitationReceived(invitation: DeviceRequestInfo) {
+            presentDeviceInvitation(invitation)
+        }
+
+        override fun onDeviceInvitationCancelled(invitation: DeviceRequestInfo) {
+            dismissInvitation(invitation.device)
+        }
+
+        override fun onDeviceInvitationTimeout(invitation: DeviceRequestInfo) {
+            dismissInvitation(invitation.device)
+        }
+    }
+
+    private fun stopObservingRoomEvents() {
+        if (!observingRoomEvents) return
+        participantStore.removeRoomParticipantListener(participantListener)
+        roomStore.removeRoomListener(roomListener)
+        observingRoomEvents = false
+        invitationDialogs.values.forEach { it.dismiss() }
+        invitationDialogs.clear()
+        recordingDialog?.dismiss()
+    }
+
+    private fun presentDeviceInvitation(invitation: DeviceRequestInfo) {
+        if (invitation.device != DeviceType.MICROPHONE && invitation.device != DeviceType.CAMERA) return
+        dismissInvitation(invitation.device)
+
+        val isMicrophone = invitation.device == DeviceType.MICROPHONE
+        val title = context.getString(
+            if (isMicrophone) R.string.roomkit_room_notifications_microphone_invitation_received
+            else R.string.roomkit_room_notifications_camera_invitation_received,
+            invitation.getSenderName(),
+        )
+        val dialog = RoomDialog.Builder(context)
+            .title(context.getString(R.string.roomkit_room_common_notification))
+            .message(title)
+            .cancelable(false)
+            .secondaryAction(
+                context.getString(
+                    if (isMicrophone) R.string.roomkit_room_notifications_keep_mute
+                    else R.string.roomkit_room_notifications_keep_off
+                )
+            ) {
+                invitationDialogs.remove(invitation.device)
+                participantStore.declineOpenDeviceInvitation(
+                    invitation.senderUserID, invitation.device,
+                    object : CompletionHandler {
+                        override fun onSuccess() {}
+                        override fun onFailure(code: Int, desc: String) {
+                            ErrorLocalized.showError(context, code, desc)
+                        }
+                    }
+                )
+            }
+            .primaryAction(
+                context.getString(
+                    if (isMicrophone) R.string.roomkit_room_notifications_open_microphone
+                    else R.string.roomkit_room_notifications_open_camera
+                )
+            ) {
+                invitationDialogs.remove(invitation.device)
+                participantStore.acceptOpenDeviceInvitation(
+                    invitation.senderUserID, invitation.device,
+                    object : CompletionHandler {
+                        override fun onSuccess() {}
+                        override fun onFailure(code: Int, desc: String) {
+                            ErrorLocalized.showError(context, code, desc)
+                        }
+                    }
+                )
+            }
+            .show()
+        invitationDialogs[invitation.device] = dialog
+    }
+
+    private fun dismissInvitation(device: DeviceType) {
+        invitationDialogs.remove(device)?.dismiss()
+    }
+
+    private fun presentRecordingNotice(operator: RoomUser) {
+        if (operator.userID.isBlank() || isLocal(operator.userID)) return
+        recordingDialog?.dismiss()
+        CloudRecordingConfirm.dismiss()
+        recordingDialog = RoomDialog.Builder(context)
+            .title(context.getString(R.string.roomkit_cloud_recording_notify_title))
+            .message(context.getString(R.string.roomkit_cloud_recording_notify_content, operator.getDisplayName()))
+            .secondaryAction(context.getString(R.string.roomkit_cloud_recording_notify_cancel)) {
+                roomStore.leaveRoom(
+                    object : CompletionHandler {
+                        override fun onSuccess() {}
+                        override fun onFailure(code: Int, desc: String) {}
+                    }
+                )
+                closeMeetingPage()
+            }
+            .primaryAction(context.getString(R.string.roomkit_cloud_recording_notify_confirm))
+            .show()
+    }
+
+    private fun toast(textRes: Int, vararg args: Any?) {
+        val text = if (args.isEmpty()) context.getString(textRes) else context.getString(textRes, *args)
+        RoomToast.show(context, text)
+    }
+
+    private fun isLocal(userID: String): Boolean =
+        userID.isNotBlank() && userID == LoginStore.shared.loginState.loginUserInfo.value?.userID
+
+    private fun deviceName(device: DeviceType): String = context.getString(
+        when (device) {
+            DeviceType.MICROPHONE -> R.string.roomkit_room_notifications_microphone
+            DeviceType.CAMERA -> R.string.roomkit_room_notifications_camera
+            DeviceType.SCREEN_SHARE -> R.string.roomkit_room_notifications_screen_share
+        }
+    )
 
     sealed class RoomBehavior {
         class CreateAndJoinRoom(val options: CreateRoomOptions) : RoomBehavior()

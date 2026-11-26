@@ -27,7 +27,7 @@
     <string name="roomkit_calendar_tomorrow">Tomorrow</string>
     <string name="roomkit_calendar_tue">Tue</string>
     <string name="roomkit_calendar_wed">Wed</string>
-    <string name="roomkit_caption_close">Hide live captions</string>
+    <string name="roomkit_caption_close">Turn off captions</string>
     <string name="roomkit_caption_drag_hint">Hold to drag. Double-click to reset.</string>
     <string name="roomkit_caption_font_large">L</string>
     <string name="roomkit_caption_font_medium">M</string>
@@ -37,7 +37,7 @@
     <string name="roomkit_caption_group_transcription">Transcription</string>
     <string name="roomkit_caption_group_translation">Translation</string>
     <string name="roomkit_caption_language_ar">العربية(Arabic)</string>
-    <string name="roomkit_caption_language_auto">Auto-detect (Chinese/English)</string>
+    <string name="roomkit_caption_language_zh">中文(Chinese)</string>
     <string name="roomkit_caption_language_de">Deutsch(German)</string>
     <string name="roomkit_caption_language_en">English(English)</string>
     <string name="roomkit_caption_language_es">Español(Spanish)</string>
@@ -59,12 +59,16 @@
     <string name="roomkit_caption_live">Live captions</string>
     <string name="roomkit_caption_live_desc">Only affects your view</string>
     <string name="roomkit_caption_settings">Caption and translation settings</string>
+    <string name="roomkit_caption_settings_native">Captions</string>
+    <string name="roomkit_caption_search_native">Search captions</string>
+    <string name="roomkit_caption_view_full">View full transcript</string>
     <string name="roomkit_caption_show_bilingual">Show bilingual captions</string>
     <string name="roomkit_caption_show_floating">Show live captions</string>
     <string name="roomkit_caption_source_language">Source language</string>
     <string name="roomkit_caption_target_language">Target language</string>
     <string name="roomkit_caption_title">Captions</string>
     <string name="roomkit_cloud_recording_end_title">Cloud recording ended</string>
+    <string name="roomkit_cloud_recording_ended_abnormal">Cloud recording ended unexpectedly</string>
     <string name="roomkit_chat_muted_all">Everyone is muted in this meeting</string>
     <string name="roomkit_chat_muted">You have been muted and cannot send messages</string>
     <string name="roomkit_cloud_recording_notify_cancel">Leave Room</string>
@@ -546,6 +550,9 @@
     <string name="roomkit_screen_share_resumed">Share resumed</string>
     <string name="roomkit_screen_share_safety_message">Sharing your screen can expose verification codes, passwords, and other private information. Watch out for scams.</string>
     <string name="roomkit_screen_share_safety_title">Security reminder</string>
+    <string name="roomkit_unable_to_shared_screen">Please contact us to experience this feature</string>
+    <string name="roomkit_tips">Friendly reminder</string>
+    <string name="roomkit_contact_us">Contact us</string>
     <string name="roomkit_screen_share_screen">Screen</string>
     <string name="roomkit_screen_share_screen1">Screen 1</string>
     <string name="roomkit_screen_share_screen2">Screen 2</string>
@@ -612,6 +619,7 @@
     <string name="roomkit_transcription_copy_results">Copy search results</string>
     <string name="roomkit_transcription_empty_hint">Speech will appear here as people talk</string>
     <string name="roomkit_transcription_no_match">No matching transcript</string>
+    <string name="roomkit_transcription_jump_latest">Back to latest</string>
     <string name="roomkit_transcription_off">Transcription is off for this room</string>
     <string name="roomkit_transcription_on_for_room">Transcription is on for this room</string>
     <string name="roomkit_transcription_open">Show transcript</string>

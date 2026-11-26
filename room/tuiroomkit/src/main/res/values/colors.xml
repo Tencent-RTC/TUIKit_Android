@@ -43,4 +43,9 @@
     <color name="roomkit_bg_popover_solid">#FCFFFFFF</color>
     <color name="roomkit_shadow_lg">#1F000000</color>
     <color name="roomkit_bg_share_placeholder">#FFF4F4F4</color>
+    <color name="roomkit_caption_overlay_bg">#94101218</color>
+    <color name="roomkit_caption_overlay_border">#1FFFFFFF</color>
+    <color name="roomkit_caption_name">#EBFFFFFF</color>
+    <color name="roomkit_caption_translation">#9EFFFFFF</color>
+    <color name="roomkit_caption_transcribing">#80FFFFFF</color>
 </resources>

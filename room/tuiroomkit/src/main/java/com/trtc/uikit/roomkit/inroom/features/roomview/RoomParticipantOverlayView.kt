@@ -19,7 +19,6 @@ import com.trtc.uikit.roomkit.base.util.getDisplayName
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.device.NetworkQuality
-import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.room.ParticipantRole
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipant
 import io.trtc.tuikit.atomicxcore.api.view.VideoStreamType
@@ -72,11 +71,12 @@ class RoomParticipantOverlayView @JvmOverloads constructor(
     fun bind(
         participant: RoomParticipant,
         streamType: VideoStreamType,
+        isLocal: Boolean,
         volume: Int,
         hasVideoStream: Boolean,
         networkQuality: NetworkQuality? = null,
     ) {
-        this.isLocal = participant.userID == LoginStore.shared.loginState.loginUserInfo.value?.userID
+        this.isLocal = isLocal
         role = participant.role
         updateNetworkMark(networkQuality)
         isCameraOn = participant.cameraStatus == DeviceStatus.ON
@@ -91,9 +91,33 @@ class RoomParticipantOverlayView @JvmOverloads constructor(
         updatePlaceholder(streamType, hasVideoStream)
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        updateBadges()
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        updateBadges(View.MeasureSpec.getSize(widthMeasureSpec))
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    }
+
+    fun reset() {
+        isLocal = false
+        isCameraOn = false
+        role = null
+        flipCamera.visibility = GONE
+        avatar.url = null
+        avatar.text = null
+        avatar.visibility = VISIBLE
+        nameLabel.text = null
+        shareWhoText.text = null
+        shareWho.visibility = GONE
+        tileFooter.visibility = VISIBLE
+        microphone.setImageDrawable(null)
+        micLevel.visibility = GONE
+        micLevel.reset()
+        microphone.contentDescription = null
+        speakingBorder.visibility = GONE
+        localBadge.visibility = GONE
+        roleBadge.visibility = GONE
+        roleBadge.setImageDrawable(null)
+        roleBadge.contentDescription = null
+        netMark.visibility = GONE
     }
 
     private fun updateParticipantInfo(participant: RoomParticipant) {
@@ -124,8 +148,8 @@ class RoomParticipantOverlayView @JvmOverloads constructor(
         microphone.contentDescription = context.getString(descriptionResource)
     }
 
-    private fun updateBadges() {
-        val showLocalBadge = isLocal && width >= context.dp(96)
+    private fun updateBadges(availableWidth: Int = width) {
+        val showLocalBadge = isLocal && availableWidth >= context.dp(96)
         val hasPrivilegedRole = role != null && role != ParticipantRole.GENERAL_USER
         val showRoleBadge = hasPrivilegedRole
         localBadge.visibility = if (showLocalBadge) VISIBLE else GONE
@@ -139,11 +163,11 @@ class RoomParticipantOverlayView @JvmOverloads constructor(
         } else {
             roleBadge.setImageResource(R.drawable.roomkit_icon_role_admin)
         }
-        updateNameMaxWidth()
+        updateNameMaxWidth(availableWidth)
     }
 
-    private fun updateNameMaxWidth() {
-        if (width <= 0) return
+    private fun updateNameMaxWidth(availableWidth: Int) {
+        if (availableWidth <= 0) return
         val density = resources.displayMetrics.density
         fun dp(value: Int) = (value * density).toInt()
         var used = dp(6 + 6 + 4 + 6)
@@ -159,7 +183,7 @@ class RoomParticipantOverlayView @JvmOverloads constructor(
             visibleCount++
         }
         used += dp(4) * (visibleCount - 1)
-        nameLabel.maxWidth = (width - used).coerceAtLeast(0)
+        nameLabel.maxWidth = (availableWidth - used).coerceAtLeast(0)
     }
 
     private fun chip(color: Int): GradientDrawable = chipCache.getOrPut(color) {

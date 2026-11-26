@@ -8,11 +8,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <androidx.viewpager2.widget.ViewPager2
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/room_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal" />
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/page_previous_icon"

@@ -1,0 +1,68 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.trtc.uikit.roomkit.base.avatar.RoomAvatar
+        android:id="@+id/caption_avatar"
+        android:layout_width="16dp"
+        android:layout_height="16dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingEnd="28dp">
+
+            <TextView
+                android:id="@+id/caption_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:textColor="@color/roomkit_caption_name"
+                android:textSize="@dimen/roomkit_fs_sm" />
+
+            <com.trtc.uikit.roomkit.base.theme.RoomLoadingDotsView
+                android:id="@+id/caption_transcribing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:gravity="center_vertical"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <com.trtc.uikit.roomkit.base.theme.TypewriterTextView
+            android:id="@+id/caption_source"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="start"
+            android:includeFontPadding="false"
+            android:lineSpacingMultiplier="1.45"
+            android:singleLine="true"
+            android:paddingEnd="5dp"
+            android:textColor="@color/roomkit_fg_on_media"
+            android:textSize="@dimen/roomkit_fs_lg" />
+
+        <com.trtc.uikit.roomkit.base.theme.TypewriterTextView
+            android:id="@+id/caption_translation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:ellipsize="start"
+            android:includeFontPadding="false"
+            android:lineSpacingMultiplier="1.4"
+            android:singleLine="true"
+            android:textColor="@color/roomkit_caption_translation"
+            android:textSize="12.75sp"
+            android:visibility="gone" />
+    </LinearLayout>
+</merge>

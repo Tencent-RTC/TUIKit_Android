@@ -1,0 +1,33 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/roomkit_bg_caption_overlay"
+    android:elevation="8dp">
+
+    <LinearLayout
+        android:id="@+id/caption_rows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="7dp"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="11dp" />
+
+    <ImageView
+        android:id="@+id/caption_close"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="-4dp"
+        android:layout_marginEnd="-4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/roomkit_caption_close"
+        android:padding="15dp"
+        android:src="@drawable/roomkit_icon_close"
+        android:tint="@color/roomkit_fg_on_media_muted" />
+
+</FrameLayout>

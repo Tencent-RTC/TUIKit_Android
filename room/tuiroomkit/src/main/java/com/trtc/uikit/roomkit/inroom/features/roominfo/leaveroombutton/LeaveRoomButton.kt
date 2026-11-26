@@ -15,7 +15,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.error.ErrorLocalized
-import com.trtc.uikit.roomkit.base.popover.RoomPopover
 import com.trtc.uikit.roomkit.base.toast.RoomToast
 import com.trtc.uikit.roomkit.base.util.dp
 import io.trtc.tuikit.atomicxcore.api.CompletionHandler
@@ -38,7 +37,7 @@ class LeaveRoomButton @JvmOverloads constructor(
     private val cancelLabel: TextView
     private var isMember = false
     private var isPromptOpen = false
-    private var popover: RoomPopover? = null
+    private var popover: RoomLeavePopoverView? = null
     private var roomID = ""
     private var roleJob: Job? = null
 
@@ -117,8 +116,8 @@ class LeaveRoomButton @JvmOverloads constructor(
 
     private fun openPrompt() {
         if (popover != null) return
-        val created = RoomPopover(this)
-        created.align = RoomPopover.Align.END
+        val created = RoomLeavePopoverView(this)
+        created.align = RoomLeavePopoverView.Align.END
         created.showsArrow = false
         created.gap = context.dp(POPOVER_GAP_DP)
         val menu = LinearLayout(context).apply {
