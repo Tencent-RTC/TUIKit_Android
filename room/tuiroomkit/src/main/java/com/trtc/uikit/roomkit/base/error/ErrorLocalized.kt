@@ -2,7 +2,6 @@ package com.trtc.uikit.roomkit.base.error
 
 import android.content.Context
 import com.trtc.uikit.roomkit.R
-import com.trtc.uikit.roomkit.base.RoomKitLogger
 import com.trtc.uikit.roomkit.base.toast.RoomToast
 
 object ErrorLocalized {
@@ -98,14 +97,11 @@ object ErrorLocalized {
         }
     }
 
-    private val logger = RoomKitLogger.getCommonLogger("ErrorLocalized")
-
     fun rule(code: Int): Rule = Rule.fromCode(code)
 
     fun message(context: Context, code: Int): String = context.getString(rule(code).messageRes)
 
     fun showError(context: Context, code: Int, desc: String) {
-        logger.error("code=$code, desc=$desc")
         show(context, code)
     }
 

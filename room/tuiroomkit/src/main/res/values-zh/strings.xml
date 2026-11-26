@@ -27,7 +27,7 @@
     <string name="roomkit_calendar_tomorrow">明天</string>
     <string name="roomkit_calendar_tue">周二</string>
     <string name="roomkit_calendar_wed">周三</string>
-    <string name="roomkit_caption_close">关闭实时字幕</string>
+    <string name="roomkit_caption_close">关闭字幕</string>
     <string name="roomkit_caption_drag_hint">按住拖动 · 双击回到默认位置</string>
     <string name="roomkit_caption_font_large">大</string>
     <string name="roomkit_caption_font_medium">中</string>
@@ -37,7 +37,7 @@
     <string name="roomkit_caption_group_transcription">转录设置</string>
     <string name="roomkit_caption_group_translation">翻译设置</string>
     <string name="roomkit_caption_language_ar">العربية(阿拉伯语)</string>
-    <string name="roomkit_caption_language_auto">自动识别 (中英)</string>
+    <string name="roomkit_caption_language_zh">中文</string>
     <string name="roomkit_caption_language_de">Deutsch(德语)</string>
     <string name="roomkit_caption_language_en">English(英语)</string>
     <string name="roomkit_caption_language_es">Español(西班牙语)</string>
@@ -59,12 +59,16 @@
     <string name="roomkit_caption_live">实时字幕</string>
     <string name="roomkit_caption_live_desc">仅对自己生效</string>
     <string name="roomkit_caption_settings">字幕与翻译设置</string>
+    <string name="roomkit_caption_settings_native">字幕设置</string>
+    <string name="roomkit_caption_search_native">搜索字幕</string>
+    <string name="roomkit_caption_view_full">查看完整字幕</string>
     <string name="roomkit_caption_show_bilingual">字幕显示双语</string>
     <string name="roomkit_caption_show_floating">显示实时字幕</string>
     <string name="roomkit_caption_source_language">识别语言</string>
     <string name="roomkit_caption_target_language">翻译语言</string>
     <string name="roomkit_caption_title">字幕</string>
     <string name="roomkit_cloud_recording_end_title">云端录制已结束</string>
+    <string name="roomkit_cloud_recording_ended_abnormal">云端录制异常结束</string>
     <string name="roomkit_chat_muted_all">当前会议已开启全员禁言</string>
     <string name="roomkit_chat_muted">你已被禁言，暂时无法发送消息</string>
     <string name="roomkit_cloud_recording_notify_cancel">离开房间</string>
@@ -546,6 +550,9 @@
     <string name="roomkit_screen_share_resumed">已恢复共享</string>
     <string name="roomkit_screen_share_safety_message">共享屏幕时可能会泄露短信验证码、密码等隐私信息，造成财产损失，请警惕各种诈骗行为。</string>
     <string name="roomkit_screen_share_safety_title">安全提醒</string>
+    <string name="roomkit_unable_to_shared_screen">如需体验该功能请联系我们</string>
+    <string name="roomkit_tips">温馨提示</string>
+    <string name="roomkit_contact_us">联系我们</string>
     <string name="roomkit_screen_share_screen">屏幕</string>
     <string name="roomkit_screen_share_screen1">桌面1</string>
     <string name="roomkit_screen_share_screen2">桌面2</string>
@@ -612,6 +619,7 @@
     <string name="roomkit_transcription_copy_results">复制搜索结果</string>
     <string name="roomkit_transcription_empty_hint">发言后将自动显示在这里</string>
     <string name="roomkit_transcription_no_match">没有找到匹配的转写</string>
+    <string name="roomkit_transcription_jump_latest">回到最新</string>
     <string name="roomkit_transcription_off">房间已关闭转录</string>
     <string name="roomkit_transcription_on_for_room">房间已开启转录</string>
     <string name="roomkit_transcription_open">显示文字转写</string>

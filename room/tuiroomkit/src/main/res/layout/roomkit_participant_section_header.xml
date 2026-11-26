@@ -24,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
+        android:text="@string/roomkit_participants_joined"
         android:textStyle="bold" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -33,5 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
-        android:includeFontPadding="false" />
+        android:includeFontPadding="false"
+        android:textStyle="bold" />
 </LinearLayout>

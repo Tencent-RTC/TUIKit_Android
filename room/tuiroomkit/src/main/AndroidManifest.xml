@@ -12,22 +12,17 @@
 
     <application>
         <activity
-            android:name=".base.util.RoomPermissionActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
-        <activity
             android:name=".inroom.views.MeetingActivity"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.RoomKit"
             android:windowSoftInputMode="adjustNothing" />
 
-        <provider
-            android:name="com.trtc.uikit.roomkit.base.ContextProvider"
-            android:authorities="${applicationId}.tuikit.roomkit.provider"
-            android:enabled="true"
-            android:exported="false" />
+        <activity
+            android:name=".base.util.RoomPermissionActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <service
             android:name="com.trtc.uikit.roomkit.base.service.RoomForegroundService"

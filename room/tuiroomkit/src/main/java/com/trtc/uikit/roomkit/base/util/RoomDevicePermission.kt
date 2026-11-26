@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -19,11 +20,20 @@ private var pendingContinuation: Continuation<Boolean>? = null
 
 object RoomDevicePermission {
 
-    suspend fun requestMicrophonePermission(activity: Activity): Boolean =
-        request(activity, Manifest.permission.RECORD_AUDIO, REQUEST_CODE_MICROPHONE)
+    val microphonePermissionGranted = MutableSharedFlow<Unit>()
+    val cameraPermissionGranted = MutableSharedFlow<Unit>()
 
-    suspend fun requestCameraPermission(activity: Activity): Boolean =
-        request(activity, Manifest.permission.CAMERA, REQUEST_CODE_CAMERA)
+    suspend fun requestMicrophonePermission(activity: Activity): Boolean {
+        val granted = request(activity, Manifest.permission.RECORD_AUDIO, REQUEST_CODE_MICROPHONE)
+        if (granted) microphonePermissionGranted.emit(Unit)
+        return granted
+    }
+
+    suspend fun requestCameraPermission(activity: Activity): Boolean {
+        val granted = request(activity, Manifest.permission.CAMERA, REQUEST_CODE_CAMERA)
+        if (granted) cameraPermissionGranted.emit(Unit)
+        return granted
+    }
 
     private suspend fun request(activity: Activity, permission: String, requestCode: Int): Boolean {
         val granted = ContextCompat.checkSelfPermission(activity, permission) ==

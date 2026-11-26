@@ -1,11 +1,13 @@
 package com.trtc.uikit.roomkit.inroom.features.screenshare.screensharebutton
 
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.inroom.views.TitleDisplaying
@@ -132,7 +134,39 @@ class ScreenShareButton @JvmOverloads constructor(
             RoomToast.show(context, context.getString(R.string.roomkit_screen_share_failure_remotemsharing))
             return
         }
-        requestStartSharing()
+        requestScreenShareTip()
+    }
+
+    /**
+     * Check if screen share is banned and show appropriate dialog.
+     * If banned, show forbidden dialog; otherwise, show share tip dialog.
+     */
+    private fun requestScreenShareTip() {
+        val sharedPreferences = context.getSharedPreferences("rtcube_module_permission", Context.MODE_PRIVATE)
+        val bannedFeatureIds = sharedPreferences.getStringSet("bannedFeatureIds", emptySet()) ?: emptySet()
+
+        if ("screen_share" in bannedFeatureIds) {
+            showScreenShareForbiddenDialog()
+        } else {
+            requestStartSharing()
+        }
+    }
+
+    private fun showScreenShareForbiddenDialog() {
+        RoomDialog.Builder(context)
+            .title(context.getString(R.string.roomkit_tips))
+            .message(context.getString(R.string.roomkit_unable_to_shared_screen))
+            .secondaryAction(context.getString(R.string.roomkit_room_common_cancel))
+            .primaryAction(context.getString(R.string.roomkit_contact_us)) {
+                try {
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, "https://im.cloud.tencent.com/s/cWSPGIIM62CC/cFUPGIIM62CF".toUri())
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            .show()
     }
 
     private fun requestStartSharing() {

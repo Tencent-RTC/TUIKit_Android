@@ -11,17 +11,19 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Space
+import androidx.appcompat.widget.AppCompatTextView
 import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.popup.RoomPopup
 import com.trtc.uikit.roomkit.base.util.applyBottomWindowInsets
 import com.trtc.uikit.roomkit.base.util.dp
-import com.trtc.uikit.roomkit.inroom.features.device.camerabutton.CameraButton
-import com.trtc.uikit.roomkit.inroom.features.device.micbutton.MicButton
-import com.trtc.uikit.roomkit.inroom.features.device.speakerbutton.SpeakerButton
-import com.trtc.uikit.roomkit.inroom.features.participants.participantbutton.ParticipantButton
-import com.trtc.uikit.roomkit.inroom.features.recording.cloudrecordingbutton.CloudRecordingButton
+import com.trtc.uikit.roomkit.inroom.features.device.camerabutton.RoomCameraButton
+import com.trtc.uikit.roomkit.inroom.features.device.micbutton.RoomMicButton
+import com.trtc.uikit.roomkit.inroom.features.device.speakerbutton.RoomSpeakerButton
+import com.trtc.uikit.roomkit.inroom.features.participants.participantbutton.RoomParticipantButton
+import com.trtc.uikit.roomkit.inroom.features.recording.cloudrecordingbutton.RoomRecordingButton
 import com.trtc.uikit.roomkit.inroom.features.screenshare.screensharebutton.ScreenShareButton
 import com.trtc.uikit.roomkit.inroom.features.setting.SettingsButton
+import com.trtc.uikit.roomkit.inroom.features.transcription.captionbutton.CaptionButton
 import io.trtc.tuikit.atomicxcore.api.room.RoomParticipantStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,13 +41,14 @@ class MeetingToolBar @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val container: LinearLayout
-    private val micButton = MicButton(context)
-    private val camButton = CameraButton(context)
-    private val speakerButton = SpeakerButton(context)
-    private val participantButton = ParticipantButton(context)
+    private val micButton = RoomMicButton(context)
+    private val camButton = RoomCameraButton(context)
+    private val speakerButton = RoomSpeakerButton(context)
+    private val participantButton = RoomParticipantButton(context)
     private val screenShareButton = ScreenShareButton(context)
-    private val recordingButton = CloudRecordingButton(context)
+    private val recordingButton = RoomRecordingButton(context)
     private val settingsButton = SettingsButton(context)
+    private val captionButton = CaptionButton(context)
     private val moreButton: View
 
     private var featureButtons: List<View> = emptyList()
@@ -76,6 +79,7 @@ class MeetingToolBar @JvmOverloads constructor(
         participantButton.init(roomID)
         screenShareButton.bind(roomID)
         recordingButton.bind(roomID)
+        captionButton.init(roomID)
         featureButtons = buildFeatureButtons()
         applyButtons()
         observeFeatureAvailability()
@@ -102,6 +106,7 @@ class MeetingToolBar @JvmOverloads constructor(
             speakerButton,
             participantButton,
             screenShareButton,
+            captionButton,
         )
         if (recordingButton.isAvailable()) {
             buttons.add(recordingButton)
@@ -157,9 +162,9 @@ class MeetingToolBar @JvmOverloads constructor(
             }
             cell.addView(
                 view,
-                LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
                 ).apply { gravity = Gravity.START },
             )
             content.addView(cell, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
@@ -172,6 +177,7 @@ class MeetingToolBar @JvmOverloads constructor(
         popup.setContentView(content, RoomPopup.ContentHeight.AUTO)
         popup.onDismiss = { morePopup = null }
         screenShareButton.onRequestDismiss = { dismissMoreMenu() }
+        captionButton.onRequestDismiss = { dismissMoreMenu() }
         recordingButton.onRequestDismiss = { dismissMoreMenu() }
         settingsButton.onRequestDismiss = { dismissMoreMenu() }
         morePopup = popup
