@@ -1,92 +1,125 @@
 package io.trtc.tuikit.chat.uikit.components.messageinput.asr
 
-import android.annotation.SuppressLint
-import android.media.AudioFormat
-import android.media.AudioRecord
-import android.media.MediaRecorder
-import android.media.audiofx.AcousticEchoCanceler
-import android.media.audiofx.AutomaticGainControl
-import android.media.audiofx.NoiseSuppressor
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.Log
+import com.tencent.voiceai.TXRealtimeASR
+import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import org.json.JSONObject
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * 实时识别专用的采集通路：麦克风 PCM16 / 16kHz / 单声道，按 20ms 切帧后用系统
- * [SystemOpusEncoder] 编成裸 Opus packet，直接喂给 sendASRAudioData。
+ * 实时识别专用的采集通路：由 VoiceAI SDK（`LiteAVSDK_VoiceAI`）负责麦克风采集、前处理与
+ * Opus 编码，只用它的本地能力，不连它的云端 ASR：
  *
- * 输入栏与 Demo 通话页共用这一路。默认 [Config.Recognition]（`VOICE_RECOGNITION` → `MIC`，
- * 不挂通话 3A）；通话页用 [Config.VoiceCommunication]。
+ * - `enableCloudAsrChannel=false`：不建 WebSocket，识别仍走 IMSDK 的 feedRealtimeAudioData；
+ * - `enableLocalOpusOutput=true`：经 `onReceiveLocalOpus` 抛出 16kHz / 单声道 / 40ms 裸 Opus packet；
+ * - `enableLocalPcmOutput=true`：经 `onReceiveLocalPcm` 抛出原始 PCM16，供 VAD / 音量动画用。
+ *
+ * 输入栏与 Demo 通话页共用这一路。默认 [Config.Recognition]；通话页用 [Config.VoiceCommunication]，
+ * 采集与 TTS 播放同时进行，切到通话音量并打开声纹降噪。
  *
  * 这条通路与「录语音文件」的 [io.trtc.tuikit.chat.uikit.components.audiorecorder.AudioRecorder]
- * 是**并行**跑的两路采集：前者要的是可上行的实时流，后者要的是可发送的 m4a 文件，
- * 两者的编码格式与生命周期都不一样，没法共用一路。同一个应用内并发采集在 Android 10
- * 及以上可用，但并非所有机型都给；拿不到音频时 [start] 返回 false，调用方回落到
- * 「录完整段再上传识别」的老路径，不影响语音消息本身。
+ * 是**并行**跑的两路采集：前者要的是可上行的实时流，后者要的是可发送的 m4a 文件。
  *
- * 不用第三方 Opus 库，避免给 UIKit 的接入方凭空加一个依赖；代价是
- * `audio/opus` 编码器要 Android 10 起且机型注册了才有，[isSupported] 负责探测。
+ * ## 线程
  *
- * [onPacket] / [onPcmFrame] 都在采集线程上回调。
+ * SDK 的 native 层把回调派到主线程，这里一进回调就转给本实例独占的采集线程：
+ * [onPacket] / [onPcmFrame] 都在采集线程上回调，且同一实例内不并发，[stop] 返回后不再回调。
+ * [onVoiceprintActive] 留在 SDK 回调线程上。
  */
 class RealtimeAsrAudioCapture(
     private val onPacket: (ByteArray) -> Unit,
     private val onPcmFrame: ((ShortArray) -> Unit)? = null,
     private val config: Config = Config.Recognition,
+    /** 声纹注册完成、开始只保留该说话人（`onVoiceprintDenoiseStatus` 的 status 变为 Active）。 */
+    private val onVoiceprintActive: (() -> Unit)? = null,
 ) {
 
     class Config(
-        val audioSources: IntArray,
-        val attachVoiceEffects: Boolean = false,
-        val minBufferFrames: Int = 8,
+        /** 采播同时进行时切到通话音量（SDK 默认媒体音量）。 */
+        val useCallVolume: Boolean = false,
+        /** 声纹降噪：自动用前 [voiceprintEnrollMs] 毫秒的人声注册声纹，之后只保留该说话人。 */
+        val enableVoiceprintDenoise: Boolean = false,
+        val voiceprintEnrollMs: Int = 3000,
         val threadName: String = "message-input-asr-capture",
     ) {
         companion object {
-            /** 输入栏：识别源，不挂通话音效。 */
-            val Recognition = Config(
-                audioSources = intArrayOf(
-                    MediaRecorder.AudioSource.VOICE_RECOGNITION,
-                    MediaRecorder.AudioSource.MIC,
-                ),
-            )
+            /** 输入栏。 */
+            val Recognition = Config()
 
-            /** 通话：`VOICE_COMMUNICATION` + 系统 AEC / NS / AGC。 */
+            /** 通话：采播同时进行。 */
             val VoiceCommunication = Config(
-                audioSources = intArrayOf(MediaRecorder.AudioSource.VOICE_COMMUNICATION),
-                attachVoiceEffects = true,
-                minBufferFrames = 10,
+                useCallVolume = true,
+                enableVoiceprintDenoise = true,
                 threadName = "ai-audio-capture",
             )
         }
     }
 
     private val running = AtomicBoolean(false)
-    private var audioRecord: AudioRecord? = null
-    private var encoder: SystemOpusEncoder? = null
-    private var workerThread: Thread? = null
-    private var echoCanceler: AcousticEchoCanceler? = null
-    private var noiseSuppressor: NoiseSuppressor? = null
-    private var gainControl: AutomaticGainControl? = null
-    private var activeSource: Int? = null
+    private var engine: TXRealtimeASR? = null
+    private var worker: HandlerThread? = null
 
     @Volatile
-    private var pendingEncoderReset = false
+    private var workerHandler: Handler? = null
+
+    // 只在采集线程上访问：把 SDK 抛出的任意长度 PCM 重新切成 20ms 一帧
+    private var pending = ShortArray(RealtimeAsrSpec.FRAME_SAMPLES * 4)
+    private var pendingLength = 0
+
+    @Volatile
+    private var loggedPcmParams = false
+
+    @Volatile
+    private var loggedOpusParams = false
+
+    /** 上一次声纹降噪状态，只在状态切进 Active 时通知一次。 */
+    @Volatile
+    private var voiceprintActive = false
+
+    // SDK 内部只持有监听器的弱引用，必须由这里强引用住
+    private val listener = object : TXRealtimeASR.Listener {
+        override fun onExperimentalEvent(eventName: String?, params: String?, data: ByteArray?) {
+            if (!running.get()) {
+                return
+            }
+            if (eventName == EVENT_VOICEPRINT_STATUS) {
+                handleVoiceprintStatus(params, data)
+                return
+            }
+            if (data == null || data.isEmpty()) {
+                return
+            }
+            when (eventName) {
+                EVENT_LOCAL_OPUS, EVENT_LOCAL_PCM ->
+                    workerHandler?.post { dispatchAudio(eventName, params, data) }
+                else -> Unit
+            }
+        }
+
+        override fun onRealtimeASRStarted(voiceId: String?) {
+            Log.i(TAG, "voiceai started: $voiceId")
+        }
+
+        override fun onRealtimeASRStopped() {
+            Log.i(TAG, "voiceai stopped")
+        }
+
+        override fun onRealtimeASRError(errorCode: Int, errorMsg: String?) {
+            Log.w(TAG, "voiceai error: $errorCode $errorMsg")
+        }
+    }
 
     val isRunning: Boolean
         get() = running.get()
 
     fun effectSummary(): String {
-        val source = when (activeSource) {
-            MediaRecorder.AudioSource.VOICE_COMMUNICATION -> "VOICE_COMMUNICATION"
-            MediaRecorder.AudioSource.VOICE_RECOGNITION -> "VOICE_RECOGNITION"
-            MediaRecorder.AudioSource.MIC -> "MIC"
-            else -> "-"
-        }
-        return "aec=${if (config.attachVoiceEffects) "ON" else "off"} source=$source " +
-            "aecAvailable=${AcousticEchoCanceler.isAvailable()} " +
-            "aecCreated=${echoCanceler != null} " +
-            "aecFx=${echoCanceler?.enabled == true} " +
-            "ns=${noiseSuppressor?.enabled == true} " +
-            "agc=${gainControl?.enabled == true}"
+        return "engine=voiceai callVolume=${config.useCallVolume} " +
+            "voiceprint=${config.enableVoiceprintDenoise} pcm=${onPcmFrame != null}"
     }
 
     /**
@@ -94,207 +127,191 @@ class RealtimeAsrAudioCapture(
      *
      * @return 启动失败返回 false，调用方据此关掉实时识别，不要重试
      */
-    @SuppressLint("MissingPermission")
     fun start(): Boolean {
         if (running.get()) {
             return true
         }
-        if (!isSupported()) {
-            return false
-        }
-        val minBufferSize = AudioRecord.getMinBufferSize(
-            RealtimeAsrSpec.SAMPLE_RATE,
-            AudioFormat.CHANNEL_IN_MONO,
-            AudioFormat.ENCODING_PCM_16BIT,
-        )
-        if (minBufferSize <= 0) {
-            Log.w(TAG, "getMinBufferSize failed: $minBufferSize")
-            return false
-        }
-        val bufferSize = maxOf(minBufferSize, RealtimeAsrSpec.FRAME_BYTES * config.minBufferFrames)
-        if (!openRecorder(bufferSize) || !openEncoder()) {
-            releaseAll()
+        val asr = try {
+            TXRealtimeASR()
+        } catch (throwable: Throwable) {
+            Log.w(TAG, "create TXRealtimeASR failed", throwable)
             return false
         }
         try {
-            audioRecord?.startRecording()
-        } catch (exception: Exception) {
-            Log.w(TAG, "startRecording failed", exception)
-            releaseAll()
+            asr.addListener(listener)
+            if (config.useCallVolume) {
+                asr.callExperimentalAPI(API_CALL_VOLUME)
+            }
+            asr.callExperimentalAPI(API_DISABLE_CLOUD)
+            asr.callExperimentalAPI(API_ENABLE_OPUS)
+            if (onPcmFrame != null) {
+                asr.callExperimentalAPI(API_ENABLE_PCM)
+            }
+            if (config.enableVoiceprintDenoise) {
+                asr.callExperimentalAPI(voiceprintApi(config.voiceprintEnrollMs))
+            }
+            pendingLength = 0
+            loggedPcmParams = false
+            loggedOpusParams = false
+            voiceprintActive = false
+            startWorker()
+            running.set(true)
+            asr.startRealtimeASR(
+                TXRealtimeASR.Params().apply {
+                    // 云端通道已关，鉴权字段不会被使用
+                    sdkAppId = LoginStore.shared.sdkAppID.toString()
+                    userSig = ""
+                    voiceId = UUID.randomUUID().toString()
+                    sourceLanguage = ""
+                    enableCustomCapture = false
+                },
+            )
+        } catch (throwable: Throwable) {
+            Log.w(TAG, "start voiceai capture failed", throwable)
+            running.set(false)
+            releaseEngine(asr)
+            stopWorker()
             return false
         }
-        running.set(true)
-        workerThread = Thread(::captureLoop, config.threadName).also {
-            it.isDaemon = true
-            it.start()
-        }
+        engine = asr
         Log.i(TAG, "capture started: ${effectSummary()}")
         return true
     }
 
     /** 停止采集并释放资源。可重复调用。 */
     fun stop() {
-        if (!running.compareAndSet(true, false) && audioRecord == null && encoder == null) {
-            return
-        }
         running.set(false)
-        // 不要在采集线程还在 read()/encode 时从这边 stop() AudioRecord：
-        // 输入栏录音和实时识别两路并行，主线程抢停会把麦克风弄僵，下一次长按就没声。
-        // join 之后再在 releaseAll 里 stop/release。
-        val worker = workerThread
-        workerThread = null
-        if (worker != null && worker != Thread.currentThread()) {
-            runCatching { worker.join(JOIN_TIMEOUT_MS) }
-            if (worker.isAlive) {
-                Log.w(TAG, "capture thread still alive after ${JOIN_TIMEOUT_MS}ms, releasing anyway")
-            }
+        engine?.let { asr ->
+            engine = null
+            releaseEngine(asr)
         }
-        releaseAll()
+        stopWorker()
+    }
+
+    /** Opus 编码在 SDK 内部，没有对外的重置接口；保留空实现兼容调用方。 */
+    fun requestEncoderReset() = Unit
+
+    private fun releaseEngine(asr: TXRealtimeASR) {
+        runCatching { asr.stopRealtimeASR() }.onFailure { Log.w(TAG, "stopRealtimeASR failed", it) }
+        runCatching { asr.removeListener(listener) }
+        runCatching { asr.destroy() }.onFailure { Log.w(TAG, "destroy failed", it) }
+    }
+
+    private fun startWorker() {
+        val thread = HandlerThread(config.threadName).also { it.start() }
+        worker = thread
+        workerHandler = Handler(thread.looper)
     }
 
     /**
-     * 主线程请求丢掉 Opus 帧间状态；下一帧在采集线程上生效。
-     * 麦克风常开、识别会话按轮切换时，每轮开始前调一次。
+     * 退出采集线程并等它结束。必须等：通话恢复时会紧接着建新实例，旧线程若还在跑，
+     * 两条线程会同时写 VAD，破坏它「单生产者」的约定。
      */
-    fun requestEncoderReset() {
-        pendingEncoderReset = true
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun openRecorder(bufferSize: Int): Boolean {
-        for (source in config.audioSources) {
-            val record = try {
-                AudioRecord(
-                    source,
-                    RealtimeAsrSpec.SAMPLE_RATE,
-                    AudioFormat.CHANNEL_IN_MONO,
-                    AudioFormat.ENCODING_PCM_16BIT,
-                    bufferSize,
-                )
-            } catch (exception: Exception) {
-                Log.w(TAG, "create AudioRecord failed, source=$source", exception)
-                null
+    private fun stopWorker() {
+        val thread = worker ?: return
+        worker = null
+        workerHandler = null
+        thread.quit()
+        if (thread != Thread.currentThread()) {
+            runCatching { thread.join(JOIN_TIMEOUT_MS) }
+            if (thread.isAlive) {
+                Log.w(TAG, "capture thread still alive after ${JOIN_TIMEOUT_MS}ms")
             }
-            if (record == null) {
-                continue
-            }
-            if (record.state == AudioRecord.STATE_INITIALIZED) {
-                if (config.attachVoiceEffects) {
-                    attachEffects(record.audioSessionId)
-                }
-                audioRecord = record
-                activeSource = source
-                return true
-            }
-            record.release()
-        }
-        Log.w(TAG, "no usable audio source for realtime asr")
-        return false
-    }
-
-    private fun openEncoder(): Boolean {
-        val opusEncoder = SystemOpusEncoder.create()
-        if (opusEncoder == null) {
-            return false
-        }
-        encoder = opusEncoder
-        return true
-    }
-
-    private fun attachEffects(sessionId: Int) {
-        if (AcousticEchoCanceler.isAvailable()) {
-            echoCanceler = runCatching {
-                AcousticEchoCanceler.create(sessionId)?.apply { enabled = true }
-            }.onFailure { Log.w(TAG, "AEC create failed", it) }.getOrNull()
-            if (echoCanceler == null) {
-                Log.w(TAG, "AcousticEchoCanceler.create returned null, session=$sessionId")
-            }
-        } else {
-            Log.w(TAG, "AcousticEchoCanceler unavailable on this device")
-        }
-        if (NoiseSuppressor.isAvailable()) {
-            noiseSuppressor = runCatching {
-                NoiseSuppressor.create(sessionId)?.apply { enabled = true }
-            }.onFailure { Log.w(TAG, "NS create failed", it) }.getOrNull()
-        }
-        if (AutomaticGainControl.isAvailable()) {
-            gainControl = runCatching {
-                AutomaticGainControl.create(sessionId)?.apply { enabled = true }
-            }.onFailure { Log.w(TAG, "AGC create failed", it) }.getOrNull()
         }
     }
 
-    private fun captureLoop() {
-        val record = audioRecord ?: return
-        val readBuffer = ShortArray(RealtimeAsrSpec.FRAME_SAMPLES * READ_BUFFER_FRAMES)
-        var pending = ShortArray(RealtimeAsrSpec.FRAME_SAMPLES * (READ_BUFFER_FRAMES + 1))
-        var pendingLength = 0
-        try {
-            while (running.get()) {
-                val read = record.read(readBuffer, 0, readBuffer.size)
-                if (read <= 0) {
-                    continue
+    /** 采集线程：把 SDK 事件分发给调用方。 */
+    private fun dispatchAudio(eventName: String, params: String?, data: ByteArray) {
+        if (!running.get()) {
+            return
+        }
+        when (eventName) {
+            EVENT_LOCAL_OPUS -> {
+                if (!loggedOpusParams) {
+                    loggedOpusParams = true
+                    Log.i(TAG, "first opus packet on ${Thread.currentThread().name}: $params")
                 }
-                if (pendingLength + read > pending.size) {
-                    pending = pending.copyOf((pendingLength + read) * 2)
-                }
-                System.arraycopy(readBuffer, 0, pending, pendingLength, read)
-                pendingLength += read
-
-                var offset = 0
-                while (pendingLength - offset >= RealtimeAsrSpec.FRAME_SAMPLES) {
-                    if (pendingEncoderReset) {
-                        pendingEncoderReset = false
-                        encoder?.reset()
-                    }
-                    onPcmFrame?.invoke(
-                        pending.copyOfRange(offset, offset + RealtimeAsrSpec.FRAME_SAMPLES),
-                    )
-                    encoder?.encode(pending, offset, onPacket)
-                    offset += RealtimeAsrSpec.FRAME_SAMPLES
-                }
-                if (offset > 0) {
-                    val remain = pendingLength - offset
-                    if (remain > 0) {
-                        System.arraycopy(pending, offset, pending, 0, remain)
-                    }
-                    pendingLength = remain
-                }
+                onPacket(data)
             }
-        } catch (exception: Exception) {
-            running.set(false)
-            Log.w(TAG, "capture loop crashed", exception)
+            EVENT_LOCAL_PCM -> {
+                if (!loggedPcmParams) {
+                    loggedPcmParams = true
+                    Log.i(TAG, "first pcm frame on ${Thread.currentThread().name}: $params")
+                }
+                deliverPcm(data)
+            }
+            else -> Unit
         }
     }
 
-    private fun releaseAll() {
-        runCatching { echoCanceler?.release() }
-        runCatching { noiseSuppressor?.release() }
-        runCatching { gainControl?.release() }
-        echoCanceler = null
-        noiseSuppressor = null
-        gainControl = null
-        activeSource = null
-        pendingEncoderReset = false
-        audioRecord?.let { record ->
-            runCatching {
-                if (record.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
-                    record.stop()
-                }
-            }
-            runCatching { record.release() }
+    /**
+     * SDK 回调线程：`onVoiceprintDenoiseStatus`，params 形如 `{"status":"Active",...}`。
+     * 只在状态从非 Active 切到 Active 时通知一次，避免重复上报时反复弹提示。
+     */
+    private fun handleVoiceprintStatus(params: String?, data: ByteArray?) {
+        val raw = params?.takeIf { it.isNotBlank() }
+            ?: data?.takeIf { it.isNotEmpty() }?.toString(Charsets.UTF_8)
+        Log.i(TAG, "voiceprint status: $raw")
+        val status = runCatching { JSONObject(raw.orEmpty()).optString("status") }.getOrDefault("")
+        val active = status.equals(VOICEPRINT_STATUS_ACTIVE, ignoreCase = true)
+        val becameActive = active && !voiceprintActive
+        voiceprintActive = active
+        if (becameActive) {
+            onVoiceprintActive?.invoke()
         }
-        audioRecord = null
-        encoder?.release()
-        encoder = null
+    }
+
+    /** 采集线程：PCM16 小端字节 → 按 20ms 切帧回调。 */
+    private fun deliverPcm(data: ByteArray) {
+        val callback = onPcmFrame ?: return
+        val samples = data.size / 2
+        if (samples == 0) {
+            return
+        }
+        if (pendingLength + samples > pending.size) {
+            pending = pending.copyOf((pendingLength + samples) * 2)
+        }
+        ByteBuffer.wrap(data, 0, samples * 2)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .asShortBuffer()
+            .get(pending, pendingLength, samples)
+        pendingLength += samples
+
+        var offset = 0
+        while (pendingLength - offset >= RealtimeAsrSpec.FRAME_SAMPLES) {
+            callback(pending.copyOfRange(offset, offset + RealtimeAsrSpec.FRAME_SAMPLES))
+            offset += RealtimeAsrSpec.FRAME_SAMPLES
+        }
+        if (offset > 0) {
+            val remain = pendingLength - offset
+            if (remain > 0) {
+                System.arraycopy(pending, offset, pending, 0, remain)
+            }
+            pendingLength = remain
+        }
     }
 
     companion object {
         private const val TAG = "RealtimeAsrCapture"
-        private const val READ_BUFFER_FRAMES = 4
         private const val JOIN_TIMEOUT_MS = 300L
 
-        /** 系统是否注册了 `audio/opus` 编码器。探测见 [SystemOpusEncoder.isSupported]。 */
-        fun isSupported(): Boolean = SystemOpusEncoder.isSupported()
+        private const val EVENT_LOCAL_PCM = "onReceiveLocalPcm"
+        private const val EVENT_LOCAL_OPUS = "onReceiveLocalOpus"
+        private const val EVENT_VOICEPRINT_STATUS = "onVoiceprintDenoiseStatus"
+        private const val VOICEPRINT_STATUS_ACTIVE = "Active"
+
+        private const val API_CALL_VOLUME =
+            "{\"api\":\"setPrivateConfig\",\"params\":{\"configs\":" +
+                "[{\"key\":\"Liteav.Audio.common.force.system.volume.type\",\"default\":\"0\",\"value\":\"1\"}]}}"
+        private const val API_DISABLE_CLOUD = "{\"api\":\"enableCloudAsrChannel\",\"params\":{\"enable\":false}}"
+        private const val API_ENABLE_OPUS = "{\"api\":\"enableLocalOpusOutput\",\"params\":{\"enable\":true}}"
+        private const val API_ENABLE_PCM = "{\"api\":\"enableLocalPcmOutput\",\"params\":{\"enable\":true}}"
+
+        private fun voiceprintApi(enrollMs: Int): String =
+            "{\"api\":\"enableVoiceprintDenoise\",\"params\":{\"enable\":true," +
+                "\"voiceprint_file_path\":\"\",\"auto_enroll_duration_ms\":$enrollMs}}"
+
+        /** 采集与 Opus 编码都由 VoiceAI SDK 提供，不再依赖系统 `audio/opus` 编码器。 */
+        fun isSupported(): Boolean = true
     }
 }

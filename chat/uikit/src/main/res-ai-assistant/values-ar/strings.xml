@@ -22,6 +22,7 @@
     <string name="uikit_ai_call_send_failed">فشل الإرسال، يرجى المحاولة مرة أخرى</string>
     <string name="uikit_ai_call_reply_timeout">لم يستجب المساعد، يرجى المحاولة مرة أخرى</string>
     <string name="uikit_ai_call_audio_unavailable">الميكروفون غير متاح</string>
+    <string name="uikit_ai_call_voiceprint_enrolled">لقد حفظت صوتك، ومن الآن سأستجيب لصوتك فقط</string>
     <string name="uikit_ai_call_playback_unavailable">تشغيل الصوت غير متاح، وسيتم عرض الردود كنص</string>
     <string name="uikit_ai_call_debug_toggle">LOG</string>
     <string name="uikit_ai_call_try_saying">جرّب أن تقول: \"%1$s\"</string>

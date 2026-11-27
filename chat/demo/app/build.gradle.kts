@@ -8,6 +8,11 @@ val appVersionCode = (findProperty("VERSION_CODE") as String?
 val appVersionName = (findProperty("VERSION_NAME") as String?
     ?: System.getenv("VERSION_NAME")) ?: "1.0"
 
+// 打包 ABI：release 只打 arm64-v8a；
+// debug 保留 armeabi-v7a + arm64-v8a（AtomicEngine 链接的 LiteAV C++ 库无 x86/x86_64，无法提供模拟器 ABI）。
+// -Parm64Only=true 时 debug 也只打 arm64-v8a。
+val arm64Only = providers.gradleProperty("arm64Only").map(String::toBoolean).getOrElse(false)
+
 android {
     namespace = "io.trtc.tuikit.chat.app"
     compileSdk = 35
@@ -27,9 +32,17 @@ android {
     }
 
     buildTypes {
+        debug {
+            ndk {
+                abiFilters += if (arm64Only) listOf("arm64-v8a") else listOf("armeabi-v7a", "arm64-v8a")
+            }
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            ndk {
+                abiFilters += listOf("arm64-v8a")
+            }
         }
     }
     compileOptions {
@@ -38,6 +51,13 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    // so 在 APK 内 deflate 压缩存储（extractNativeLibs=true），减小 APK 下载体积
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 }
 

@@ -1,11 +1,7 @@
 package io.trtc.tuikit.chat.demo.ai
 
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -13,127 +9,37 @@ import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.ImageView
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
-import com.tencent.mmkv.MMKV
 import io.trtc.tuikit.atomicx.theme.ThemeStore
 import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
 import io.trtc.tuikit.chat.app.R
 import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantAgent
-import io.trtc.tuikit.chat.uikit.R as UikitR
 
 /**
- * AI 首屏左上角的助手下拉框：服务器内置的助手 + 第三项「自定义 AI 助手」。
+ * AI 聊天页标题的助手下拉菜单：服务器内置的助手 + 最后一项「自定义 AI 助手」。
  *
- * 用渐变实心胶囊做入口，第一次出现时带 NEW 角标和呼吸动画吸引点击，点过一次后收起。
  * 选中项写入 [SupportAgentCatalog]，变化后回调 [onSelectionChanged] 让页面重新加载助手。
  */
 class AIAgentPicker(
-    context: Context,
+    private val context: Context,
     private val onSelectionChanged: () -> Unit,
-) : FrameLayout(context) {
+) {
 
     private val themeStore = ThemeStore.shared(context)
-    private val pill = LinearLayout(context)
-    private val label = TextView(context)
-    private val badge = TextView(context)
-    private var attention: ValueAnimator? = null
+    private val density = context.resources.displayMetrics.density
     private var popup: PopupWindow? = null
 
-    private var badgeVisible: Boolean
-        get() = !MMKV.defaultMMKV().decodeBool(KEY_PICKER_SEEN, false)
-        set(value) {
-            MMKV.defaultMMKV().encode(KEY_PICKER_SEEN, !value)
-        }
-
-    init {
-        clipChildren = false
-        clipToPadding = false
-
-        pill.apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(12), 0, dp(10), 0)
-            background = GradientDrawable(
-                GradientDrawable.Orientation.LEFT_RIGHT,
-                intArrayOf(BRAND_PURPLE, BRAND_BLUE),
-            ).apply { cornerRadius = dp(18).toFloat() }
-            elevation = dp(4).toFloat()
-            contentDescription = context.getString(R.string.demo_ai_agent_picker_title)
-            setOnClickListener { onPillClicked() }
-        }
-        pill.addView(
-            TextView(context).apply {
-                text = "✦"
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-                setTextColor(Color.WHITE)
-                importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
-            },
-            LinearLayout.LayoutParams(-2, -2).apply { marginEnd = dp(5) },
-        )
-        label.apply {
-            text = context.getString(R.string.demo_ai_voice_title)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.WHITE)
-            maxLines = 1
-            maxWidth = dp(170)
-            ellipsize = TextUtils.TruncateAt.END
-        }
-        pill.addView(label)
-        pill.addView(
-            ImageView(context).apply {
-                setImageResource(UikitR.drawable.uikit_ai_ic_title_dropdown)
-                setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
-                importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
-            },
-            LinearLayout.LayoutParams(dp(18), dp(18)).apply { marginStart = dp(4) },
-        )
-        addView(
-            pill,
-            LayoutParams(-2, dp(36), Gravity.START or Gravity.BOTTOM).apply {
-                topMargin = dp(7)
-                marginEnd = dp(12)
-            },
-        )
-
-        badge.apply {
-            text = context.getString(R.string.demo_ai_agent_new_badge)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
-            typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.WHITE)
-            setPadding(dp(5), dp(1), dp(5), dp(1))
-            background = GradientDrawable().apply {
-                cornerRadius = dp(8).toFloat()
-                setColor(BADGE_RED)
-                setStroke(dp(1), Color.WHITE)
-            }
-            elevation = dp(5).toFloat()
-            visibility = if (badgeVisible) View.VISIBLE else View.GONE
-        }
-        addView(badge, LayoutParams(-2, -2, Gravity.TOP or Gravity.END))
-    }
-
-    /** 显示当前选中的助手名，未加载到时显示「AI 助手」。 */
-    fun setAgent(agent: AIAssistantAgent?) {
-        label.text = agent?.displayName ?: context.getString(R.string.demo_ai_voice_title)
-    }
-
-    private fun onPillClicked() {
-        if (badgeVisible) {
-            badgeVisible = false
-            badge.visibility = View.GONE
-            stopAttention()
-        }
-        showMenu()
+    fun dismiss() {
+        popup?.dismiss()
     }
 
     // region menu
 
-    private fun showMenu() {
+    /** 在 [anchor] 下方弹出助手菜单，水平居中对齐。 */
+    fun show(anchor: View) {
         popup?.dismiss()
         val colors = themeStore.themeState.value.currentTheme.tokens.color
         val card = LinearLayout(context).apply {
@@ -145,7 +51,7 @@ class AIAgentPicker(
                 setStroke(dp(1), colors.strokeColorSecondary)
             }
         }
-        val window = PopupWindow(card, dp(292), LayoutParams.WRAP_CONTENT, true).apply {
+        val window = PopupWindow(card, dp(MENU_WIDTH_DP), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
             elevation = dp(12).toFloat()
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             isOutsideTouchable = true
@@ -225,7 +131,7 @@ class AIAgentPicker(
             },
         )
 
-        window.showAsDropDown(pill, 0, dp(8))
+        window.showAsDropDown(anchor, (anchor.width - MENU_WIDTH_DP * density).toInt() / 2, dp(4))
     }
 
     private fun buildRow(
@@ -315,14 +221,12 @@ class AIAgentPicker(
 
     private fun selectBuiltIn(agent: AIAssistantAgent) {
         SupportAgentCatalog.selectedBotUserId = agent.imUserId
-        setAgent(agent)
         onSelectionChanged()
     }
 
     private fun selectCustom() {
         val customId = SupportAgentCatalog.customBotUserId
         SupportAgentCatalog.selectedBotUserId = customId
-        label.text = SupportAgentCatalog.customAgent?.displayName ?: customId
         onSelectionChanged()
     }
 
@@ -332,52 +236,12 @@ class AIAgentPicker(
 
     // endregion
 
-    // region attention animation
-
-    private fun startAttention() {
-        if (!badgeVisible || attention != null) {
-            return
-        }
-        attention = ObjectAnimator.ofPropertyValuesHolder(
-            pill,
-            PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.07f, 1f),
-            PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.07f, 1f),
-        ).apply {
-            duration = 900L
-            startDelay = 600L
-            repeatCount = ValueAnimator.INFINITE
-            repeatMode = ValueAnimator.RESTART
-            start()
-        }
-    }
-
-    private fun stopAttention() {
-        attention?.cancel()
-        attention = null
-        pill.scaleX = 1f
-        pill.scaleY = 1f
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        startAttention()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        stopAttention()
-        popup?.dismiss()
-    }
-
-    // endregion
-
-    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
+    private fun dp(value: Int): Int = (value * density).toInt()
 
     private companion object {
-        const val KEY_PICKER_SEEN = "ai_agent_picker_seen"
+        const val MENU_WIDTH_DP = 292
         const val BRAND_PURPLE = 0xFF7B5CFF.toInt()
         const val BRAND_BLUE = 0xFF2EC5FF.toInt()
         const val BRAND_PURPLE_SOFT = 0x267B5CFF
-        const val BADGE_RED = 0xFFFF4D4F.toInt()
     }
 }

@@ -51,6 +51,7 @@ android {
 dependencies {
     implementation(project(":atomic_x"))
     implementation("com.tencent.imsdk:imsdk-plus:latest.release")
+    implementation("com.tencent.liteav:LiteAVSDK_VoiceAI:13.6.0.255")
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.cardview:cardview:1.0.0")

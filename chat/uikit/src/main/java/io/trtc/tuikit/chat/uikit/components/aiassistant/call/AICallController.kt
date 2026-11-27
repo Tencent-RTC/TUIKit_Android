@@ -77,6 +77,9 @@ class AICallController(
          */
         fun onAsrServiceUnavailable()
 
+        /** 声纹注册完成，之后只响应当前说话人。主线程回调。 */
+        fun onVoiceprintEnrolled()
+
         /** 调试浮层用的事件行。采集线程也可能来，实现方要切主线程。 */
         fun onDebugLog(line: String)
     }
@@ -324,7 +327,7 @@ class AICallController(
             if (preRollPackets.isNotEmpty()) {
                 debugI(
                     "push pre-roll: ${preRollPackets.size} packets " +
-                        "(${preRollPackets.size * AIConstants.FRAME_DURATION_MS}ms)"
+                        "(${preRollPackets.size * AIConstants.OPUS_PACKET_DURATION_MS}ms)"
                 )
                 preRollPackets.forEach { asrSession?.pushPacket(it) }
             }
@@ -558,6 +561,14 @@ class AICallController(
             onPacket = ::onCapturedPacket,
             onPcmFrame = ::onAudioFrame,
             config = RealtimeAsrAudioCapture.Config.VoiceCommunication,
+            onVoiceprintActive = {
+                debugI("voiceprint denoise active")
+                mainHandler.post {
+                    if (!released) {
+                        callbacks.onVoiceprintEnrolled()
+                    }
+                }
+            },
         )
         return if (engine.start()) engine else null
     }

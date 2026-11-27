@@ -21,14 +21,14 @@ package io.trtc.tuikit.chat.uikit.components.aiassistant.audio
  *
  * ## 线程契约
  *
- * **这是本特性里唯一一个真正被两条线程同时碰的容器**：采集线程（20ms 一帧）写，主线程
+ * **这是本特性里唯一一个真正被两条线程同时碰的容器**：采集线程（40ms 一个 packet）写，主线程
  * （[drain] / [clear]）读。所以每个方法都加锁，而不是像 `AICallController` 里别的字段那样
  * 靠 `@Volatile` + 单向所有权——`@Volatile` 只保证单个引用的可见性，保证不了 ArrayDeque
  * 内部结构的一致性，边读边写会读到半截状态甚至抛异常。
  *
  * 锁是非竞争的（两条线程各自访问都是纳秒级），采集线程不会因此被拖慢。
  *
- * packet 本身是系统 MediaCodec 每次新分配的 ByteArray，交出去之后编码器不会再碰，
+ * packet 本身是 VoiceAI SDK 每次回调新分配的 ByteArray，交出去之后 SDK 不会再碰，
  * 所以不必再拷贝一份。
  */
 class PreRollBuffer(private val capacity: Int) {

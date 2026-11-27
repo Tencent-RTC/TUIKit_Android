@@ -66,6 +66,10 @@ class AIAssistantTrialPrompt(
     val callUiOptions: AICallUiOptions? = null,
     /** 按当前助手提供通话页选项（如示例话术），返回 null 时使用 [callUiOptions]。 */
     val callUiOptionsForAgent: ((AIAssistantAgent) -> AICallUiOptions?)? = null,
+    /** 是否显示标题栏右上角的语音通话入口。 */
+    val showCallButton: Boolean = true,
+    /** 宿主接管标题点击（如自带的助手下拉菜单），参数为标题区域；传入后标题始终带下拉箭头，不再使用内置的助手切换。 */
+    val onTitleClick: ((anchor: View) -> Unit)? = null,
 )
 
 /**
@@ -169,7 +173,10 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
         this.trialPrompt = trialPrompt
         applyTrialPromptDecorations(trialPrompt)
         btnCallButton.setOnClickListener { onCallClicked() }
-        titleRow.setOnClickListener { showAgentPicker() }
+        titleRow.setOnClickListener {
+            val onTitleClick = this.trialPrompt?.onTitleClick
+            if (onTitleClick != null) onTitleClick(titleRow) else showAgentPicker()
+        }
         applyColors(themeStore.themeState.value.currentTheme.tokens.color)
         if (isAttachedToWindow) {
             reloadAgents()
@@ -314,8 +321,9 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
             selectedAgent = null
             boundConversationID = null
             title.text = context.getString(R.string.uikit_ai_page_title)
-            titleDropdown.visibility = View.GONE
-            titleRow.isClickable = false
+            val hostPicker = trialPrompt?.onTitleClick != null
+            titleDropdown.visibility = if (hostPicker) View.VISIBLE else View.GONE
+            titleRow.isClickable = hostPicker
             btnCallButton.visibility = View.GONE
             updateCallRedDot()
             chatPageView.visibility = View.GONE
@@ -323,7 +331,8 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
             return
         }
         emptyView.visibility = View.GONE
-        btnCallButton.visibility = if (isVoiceCallSupported) View.VISIBLE else View.GONE
+        btnCallButton.visibility =
+            if (isVoiceCallSupported && trialPrompt?.showCallButton != false) View.VISIBLE else View.GONE
         updateCallRedDot()
         val currentId = selectedAgent?.id
         val next = agents.firstOrNull { it.id == currentId } ?: agents.first()
@@ -340,7 +349,7 @@ class AIAssistantPageView(context: Context) : FrameLayout(context) {
         trialPrompt?.let { prompt ->
             prompt.quickQuestionsForAgent?.let { setQuickQuestions(it(agent) ?: prompt.quickQuestions) }
         }
-        val canSwitch = agents.size > 1
+        val canSwitch = agents.size > 1 || trialPrompt?.onTitleClick != null
         titleDropdown.visibility = if (canSwitch) View.VISIBLE else View.GONE
         titleRow.isClickable = canSwitch
         if (boundConversationID == agent.conversationID && chatPageView.visibility == View.VISIBLE) {

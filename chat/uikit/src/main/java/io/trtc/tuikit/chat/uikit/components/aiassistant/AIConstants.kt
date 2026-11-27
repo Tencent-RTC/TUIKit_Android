@@ -1,5 +1,7 @@
 package io.trtc.tuikit.chat.uikit.components.aiassistant
 
+import io.trtc.tuikit.chat.uikit.components.messageinput.asr.RealtimeAsrSpec
+
 /**
  * AI 语音对话相关的固定参数。
  *
@@ -19,13 +21,16 @@ object AIConstants {
     const val SAMPLE_RATE = 16000
     const val CHANNEL_COUNT = 1
 
-    /** 20ms @ 16kHz */
+    /** PCM 帧：20ms @ 16kHz，供 VAD 与音量动画使用。 */
     const val FRAME_SAMPLES = 320
     const val FRAME_BYTES = FRAME_SAMPLES * 2
     const val FRAME_DURATION_MS = 20
 
-    /** 每 5 帧（100ms）调一次 sendASRAudioData */
-    const val UPLOAD_BATCH_FRAMES = 5
+    /** VoiceAI SDK 输出的一个 Opus packet 的时长，与 PCM 帧长不同。 */
+    const val OPUS_PACKET_DURATION_MS = RealtimeAsrSpec.OPUS_PACKET_DURATION_MS
+
+    /** 每 3 个 packet（120ms）上行一次。 */
+    const val UPLOAD_BATCH_PACKETS = RealtimeAsrSpec.UPLOAD_BATCH_PACKETS
 
     const val ASR_LANGUAGE = "zh"
 
@@ -49,14 +54,14 @@ object AIConstants {
     const val VAD_MIN_NOISE_FLOOR = 100.0
 
     /**
-     * 打断 pre-roll 缓冲的上界：100 个 packet = 2 秒。
+     * 打断 pre-roll 缓冲的上界：50 个 packet = 2 秒。
      *
      * 缓冲只从人声起点开始装（见 `PreRollBuffer.appendFromSpeechOnset`），正常情况下装到打断
      * 判定成立也就 200~400ms。2 秒是给「说了很久才攒够越线帧」和「startASR 慢」两种情况留的
      * 余量，超了丢最旧的——补推 2 秒以上的历史音频对 ASR 已无意义，反而会把一句话的开头推到
      * 离实时太远的地方。
      */
-    const val PRE_ROLL_MAX_PACKETS = 100
+    const val PRE_ROLL_MAX_PACKETS = 50
 
     /** 噪声基线校准时长 */
     const val NOISE_CALIBRATION_MS = 300L

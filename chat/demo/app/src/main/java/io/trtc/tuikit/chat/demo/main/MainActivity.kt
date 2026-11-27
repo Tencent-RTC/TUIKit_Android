@@ -7,6 +7,7 @@ import io.trtc.tuikit.chat.demo.common.CustomerSeatConversations
 import io.trtc.tuikit.chat.demo.customerservice.CustomerServiceManager
 import io.trtc.tuikit.chat.demo.settings.SettingsPageView
 
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.LinearGradient
@@ -49,7 +50,7 @@ import io.trtc.tuikit.atomicxcore.api.group.GroupInfo
 import io.trtc.tuikit.atomicxcore.api.group.GroupStore
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.chat.app.R
-import io.trtc.tuikit.chat.demo.ai.AIVoiceHomeView
+import io.trtc.tuikit.chat.demo.ai.AIChatHomeView
 import io.trtc.tuikit.chat.demo.ai.AIStayReporter
 import io.trtc.tuikit.chat.demo.chat.ChatActivity
 import io.trtc.tuikit.chat.demo.search.SearchActivity
@@ -78,6 +79,8 @@ private data class BottomTab(
 
 private const val BADGE_CLEAR_DRAG_THRESHOLD_DP = 48
 private const val TAB_ICON_SIZE_DP = 24
+private const val SHOW_AI_TAB = false
+private const val STATE_CURRENT_TAB_ID = "state_current_tab_id"
 
 // Gradient handle positions of the selected tab icon, normalized to the icon canvas.
 private const val TAB_ICON_GRADIENT_LIGHT_X = 0.66f
@@ -99,7 +102,7 @@ class MainActivity : BaseActivity() {
     private var conversationsAddButton: ImageView? = null
     private var contactsAddButton: ImageView? = null
     private var selectedTabIndex = 0
-    private var currentTabId = R.id.demo_tab_ai
+    private var currentTabId = if (SHOW_AI_TAB) R.id.demo_tab_ai else R.id.demo_tab_messages
     private val aiStayReporter = AIStayReporter()
     private var isActivityStarted = false
     private val tabPageCache = mutableMapOf<Int, View>()
@@ -122,6 +125,8 @@ class MainActivity : BaseActivity() {
         if (isFinishing) {
             return
         }
+        // 切 tab 会改屏幕方向并重建 Activity，必须恢复到重建前的 tab，否则会被拉回默认的 AI tab
+        savedInstanceState?.getInt(STATE_CURRENT_TAB_ID, currentTabId)?.let { currentTabId = it }
 
         setContentView(R.layout.demo_activity_main)
 
@@ -173,6 +178,8 @@ class MainActivity : BaseActivity() {
         bottomTabs = filterVisibleTabs(showCallsTab)
         allBottomTabs.first { it.tabId == R.id.demo_tab_calls }.root.visibility =
             if (showCallsTab) View.VISIBLE else View.GONE
+        allBottomTabs.first { it.tabId == R.id.demo_tab_ai }.root.visibility =
+            if (SHOW_AI_TAB) View.VISIBLE else View.GONE
 
         ViewCompat.setOnApplyWindowInsetsListener(mainContainer) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -270,6 +277,11 @@ class MainActivity : BaseActivity() {
         rebuildPages()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(STATE_CURRENT_TAB_ID, currentTabId)
+    }
+
     private fun rebuildPages() {
         val pages = bottomTabs.map { getOrCreatePage(it.tabId) }
         viewPager.adapter = TabPagerAdapter(pages)
@@ -292,7 +304,9 @@ class MainActivity : BaseActivity() {
     }
 
     private fun filterVisibleTabs(showCalls: Boolean): List<BottomTab> {
-        return allBottomTabs.filter { it.tabId != R.id.demo_tab_calls || showCalls }
+        return allBottomTabs.filter {
+            (it.tabId != R.id.demo_tab_calls || showCalls) && (it.tabId != R.id.demo_tab_ai || SHOW_AI_TAB)
+        }
     }
 
     fun setCallsTabVisible(show: Boolean) {
@@ -337,10 +351,15 @@ class MainActivity : BaseActivity() {
         }
         selectedTabIndex = index
         currentTabId = bottomTabs[index].tabId
+        // AI 助手页只支持竖屏，其他 tab 跟随系统
+        requestedOrientation = if (currentTabId == R.id.demo_tab_ai) {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
         updateAiStay()
-        (tabPageCache[R.id.demo_tab_ai] as? AIVoiceHomeView)?.isCurrentTab = currentTabId == R.id.demo_tab_ai
         if (currentTabId == R.id.demo_tab_ai) {
-            (tabPageCache[currentTabId] as? AIVoiceHomeView)?.onPageVisible()
+            (tabPageCache[currentTabId] as? AIChatHomeView)?.onPageVisible()
         }
         if (updatePager && viewPager.currentItem != index) {
             viewPager.setCurrentItem(index, false)
@@ -782,7 +801,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun createAIPage(): View {
-        return AIVoiceHomeView(this).also { it.isCurrentTab = currentTabId == R.id.demo_tab_ai }
+        return AIChatHomeView(this)
     }
 
     private fun createConversationsPage(): View {
