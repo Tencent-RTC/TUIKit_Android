@@ -1,0 +1,631 @@
+package io.trtc.tuikit.chat.demo.chat
+
+import io.trtc.tuikit.chat.demo.customMessages.CustomLinkMessage
+import io.trtc.tuikit.chat.demo.customMessages.CustomLinkMessageRenderer
+import android.content.Context
+import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
+import android.net.Uri
+import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnPreDraw
+import androidx.core.view.updatePadding
+import com.google.gson.Gson
+import io.trtc.tuikit.chat.uikit.components.common.EventBus
+import io.trtc.tuikit.chat.uikit.components.common.observeOn
+import io.trtc.tuikit.chat.uikit.components.common.expandTouchTarget
+import io.trtc.tuikit.chat.uikit.components.aiassistant.AIAssistantControlMessages
+import io.trtc.tuikit.chat.uikit.components.contactlist.ui.ContactFlowLauncher
+import io.trtc.tuikit.atomicx.theme.ThemeStore
+import io.trtc.tuikit.atomicx.theme.tokens.ColorTokens
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.AtomicAlertDialog
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.cancelButton
+import io.trtc.tuikit.atomicx.widget.basicwidget.alertdialog.confirmButton
+import io.trtc.tuikit.atomicx.widget.basicwidget.toast.AtomicToast
+import io.trtc.tuikit.atomicxcore.api.CompletionHandler
+import io.trtc.tuikit.atomicxcore.api.contact.ContactInfo
+import io.trtc.tuikit.atomicxcore.api.contact.ContactStore
+import io.trtc.tuikit.atomicxcore.api.contact.GetContactInfoCompletionHandler
+import io.trtc.tuikit.atomicxcore.api.conversation.ConversationInfo
+import io.trtc.tuikit.atomicxcore.api.conversation.ConversationListStore
+import io.trtc.tuikit.atomicxcore.api.conversation.GetConversationInfoCompletionHandler
+import io.trtc.tuikit.atomicxcore.api.group.GetGroupInfoCompletionHandler
+import io.trtc.tuikit.atomicxcore.api.group.GroupEvent
+import io.trtc.tuikit.atomicxcore.api.group.GroupInfo
+import io.trtc.tuikit.atomicxcore.api.group.GroupStore
+import io.trtc.tuikit.atomicxcore.api.message.CustomMessagePayload
+import io.trtc.tuikit.atomicxcore.api.message.MessageInfo
+import io.trtc.tuikit.atomicxcore.api.login.LoginStore
+import io.trtc.tuikit.atomicxcore.api.message.MessageInputStore
+import io.trtc.tuikit.atomicxcore.api.message.SendMessageOption
+import io.trtc.tuikit.atomicxcore.api.message.SendMessagePayload
+import io.trtc.tuikit.chat.demo.ai.SupportAgentCatalog
+import io.trtc.tuikit.chat.demo.common.AppConstants
+import io.trtc.tuikit.chat.demo.common.BaseActivity
+import io.trtc.tuikit.chat.demo.common.Event
+import io.trtc.tuikit.chat.demo.common.MessageInputCallRedDotStore
+import io.trtc.tuikit.chat.app.R
+import io.trtc.tuikit.chat.uikit.components.config.AppBuilderConfig
+import io.trtc.tuikit.chat.uikit.components.messageinput.config.ChatMessageInputConfig
+import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputActionIDs
+import io.trtc.tuikit.chat.uikit.components.messageinput.data.MessageInputMenuAction
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.CallMessageClickContext
+import io.trtc.tuikit.chat.uikit.components.messagelist.config.ChatMessageListConfig
+import io.trtc.tuikit.chat.uikit.pages.ChatPageView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+
+class ChatActivity : BaseActivity() {
+
+    private var activityScope: CoroutineScope? = null
+    private val themeStore by lazy { ThemeStore.shared(this) }
+    private val contactStore by lazy { ContactStore.shared }
+    private val groupStore by lazy { GroupStore.shared }
+
+    private lateinit var rootContainer: LinearLayout
+    private lateinit var headerContainer: LinearLayout
+    private lateinit var tvChatTitle: TextView
+    private lateinit var btnBack: ImageView
+    private lateinit var btnMore: ImageView
+    private lateinit var headerDivider: View
+    private lateinit var badgeContainer: FrameLayout
+    private lateinit var tvUnreadBadge: TextView
+    private lateinit var leftContainer: LinearLayout
+    private lateinit var btnMultiSelectCancel: TextView
+    private lateinit var chatPageView: ChatPageView
+    private var isCheckingHandoffStatus = false
+    private lateinit var chatSecurityBar: LinearLayout
+    private lateinit var securityWarningIcon: ImageView
+    private lateinit var securityWarningText: TextView
+    private lateinit var securityWarningClose: ImageView
+
+    private var isPeerTyping = false
+    private var latestChatTitle: String = ""
+
+    companion object {
+        private const val EXTRA_CONVERSATION_ID = "conversationID"
+        private const val EXTRA_LOCATE_MESSAGE = "locateMessage"
+        private const val C2C_CONVERSATION_ID_PREFIX = "c2c_"
+        private const val GROUP_CONVERSATION_ID_PREFIX = "group_"
+        private const val UNREAD_BADGE_DEBOUNCE_MS = 300L
+        private const val DEMO_MESSAGE_INPUT_CUSTOM_LINK_ACTION_ID = "demo.messageInput.customLink"
+
+        fun start(context: Context, conversationID: String) {
+            start(context, conversationID, null)
+        }
+
+        fun start(context: Context, conversationID: String, locateMessage: MessageInfo?) {
+            context.startActivity(Intent(context, ChatActivity::class.java).apply {
+                putExtra(EXTRA_CONVERSATION_ID, conversationID)
+                if (locateMessage != null) {
+                    putExtra(EXTRA_LOCATE_MESSAGE, locateMessage)
+                }
+            })
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (isFinishing) {
+            return
+        }
+        setContentView(R.layout.demo_activity_chat)
+
+        val conversationID = intent?.getStringExtra(EXTRA_CONVERSATION_ID) ?: run {
+            finish()
+            return
+        }
+        val isChatbotConversation = ChatPageView.isChatbotConversationID(conversationID)
+        @Suppress("DEPRECATION")
+        val locateMessage = intent?.getParcelableExtra<MessageInfo>(EXTRA_LOCATE_MESSAGE)
+
+        rootContainer = findViewById(R.id.demo_chatRootContainer)
+        headerContainer = findViewById(R.id.demo_chatHeaderContainer)
+        tvChatTitle = findViewById(R.id.demo_tvChatTitle)
+        btnBack = findViewById(R.id.demo_btnBack)
+        btnMore = findViewById(R.id.demo_btnMore)
+        headerDivider = findViewById(R.id.demo_headerDivider)
+        badgeContainer = findViewById(R.id.demo_badgeContainer)
+        tvUnreadBadge = findViewById(R.id.demo_tvUnreadBadge)
+        leftContainer = findViewById(R.id.demo_leftContainer)
+        btnMultiSelectCancel = findViewById(R.id.demo_btnMultiSelectCancel)
+        btnMultiSelectCancel.text = getString(R.string.demo_chat_header_cancel)
+        val groupID = getGroupID(conversationID)
+        val cachedGroupName = groupID?.let { id ->
+            groupStore.state.joinedGroupList.value.firstOrNull { it.groupID == id }?.groupName
+        }
+        updateChatTitle(
+            ChatTitleResolver.resolve(
+                conversationID = conversationID,
+                groupName = cachedGroupName
+            )
+        )
+        val chatPageContainer = findViewById<FrameLayout>(R.id.demo_chatPageContainer)
+        chatSecurityBar = findViewById(R.id.demo_chatSecurityBar)
+        securityWarningIcon = findViewById(R.id.demo_securityWarningIcon)
+        securityWarningText = findViewById(R.id.demo_securityWarningText)
+        securityWarningClose = findViewById(R.id.demo_securityWarningClose)
+        if (isChatbotConversation) {
+            chatSecurityBar.visibility = View.GONE
+        } else {
+            setupSecurityWarning()
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(top = systemBars.top)
+            chatPageContainer.updatePadding(bottom = systemBars.bottom)
+            insets
+        }
+
+        leftContainer.contentDescription = btnBack.contentDescription
+        leftContainer.setOnClickListener { finish() }
+        if (isChatbotConversation) {
+            btnMore.setImageResource(R.drawable.demo_ic_clear_chat_history)
+            btnMore.contentDescription = getString(R.string.demo_chatbot_clear_history)
+        }
+        btnMore.setOnClickListener {
+            if (isChatbotConversation) {
+                showClearChatHistoryConfirmation()
+            } else {
+                handleChatSettingNavigation(
+                    userID = getUserID(conversationID),
+                    groupID = getGroupID(conversationID)
+                )
+            }
+        }
+        btnMore.expandTouchTarget()
+
+        val messageListConfig = ChatMessageListConfig().setCustomMessageRenderer(
+            businessID = CustomLinkMessage.BUSINESS_ID,
+            renderer = CustomLinkMessageRenderer(),
+            summaryProvider = { summaryContext ->
+                val payload = summaryContext.message.messagePayload as? CustomMessagePayload
+                CustomLinkMessage.from(payload?.customData)?.text
+            }
+        ).addMessageExclusion {
+            AIAssistantControlMessages.isControlMessage(it)
+        }.apply {
+            if (isChatbotConversation) {
+                setCallMessageClickListener { clickContext ->
+                    handleChatbotCallMessageClick(clickContext)
+                    true
+                }
+            }
+        }
+
+        val sdkAppID = LoginStore.shared.sdkAppID
+        val messageInputConfig = ChatMessageInputConfig().customizeActions {
+            val androidContext = editorContext.androidContext
+            val conversationID = editorContext.conversationID
+            add(
+                MessageInputMenuAction(
+                    ID = DEMO_MESSAGE_INPUT_CUSTOM_LINK_ACTION_ID,
+                    title = androidContext.getString(R.string.demo_chat_custom_message_menu_title),
+                    iconResID = android.R.drawable.ic_menu_send,
+                    onClick = {
+                        val customLinkMessage = CustomLinkMessage(
+                            businessID = CustomLinkMessage.BUSINESS_ID,
+                            text = androidContext.getString(R.string.demo_chat_custom_message_content),
+                            link = androidContext.getString(R.string.demo_chat_custom_message_link)
+                        )
+                        val payload = SendMessagePayload.CustomSendMessagePayload(
+                            customData = Gson().toJson(customLinkMessage),
+                            description = customLinkMessage.text
+                        )
+                        MessageInputStore.create(conversationID).sendMessage(
+                            payload = payload,
+                            option = SendMessageOption(
+                                needReadReceipt = AppBuilderConfig.enableReadReceipt
+                            ),
+                            completion = object : CompletionHandler {
+                                override fun onSuccess() {}
+                                override fun onFailure(code: Int, desc: String) {}
+                            }
+                        )
+                    }
+                )
+            )
+            replace(MessageInputActionIDs.VIDEO_CALL) { action ->
+                withCallRedDotIfNeeded(sdkAppID, action)
+            }
+            replace(MessageInputActionIDs.AUDIO_CALL) { action ->
+                withCallRedDotIfNeeded(sdkAppID, action)
+            }
+        }
+
+        chatPageView = ChatPageView(this)
+        chatPageContainer.addView(chatPageView)
+        chatPageView.setup(
+            conversationID = conversationID,
+            messageListConfig = messageListConfig,
+            messageInputConfig = messageInputConfig,
+            locateMessage = locateMessage,
+            onUserClick = { userID ->
+                handleChatSettingNavigation(userID = userID)
+            },
+            onMultiSelectStateChanged = { isMultiSelect ->
+                updateHeaderForMultiSelect(isMultiSelect)
+                chatPageView.setMessageListFooterOverlayVisible(!isMultiSelect)
+            },
+            onTypingStatusChanged = { isTyping ->
+                isPeerTyping = isTyping
+                tvChatTitle.text = if (isTyping) {
+                    getString(R.string.demo_chat_typing_indicator)
+                } else {
+                    latestChatTitle
+                }
+            }
+        )
+        btnMultiSelectCancel.setOnClickListener {
+            chatPageView.exitMultiSelectMode()
+        }
+        applyColors(themeStore.themeState.value.currentTheme.tokens.color)
+
+        activityScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+        activityScope?.launch {
+            themeStore.themeState.collectLatest { state ->
+                applyColors(state.currentTheme.tokens.color)
+            }
+        }
+
+        activityScope?.let { scope ->
+            EventBus.observeOn<Event.ContactDeleted>(scope) { event ->
+                if ("c2c_${event.contactID}" == conversationID) {
+                    finish()
+                }
+            }
+            EventBus.observeOn<Event.GroupDeleted>(scope) { event ->
+                if ("group_${event.groupID}" == conversationID) {
+                    finish()
+                }
+            }
+            scope.launch {
+                groupStore.groupEventFlow.collectLatest { event ->
+                    when (event) {
+                        is GroupEvent.OnGroupDismissed -> {
+                            if ("group_${event.groupID}" == conversationID) {
+                                finish()
+                            }
+                        }
+                        else -> Unit
+                    }
+                }
+            }
+        }
+
+        val conversationListStore = ConversationListStore.create()
+        conversationListStore.getConversationInfo(conversationID, object : GetConversationInfoCompletionHandler {
+            override fun onSuccess(conversationInfo: ConversationInfo) {
+                applyConversationTitle(conversationInfo.title, conversationID)
+            }
+
+            override fun onFailure(code: Int, desc: String) {}
+        })
+
+        val currentConversationFlow = conversationListStore.state.conversationList
+            .map { list -> list.firstOrNull { it.conversationID == conversationID } }
+            .stateIn(activityScope!!, SharingStarted.WhileSubscribed(5000), null)
+
+        activityScope?.launch {
+            currentConversationFlow.collect { info ->
+                if (info != null) {
+                    applyConversationTitle(info.title, conversationID)
+                }
+            }
+        }
+
+        if (groupID != null) {
+            groupStore.getGroupInfo(
+                groupID,
+                object : GetGroupInfoCompletionHandler {
+                    override fun onSuccess(groupInfo: GroupInfo) {
+                        val groupName = groupInfo.groupName?.takeIf { it.isNotBlank() } ?: return
+                        runOnUiThread {
+                            if (!isFinishing && !isDestroyed) {
+                                updateChatTitle(groupName)
+                            }
+                        }
+                    }
+
+                    override fun onFailure(code: Int, desc: String) {}
+                }
+            )
+            activityScope?.launch {
+                groupStore.state.joinedGroupList
+                    .map { list -> list.firstOrNull { it.groupID == groupID }?.groupName }
+                    .distinctUntilChanged()
+                    .collect { groupName ->
+                        if (!groupName.isNullOrBlank()) {
+                            updateChatTitle(groupName)
+                        }
+                    }
+            }
+        }
+
+        activityScope?.launch {
+            observeTotalUnreadCount(conversationListStore)
+        }
+    }
+
+    @OptIn(FlowPreview::class)
+    private suspend fun observeTotalUnreadCount(store: ConversationListStore) {
+        store.state.totalUnreadCount
+            .debounce(UNREAD_BADGE_DEBOUNCE_MS)
+            .distinctUntilChanged()
+            .collect { total ->
+                if (total > 0L) {
+                    badgeContainer.visibility = View.VISIBLE
+                    tvUnreadBadge.text = if (total > 99L) "99+" else total.toString()
+                } else {
+                    badgeContainer.visibility = View.GONE
+                }
+            }
+    }
+
+    private fun handleChatSettingNavigation(userID: String? = null, groupID: String? = null) {
+        if (!userID.isNullOrEmpty()) {
+            contactStore.getContactInfo(
+                userIDList = listOf(userID),
+                completion = object : GetContactInfoCompletionHandler {
+                    override fun onSuccess(contactInfoList: List<ContactInfo>) {
+                        val info = contactInfoList.firstOrNull() ?: return
+                        if (info.isFriend == true) {
+                            ChatSettingActivity.startC2C(this@ChatActivity, userID)
+                        } else {
+                            ContactFlowLauncher.showAddFriendForContact(
+                                context = this@ChatActivity,
+                                contactInfo = info
+                            )
+                        }
+                    }
+
+                    override fun onFailure(code: Int, desc: String) {
+                    }
+                }
+            )
+        } else if (!groupID.isNullOrEmpty()) {
+            ChatSettingActivity.startGroup(this, groupID)
+        }
+    }
+
+    private fun showClearChatHistoryConfirmation() {
+        AtomicAlertDialog(this).apply {
+            init {
+                content = getString(R.string.demo_chatbot_clear_history_confirmation)
+                confirmButton(getString(R.string.demo_confirm)) { _ ->
+                    chatPageView.clearChatHistory(
+                        object : CompletionHandler {
+                            override fun onSuccess() = Unit
+
+                            override fun onFailure(code: Int, desc: String) {
+                                AtomicToast.show(
+                                    this@ChatActivity,
+                                    desc.ifBlank {
+                                        getString(R.string.demo_chatbot_clear_history_failed)
+                                    },
+                                    style = AtomicToast.Style.ERROR
+                                )
+                            }
+                        }
+                    )
+                }
+                cancelButton(getString(R.string.demo_cancel))
+            }
+            show()
+        }
+    }
+
+    private fun getUserID(conversationID: String): String? {
+        return if (conversationID.startsWith(C2C_CONVERSATION_ID_PREFIX)) {
+            conversationID.removePrefix(C2C_CONVERSATION_ID_PREFIX)
+        } else {
+            null
+        }
+    }
+
+    private fun getGroupID(conversationID: String): String? {
+        return if (conversationID.startsWith(GROUP_CONVERSATION_ID_PREFIX)) {
+            conversationID.removePrefix(GROUP_CONVERSATION_ID_PREFIX)
+        } else {
+            null
+        }
+    }
+
+    private fun updateHeaderForMultiSelect(isMultiSelect: Boolean) {
+        leftContainer.visibility = if (isMultiSelect) View.GONE else View.VISIBLE
+        btnMultiSelectCancel.visibility = if (isMultiSelect) View.VISIBLE else View.GONE
+        btnMore.visibility = if (isMultiSelect) View.INVISIBLE else View.VISIBLE
+        if (isMultiSelect) {
+            btnMultiSelectCancel.expandTouchTarget()
+        }
+    }
+
+    private fun applyConversationTitle(conversationTitle: String?, conversationID: String) {
+        val resolved = ChatTitleResolver.resolve(
+            conversationTitle = conversationTitle,
+            conversationID = conversationID
+        )
+        if (resolved.isNotEmpty() || !ChatTitleResolver.isGroupConversation(conversationID)) {
+            updateChatTitle(resolved)
+        }
+    }
+
+    private fun updateChatTitle(title: String) {
+        latestChatTitle = title
+        if (!isPeerTyping) {
+            tvChatTitle.text = title
+        }
+    }
+
+    override fun onBackPressed() {
+        if (::chatPageView.isInitialized && chatPageView.isInMultiSelectMode()) {
+            chatPageView.exitMultiSelectMode()
+            return
+        }
+        @Suppress("DEPRECATION")
+        super.onBackPressed()
+    }
+
+    private fun setupSecurityWarning() {
+        securityWarningText.movementMethod = LinkMovementMethod.getInstance()
+        securityWarningClose.setOnClickListener {
+            chatSecurityBar.visibility = View.GONE
+        }
+        alignSecurityIconWithFirstTextLine()
+    }
+
+    private fun alignSecurityIconWithFirstTextLine() {
+        securityWarningText.doOnPreDraw {
+            val textLayout = securityWarningText.layout ?: return@doOnPreDraw
+            val firstLineHeight = textLayout.getLineBottom(0) - textLayout.getLineTop(0)
+            val lp = securityWarningIcon.layoutParams as LinearLayout.LayoutParams
+            lp.topMargin = ((firstLineHeight - securityWarningIcon.height) / 2f).toInt().coerceAtLeast(0)
+            securityWarningIcon.layoutParams = lp
+        }
+    }
+
+    private fun bindSecurityWarningText(colors: ColorTokens) {
+        val warning = getString(R.string.demo_chat_security_warning)
+        val report = getString(R.string.demo_chat_security_warning_click_to_report)
+        val builder = SpannableStringBuilder(warning).append(" ")
+        val reportStart = builder.length
+        val reportEnd = reportStart + report.length
+        builder.append(report)
+        builder.setSpan(
+            ForegroundColorSpan(colors.textColorLink),
+            reportStart,
+            reportEnd,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        builder.setSpan(
+            object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    openSecurityReport()
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    ds.color = colors.textColorLink
+                    ds.isUnderlineText = false
+                }
+            },
+            reportStart,
+            reportEnd,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        securityWarningText.text = builder
+    }
+
+    private fun openSecurityReport() {
+        try {
+            startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(AppConstants.REPORT_URL))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        } catch (_: Exception) {
+            Toast.makeText(this, getString(R.string.demo_open_browser_failed), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun applyColors(colors: ColorTokens) {
+        rootContainer.setBackgroundColor(colors.bgColorOperate)
+        headerContainer.setBackgroundColor(colors.bgColorOperate)
+        tvChatTitle.setTextColor(colors.textColorPrimary)
+        btnBack.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
+        btnMore.imageTintList = ColorStateList.valueOf(colors.textColorSecondary)
+        btnMultiSelectCancel.setTextColor(colors.textColorLink)
+        headerDivider.setBackgroundColor(colors.strokeColorSecondary)
+
+        val badgeBg = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(colors.buttonColorOff)
+        }
+        badgeContainer.background = badgeBg
+        tvUnreadBadge.setTextColor(colors.textColorButton)
+
+        chatSecurityBar.setBackgroundColor(colors.toastColorWarning)
+        securityWarningIcon.imageTintList = ColorStateList.valueOf(colors.textColorWarning)
+        securityWarningText.setTextColor(colors.textColorWarning)
+        securityWarningClose.imageTintList = ColorStateList.valueOf(colors.textColorWarning)
+        bindSecurityWarningText(colors)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activityScope?.cancel()
+        activityScope = null
+    }
+
+    private fun withCallRedDotIfNeeded(
+        sdkAppID: Int,
+        action: MessageInputMenuAction
+    ): MessageInputMenuAction {
+        if (!MessageInputCallRedDotStore.shouldShow(sdkAppID, action.ID)) {
+            return action
+        }
+        return action.copy(
+            showRedDot = true,
+            onClick = {
+                MessageInputCallRedDotStore.markClicked(sdkAppID, action.ID)
+                action.onClick()
+            }
+        )
+    }
+
+    private fun handleChatbotCallMessageClick(clickContext: CallMessageClickContext) {
+        if (isCheckingHandoffStatus) {
+            return
+        }
+        isCheckingHandoffStatus = true
+        SupportAgentCatalog.fetchHandoffStatus { status ->
+            isCheckingHandoffStatus = false
+            if (isFinishing || isDestroyed) {
+                return@fetchHandoffStatus
+            }
+            when {
+                status.isSeatCallable -> {
+                    clickContext.startCall(status.seatImUserId)
+                }
+                status.isWaitingForSeat -> {
+                    Toast.makeText(
+                        this,
+                        io.trtc.tuikit.chat.uikit.R.string.uikit_ai_call_handoff_waiting,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+                else -> {
+                    Toast.makeText(
+                        this,
+                        io.trtc.tuikit.chat.uikit.R.string.uikit_ai_call_handoff_required,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+            }
+        }
+    }
+}

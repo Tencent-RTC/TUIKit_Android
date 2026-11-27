@@ -131,7 +131,7 @@ private class SeatPreviewCell(context: Context, index: Int, isColumn: Boolean) :
         val label = voiceLoungeText(
             context, com.trtc.uikit.livekit.common.theme.LiveTheme.TextRole.CAPTION,
             gravity = Gravity.CENTER,
-            text = context.getString(R.string.livekit_voiceroom_prepare_seat_label, index),
+            text = context.getString(R.string.livekit_voicelounge_prepare_seat_label, index),
         )
         label.setTextSize(TypedValue.COMPLEX_UNIT_SP, VoiceLoungeFont.size(10f))
         label.setTextColor(whiteAlpha(0.44f))

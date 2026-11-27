@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="uikit_ai_page_title">AI アシスタント</string>
+    <string name="uikit_ai_transfer_to_human">オペレーターに接続</string>
+    <string name="uikit_ai_select_agent">アシスタントを選択</string>
+    <string name="uikit_ai_agents_empty">利用できるアシスタントがありません</string>
+    <string name="uikit_ai_call_button">音声通話</string>
+    <string name="uikit_ai_call_handoff_waiting">オペレーターへの接続を待っています。しばらくしてから再試行してください</string>
+    <string name="uikit_ai_call_handoff_required">通話を行う前にオペレーターに接続してください</string>
+    <string name="uikit_ai_call_mode_free">フリートーク</string>
+    <string name="uikit_ai_call_listening">聞いています...</string>
+    <string name="uikit_ai_call_thinking">考えています...</string>
+    <string name="uikit_ai_call_speaking">そのままお話しください</string>
+    <string name="uikit_ai_call_muted">ミュート中</string>
+    <string name="uikit_ai_call_disclaimer">AI により生成された内容</string>
+    <string name="uikit_ai_call_permission_denied">音声チャットにはマイクの権限が必要です</string>
+    <string name="uikit_ai_call_start_failed">音声認識を開始できませんでした。再試行してください</string>
+    <string name="uikit_ai_call_asr_unavailable_title">音声認識を利用できません</string>
+    <string name="uikit_ai_call_asr_unavailable_content">このアプリの音声認識リソースパックが使い切られたか、有効化されていないため、音声通話を一時的に利用できません。</string>
+    <string name="uikit_ai_call_asr_unavailable_exit">通話を終了</string>
+    <string name="uikit_ai_call_start_failed_retry">接続に失敗しました。マイクをタップして再試行</string>
+    <string name="uikit_ai_call_send_failed">送信に失敗しました。再試行してください</string>
+    <string name="uikit_ai_call_reply_timeout">アシスタントが応答しませんでした。再試行してください</string>
+    <string name="uikit_ai_call_audio_unavailable">マイクを利用できません</string>
+    <string name="uikit_ai_call_voiceprint_enrolled">あなたの声を記憶しました。今後はあなたの声にのみ応答します</string>
+    <string name="uikit_ai_call_playback_unavailable">音声再生を利用できません。返信はテキストで表示されます</string>
+    <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">話しかけてみよう：「%1$s」</string>
+    <string name="uikit_ai_call_duration">通話中 %1$s</string>
+    <string name="uikit_ai_call_connecting">接続中…</string>
+    <string name="uikit_ai_call_label_mute">ミュート</string>
+    <string name="uikit_ai_call_label_unmute">ミュート解除</string>
+    <string name="uikit_ai_call_label_subtitle">字幕</string>
+    <string name="uikit_ai_call_label_hangup">終了</string>
+</resources>

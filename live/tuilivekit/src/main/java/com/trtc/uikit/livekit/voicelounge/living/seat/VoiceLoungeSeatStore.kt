@@ -29,7 +29,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import kotlin.math.max
 
 internal class VoiceLoungeSeatStore(
     val liveID: String,
@@ -59,7 +58,6 @@ internal class VoiceLoungeSeatStore(
     val leavePrompts = VoiceLoungeSignal()
 
     private var speakingUsers: Map<String, Int> = emptyMap()
-    private var unitVolumes: MutableMap<String, Int> = HashMap()
     private var localMicVolume = 0
     private var adminUserIDs: Set<String> = emptySet()
     private var knownAudienceIDs: Set<String> = emptySet()
@@ -149,7 +147,6 @@ internal class VoiceLoungeSeatStore(
         audienceStore = null
         seatList = emptyList()
         speakingUsers = emptyMap()
-        unitVolumes.clear()
         localMicVolume = 0
         adminUserIDs = emptySet()
         knownAudienceIDs = emptySet()
@@ -166,15 +163,6 @@ internal class VoiceLoungeSeatStore(
     fun release() {
         deactivate()
         bindings.clear()
-    }
-
-    fun applyUnitVolume(userID: String, volume: Int) {
-        if (role != VoiceLoungeRole.AUDIENCE || userID.isEmpty()) return
-        val clamped = volume.coerceAtLeast(0)
-        val previous = unitVolumes[userID] ?: 0
-        if (previous == clamped) return
-        unitVolumes[userID] = clamped
-        refresh()
     }
 
     fun moveAudienceFadedSeat(index: Int) {
@@ -311,9 +299,7 @@ internal class VoiceLoungeSeatStore(
     private fun isSpeaking(userID: String): Boolean {
         if (userID.isEmpty()) return false
         if (userID == selfUserID) return localMicVolume > SPEAKING_VOLUME_THRESHOLD
-        val seatVolume = speakingUsers[userID] ?: 0
-        val unitVolume = unitVolumes[userID] ?: 0
-        return max(seatVolume, unitVolume) > SPEAKING_VOLUME_THRESHOLD
+        return (speakingUsers[userID] ?: 0) > SPEAKING_VOLUME_THRESHOLD
     }
 
     private fun isFreeSlot(seat: VoiceLoungeSeat): Boolean =
@@ -356,7 +342,7 @@ internal class VoiceLoungeSeatStore(
             name = profile?.nickname ?: selfID,
             avatarURL = profile?.avatarURL.orEmpty(),
             pillText = vlString(
-                if (applying) R.string.livekit_voiceroom_seat_pill_pending else R.string.livekit_voiceroom_seat_pill_apply,
+                if (applying) R.string.livekit_voicelounge_seat_pill_pending else R.string.livekit_voicelounge_seat_pill_apply,
             ),
             isPillHighlighted = false,
         )
@@ -382,9 +368,9 @@ internal class VoiceLoungeSeatStore(
                 avatarURL = user.avatarURL,
                 pillText = vlString(
                     if (isApplicant) {
-                        R.string.livekit_voiceroom_seat_pill_start
+                        R.string.livekit_voicelounge_seat_pill_start
                     } else {
-                        R.string.livekit_voiceroom_seat_pill_invite_pending
+                        R.string.livekit_voicelounge_seat_pill_invite_pending
                     },
                 ),
                 isPillHighlighted = isApplicant,

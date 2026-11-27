@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_viewer_loading">載入中</string>
+    <string name="image_viewer_no_more_data">沒有更多資料了</string>
+    <string name="image_viewer_video_download_failed">影片下載失敗</string>
+    <string name="image_viewer_save_to_album">儲存到相簿</string>
+    <string name="image_viewer_saving">儲存中</string>
+    <string name="image_viewer_save_success">儲存成功</string>
+    <string name="image_viewer_save_failed">儲存失敗</string>
+</resources>

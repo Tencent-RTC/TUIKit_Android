@@ -41,10 +41,10 @@ internal class VoiceLoungePrepareMorePanel(context: Context) : BottomSheetView(c
         }
         listOf(
             Triple(
-                R.string.livekit_voiceroom_prepare_more_layout, R.drawable.livekit_living_more
+                R.string.livekit_voicelounge_prepare_more_layout, R.drawable.livekit_living_more
             ) { onLayout?.invoke() },
-            Triple(R.string.livekit_voiceroom_prepare_more_caption, 0) { onTranscriber?.invoke() },
-            Triple(R.string.livekit_voiceroom_prepare_more_audio, R.drawable.livekit_living_setting_audio) {
+            Triple(R.string.livekit_voicelounge_prepare_more_caption, 0) { onTranscriber?.invoke() },
+            Triple(R.string.livekit_voicelounge_prepare_more_audio, R.drawable.livekit_living_setting_audio) {
                 onAudio?.invoke()
             },
         ).forEach { (title, icon, action) ->

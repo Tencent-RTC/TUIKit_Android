@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application
+        android:name=".Application"
+        android:allowBackup="true"
+        android:icon="@drawable/app_launcher_icon"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/app_launcher_icon"
+        android:supportsRtl="true"
+        android:theme="@style/BaseComponent.Theme.FullScreen"
+        tools:replace="android:allowBackup"
+        tools:targetApi="31">
+
+        <activity
+            android:name=".login.LoginActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/BaseComponent.Theme.FullScreen"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".login.TelephoneAreaCodeSelectorActivity"
+            android:exported="false"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+        <activity
+            android:name=".chat.ChatActivity"
+            android:exported="true"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+        <activity
+            android:name=".chatsetting.ChatSettingActivity"
+            android:exported="false"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+        <activity
+            android:name=".settings.AboutActivity"
+            android:exported="false"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+        <activity
+            android:name=".settings.CancelAccountActivity"
+            android:exported="false"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+        <activity
+            android:name=".settings.VoiceMessageSettingActivity"
+            android:exported="false"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+        <activity
+            android:name=".settings.VoiceCloneActivity"
+            android:exported="false"
+            android:theme="@style/BaseComponent.Theme.FullScreen"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".settings.VoiceSelectActivity"
+            android:exported="false"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+        <activity
+            android:name=".search.SearchActivity"
+            android:exported="false"
+            android:theme="@style/BaseComponent.Theme.FullScreen" />
+
+    </application>
+</manifest>

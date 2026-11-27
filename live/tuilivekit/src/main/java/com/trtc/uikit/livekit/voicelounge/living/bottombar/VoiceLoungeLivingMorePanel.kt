@@ -2,6 +2,7 @@ package com.trtc.uikit.livekit.voicelounge.living.bottombar
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -23,9 +24,8 @@ import com.trtc.uikit.livekit.voicelounge.linearParams
 import com.trtc.uikit.livekit.voicelounge.living.VoiceLoungeLivingActions
 import com.trtc.uikit.livekit.voicelounge.ovalDrawable
 import com.trtc.uikit.livekit.voicelounge.setPressAlpha
+import com.trtc.uikit.livekit.voicelounge.settings.VoiceLoungeSeatLayout
 import com.trtc.uikit.livekit.voicelounge.settings.VoiceLoungeSettings
-import com.trtc.uikit.livekit.voicelounge.settings.aitranscriber.VoiceLoungeAITranscriberPanel
-import com.trtc.uikit.livekit.voicelounge.settings.seatlayout.VoiceLoungeSeatLayoutPanel
 import com.trtc.uikit.livekit.voicelounge.settings.theme.VoiceLoungeColor
 import com.trtc.uikit.livekit.voicelounge.voiceLoungeText
 import com.trtc.uikit.livekit.voicelounge.whiteAlpha
@@ -38,14 +38,13 @@ internal class VoiceLoungeLivingMorePanel(
     var onComment: (() -> Unit)? = null
 
     private val layoutPanel by lazy {
-        VoiceLoungeSeatLayoutPanel(context).apply { onConfirm = { livingActions.changeLayout(it) } }
-    }
-    private val transcriberPanel by lazy {
-        VoiceLoungeAITranscriberPanel(context).apply {
-            onToggle = { isOn -> livingActions.toggleTranscriber(isOn) }
+        com.trtc.uikit.livekit.voicelounge.settings.seatlayout.VoiceLoungeSeatLayoutPanel(context).apply {
+            onConfirm = { livingActions.changeLayout(it) }
         }
     }
     private var bottomInset = 0
+    private lateinit var transcriberIcon: TranscriberIconView
+    private lateinit var transcriberBackground: FrameLayout
 
     override val sheetHeight: Int get() = context.dp(CONTENT_HEIGHT_DP) + bottomInset
 
@@ -60,27 +59,38 @@ internal class VoiceLoungeLivingMorePanel(
             row, frameParams(MATCH, WRAP, Gravity.TOP, start = hInset, end = hInset, top = context.dp(TOP_INSET_DP)),
         )
 
-        val pauseItem = makeItem(R.drawable.livekit_living_setting_pause, R.string.livekit_voiceroom_living_pause)
-        val layoutItem = makeItem(R.drawable.livekit_living_more, R.string.livekit_voiceroom_living_layout_setting)
+        val layoutItem = makeItem(R.drawable.livekit_living_more, R.string.livekit_voicelounge_living_layout_setting)
+        val transcriberIconView = TranscriberIconView(context)
+        transcriberIcon = transcriberIconView
         val transcriberItem = makeItem(
-            iconFactory = { TranscriberIconView(context) },
-            title = R.string.livekit_voiceroom_caption_title,
+            iconFactory = { transcriberIconView },
+            title = R.string.livekit_voicelounge_caption_title,
         )
-        val commentItem = makeItem(R.drawable.livekit_living_setting_comment, R.string.livekit_voiceroom_living_comment)
-        val items = listOf<View>(pauseItem, layoutItem, transcriberItem, commentItem, View(context))
+        transcriberBackground = transcriberItem.getChildAt(0) as FrameLayout
+        val commentItem = makeItem(R.drawable.livekit_living_setting_comment, R.string.livekit_voicelounge_living_comment)
+        val items = listOf<View>(layoutItem, transcriberItem, commentItem)
         items.forEach { row.addView(it, linearParams(0, WRAP, 1f)) }
 
-        pauseItem.setOnClickListener {
-            dismiss()
-            livingActions.pauseLive()
-        }
         layoutItem.setOnClickListener {
             dismiss()
-            layoutPanel.show(settings.seatLayout, setAsDefault = true, skin = settings.skin)
+            layoutPanel.show(
+                settings.seatLayout,
+                setAsDefault = VoiceLoungeSeatLayout.savedDefault(context) != null,
+                skin = settings.skin,
+            )
         }
         transcriberItem.setOnClickListener {
-            dismiss()
-            transcriberPanel.show(settings.isTranscriberEnabled, settings.skin)
+            val nextEnabled = !settings.isTranscriberEnabled
+            livingActions.updateTranscriber(
+                com.trtc.uikit.livekit.voicelounge.settings.aitranscriber.VoiceLoungeAITranscriberPanel.State(
+                    isEnabled = nextEnabled,
+                    showOriginal = settings.transcriberShowOriginal,
+                    scale = settings.transcriberScale,
+                    language = settings.transcriberLanguage,
+                    saveAsDefault = false,
+                ),
+            )
+            applyTranscriberState()
         }
         commentItem.setOnClickListener {
             dismiss()
@@ -91,12 +101,19 @@ internal class VoiceLoungeLivingMorePanel(
     override fun show() {
         bottomInset = navigationBarHeight()
         updateSheetHeight(animated = false)
+        applyTranscriberState()
         super.show()
+    }
+
+    private fun applyTranscriberState() {
+        val isOn = settings.isTranscriberEnabled
+        transcriberBackground.background =
+            if (isOn) ovalDrawable(Color.WHITE) else ovalDrawable(VoiceLoungeColor.overlaySoft)
+        transcriberIcon.strokeColor = if (isOn) Color.BLACK else whiteAlpha(0.92f)
     }
 
     fun dismissChildren() {
         if (layoutPanel.isShowing) layoutPanel.dismiss()
-        if (transcriberPanel.isShowing) transcriberPanel.dismiss()
     }
 
     private fun navigationBarHeight(): Int {
@@ -136,12 +153,19 @@ internal class VoiceLoungeLivingMorePanel(
     }
 
     private class TranscriberIconView(context: Context) : View(context) {
+        var strokeColor: Int = whiteAlpha(0.92f)
+            set(value) {
+                field = value
+                paint.color = value
+                invalidate()
+            }
+
         private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.STROKE
             strokeWidth = 1.8f
             strokeCap = Paint.Cap.ROUND
             strokeJoin = Paint.Join.ROUND
-            color = whiteAlpha(0.92f)
+            color = strokeColor
         }
         private val path = Path()
 

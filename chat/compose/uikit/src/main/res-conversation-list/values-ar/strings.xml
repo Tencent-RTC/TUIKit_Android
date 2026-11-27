@@ -1,0 +1,18 @@
+<resources>
+    <string name="conversation_list_more">المزيد</string>
+    <string name="conversation_list_mute">كتم الإشعارات</string>
+    <string name="conversation_list_unmute">إلغاء كتم الإشعارات</string>
+    <string name="conversation_list_pin">تثبيت</string>
+    <string name="conversation_list_unpin">إلغاء التثبيت</string>
+    <string name="conversation_list_delete">حذف الدردشة</string>
+    <string name="conversation_list_clear">مسح سجل الدردشة</string>
+    <string name="conversation_list_delete_confirmation">هل أنت متأكد من حذف هذه المحادثة؟</string>
+    <string name="conversation_list_clear_history_confirmation">هل أنت متأكد من مسح سجل هذه المحادثة؟</string>
+    <string name="conversation_list_mark_unread">وضع علامة كغير مقروء</string>
+    <string name="conversation_list_mark_read">وضع علامة كمقروء</string>
+    <string name="conversation_list_message_count_unit">رسائل</string>
+    <string name="conversation_list_draft_prefix">[مسودة]</string>
+    <string name="conversation_list_at_all_prefix">[@الجميع]</string>
+    <string name="conversation_list_at_me_prefix">[@أنا]</string>
+    <string name="uikit_empty_content">لا يوجد محتوى</string>
+</resources>

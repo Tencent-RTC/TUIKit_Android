@@ -63,7 +63,7 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
 
     private val earMonitorSwitch = LiveSwitch(context)
     private val earMonitorVolumeRow = EffectVolumeRow(context, R.string.livekit_pusher_settings_ear_monitor_volume)
-    private val voiceVolumeRow = EffectVolumeRow(context, R.string.livekit_voiceroom_audio_voice_volume)
+    private val voiceVolumeRow = EffectVolumeRow(context, R.string.livekit_voicelounge_audio_voice_volume)
     private val reverbStrip = EffectCardStrip(context, reverbOptions())
     private val voiceStrip = EffectCardStrip(context, voiceOptions())
     private val formantPad = FormantPadView(context)
@@ -169,10 +169,10 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
         space(6)
 
         val hint = TextView(context).apply {
-            text = context.getString(R.string.livekit_voiceroom_audio_formant_hint)
+            text = context.getString(R.string.livekit_voicelounge_audio_formant_hint)
             setTextColor(whiteAlpha(0.45f))
             gravity = Gravity.CENTER
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
             includeFontPadding = false
         }
         contentStack.addView(inset(hint), linearParams(MATCH, WRAP))
@@ -232,7 +232,7 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
         val label = TextView(context).apply {
             text = context.getString(res)
             setTextColor(whiteAlpha(0.45f))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
             includeFontPadding = false
         }
         container.addView(
@@ -258,7 +258,7 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
         val earLabel = TextView(context).apply {
             text = context.getString(R.string.livekit_pusher_settings_ear_monitor)
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 9.5f)
             includeFontPadding = false
         }
         earRow.addView(earLabel, frameParams(WRAP, WRAP, Gravity.CENTER_VERTICAL or Gravity.START))
@@ -305,7 +305,7 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
             R.string.livekit_pusher_settings_voice_original, R.drawable.livekit_voicefx_v_none,
         ),
         EffectOption(
-            VoiceChoice.Custom, R.string.livekit_voiceroom_audio_voice_custom, R.drawable.livekit_voicefx_v_custom,
+            VoiceChoice.Custom, R.string.livekit_voicelounge_audio_voice_custom, R.drawable.livekit_voicefx_v_custom,
         ),
         EffectOption(
             VoiceChoice.Preset(AudioChangerType.CHILD),
@@ -392,7 +392,7 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
         private val titleLabel = TextView(context).apply {
             text = title
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 7f)
             typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             maxLines = 1
             gravity = Gravity.CENTER
@@ -507,10 +507,10 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
         }
         private val pitchValue = TextView(context)
         private val formantValue = TextView(context)
-        private val tagLow = tagLabel(R.string.livekit_voiceroom_audio_pad_low)
-        private val tagHigh = tagLabel(R.string.livekit_voiceroom_audio_pad_high)
-        private val tagBright = tagLabel(R.string.livekit_voiceroom_audio_pad_bright)
-        private val tagThick = tagLabel(R.string.livekit_voiceroom_audio_pad_thick)
+        private val tagLow = tagLabel(R.string.livekit_voicelounge_audio_pad_low)
+        private val tagHigh = tagLabel(R.string.livekit_voicelounge_audio_pad_high)
+        private val tagBright = tagLabel(R.string.livekit_voicelounge_audio_pad_bright)
+        private val tagThick = tagLabel(R.string.livekit_voicelounge_audio_pad_thick)
         private var skin = VoiceLoungeSkin.defaultSkin
         private var pointX = 0f
         private var pointY = 0f
@@ -672,9 +672,9 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
                 orientation = LinearLayout.VERTICAL
                 gravity = Gravity.END
             }
-            titles.addView(readoutTitle(R.string.livekit_voiceroom_audio_pitch))
+            titles.addView(readoutTitle(R.string.livekit_voicelounge_audio_pitch))
             titles.addView(
-                readoutTitle(R.string.livekit_voiceroom_audio_formant), linearParams(WRAP, WRAP, top = context.dp(1))
+                readoutTitle(R.string.livekit_voicelounge_audio_formant), linearParams(WRAP, WRAP, top = context.dp(1))
             )
             pitchValue.applyReadoutValue()
             formantValue.applyReadoutValue()
@@ -691,20 +691,20 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
         private fun tagLabel(@StringRes res: Int): TextView = TextView(context).apply {
             text = context.getString(res)
             setTextColor(whiteAlpha(0.4f))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 7f)
             includeFontPadding = false
         }
 
         private fun readoutTitle(@StringRes res: Int): TextView = TextView(context).apply {
             text = context.getString(res)
             setTextColor(whiteAlpha(0.8f))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10.5f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 7.5f)
             includeFontPadding = false
         }
 
         private fun TextView.applyReadoutValue() {
             setTextColor(skin.textStrong)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10.5f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 7.5f)
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
             gravity = Gravity.END
             includeFontPadding = false
@@ -792,7 +792,7 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
         }
         private val valueLabel = TextView(context).apply {
             setTextColor(whiteAlpha(0.72f))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
             gravity = Gravity.END
             includeFontPadding = false
             text = "0"
@@ -800,7 +800,7 @@ internal class VoiceLoungeAudioEffectView(context: Context) : FrameLayout(contex
         private val titleLabel = TextView(context).apply {
             text = context.getString(titleRes)
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 9.5f)
             includeFontPadding = false
         }
 

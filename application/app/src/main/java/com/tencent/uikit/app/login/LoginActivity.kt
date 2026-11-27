@@ -31,10 +31,9 @@ class LoginActivity : BaseActivity() {
     private lateinit var scAutoLogin: SwitchCompat
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!isTaskRoot
-            && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
-            && intent.action != null
-            && intent.action.equals(Intent.ACTION_MAIN)
+        if (!isTaskRoot && intent.hasCategory(
+                Intent.CATEGORY_LAUNCHER
+            ) && intent.action != null && intent.action.equals(Intent.ACTION_MAIN)
         ) {
             finish()
             return
@@ -69,8 +68,9 @@ class LoginActivity : BaseActivity() {
 
     private fun login(userId: String) {
         if (userId.isEmpty()) {
-            Toast.makeText(this,
-                getString(R.string.app_user_id_is_empty), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this, getString(R.string.app_user_id_is_empty), Toast.LENGTH_SHORT
+            ).show()
             return
         }
         val context = this
@@ -79,14 +79,21 @@ class LoginActivity : BaseActivity() {
             override fun onSuccess() {
                 Log.i(TAG, "login onSuccess")
                 MMKV.defaultMMKV().putString("userId", userId)
+                com.tencent.qcloud.tuicore.TUICore.callService(
+                    "TUIEffectPlayerService", "setLicense", mapOf(
+                        "context" to applicationContext, "licenseUrl" to GenerateTestUserSig.TENCENT_EFFECT_LICENSE_URL,
+                        "licenseKey" to GenerateTestUserSig.TENCENT_EFFECT_LICENSE_KEY
+                    )
+                )
                 getUserInfo()
 
                 KeyMetrics.reportAtomicMetrics(DEMO_LOGIN_SUCCESS)
             }
 
             override fun onFailure(code: Int, desc: String) {
-                Toast.makeText(context,
-                    getString(R.string.app_toast_login_fail, code, desc), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, getString(R.string.app_toast_login_fail, code, desc), Toast.LENGTH_SHORT
+                ).show()
                 Log.e(TAG, "login fail errorCode: $code errorMessage:$desc")
             }
         })

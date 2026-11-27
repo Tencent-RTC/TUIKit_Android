@@ -121,8 +121,8 @@ internal class VoiceLoungeSeatView(
         nameLabel.ellipsize = TextUtils.TruncateAt.MIDDLE
         nameLabel.visibility = if (showsName) View.VISIBLE else View.GONE
 
-        adminBadge.text = context.getString(R.string.livekit_voiceroom_seat_admin_badge)
-        adminBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (showsName) 10f else 8f)
+        adminBadge.text = context.getString(R.string.livekit_voicelounge_seat_admin_badge)
+        adminBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (showsName) 7f else 5f)
         adminBadge.typeface = Typeface.DEFAULT_BOLD
         adminBadge.setTextColor(Color.WHITE)
         adminBadge.gravity = Gravity.CENTER
@@ -132,7 +132,7 @@ internal class VoiceLoungeSeatView(
         adminBadge.visibility = View.GONE
         applyBadgeColor(VoiceLoungeSeatStyle.adminBadge)
 
-        pillLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (isCompact) 10f else 13f)
+        pillLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (isCompact) 7f else 10f)
         pillLabel.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         pillLabel.gravity = Gravity.CENTER
         pillLabel.includeFontPadding = false

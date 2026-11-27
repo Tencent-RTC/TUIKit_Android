@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_viewer_loading">جارٍ التحميل</string>
+    <string name="image_viewer_no_more_data">لا توجد بيانات أخرى</string>
+    <string name="image_viewer_video_download_failed">تعذر تنزيل الفيديو</string>
+    <string name="image_viewer_save_to_album">حفظ في الألبوم</string>
+    <string name="image_viewer_saving">جارٍ الحفظ</string>
+    <string name="image_viewer_save_success">تم الحفظ بنجاح</string>
+    <string name="image_viewer_save_failed">فشل الحفظ</string>
+</resources>

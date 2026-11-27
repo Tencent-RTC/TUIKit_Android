@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/home_dark">
+    <com.tencent.uikit.app.live.home.LiveHomeListView android:id="@+id/home_live_grid" android:layout_width="match_parent" android:layout_height="match_parent"/>
+    <com.tencent.uikit.app.live.home.LiveHomePreviewView android:id="@+id/home_live_preview" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone"/>
+    <com.tencent.uikit.app.live.home.LiveHomeHeaderView android:id="@+id/home_live_header" android:layout_width="match_parent" android:layout_height="56dp"/>
+</FrameLayout>

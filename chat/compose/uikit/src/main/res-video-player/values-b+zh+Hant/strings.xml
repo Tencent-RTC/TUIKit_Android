@@ -1,0 +1,9 @@
+<resources>
+    <string name="video_player_close">關閉影片播放器</string>
+    <string name="video_player_play">播放影片</string>
+    <string name="video_player_pause">暫停影片</string>
+    <string name="video_player_retry">重試</string>
+    <string name="video_player_load_failed">影片載入失敗</string>
+    <string name="video_player_download_failed">影片資源準備失敗</string>
+    <string name="video_player_invalid_source">無效的影片資源</string>
+</resources>

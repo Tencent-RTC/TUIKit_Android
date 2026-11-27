@@ -69,7 +69,7 @@ internal class VoiceLoungeCoGuestManagePanel(
         scrollView.isVerticalScrollBarEnabled = false
         scrollView.clipToPadding = false
         scrollView.setPadding(0, context.dp(4), 0, context.dp(16))
-        sheetTitle = context.getString(R.string.livekit_voiceroom_comic_settings_title)
+        sheetTitle = context.getString(R.string.livekit_voicelounge_comic_settings_title)
     }
 
     fun show(skin: VoiceLoungeSkin) {
@@ -88,11 +88,7 @@ internal class VoiceLoungeCoGuestManagePanel(
 
     private fun hangUp(userID: String) {
         LiveSeatStore.create(liveID).kickUserOutOfSeat(userID, object : CompletionHandler {
-            override fun onSuccess() {
-                VoiceLoungeMain.post {
-                    LiveToast.show(voiceLoungeAppContext, context.getString(R.string.livekit_voiceroom_comic_kicked))
-                }
-            }
+            override fun onSuccess() = Unit
 
             override fun onFailure(code: Int, desc: String) {
                 VoiceLoungeMain.post { LiveToast.show(voiceLoungeAppContext, VoiceLoungeErrorText.coGuest(code)) }
@@ -107,17 +103,17 @@ internal class VoiceLoungeCoGuestManagePanel(
         val isSeatFull = seatStore.hasNoFreeGuestSeat
 
         addHeader(
-            context.getString(R.string.livekit_voiceroom_comic_connected_title), connected.isNotEmpty(), first = true
+            context.getString(R.string.livekit_voicelounge_comic_connected_title), connected.isNotEmpty(), first = true
         )
         if (connected.isEmpty()) {
-            addEmpty(context.getString(R.string.livekit_voiceroom_comic_connected_empty))
+            addEmpty(context.getString(R.string.livekit_voicelounge_comic_connected_empty))
         } else {
             connected.forEachIndexed { index, user ->
                 val userID = user.userID
                 addUser(
                     name = user.userName.ifEmpty { userID },
                     avatarURL = user.avatarURL,
-                    title = context.getString(R.string.livekit_voiceroom_comic_hang_up),
+                    title = context.getString(R.string.livekit_voicelounge_comic_hang_up),
                     showsMic = false,
                     style = ButtonStyle.DESTRUCTIVE,
                     isEnabled = true,
@@ -127,12 +123,12 @@ internal class VoiceLoungeCoGuestManagePanel(
         }
 
         addHeader(
-            context.getString(R.string.livekit_voiceroom_comic_applied_title, applicants.size.toString()),
+            context.getString(R.string.livekit_voicelounge_comic_applied_title, applicants.size.toString()),
             showsDivider = true,
             first = false,
         )
         if (applicants.isEmpty()) {
-            addEmpty(context.getString(R.string.livekit_voiceroom_comic_applicants_empty))
+            addEmpty(context.getString(R.string.livekit_voicelounge_comic_applicants_empty))
         } else {
             applicants.forEachIndexed { index, user ->
                 val userID = user.userID
@@ -143,7 +139,7 @@ internal class VoiceLoungeCoGuestManagePanel(
                         false,
                     )
                 } else {
-                    Triple(ButtonStyle.TINTED, context.getString(R.string.livekit_voiceroom_comic_connect), true)
+                    Triple(ButtonStyle.TINTED, context.getString(R.string.livekit_voicelounge_comic_connect), true)
                 }
                 addUser(
                     name = user.userName.ifEmpty { userID },
@@ -175,7 +171,7 @@ internal class VoiceLoungeCoGuestManagePanel(
         card.background = cardBackground(top = true, bottom = false)
         val label = TextView(context).apply {
             text = title
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             setTextColor(whiteAlpha(0.85f))
             includeFontPadding = false
@@ -258,7 +254,7 @@ internal class VoiceLoungeCoGuestManagePanel(
             }
             val label = TextView(context).apply {
                 text = title
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                 typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
                 setTextColor(if (style == ButtonStyle.DISABLED) whiteAlpha(0.4f) else Color.WHITE)
                 includeFontPadding = false
@@ -274,7 +270,7 @@ internal class VoiceLoungeCoGuestManagePanel(
 
         val nameLabel = TextView(context).apply {
             text = name
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             setTextColor(LiveTheme.Color.text(LiveTheme.TextTone.SECONDARY))
             includeFontPadding = false
             singleLineEnd()

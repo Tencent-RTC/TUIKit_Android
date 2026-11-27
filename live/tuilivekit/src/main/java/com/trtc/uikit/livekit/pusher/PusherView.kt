@@ -47,6 +47,7 @@ import com.trtc.uikit.livekit.pusher.settings.PusherSettingsState
 import com.trtc.uikit.livekit.common.beauty.AdvancedBeautySession
 import com.trtc.uikit.livekit.common.beauty.BeautyPreferences
 import com.trtc.uikit.livekit.common.beauty.BeautyPanel
+import io.trtc.tuikit.atomicxcore.api.device.DeviceState
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.device.MirrorType
@@ -155,7 +156,9 @@ class PusherView @JvmOverloads constructor(
     private var presentationState = PusherPresentationState()
     private val settingsActionHandler = object : PusherSettingsActionHandling {
         override fun toggleMirror() {
-            val isEnabled = DeviceStore.shared().deviceState.localMirrorType.value != MirrorType.DISABLE
+            val deviceState = DeviceStore.shared().deviceState
+            if (!deviceState.isFrontCamera.value) return
+            val isEnabled = isMirrorEnabled(deviceState)
             DeviceStore.shared().switchMirror(if (isEnabled) MirrorType.DISABLE else MirrorType.ENABLE)
             updateSettings { copy(isMirrorEnabled = !isEnabled) }
         }
@@ -386,18 +389,14 @@ class PusherView @JvmOverloads constructor(
             if (!didReleaseSession) prepareView.isVisible = phase == Phase.PREPARE && !beautyPanel.isShowing
         }
         prepareView.onRefreshSettings = ::refreshSettings
-        prepareView.onFlipCamera = {
-            DeviceStore.shared().switchCamera(!DeviceStore.shared().deviceState.isFrontCamera.value)
-        }
+        prepareView.onFlipCamera = ::switchCamera
         prepareView.settingsActionHandler = settingsActionHandler
         livingView.onRefreshSettings = ::refreshSettings
         livingView.onEnd = ::endLive
         livingView.onToggleMute = ::toggleMute
         livingView.onPause = ::pauseLive
         livingView.onResume = ::resumeLive
-        livingView.onFlipCamera = {
-            DeviceStore.shared().switchCamera(!DeviceStore.shared().deviceState.isFrontCamera.value)
-        }
+        livingView.onFlipCamera = ::switchCamera
         livingView.coGuestSmallWindowRegions = { videoView.coGuestSmallWindowRegions(livingView) }
         livingView.coGuestGridRegions = { videoView.coGuestGridRegions(livingView) }
         livingView.onCoGuestStageTap = { point ->
@@ -464,6 +463,9 @@ class PusherView @JvmOverloads constructor(
             deviceState.networkInfo,
         ).forEach { flow ->
             flow.onEach { updateDeviceStatus() }.launchIn(scope)
+        }
+        listOf(deviceState.isFrontCamera, deviceState.localMirrorType).forEach { flow ->
+            flow.onEach { refreshSettings() }.launchIn(scope)
         }
         seatStore?.liveSeatState?.avStatistics?.onEach { statistics ->
             val value = statistics.firstOrNull { it.userID.isEmpty() }
@@ -541,10 +543,22 @@ class PusherView @JvmOverloads constructor(
         )
     }
 
+    private fun switchCamera() {
+        val isFront = !DeviceStore.shared().deviceState.isFrontCamera.value
+        DeviceStore.shared().switchMirror(if (isFront) MirrorType.ENABLE else MirrorType.DISABLE)
+        DeviceStore.shared().switchCamera(isFront)
+    }
+
+    private fun isMirrorEnabled(deviceState: DeviceState): Boolean {
+        if (deviceState.localMirrorType.value == MirrorType.AUTO) return deviceState.isFrontCamera.value
+        return deviceState.localMirrorType.value == MirrorType.ENABLE
+    }
+
     private fun makeSettingsState(): PusherSettingsState {
         val deviceState = DeviceStore.shared().deviceState
         return PusherSettingsState(
-            isMirrorEnabled = deviceState.localMirrorType.value != MirrorType.DISABLE,
+            isMirrorEnabled = isMirrorEnabled(deviceState),
+            isFrontCamera = deviceState.isFrontCamera.value,
             isMuted = presentationState.settings.isMuted,
             captureVolume = deviceState.captureVolume.value,
         )
@@ -586,7 +600,7 @@ class PusherView @JvmOverloads constructor(
                     ?: if (didInitializePreviewSettings) DeviceStore.shared().deviceState.isFrontCamera.value else true
                 if (!didInitializePreviewSettings) {
                     didInitializePreviewSettings = true
-                    DeviceStore.shared().switchMirror(MirrorType.ENABLE)
+                    DeviceStore.shared().switchMirror(MirrorType.AUTO)
                     updateSettings { copy(isMirrorEnabled = true) }
                 }
                 BeautyPreferences.restore(context)

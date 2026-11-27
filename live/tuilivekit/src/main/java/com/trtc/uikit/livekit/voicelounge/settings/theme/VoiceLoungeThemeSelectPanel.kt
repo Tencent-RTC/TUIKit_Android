@@ -101,10 +101,10 @@ internal class VoiceLoungeThemeSelectPanel(context: Context) : BottomSheetView(c
     }
 
     private fun setupStyles() {
-        sheetTitle = context.getString(R.string.livekit_voiceroom_prepare_theme_title)
-        skinSectionLabel.text = context.getString(R.string.livekit_voiceroom_prepare_section_skin)
+        sheetTitle = context.getString(R.string.livekit_voicelounge_prepare_theme_title)
+        skinSectionLabel.text = context.getString(R.string.livekit_voicelounge_prepare_section_skin)
         skinRow.orientation = LinearLayout.HORIZONTAL
-        bgSectionLabel.text = context.getString(R.string.livekit_voiceroom_prepare_section_background)
+        bgSectionLabel.text = context.getString(R.string.livekit_voicelounge_prepare_section_background)
         scrollView.isHorizontalScrollBarEnabled = false
         scrollView.overScrollMode = View.OVER_SCROLL_NEVER
         cardRow.orientation = LinearLayout.HORIZONTAL
@@ -224,5 +224,5 @@ private object ThemePanelStyle {
 
     val selectionBorder = VoiceLoungeColor.prepareMid
 
-    const val SHEET_HEIGHT = SKIN_LABEL_TOP + 14f + 8f + SKIN_ROW_HEIGHT + 16f + 14f + 10f + CARD_HEIGHT + 28f
+    const val SHEET_HEIGHT = SKIN_LABEL_TOP + 14f + 8f + SKIN_ROW_HEIGHT + 16f + 14f + 10f + CARD_HEIGHT + 44f
 }

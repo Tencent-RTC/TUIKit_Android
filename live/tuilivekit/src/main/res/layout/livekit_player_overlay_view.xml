@@ -112,13 +112,27 @@
         android:gravity="center_vertical"
         android:includeFontPadding="false"
         android:paddingStart="14dp"
-        android:paddingEnd="14dp"
+        android:paddingEnd="48dp"
         android:text="@string/livekit_player_comment_placeholder"
         android:textColor="#80FFFFFF"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/livekit_overlay_coguest_view" />
+
+    <ImageView
+        android:id="@+id/livekit_overlay_comment_emoji"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="10dp"
+        android:clickable="true"
+        android:contentDescription="@string/livekit_barrage_emoji_title"
+        android:focusable="true"
+        android:scaleType="center"
+        android:src="@drawable/live_emoji_icon"
+        app:layout_constraintBottom_toBottomOf="@id/livekit_overlay_comment_entry"
+        app:layout_constraintEnd_toEndOf="@id/livekit_overlay_comment_entry"
+        app:layout_constraintTop_toTopOf="@id/livekit_overlay_comment_entry" />
 
     <com.trtc.uikit.livekit.player.living.coguest.CoGuestIcon
         android:id="@+id/livekit_overlay_coguest_view"

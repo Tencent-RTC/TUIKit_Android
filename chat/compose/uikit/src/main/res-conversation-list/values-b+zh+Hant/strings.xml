@@ -1,0 +1,18 @@
+<resources>
+    <string name="conversation_list_more">更多</string>
+    <string name="conversation_list_mute">訊息免打擾</string>
+    <string name="conversation_list_unmute">取消免打擾</string>
+    <string name="conversation_list_pin">置頂</string>
+    <string name="conversation_list_unpin">取消置頂</string>
+    <string name="conversation_list_delete">刪除聊天</string>
+    <string name="conversation_list_clear">清空聊天記錄</string>
+    <string name="conversation_list_delete_confirmation">確定刪除該會話？</string>
+    <string name="conversation_list_clear_history_confirmation">確定清空該會話的聊天記錄？</string>
+    <string name="conversation_list_mark_unread">標為未讀</string>
+    <string name="conversation_list_mark_read">標為已讀</string>
+    <string name="conversation_list_message_count_unit">條</string>
+    <string name="conversation_list_draft_prefix">[草稿]</string>
+    <string name="conversation_list_at_all_prefix">[@所有人]</string>
+    <string name="conversation_list_at_me_prefix">[有人@我]</string>
+    <string name="uikit_empty_content">暫無內容</string>
+</resources>

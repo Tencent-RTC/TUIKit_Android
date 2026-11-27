@@ -90,6 +90,8 @@ internal class PrepareMoreSettingsView(context: Context) : BottomSheetView(conte
                 R.drawable.livekit_pusher_settings_ic_mirror_off
             },
         )
+        mirrorItem.isEnabled = settings.isFrontCamera
+        mirrorItem.alpha = if (settings.isFrontCamera) 1f else 0.46f
         bindAudioEffectState(settings)
     }
 

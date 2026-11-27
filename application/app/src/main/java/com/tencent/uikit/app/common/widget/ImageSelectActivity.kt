@@ -32,8 +32,7 @@ class ImageSelectActivity : BaseLightActivity() {
     companion object {
         private val TAG = ImageSelectActivity::class.java.simpleName
 
-        const val CHAT_CONVERSATION_BACKGROUND_DEFAULT_URL =
-            "chat/conversation/background/default/url"
+        const val CHAT_CONVERSATION_BACKGROUND_DEFAULT_URL = "chat/conversation/background/default/url"
         const val RESULT_CODE_ERROR = -1
         const val RESULT_CODE_SUCCESS = 0
         const val TITLE = "title"
@@ -68,8 +67,7 @@ class ImageSelectActivity : BaseLightActivity() {
         titleBarLayout = findViewById(R.id.image_select_title)
         titleBarLayout.setTitle(title, ITitleBarLayout.Position.MIDDLE)
         titleBarLayout.setTitle(
-            getString(R.string.app_btn_confirm),
-            ITitleBarLayout.Position.RIGHT
+            getString(R.string.app_btn_confirm), ITitleBarLayout.Position.RIGHT
         )
         titleBarLayout.getRightIcon().visibility = View.GONE
         titleBarLayout.getRightTitle().setTextColor(0xFF006EFF.toInt())
@@ -93,8 +91,7 @@ class ImageSelectActivity : BaseLightActivity() {
             }
         }
 
-        @Suppress("UNCHECKED_CAST")
-        data = intent.getSerializableExtra(DATA) as? List<ImageBean>
+        @Suppress("UNCHECKED_CAST") data = intent.getSerializableExtra(DATA) as? List<ImageBean>
         selected = intent.getSerializableExtra(SELECTED) as? ImageBean
         placeHolder = intent.getIntExtra(PLACEHOLDER, 0)
         itemHeight = intent.getIntExtra(ITEM_HEIGHT, 0)
@@ -150,39 +147,32 @@ class ImageSelectActivity : BaseLightActivity() {
         dialog.show()
 
         val finalBean = selected!!
-        Glide.with(this)
-            .downloadOnly()
-            .load(url)
-            .listener(object : RequestListener<File> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<File>,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    dialog.cancel()
-                    Log.e(TAG, "DownloadUrl onLoadFailed e = $e")
-                    Toast.makeText(this@ImageSelectActivity, resources.getString(R.string.app_set_fail), Toast.LENGTH_SHORT).show()
-                    return false
-                }
+        Glide.with(this).downloadOnly().load(url).listener(object : RequestListener<File> {
+            override fun onLoadFailed(
+                e: GlideException?, model: Any?, target: Target<File>, isFirstResource: Boolean
+            ): Boolean {
+                dialog.cancel()
+                Log.e(TAG, "DownloadUrl onLoadFailed e = $e")
+                Toast.makeText(
+                    this@ImageSelectActivity, resources.getString(R.string.app_set_fail), Toast.LENGTH_SHORT
+                ).show()
+                return false
+            }
 
-                override fun onResourceReady(
-                    resource: File,
-                    model: Any,
-                    target: Target<File>?,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    dialog.cancel()
-                    val path = resource.absolutePath
-                    Log.e(TAG, "DownloadUrl resource path = $path")
-                    finalBean.setLocalPath(path)
-                    setResult(finalBean)
-                    Toast.makeText(this@ImageSelectActivity, resources.getString(R.string.app_set_success), Toast.LENGTH_SHORT).show()
-                    return false
-                }
-            })
-            .preload()
+            override fun onResourceReady(
+                resource: File, model: Any, target: Target<File>, dataSource: DataSource, isFirstResource: Boolean
+            ): Boolean {
+                dialog.cancel()
+                val path = resource?.absolutePath
+                Log.e(TAG, "DownloadUrl resource path = $path")
+                finalBean.setLocalPath(path)
+                setResult(finalBean)
+                Toast.makeText(
+                    this@ImageSelectActivity, resources.getString(R.string.app_set_success), Toast.LENGTH_SHORT
+                ).show()
+                return false
+            }
+        }).preload()
     }
 
     private fun setResult(bean: ImageBean) {
@@ -248,9 +238,7 @@ class ImageSelectActivity : BaseLightActivity() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-            val view =
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.app_select_image_item_layout, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.app_select_image_item_layout, parent, false)
             return ImageViewHolder(view)
         }
 
@@ -259,8 +247,7 @@ class ImageSelectActivity : BaseLightActivity() {
             setItemLayoutParams(holder)
             val imageBean = data!![position]
             if (selected != null && imageBean != null && TextUtils.equals(
-                    selected!!.getThumbnailUri(),
-                    imageBean.getThumbnailUri()
+                    selected!!.getThumbnailUri(), imageBean.getThumbnailUri()
                 )
             ) {
                 holder.selectBorderLayout.visibility = View.VISIBLE
@@ -274,20 +261,15 @@ class ImageSelectActivity : BaseLightActivity() {
                     val synthesizedImageView = imageView
                     val imageId = imageBean.getImageId()
                     synthesizedImageView.setImageId(imageId ?: "")
-                    synthesizedImageView.displayImage(imageBean.getGroupGridAvatar())
-                        .load(imageId ?: "")
+                    synthesizedImageView.displayImage(imageBean.getGroupGridAvatar()).load(imageId ?: "")
                 }
             } else if (imageBean.isDefault()) {
                 holder.defaultLayout.visibility = View.VISIBLE
                 imageView.setImageResource(android.R.color.transparent)
             } else {
                 holder.defaultLayout.visibility = View.GONE
-                Glide.with(holder.itemView.context)
-                    .asBitmap()
-                    .load(imageBean.getThumbnailUri())
-                    .placeholder(placeHolder)
-                    .apply(RequestOptions().error(placeHolder))
-                    .into(imageView)
+                Glide.with(holder.itemView.context).asBitmap().load(imageBean.getThumbnailUri())
+                    .placeholder(placeHolder).apply(RequestOptions().error(placeHolder)).into(imageView)
             }
 
             holder.itemView.setOnClickListener {
@@ -328,8 +310,7 @@ class ImageSelectActivity : BaseLightActivity() {
         class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val imageView: ImageView = itemView.findViewById(R.id.content_image)
             val selectedBorder: ImageView = itemView.findViewById(R.id.select_border)
-            val selectBorderLayout: RelativeLayout =
-                itemView.findViewById(R.id.selected_border_area)
+            val selectBorderLayout: RelativeLayout = itemView.findViewById(R.id.selected_border_area)
             val defaultLayout: Button = itemView.findViewById(R.id.default_image_layout)
         }
     }
@@ -344,10 +325,7 @@ class ImageSelectActivity : BaseLightActivity() {
     ) : RecyclerView.ItemDecoration() {
 
         override fun getItemOffsets(
-            outRect: Rect,
-            view: View,
-            parent: RecyclerView,
-            state: RecyclerView.State
+            outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
         ) {
             val position = parent.getChildAdapterPosition(view)
             val column = position % columnNum

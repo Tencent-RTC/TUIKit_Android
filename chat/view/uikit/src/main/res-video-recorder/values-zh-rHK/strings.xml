@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="video_recorder_empty">""</string>
+    <string name="video_recorder_torch">手電筒</string>
+    <string name="video_recorder_aspect">比例</string>
+
+    <string name="video_recorder_confirm">確認</string>
+    <string name="video_recorder_cancel">取消</string>
+    <string name="video_recorder_close">關閉</string>
+    <string name="video_recorder_setup">設置</string>
+    <string name="video_recorder_common_none">無</string>
+    <string name="video_recorder_palm_out">手掌展開</string>
+
+    <string name="video_recorder_default_bgm_name">未知音樂名稱</string>
+    <string name="video_recorder_default_time">00:00</string>
+    <string name="video_recorder_bgm_music">音樂</string>
+    <string name="video_recorder_origin_audio">原音</string>
+    <string name="video_recorder_send">發送</string>
+    <string name="video_recorder_done">完成</string>
+    <string name="video_recorder_restore">還原</string>
+    <string name="video_recorder_zero">0</string>
+    <string name="video_recorder_zero_time">00:00</string>
+    <string name="video_recorder_local">本地</string>
+    <string name="video_recorder_default">預設</string>
+    <string name="video_recorder_mixed_mode_operation_tips">點擊拍照，長按錄影</string>
+    <string name="video_recorder_phone_mode_operation_tips">點擊拍照</string>
+    <string name="video_recorder_video_mode_operation_tips">長按錄影</string>
+    <string name="video_recorder_bgm_type_name_default">預設</string>
+    <string name="video_recorder_bgm_type_name_chosen">已選擇</string>
+    <string name="video_recorder_bgm_item_bgm_name_default">未知音樂</string>
+    <string name="video_recorder_bgm_item_bgm_author_default">未知作者</string>
+
+    <string name="video_recorder_picker_preview">預覽</string>
+    <string name="video_recorder_picker_full_image">完整圖片</string>
+    <string name="video_recorder_picker_send">發送</string>
+    <string name="video_recorder_picker_edit">編輯</string>
+    <string name="video_recorder_picker_select">選擇</string>
+    <string name="video_recorder_recode_time_short_tips">錄製時間太短</string>
+
+    <string name="video_recorder_request_permission_storage_title">%s申請獲取存儲權限</string>
+    <string name="video_recorder_request_permission_storage_reason">需要訪問您的存儲權限，開啟後用於相冊圖片視頻發送、聊天圖片視頻保存等功能</string>
+    <string name="video_recorder_request_permission_storage_tip">在設置-應用-%s-權限中開啟存儲權限，以正常使用相冊圖片視頻發送、聊天圖片保存等功能</string>
+
+    <string name="video_recorder_request_permission_media_title">%s申請訪問照片與視頻</string>
+    <string name="video_recorder_request_permission_media_reason">需要訪問照片與視頻，開啟後用於相冊圖片視頻發送、聊天圖片視頻保存等功能</string>
+    <string name="video_recorder_request_permission_media_tip">在設置-應用-%s-權限中開啟照片與視頻權限，以正常使用相冊圖片視頻發送、聊天圖片保存等功能</string>
+
+    <string name="video_recorder_authorization_prompter_no_signature">由於您未開通多媒體挿件使用許可權，您當前功能將受限，您可以在CONFIG中遮罩相關功能，也可以開通多媒體挿件許可權繼續使用該功能，詳情請閱讀模塊下的READ.ME檔案</string>
+    <string name="video_recorder_authorization_prompter_no_liteav_sdk">由於您的工程配寘，您當前功能將受限，您可以在CONFIG中遮罩相關功能，也可以更改您的工程配寘繼續使用該功能，詳情請閱讀模塊下的READ.ME檔案</string>
+
+    <string name="video_recorder_audio_authorization_prompter">當前配寘不能開啟AI降噪. 僅Debug版本有該提示</string>
+    <string name="video_recorder_audio_recorder_less_than_min_time">語音錄製時長太短了</string>
+    <string name="video_recorder_audio_record_time_limit_reached">語音錄影時長上限</string>
+
+    <string name="video_recorder_prompter">提示</string>
+    <string name="video_recorder_link_error">無法打開連結</string>
+</resources>

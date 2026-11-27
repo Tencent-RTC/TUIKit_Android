@@ -1,15 +1,14 @@
 package com.tencent.uikit.app.room
 
-import com.tencent.uikit.app.R
 import android.content.Context
-import android.content.Intent
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
-import com.trtc.uikit.roomkit.base.avatar.RoomAvatar
 import androidx.appcompat.widget.AppCompatTextView
+import com.trtc.uikit.roomkit.R
+import com.trtc.uikit.roomkit.base.avatar.RoomAvatar
 import com.trtc.uikit.roomkit.base.util.getDisplayName
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.login.UserProfile
@@ -27,32 +26,34 @@ class RoomHomeView @JvmOverloads constructor(
     private val avatar: RoomAvatar
     private val titleText: AppCompatTextView
     private var loginJob: Job? = null
-    private var profilePopup: RoomHomeLogoutPopup? = null
+    private var profilePopup: RoomHomeProfilePopup? = null
 
+    var onQuickStart: (() -> Unit)? = null
+    var onJoin: (() -> Unit)? = null
     var onOpenSettings: (() -> Unit)? = null
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.app_home_view, this, true)
+        LayoutInflater.from(context).inflate(R.layout.roomkit_home_view, this, true)
         avatar = findViewById(R.id.avatar)
         titleText = findViewById(R.id.home_title)
         findViewById<View>(R.id.quick_meeting_button).setOnClickListener {
-            context.startActivity(Intent(context, RoomQuickStartActivity::class.java))
+            onQuickStart?.invoke()
         }
         findViewById<View>(R.id.join_button).setOnClickListener {
-            context.startActivity(Intent(context, RoomJoinActivity::class.java))
+            onJoin?.invoke()
         }
         findViewById<View>(R.id.schedule_button).setOnClickListener {
-            Toast.makeText(context, R.string.app_home_coming_soon, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, com.tencent.uikit.app.R.string.app_home_coming_soon, Toast.LENGTH_SHORT).show()
         }
         avatar.setOnClickListener { showProfilePopup() }
     }
 
     private fun showProfilePopup() {
         if (profilePopup != null) return
-        val popup = RoomHomeLogoutPopup(context)
+        val popup = RoomHomeProfilePopup(context)
         popup.onSettings = {
             closeProfilePopup()
-            openSettings()
+            onOpenSettings?.invoke()
         }
         popup.onDismiss = { profilePopup = null }
         profilePopup = popup
@@ -62,15 +63,6 @@ class RoomHomeView @JvmOverloads constructor(
     private fun closeProfilePopup() {
         profilePopup?.dismiss()
         profilePopup = null
-    }
-
-    private fun openSettings() {
-        val hook = onOpenSettings
-        if (hook != null) {
-            hook.invoke()
-            return
-        }
-        Toast.makeText(context, R.string.app_settings_open, Toast.LENGTH_SHORT).show()
     }
 
     override fun onAttachedToWindow() {

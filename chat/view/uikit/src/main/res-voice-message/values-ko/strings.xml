@@ -1,0 +1,22 @@
+<resources>
+    <string name="voice_message_translate">번역</string>
+    <string name="voice_message_undo_translate">번역 취소</string>
+    <string name="voice_message_switch_language">언어 변경</string>
+    <string name="voice_message_read_aloud">읽어주기</string>
+    <string name="voice_message_stop">정지</string>
+    <string name="voice_message_select_language">언어 선택</string>
+    <string name="voice_message_translate_failed">번역 실패</string>
+    <string name="voice_message_speak_failed">읽어주기 실패</string>
+    <string name="voice_message_listen_from_here">여기부터 듣기</string>
+    <string name="voice_message_listen_self_speaker">나</string>
+    <string name="voice_message_listen_says">"%1$s님이 말했습니다: "</string>
+    <string name="voice_message_listen_sent_image">%1$s님이 이미지를 보냈습니다</string>
+    <string name="voice_message_listen_sent_video">%1$s님이 동영상을 보냈습니다</string>
+    <string name="voice_message_listen_sent_file">%1$s님이 파일을 보냈습니다</string>
+    <string name="voice_message_listen_sent_merged">%1$s님이 보냈습니다: %2$s</string>
+    <string name="voice_message_voice_default">기본</string>
+    <string name="voice_message_voice_xiaoxu">샤오쉬 (남성)</string>
+    <string name="voice_message_voice_xiaomei">샤오메이 (여성)</string>
+    <string name="voice_message_voice_xiaoxin">샤오신 (여성)</string>
+    <string name="voice_message_voice_xiaoyue">샤오위에 (여성)</string>
+</resources>

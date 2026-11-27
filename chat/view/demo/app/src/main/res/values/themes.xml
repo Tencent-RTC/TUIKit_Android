@@ -1,0 +1,3 @@
+<resources>
+    <style name="demo_Theme_ChatView" parent="Chat_UIKit_Theme" />
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="uikit_ai_page_title">مساعد الذكاء الاصطناعي</string>
+    <string name="uikit_ai_transfer_to_human">التحويل إلى موظف</string>
+    <string name="uikit_ai_select_agent">اختيار المساعد</string>
+    <string name="uikit_ai_agents_empty">لا يوجد مساعدون متاحون</string>
+    <string name="uikit_ai_call_button">مكالمة صوتية</string>
+    <string name="uikit_ai_call_handoff_waiting">في انتظار اتصال الموظف، يرجى المحاولة لاحقًا</string>
+    <string name="uikit_ai_call_handoff_required">يرجى التحويل إلى موظف أولاً قبل إجراء المكالمة</string>
+    <string name="uikit_ai_call_mode_free">محادثة حرة</string>
+    <string name="uikit_ai_call_listening">...جارٍ الاستماع</string>
+    <string name="uikit_ai_call_thinking">...جارٍ التفكير</string>
+    <string name="uikit_ai_call_speaking">يمكنك متابعة التحدث</string>
+    <string name="uikit_ai_call_muted">تم كتم الصوت</string>
+    <string name="uikit_ai_call_disclaimer">محتوى تم إنشاؤه بواسطة الذكاء الاصطناعي</string>
+    <string name="uikit_ai_call_permission_denied">تتطلب المحادثة الصوتية إذن الميكروفون</string>
+    <string name="uikit_ai_call_start_failed">تعذر بدء التعرف على الصوت، يرجى المحاولة مرة أخرى</string>
+    <string name="uikit_ai_call_asr_unavailable_title">التعرف على الكلام غير متاح</string>
+    <string name="uikit_ai_call_asr_unavailable_content">نفدت حزمة التعرف على الكلام لهذا التطبيق أو لم يتم تفعيلها، لذا فإن المكالمات الصوتية غير متاحة مؤقتًا.</string>
+    <string name="uikit_ai_call_asr_unavailable_exit">إنهاء المكالمة</string>
+    <string name="uikit_ai_call_start_failed_retry">فشل الاتصال، انقر على الميكروفون لإعادة المحاولة</string>
+    <string name="uikit_ai_call_send_failed">فشل الإرسال، يرجى المحاولة مرة أخرى</string>
+    <string name="uikit_ai_call_reply_timeout">لم يستجب المساعد، يرجى المحاولة مرة أخرى</string>
+    <string name="uikit_ai_call_audio_unavailable">الميكروفون غير متاح</string>
+    <string name="uikit_ai_call_voiceprint_enrolled">لقد حفظت صوتك، ومن الآن سأستجيب لصوتك فقط</string>
+    <string name="uikit_ai_call_playback_unavailable">تشغيل الصوت غير متاح، وسيتم عرض الردود كنص</string>
+    <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">جرّب أن تقول: \"%1$s\"</string>
+    <string name="uikit_ai_call_duration">في مكالمة %1$s</string>
+    <string name="uikit_ai_call_connecting">جارٍ الاتصال…</string>
+    <string name="uikit_ai_call_label_mute">كتم</string>
+    <string name="uikit_ai_call_label_unmute">إلغاء الكتم</string>
+    <string name="uikit_ai_call_label_subtitle">الترجمة</string>
+    <string name="uikit_ai_call_label_hangup">إنهاء</string>
+</resources>

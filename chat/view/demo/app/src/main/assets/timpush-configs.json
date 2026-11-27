@@ -1,0 +1,20 @@
+{
+    "com.tencent.qcloud.tim.tuikit": {
+        "huaweiPushBussinessId": "24548",
+        "huaweiBadgeClassName": "io.trtc.tuikit.chat.login.LoginActivity",
+        "xiaomiPushBussinessId": "31364",
+        "xiaomiPushAppId": "2882303761518516314",
+        "xiaomiPushAppKey": "5141851613314",
+        "meizuPushBussinessId": "30670",
+        "meizuPushAppId": "118863",
+        "meizuPushAppKey": "d9c7628144e541c1a6446983531467c8",
+        "vivoPushBussinessId": "24546",
+        "fcmPushBussinessId": "36773",
+        "oppoPushBussinessId": "30609",
+        "oppoPushAppKey": "cf080880fc9747cf8f09baa6d806fb85",
+        "oppoPushAppSecret": "75bb981450bc4753b93b1978fd014c95",
+        "honorPushBussinessId": "26175",
+        "honorBadgeClassName": "io.trtc.tuikit.chat.login.LoginActivity"
+    },
+    "version": "1.0.1"
+}

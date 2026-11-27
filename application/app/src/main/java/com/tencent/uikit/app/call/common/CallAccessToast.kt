@@ -26,6 +26,7 @@ internal object CallAccessToast {
             return
         }
         mainHandler.post {
+            if (activity.isFinishing || activity.isDestroyed) return@post
             val host = activity.window?.decorView as? ViewGroup ?: return@post
             removeCurrentToast()
             val density = activity.resources.displayMetrics.density
@@ -60,6 +61,8 @@ internal object CallAccessToast {
         if (currentToast?.get() !== toast) {
             return
         }
+        pendingDismiss?.let(mainHandler::removeCallbacks)
+        pendingDismiss = null
         toast.animate().cancel()
         toast.animate().alpha(0f).translationY(8 * toast.resources.displayMetrics.density)
             .setDuration(ANIMATION_DURATION_MS)

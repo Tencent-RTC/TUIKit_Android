@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_viewer_loading">Loading</string>
+    <string name="image_viewer_no_more_data">No more data</string>
+    <string name="image_viewer_video_download_failed">Video download failed</string>
+    <string name="image_viewer_save_to_album">Save to album</string>
+    <string name="image_viewer_saving">Saving</string>
+    <string name="image_viewer_save_success">Saved successfully</string>
+    <string name="image_viewer_save_failed">Save failed</string>
+</resources>

@@ -55,8 +55,8 @@ internal class VoiceLoungeGiftRankPanel(
         contentView.addView(scrollView, frameParams(MATCH, MATCH, Gravity.TOP, top = context.dp(CONTENT_TOP)))
         scrollView.addView(listView, FrameLayout.LayoutParams(MATCH, WRAP))
         scrollView.isVerticalScrollBarEnabled = false
-        sheetTitle = context.getString(R.string.livekit_voiceroom_room_gift_rank)
-        emptyLabel.text = context.getString(R.string.livekit_voiceroom_rank_empty)
+        sheetTitle = context.getString(R.string.livekit_voicelounge_room_gift_rank)
+        emptyLabel.text = context.getString(R.string.livekit_voicelounge_rank_empty)
         emptyLabel.visibility = View.GONE
     }
 
@@ -126,7 +126,7 @@ internal class VoiceLoungeGiftRankPanel(
             ring.addView(avatarView, frameParams(size, size, Gravity.CENTER))
             val badge = TextView(context).apply {
                 text = rank.toString()
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
                 typeface = Typeface.DEFAULT_BOLD
                 setTextColor(Color.WHITE)
                 gravity = Gravity.CENTER
@@ -141,14 +141,14 @@ internal class VoiceLoungeGiftRankPanel(
             )
             addView(ringHolder, linearParams(MATCH, ringSize))
 
-            nameLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            nameLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
             nameLabel.typeface = Typeface.DEFAULT_BOLD
             nameLabel.setTextColor(Color.WHITE)
             nameLabel.gravity = Gravity.CENTER
             nameLabel.singleLineEnd()
             addView(nameLabel, linearParams(MATCH, WRAP, top = dp(8)))
 
-            coinsLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            coinsLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
             coinsLabel.setTextColor(whiteAlpha(0.55f))
             coinsLabel.gravity = Gravity.CENTER
             addView(coinsLabel, linearParams(MATCH, WRAP, top = dp(2)))
@@ -181,7 +181,7 @@ internal class VoiceLoungeGiftRankPanel(
         private val coinsLabel = TextView(context)
 
         init {
-            rankLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            rankLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             rankLabel.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             rankLabel.setTextColor(whiteAlpha(0.5f))
             rankLabel.gravity = Gravity.CENTER
@@ -192,13 +192,13 @@ internal class VoiceLoungeGiftRankPanel(
             avatar.clipOval()
             addView(avatar, frameParams(dp(36), dp(36), Gravity.CENTER_VERTICAL, start = dp(20 + 24 + 12)))
 
-            coinsLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            coinsLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             coinsLabel.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             coinsLabel.setTextColor(whiteAlpha(0.8f))
             coinsLabel.gravity = Gravity.END
             addView(coinsLabel, frameParams(WRAP, WRAP, Gravity.CENTER_VERTICAL or Gravity.END, end = dp(20)))
 
-            nameLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            nameLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             nameLabel.setTextColor(Color.WHITE)
             nameLabel.singleLineEnd()
             addView(

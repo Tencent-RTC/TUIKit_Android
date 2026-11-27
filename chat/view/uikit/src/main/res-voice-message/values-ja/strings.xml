@@ -1,0 +1,22 @@
+<resources>
+    <string name="voice_message_translate">翻訳</string>
+    <string name="voice_message_undo_translate">翻訳を取り消す</string>
+    <string name="voice_message_switch_language">言語を切り替え</string>
+    <string name="voice_message_read_aloud">読み上げ</string>
+    <string name="voice_message_stop">停止</string>
+    <string name="voice_message_select_language">言語を選択</string>
+    <string name="voice_message_translate_failed">翻訳に失敗しました</string>
+    <string name="voice_message_speak_failed">読み上げに失敗しました</string>
+    <string name="voice_message_listen_from_here">ここから聴く</string>
+    <string name="voice_message_listen_self_speaker">私</string>
+    <string name="voice_message_listen_says">%1$sさんが言いました：</string>
+    <string name="voice_message_listen_sent_image">%1$sさんが画像を送信しました</string>
+    <string name="voice_message_listen_sent_video">%1$sさんが動画を送信しました</string>
+    <string name="voice_message_listen_sent_file">%1$sさんがファイルを送信しました</string>
+    <string name="voice_message_listen_sent_merged">%1$sさんが送信しました：%2$s</string>
+    <string name="voice_message_voice_default">デフォルト</string>
+    <string name="voice_message_voice_xiaoxu">シャオシュー（男性）</string>
+    <string name="voice_message_voice_xiaomei">シャオメイ（女性）</string>
+    <string name="voice_message_voice_xiaoxin">シャオシン（女性）</string>
+    <string name="voice_message_voice_xiaoyue">シャオユエ（女性）</string>
+</resources>

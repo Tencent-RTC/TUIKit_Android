@@ -1,0 +1,22 @@
+<resources>
+    <string name="voice_message_translate">翻译</string>
+    <string name="voice_message_undo_translate">取消翻译</string>
+    <string name="voice_message_switch_language">切换语言</string>
+    <string name="voice_message_read_aloud">朗读</string>
+    <string name="voice_message_stop">停止</string>
+    <string name="voice_message_select_language">选择语言</string>
+    <string name="voice_message_translate_failed">翻译失败</string>
+    <string name="voice_message_speak_failed">朗读失败</string>
+    <string name="voice_message_listen_from_here">从当前听</string>
+    <string name="voice_message_listen_self_speaker">我</string>
+    <string name="voice_message_listen_says">%1$s说：</string>
+    <string name="voice_message_listen_sent_image">%1$s发送了图片</string>
+    <string name="voice_message_listen_sent_video">%1$s发送了视频</string>
+    <string name="voice_message_listen_sent_file">%1$s发送了文件</string>
+    <string name="voice_message_listen_sent_merged">%1$s发送了%2$s</string>
+    <string name="voice_message_voice_default">默认</string>
+    <string name="voice_message_voice_xiaoxu">小旭(男)</string>
+    <string name="voice_message_voice_xiaomei">小美(女)</string>
+    <string name="voice_message_voice_xiaoxin">小新(女)</string>
+    <string name="voice_message_voice_xiaoyue">小月(女)</string>
+</resources>

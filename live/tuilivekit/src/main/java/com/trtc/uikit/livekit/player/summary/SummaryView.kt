@@ -1,7 +1,6 @@
 package com.trtc.uikit.livekit.player.summary
 
 import android.content.Context
-import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
@@ -36,25 +35,27 @@ class SummaryView @JvmOverloads constructor(
 
     @JvmOverloads
     fun bind(liveInfo: LiveInfo, reason: String? = null) {
+        bind(
+            ownerName = liveInfo.liveOwner.userName.ifEmpty { liveInfo.liveOwner.userID },
+            ownerAvatarURL = liveInfo.liveOwner.avatarURL,
+            backgroundURL = liveInfo.backgroundURL.ifEmpty { liveInfo.coverURL },
+            reason = reason,
+        )
+    }
+
+    fun bind(ownerName: String, ownerAvatarURL: String, backgroundURL: String, reason: String? = null) {
         titleView.text = if (reason.isNullOrEmpty()) {
             context.getString(R.string.livelist_live_ended)
         } else {
             reason
         }
-        ImageLoader.loadAvatar(avatar, liveInfo.liveOwner.avatarURL, R.drawable.livekit_livelist_default_avatar)
-        anchorNameView.text = if (TextUtils.isEmpty(liveInfo.liveOwner.userName)) {
-            liveInfo.liveOwner.userID
-        } else {
-            liveInfo.liveOwner.userName
-        }
-
-        setBackground(liveInfo)
+        ImageLoader.loadAvatar(avatar, ownerAvatarURL, R.drawable.livekit_livelist_default_avatar)
+        anchorNameView.text = ownerName
+        setBackground(backgroundURL)
     }
 
-    private fun setBackground(liveInfo: LiveInfo) {
-        val url = liveInfo.backgroundURL.ifEmpty {
-            liveInfo.coverURL.ifEmpty { LiveKitResources.defaultBackgroundURL }
-        }
+    private fun setBackground(backgroundURL: String) {
+        val url = backgroundURL.ifEmpty { LiveKitResources.defaultBackgroundURL }
 
         val config = ImageOptions.Builder().setPlaceImage(R.drawable.livekit_video_background)
             .setErrorImage(R.drawable.livekit_video_background).build()

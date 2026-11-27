@@ -85,9 +85,9 @@ internal class VoiceLoungeBottomBar(
         coMic.setOnClickListener { showCoMic() }
 
         val titles = listOf(
-            R.string.livekit_voiceroom_living_mute, R.string.livekit_voiceroom_living_unmute,
-            R.string.livekit_voiceroom_living_bgm, R.string.livekit_voiceroom_prepare_more_audio,
-            R.string.livekit_voiceroom_room_more,
+            R.string.livekit_voicelounge_living_mute, R.string.livekit_voicelounge_living_unmute,
+            R.string.livekit_voicelounge_living_bgm, R.string.livekit_voicelounge_prepare_more_audio,
+            R.string.livekit_voicelounge_room_more,
         ).map { context.getString(it) }
         val slotWidth = titles.maxOf { ActionButton.fittingWidth(context, it) }
 
@@ -130,7 +130,7 @@ internal class VoiceLoungeBottomBar(
         inputPill.background = roundedDrawable(blackAlpha(0.3f), dp(18).toFloat())
         val placeholder = voiceLoungeText(
             context, LiveTheme.TextRole.BODY, LiveTheme.TextTone.TERTIARY,
-            text = context.getString(R.string.livekit_voiceroom_room_input_placeholder),
+            text = context.getString(R.string.livekit_voicelounge_room_input_placeholder),
         )
         placeholder.maxLines = 1
         placeholder.ellipsize = android.text.TextUtils.TruncateAt.END
@@ -208,7 +208,7 @@ internal class VoiceLoungeBottomBar(
         button.setImage(if (muted) R.drawable.livekit_coguest_seat_muted else R.drawable.livekit_coguest_seat_mic)
         button.setTitle(
             context.getString(
-                if (muted) R.string.livekit_voiceroom_living_unmute else R.string.livekit_voiceroom_living_mute
+                if (muted) R.string.livekit_voicelounge_living_unmute else R.string.livekit_voicelounge_living_mute
             ),
         )
     }
@@ -242,7 +242,7 @@ internal class VoiceLoungeBottomBar(
             when (icon) {
                 Icon.MUTE -> {
                     addView(micGlyph, frameParams(dp(MIC_BOX_SIZE), dp(MIC_BOX_SIZE), Gravity.CENTER))
-                    contentDescription = context.getString(R.string.livekit_voiceroom_living_mute)
+                    contentDescription = context.getString(R.string.livekit_voicelounge_living_mute)
                 }
 
                 Icon.AUDIO_EFFECTS -> {
@@ -250,12 +250,12 @@ internal class VoiceLoungeBottomBar(
                     glyph.translationX = -dp(1).toFloat()
                     glyph.translationY = -dp(1).toFloat()
                     addView(glyph, frameParams(dp(AUDIO_ICON_SIZE), dp(AUDIO_ICON_SIZE), Gravity.CENTER))
-                    contentDescription = context.getString(R.string.livekit_voiceroom_prepare_more_audio)
+                    contentDescription = context.getString(R.string.livekit_voicelounge_prepare_more_audio)
                 }
 
                 Icon.CO_MIC -> {
                     addView(
-                        imageView(R.drawable.livekit_voiceroom_comic),
+                        imageView(R.drawable.livekit_voicelounge_comic),
                         frameParams(dp(MIC_BOX_SIZE), dp(MIC_BOX_SIZE), Gravity.CENTER)
                     )
                     leaveBadge.visibility = View.GONE
@@ -265,7 +265,7 @@ internal class VoiceLoungeBottomBar(
                 }
 
                 Icon.GIFT -> addView(
-                    imageView(R.drawable.livekit_voiceroom_gift), frameParams(dp(30), dp(30), Gravity.CENTER)
+                    imageView(R.drawable.livekit_voicelounge_gift), frameParams(dp(30), dp(30), Gravity.CENTER)
                 )
             }
             setOnTouchListener { view, event ->
@@ -283,7 +283,7 @@ internal class VoiceLoungeBottomBar(
         fun setMuted(muted: Boolean) {
             micGlyph.glyph = if (muted) GradientGlyphView.Glyph.MIC_SLASH else GradientGlyphView.Glyph.MIC
             contentDescription = context.getString(
-                if (muted) R.string.livekit_voiceroom_living_unmute else R.string.livekit_voiceroom_living_mute,
+                if (muted) R.string.livekit_voicelounge_living_unmute else R.string.livekit_voicelounge_living_mute,
             )
         }
 
@@ -423,13 +423,13 @@ internal class VoiceLoungeBottomBar(
             clipChildren = false
             val iconSize = dp(28)
             val icon = ImageView(context).apply {
-                setImageResource(R.drawable.livekit_voiceroom_comic)
+                setImageResource(R.drawable.livekit_voicelounge_comic)
                 scaleType = ImageView.ScaleType.FIT_CENTER
             }
             addView(icon, frameParams(iconSize, iconSize, Gravity.TOP or Gravity.CENTER_HORIZONTAL))
             icon.translationY = dp(13.5f) - iconSize / 2f
             val title = liveText(context, LiveTheme.TextRole.CONTROL, LiveTheme.TextTone.SECONDARY, Gravity.CENTER)
-            title.text = context.getString(R.string.livekit_voiceroom_room_comic)
+            title.text = context.getString(R.string.livekit_voicelounge_room_comic)
             title.applyBottomBarShadow()
             addView(title, frameParams(MATCH, dp(16), Gravity.TOP, top = dp(30)))
             badgeView.background = ovalDrawable(VoiceLoungeColor.rose)

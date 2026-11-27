@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 @SuppressLint("InflateParams")
@@ -41,10 +42,15 @@ class SettingsPanel(
         .inflate(R.layout.livekit_coguest_settings_panel, contentView, false) as LinearLayout
     private val previewContainer: FrameLayout = root.findViewById(R.id.preview_container)
     private val cameraView: CameraView = root.findViewById(R.id.camera_view)
+    private val mirrorAction: View = root.findViewById(R.id.action_mirror)
     private val mirrorIcon: ImageView = root.findViewById(R.id.iv_action_mirror)
     private val applyButton: View = root.findViewById(R.id.btn_apply)
 
     private val previewCornerRadius: Float = 20f * context.resources.displayMetrics.density
+
+    private companion object {
+        const val DISABLED_ALPHA = 0.46f
+    }
 
     private val beautyPanel = BeautyPanel(context)
     private var cameraStarted = false
@@ -66,16 +72,24 @@ class SettingsPanel(
         root.findViewById<View>(R.id.action_beauty).setDebounceClickListener {
             beautyPanel.show()
         }
-        root.findViewById<View>(R.id.action_mirror).setDebounceClickListener {
-            if (DeviceStore.shared().deviceState.localMirrorType.value != MirrorType.DISABLE) {
-                DeviceStore.shared().switchMirror(MirrorType.DISABLE)
-            } else {
-                DeviceStore.shared().switchMirror(MirrorType.ENABLE)
+        mirrorAction.setDebounceClickListener {
+            val deviceState = DeviceStore.shared().deviceState
+            if (deviceState.isFrontCamera.value) {
+                val mirrorType = if (deviceState.localMirrorType.value != MirrorType.DISABLE) {
+                    MirrorType.DISABLE
+                } else {
+                    MirrorType.ENABLE
+                }
+                DeviceStore.shared().switchMirror(mirrorType)
             }
         }
         root.findViewById<View>(R.id.action_flip).setDebounceClickListener {
-            val nowFront = DeviceStore.shared().deviceState.isFrontCamera.value
-            DeviceStore.shared().switchCamera(!nowFront)
+            val deviceState = DeviceStore.shared().deviceState
+            val nextFront = !deviceState.isFrontCamera.value
+            if (!nextFront && deviceState.localMirrorType.value != MirrorType.DISABLE) {
+                DeviceStore.shared().switchMirror(MirrorType.DISABLE)
+            }
+            DeviceStore.shared().switchCamera(nextFront)
         }
         applyButton.setDebounceClickListener {
             onRequestCoGuest?.invoke()
@@ -114,12 +128,17 @@ class SettingsPanel(
 
     private fun subscribeStates() {
         subscribeJob?.cancel()
+        val deviceState = DeviceStore.shared().deviceState
         subscribeJob = panelScope.launch {
-            DeviceStore.shared().deviceState.localMirrorType.collect { type ->
+            combine(deviceState.localMirrorType, deviceState.isFrontCamera) { mirrorType, isFront ->
+                mirrorType to isFront
+            }.collect { (mirrorType, isFront) ->
                 mirrorIcon.setImageResource(
-                    if (type != MirrorType.DISABLE) R.drawable.livekit_ic_setting_mirror_on
+                    if (mirrorType != MirrorType.DISABLE) R.drawable.livekit_ic_setting_mirror_on
                     else R.drawable.livekit_ic_setting_mirror_off
                 )
+                mirrorAction.isEnabled = isFront
+                mirrorAction.alpha = if (isFront) 1f else DISABLED_ALPHA
             }
         }
     }

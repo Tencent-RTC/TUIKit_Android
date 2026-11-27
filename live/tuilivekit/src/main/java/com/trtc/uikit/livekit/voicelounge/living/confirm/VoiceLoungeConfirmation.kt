@@ -39,8 +39,8 @@ internal class VoiceLoungeEndPanel(context: Context) : BottomSheetView(context) 
         voiceLoungeText(context, LiveTheme.TextRole.BODY, LiveTheme.TextTone.SECONDARY, Gravity.CENTER)
     private val buttonRow = LinearLayout(context)
     private val continueButton =
-        makeButton(context.getString(R.string.livekit_voiceroom_end_continue), VoiceLoungeColor.overlayBase)
-    private val endButton = makeButton(context.getString(R.string.livekit_voiceroom_end_end), END_BACKGROUND)
+        makeButton(context.getString(R.string.livekit_voicelounge_end_continue), VoiceLoungeColor.overlayBase)
+    private val endButton = makeButton(context.getString(R.string.livekit_voicelounge_end_end), END_BACKGROUND)
     private var hasAudience = false
 
     override val sheetHeight: Int get() = context.dp(if (hasAudience) 244 else 208)
@@ -74,8 +74,8 @@ internal class VoiceLoungeEndPanel(context: Context) : BottomSheetView(context) 
         audienceStatusLabel.gravity = Gravity.CENTER
         audienceStatusLabel.includeFontPadding = false
         audienceStatusLabel.maxLines = 1
-        confirmationLabel.text = context.getString(R.string.livekit_voiceroom_end_confirm)
-        emptyLabel.text = context.getString(R.string.livekit_voiceroom_end_empty)
+        confirmationLabel.text = context.getString(R.string.livekit_voicelounge_end_confirm)
+        emptyLabel.text = context.getString(R.string.livekit_voicelounge_end_empty)
         continueButton.setOnClickListener { dismiss() }
         endButton.setOnClickListener { confirmEnd() }
     }
@@ -100,7 +100,7 @@ internal class VoiceLoungeEndPanel(context: Context) : BottomSheetView(context) 
     private fun makeButton(title: String, background: Int): TextView = TextView(context).apply {
         text = title
         setTextColor(whiteAlpha(0.94f))
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         gravity = Gravity.CENTER
         includeFontPadding = false
@@ -110,7 +110,7 @@ internal class VoiceLoungeEndPanel(context: Context) : BottomSheetView(context) 
 
     private fun makeAudienceStatus(count: Int): CharSequence {
         val countString = count.toString()
-        val text = context.getString(R.string.livekit_voiceroom_end_audience_count, countString)
+        val text = context.getString(R.string.livekit_voicelounge_end_audience_count, countString)
         val result = SpannableString(text)
         val all = 0 to text.length
         result.setSpan(AbsoluteSizeSpan(15, true), all.first, all.second, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -203,7 +203,7 @@ internal class VoiceLoungeAlertView(context: Context) : FrameLayout(context) {
 
     private fun makeButton(background: Int): TextView = TextView(context).apply {
         setTextColor(Color.WHITE)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         gravity = Gravity.CENTER
         includeFontPadding = false

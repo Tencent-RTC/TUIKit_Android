@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="emoji_picker_background">#F7F8FA</color>
+    <color name="emoji_picker_divider">#E5E6E9</color>
+    <color name="emoji_picker_selected_group">#E5E6E9</color>
+    <color name="emoji_picker_preview_background">#FFFFFF</color>
+</resources> 

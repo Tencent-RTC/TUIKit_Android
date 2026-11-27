@@ -1,0 +1,252 @@
+<resources>
+    <string name="demo_app_name">Tencent Chat</string>
+    <string name="demo_tab_messages">Messages</string>
+    <string name="demo_tab_calls">Calls</string>
+    <string name="demo_tab_contacts">Contacts</string>
+    <string name="demo_tab_me">Me</string>
+    <string name="demo_settings_show_calls">Show Recent Calls</string>
+    <string name="demo_tab_settings">Settings</string>
+    <string name="demo_login">Login</string>
+    <string name="demo_input_user_id_tips">Please enter user ID</string>
+    <string name="demo_logout">Logout</string>
+    <string name="demo_login_hero_title">Tencent Cloud Chat</string>
+    <string name="demo_login_hero_subtitle">Welcome to use this APP to experience Tencent Cloud Chat products and services</string>
+    <string name="demo_login_user_id_label">User ID</string>
+    <string name="demo_page_conversations_title">Messages</string>
+    <string name="demo_page_contacts_title">Contacts</string>
+    <string name="demo_page_me_title">Me</string>
+    <string name="demo_page_settings_title">Settings</string>
+    <string name="demo_search_hint">Search</string>
+    <string name="demo_chat_title">Chat</string>
+    <string name="demo_chat_setting_contact_info">Contact Info</string>
+    <string name="demo_chat_setting_group_info">Group Info</string>
+    <string name="demo_message_input_hint">Type a message…</string>
+    <string name="demo_chat_custom_message_menu_title">Custom Message</string>
+    <string name="demo_chat_custom_message_content">Welcome to the Cloud Communication IM family!</string>
+    <string name="demo_chat_custom_message_link" translatable="false">https://cloud.tencent.com/document/product/269/3794</string>
+    <string name="demo_chat_custom_message_view_details">View Details</string>
+
+    <string name="demo_start_chat">Start Chat</string>
+    <string name="demo_create_group">Create Group</string>
+    <string name="demo_add_friend">Add Friend</string>
+    <string name="demo_add_group">Add Group</string>
+    <string name="demo_chat_header_back">Back</string>
+    <string name="demo_chat_header_more">More</string>
+    <string name="demo_chat_header_cancel">Cancel</string>
+    <string name="demo_chatbot_clear_history">Clear history</string>
+    <string name="demo_chatbot_clear_history_confirmation">Clear all chat history?</string>
+    <string name="demo_chatbot_clear_history_failed">Failed to clear chat history</string>
+    <string name="demo_confirm">Clear</string>
+    <string name="demo_cancel">Cancel</string>
+    <string name="demo_chat_typing_indicator">Typing…</string>
+    <string name="demo_clear_all_unread_success">All unread messages cleared</string>
+    <string name="demo_group_event_kicked">You have been kicked out of the group: %1$s</string>
+    <string name="demo_group_event_dismissed">Your group %1$s is disbanded.</string>
+    <string name="demo_group_event_unknown_group">Unknown group</string>
+    <string name="demo_force_offline">Your account has logged in on another device. Please log in again.</string>
+    <string name="demo_login_expired">Your login has expired. Please log in again.</string>
+
+    <string name="demo_settings_theme">Theme</string>
+    <string name="demo_settings_primary_color">Theme Color</string>
+    <string name="demo_settings_primary_color_title">Select Theme Color</string>
+    <string name="demo_settings_primary_color_hue">Hue</string>
+    <string name="demo_settings_primary_color_saturation">Saturation</string>
+    <string name="demo_settings_primary_color_brightness">Brightness</string>
+    <string name="demo_settings_primary_color_hex">Hex</string>
+    <string name="demo_settings_primary_color_reset">Reset</string>
+    <string name="demo_settings_language">Language</string>
+    <string name="demo_settings_current_language">English</string>
+    <string name="demo_settings_add_rule">When adding me as a friend</string>
+    <string name="demo_settings_read_receipt">Message Read Receipt</string>
+    <string name="demo_settings_read_receipt_enabled_desc">If disabled, the message read status is hidden for all your messages and for all the messages sent by members in a chat.</string>
+    <string name="demo_settings_read_receipt_disabled_desc">If enabled, the message read status is displayed for all your messages and for all the messages sent by members in a chat.</string>
+    <string name="demo_settings_translate_target_language">Translate To</string>
+    <string name="demo_settings_self_detail_status">Status</string>
+
+    <string name="demo_settings_self_detail_title">Details</string>
+    <string name="demo_settings_self_detail_account">Account</string>
+    <string name="demo_settings_self_detail_nickname">Nickname</string>
+    <string name="demo_settings_self_detail_gender">Gender</string>
+    <string name="demo_settings_self_detail_birthday">Birthday</string>
+    <string name="demo_settings_self_detail_gender_male">Male</string>
+    <string name="demo_settings_self_detail_gender_female">Female</string>
+    <string name="demo_settings_self_detail_gender_secret">Secret</string>
+    <string name="demo_settings_self_detail_edit_nickname_title">Edit nickname</string>
+    <string name="demo_settings_self_detail_edit_nickname_placeholder">Please enter nickname</string>
+    <string name="demo_settings_self_detail_edit_status_title">Set status</string>
+    <string name="demo_settings_self_detail_edit_status_placeholder">What\'s on your mind</string>
+    <string name="demo_settings_self_detail_pick_avatar_title">Choose Avatar</string>
+
+    <string name="demo_settings_theme_system">Follow System</string>
+    <string name="demo_settings_theme_dark">Dark</string>
+    <string name="demo_settings_theme_light">Light</string>
+    <string name="demo_settings_theme_custom">Custom</string>
+
+    <string name="demo_settings_zh_hans">简体中文</string>
+    <string name="demo_settings_zh_hant">繁體中文</string>
+    <string name="demo_settings_en">English</string>
+    <string name="demo_settings_ar">عربي</string>
+
+    <string name="demo_settings_allow_type_allow_any">Allow anyone</string>
+    <string name="demo_settings_allow_type_deny_any">Deny anyone</string>
+    <string name="demo_settings_allow_type_need_confirm">Require verification</string>
+
+    <string name="demo_login_failed">Login failed: %1$s</string>
+    <string name="demo_login_network_error">Network error, please try again</string>
+    <string name="demo_login_country_or_region_label">Country/Region</string>
+    <string name="demo_login_chinese_mainland">Chinese Mainland</string>
+    <string name="demo_login_phone_number_label">Mobile Number</string>
+    <string name="demo_login_input_phone_hint">Enter phone number</string>
+    <string name="demo_login_verification_code_label">Verification Code</string>
+    <string name="demo_login_input_verification_hint">Enter code</string>
+    <string name="demo_login_get_verification_code">Get Code</string>
+    <string name="demo_login_resend_seconds">%1$ds</string>
+    <string name="demo_login_input_phone">Please enter phone number</string>
+    <string name="demo_login_input_phone_code">Please enter phone number and code</string>
+    <string name="demo_login_send_verify_code">Verification code sent</string>
+    <string name="demo_login_switch_local">Developer Login</string>
+    <string name="demo_login_official_website">Visit Us</string>
+    <string name="demo_login_privacy_agree">Agree and Continue</string>
+    <string name="demo_login_privacy_refuse">Disagree and Exit</string>
+    <string name="demo_login_privacy_policy">\"Privacy Policy\"</string>
+    <string name="demo_login_privacy_policy_summary">\"Summary of Privacy Policy\"</string>
+    <string name="demo_login_user_agreement">\"User Agreement\"</string>
+    <string name="demo_login_self_information_collection">\"Personal Information Collected\"</string>
+    <string name="demo_login_third_part_shared">\"Information Shared with Third Parties\"</string>
+    <string name="demo_login_privacy_dialog_tips">Welcome to Tencent Cloud Instant Messaging. To protect your personal information, we have updated the \"Privacy Policy\", involving improving the specific contents and purposes of collecting user information, and adding third-party SDKs.\n\n Please carefully read the \"User Agreement\",\"Summary of Privacy Policy\",\"Privacy Policy\",\"Personal Information Collected\" and \"Information Shared with Third Parties\", and tap Agree and Continue to use our products and services if you agree to them.</string>
+    <string name="demo_area_code_title">Select Country/Region</string>
+    <string name="demo_area_code_search_hint">Search</string>
+    <string name="demo_chat_security_warning">Do not easily believe in remittance, winning prizes, and other information. Be cautious when dealing with unknown phone calls to avoid being deceived. Please report any suspicious situations in a timely manner.</string>
+    <string name="demo_chat_security_warning_click_to_report">Report here</string>
+    <string name="demo_report">Report</string>
+    <string name="demo_open_browser_failed">No app found to open the link</string>
+    <string name="demo_close">Close</string>
+
+    <string name="demo_about_im">About Tencent Cloud Chat</string>
+    <string name="demo_about_sdk_version">SDK Version</string>
+    <string name="demo_about_privacy">Privacy Policy</string>
+    <string name="demo_about_user_agreement">User Agreement</string>
+    <string name="demo_about_statement">Disclaimer</string>
+    <string name="demo_about_statement_content">Tencent Cloud Chat APP (\"this product\") is a test product provided by Tencent Cloud, and Tencent Cloud enjoys the copyright and ownership of this product. This product is only used for functional experience and must not be used for any commercial purposes. In order to comply with the regulatory requirements of relevant departments, any pornography, abusive, violent, and politically related content is strictly prohibited during use.</string>
+    <string name="demo_about_self_information_collection">Personal Information Collected</string>
+    <string name="demo_about_third_part_shared">Information Shared with Third Parties</string>
+    <string name="demo_about_cancel_account">Cancel Account</string>
+    <string name="demo_about_contact_us">Contact us</string>
+    <string name="demo_about_confirm">OK</string>
+    <string name="demo_about_cancel">Cancel</string>
+    <string name="demo_about_company" translatable="false">腾讯公司 版权所有</string>
+    <string name="demo_about_copyright" translatable="false">Copyright © 2020-2024 Tencent. All Rights Reserved.</string>
+    <string name="demo_about_icp_number" translatable="false">ICP备案号：粤B2-20090059-2674A &gt;</string>
+    <string name="demo_about_cancel_account_alert_tip">Are you sure you want to cancel this account?</string>
+    <string name="demo_about_cancel_account_tip">After canceling this account, you will be unable to use it, and related data will be permanently deleted. Current account: %1$s</string>
+    <string name="demo_about_cancel_account_error_msg">Cancellation failed. No token or mobile number associated with the current account is detected. Please log in with your mobile number.</string>
+    <string name="demo_about_cancel_account_local_hint">Account cancellation is not supported for accounts that logged in with a locally generated userSig. Please log in with your mobile number.</string>
+    <string name="demo_about_cancel_account_successful">Canceled</string>
+    <string name="demo_customer_service_summary">[Customer Service] Please check in time</string>
+    <string name="demo_welcome_message">Welcome to Chat Demo! Send a message to try out the basic chat.\nTo add friends, go to the Contacts page and tap the plus button.\nTo make audio or video calls, tap the plus button below -> Voice Call/Video Call.</string>
+    <string name="demo_voice_message_settings">Voice Message Settings</string>
+    <string name="demo_voice_clone">Voice Clone</string>
+    <string name="demo_voice_select">Voice Selection</string>
+    <string name="demo_voice_clone_tip">Record a 10-18 second voice clip to clone your exclusive voice.</string>
+    <string name="demo_voice_clone_reading_title">Suggested text to read:</string>
+    <string name="demo_voice_clone_sample">Hello everyone, I am your exclusive voice assistant, glad to be at your service. The weather is really nice today, hope you have a pleasant mood.</string>
+    <string name="demo_voice_clone_auth_tip">Creating a voice requires capturing your human voice audio. This sensitive information is only used for the current feature. If you do not agree to the authorization, you may not be able to use voice cloning. Recording implies consent to the authorization.</string>
+    <string name="demo_voice_clone_name_hint">Enter a voice name (optional)</string>
+    <string name="demo_voice_clone_default_name">My Voice</string>
+    <string name="demo_voice_clone_submit">Submit Clone</string>
+    <string name="demo_voice_clone_start">Tap to start recording</string>
+    <string name="demo_voice_clone_stop">Tap to stop recording</string>
+    <string name="demo_voice_clone_done">Recording complete</string>
+    <string name="demo_voice_clone_too_short_title">Recording too short</string>
+    <string name="demo_voice_clone_too_short_message">Please record at least 3 seconds</string>
+    <string name="demo_voice_clone_permission_denied">Microphone permission is required to record.</string>
+    <string name="demo_voice_clone_record_failed">Recording failed</string>
+    <string name="demo_voice_clone_empty_record">Please record a voice clip first</string>
+    <string name="demo_voice_clone_success_title">Clone Succeeded</string>
+    <string name="demo_voice_clone_success_message">Your exclusive voice has been created successfully!</string>
+    <string name="demo_voice_clone_failed">Voice clone failed</string>
+    <string name="demo_voice_default_group">Default Voices</string>
+    <string name="demo_voice_custom_group">Custom Voices</string>
+    <string name="demo_voice_custom_empty">No custom voices yet</string>
+    <string name="demo_voice_custom_badge">Custom</string>
+    <string name="demo_voice_delete">Delete</string>
+    <string name="demo_voice_delete_failed">Delete failed</string>
+    <string name="demo_tab_ai">AI</string>
+    <string name="demo_ai_home_input_prompt">First tell me who you are, then what you can help me with.</string>
+    <string name="demo_ai_voice_title">AI Assistant</string>
+    <string name="demo_ai_voice_history">History</string>
+    <string name="demo_ai_voice_headline">Talk to AI in real time</string>
+    <string name="demo_ai_voice_subtitle">Knows all Tencent Cloud Chat docs · Interrupt anytime</string>
+    <string name="demo_ai_voice_subtitle_aircon">Knows air conditioner usage and after-sales guides · Interrupt anytime</string>
+    <string name="demo_ai_voice_subtitle_default">Just ask out loud · Interrupt anytime</string>
+    <string name="demo_ai_voice_try_label">Try asking</string>
+    <string-array name="demo_ai_voice_samples">
+        <item>Why are group messages not received?</item>
+        <item>How do I configure message roaming?</item>
+        <item>Why are offline push notifications not arriving?</item>
+        <item>How do I recall a sent message?</item>
+        <item>How can I add an AI agent to my app?</item>
+    </string-array>
+    <string-array name="demo_ai_voice_samples_aircon">
+        <item>My air conditioner is not cooling. How do I check it?</item>
+        <item>Is white mist from the air outlet normal?</item>
+        <item>What size unit fits a 20 square meter west-facing bedroom?</item>
+        <item>What temperature does sleep mode reach at midnight?</item>
+        <item>Can I still return the air conditioner after installation?</item>
+    </string-array>
+    <string-array name="demo_ai_quick_questions_aircon">
+        <item>What does error code E4 mean?</item>
+        <item>Do I need repair when H1 shows in winter?</item>
+        <item>Is white mist from the air outlet normal?</item>
+        <item>What size unit for a 20 m² west-facing bedroom?</item>
+        <item>Can a 3 HP unit use a power strip?</item>
+    </string-array>
+    <string-array name="demo_ai_voice_samples_default">
+        <item>What can you help me with?</item>
+        <item>What questions can you answer?</item>
+        <item>How do I reach a human agent?</item>
+    </string-array>
+    <string name="demo_ai_voice_start">Tap to start a call</string>
+    <string name="demo_ai_voice_use_text">Ask by text instead ›</string>
+    <string name="demo_ai_voice_back">‹ Voice</string>
+    <string name="demo_ai_voice_unavailable">AI assistant is not ready yet. Please try again later.</string>
+    <string name="demo_ai_mic_title">Microphone access needed</string>
+    <string name="demo_ai_mic_desc">AI needs to hear you to answer.\nOnly used during the call and stops when you hang up.</string>
+    <string name="demo_ai_mic_tip">● Works best in a quiet place or with earphones</string>
+    <string name="demo_ai_mic_allow">Allow and start call</string>
+    <string name="demo_ai_mic_text">Ask by text first</string>
+    <string-array name="demo_ai_quick_questions">
+        <item>Why does UserSig expire?</item>
+        <item>How long should ExpireTime be?</item>
+        <item>Group messages not received?</item>
+        <item>How to set up message roaming?</item>
+    </string-array>
+    <string name="demo_ai_cta_title">Bring the same AI agent to your app</string>
+    <string name="demo_ai_cta_desc">Built on Tencent Cloud Chat + Conversational AI</string>
+    <string name="demo_ai_cta_action">Learn more</string>
+    <string name="demo_ai_mic_denied_desc">Microphone access is turned off.\nTurn it on in Settings to talk to AI.</string>
+    <string name="demo_ai_mic_open_settings">Open Settings</string>
+    <string name="demo_ai_cta_close">Close</string>
+    <string name="demo_custom_bot_dialog_title">Custom AI assistant</string>
+    <string name="demo_custom_bot_dialog_desc">After creating an AI assistant in the experience workbench, enter the part of its assistant IM ID after @RBT# below.</string>
+    <string name="demo_custom_bot_dialog_doc_link">View integration guide ›</string>
+    <string name="demo_custom_bot_input_hint">AIAssistant</string>
+    <string name="demo_custom_bot_not_found">Bot not found. Make sure the AI assistant is enabled and the IM bot is connected in the workbench.</string>
+    <string name="demo_custom_bot_network_error">Network error, please try again later</string>
+    <string name="demo_ai_quick_start_title">Set up your AI assistant</string>
+    <string name="demo_ai_quick_start_intro">The AI assistant answers your users\' questions by text or voice in one-to-one chats, based on the knowledge you import, and hands over to a human agent when needed.</string>
+    <string name="demo_ai_quick_start_step1">Create an AI assistant in the experience workbench and connect it to your IM app</string>
+    <string name="demo_ai_quick_start_step2">Enter the callback URL and token from the workbench in the IM console</string>
+    <string name="demo_ai_quick_start_step3">Tap the assistant name in the upper-left corner, choose \"Custom AI assistant\", and enter the assistant ID</string>
+    <string name="demo_ai_quick_start_doc_hint">For details, see \"Quick start with UIKit (no server required)\" in the official documentation</string>
+    <string name="demo_ai_quick_start_doc">View integration guide</string>
+    <string name="demo_ai_quick_start_cancel">Got it</string>
+    <string name="demo_custom_bot_cancel">Cancel</string>
+    <string name="demo_custom_bot_confirm">OK</string>
+    <string name="demo_ai_agent_picker_title">Choose an AI assistant</string>
+    <string name="demo_ai_agent_custom_title">Custom AI assistant</string>
+    <string name="demo_ai_agent_custom_desc">Enter your assistant ID</string>
+    <string name="demo_ai_agent_custom_edit">Edit</string>
+    <string name="demo_ai_agent_custom_go">Try it</string>
+    <string name="demo_ai_agent_new_badge" translatable="false">NEW</string>
+</resources>

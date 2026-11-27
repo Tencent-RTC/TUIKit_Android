@@ -1,0 +1,2 @@
+<?xml version="1.0" ?>
+<androidx.appcompat.widget.AppCompatImageButton xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/home_messages_action" android:layout_width="44dp" android:layout_height="44dp" android:padding="10dp" android:src="@drawable/uikit_ic_add_circle" android:background="@android:color/transparent" android:contentDescription="@string/uikit_start_chat"/>

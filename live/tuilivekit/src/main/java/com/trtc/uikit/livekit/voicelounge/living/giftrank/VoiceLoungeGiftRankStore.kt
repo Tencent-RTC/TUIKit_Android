@@ -2,14 +2,13 @@ package com.trtc.uikit.livekit.voicelounge.living.giftrank
 
 import com.trtc.uikit.livekit.common.log.LiveKitLog
 import com.trtc.uikit.livekit.voicelounge.VoiceLoungeMain
+import com.trtc.uikit.livekit.voicelounge.VoiceLoungeSession
 import com.trtc.uikit.livekit.voicelounge.VoiceLoungeSignal
 import com.trtc.uikit.livekit.voicelounge.living.VoiceLoungeRole
 import io.trtc.tuikit.atomicxcore.api.gift.Gift
 import io.trtc.tuikit.atomicxcore.api.gift.GiftListener
 import io.trtc.tuikit.atomicxcore.api.gift.GiftStore
-import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
-import io.trtc.tuikit.atomicxcore.api.live.MetaDataCompletionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -99,7 +98,8 @@ internal class VoiceLoungeGiftRankStore {
         val activeScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         scope = activeScope
         activeScope.launch {
-            LiveListStore.shared().liveState.currentLive.filter { it.liveID == liveID }.map { it.metaData }
+            VoiceLoungeSession.of(liveID).state.currentLounge
+                .filter { it.loungeID == liveID }.map { it.metaData }
                 .collect { applyRemote(it) }
         }
         refresh()
@@ -129,20 +129,7 @@ internal class VoiceLoungeGiftRankStore {
     fun refresh() {
         if (role != VoiceLoungeRole.AUDIENCE || liveID.isEmpty()) return
         refreshToken += 1
-        val token = refreshToken
-        val liveID = liveID
-        LiveListStore.shared().queryMetaData(
-            listOf(META_KEY, COUNT_META_KEY),
-            object : MetaDataCompletionHandler {
-                override fun onSuccess(metaData: HashMap<String, String>) {
-                    VoiceLoungeMain.post { if (token == refreshToken) applyRemote(metaData) }
-                }
-
-                override fun onFailure(code: Int, desc: String) {
-                    logger.error("query gift rank failed liveID=$liveID code=$code message=$desc")
-                }
-            },
-        )
+        applyRemote(VoiceLoungeSession.of(liveID).state.currentLounge.value.metaData)
     }
 
     private fun applyRemote(metaData: Map<String, String>) {

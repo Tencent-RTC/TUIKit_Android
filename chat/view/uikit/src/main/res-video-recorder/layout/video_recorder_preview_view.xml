@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layoutDirection="locale">
+
+    <io.trtc.tuikit.chat.uikit.components.videorecorder.view.preview.TransformLayout
+            android:id="@+id/video_recorder_preview_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    </io.trtc.tuikit.chat.uikit.components.videorecorder.view.preview.TransformLayout>
+
+    <ImageView
+            android:id="@+id/video_recorder_edit_return_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/video_recorder_return"
+            android:visibility="visible" />
+
+    <RelativeLayout
+            android:id="@+id/video_recorder_operation_layout"
+            android:background="@color/video_recorder_edit_function_view_background"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true">
+
+        <LinearLayout
+                android:id="@+id/video_recorder_function_button_layout"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@+id/video_recorder_send_btn"
+                android:gravity="center_vertical">
+
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/video_recorder_send_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@string/video_recorder_common_font"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:minWidth="60dp"
+                android:minHeight="0dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:text="@string/video_recorder_send"
+                android:textColor="@color/video_recorder_white"
+                android:textSize="@dimen/video_recorder_common_text_size" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,9 @@
+<resources>
+    <string name="video_player_close">إغلاق مشغل الفيديو</string>
+    <string name="video_player_play">تشغيل الفيديو</string>
+    <string name="video_player_pause">إيقاف الفيديو مؤقتًا</string>
+    <string name="video_player_retry">إعادة المحاولة</string>
+    <string name="video_player_load_failed">تعذر تحميل الفيديو</string>
+    <string name="video_player_download_failed">تعذر تجهيز مورد الفيديو</string>
+    <string name="video_player_invalid_source">مصدر الفيديو غير صالح</string>
+</resources>

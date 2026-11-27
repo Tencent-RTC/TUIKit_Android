@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:id="@+id/home_list_refresh" android:layout_width="match_parent" android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/home_list_grid" android:layout_width="match_parent" android:layout_height="match_parent" android:padding="12dp" android:clipToPadding="false"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <LinearLayout android:id="@+id/home_list_status" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="center" android:orientation="vertical" android:gravity="center">
+        <ProgressBar android:id="@+id/home_list_loading" android:layout_width="32dp" android:layout_height="32dp"/>
+        <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_list_message" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textColor="@color/home_inactive_dark" android:textSize="14sp"/>
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/home_list_retry" android:layout_width="wrap_content" android:layout_height="44dp" android:text="@string/home_retry"/>
+    </LinearLayout>
+</merge>

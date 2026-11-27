@@ -1,21 +1,17 @@
 package com.tencent.uikit.app.room
 
-import com.tencent.uikit.app.R
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
-import com.trtc.uikit.roomkit.base.util.applyTopWindowInsets
-import android.widget.EditText
 import androidx.appcompat.widget.SwitchCompat
+import com.trtc.uikit.roomkit.R
 import com.trtc.uikit.roomkit.base.util.applyBottomWindowInsets
+import com.trtc.uikit.roomkit.base.util.applyTopWindowInsets
 import com.trtc.uikit.roomkit.base.util.generateRoomID
 import com.trtc.uikit.roomkit.base.util.getDisplayName
-import com.trtc.uikit.roomkit.inroom.views.MeetingActivity
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import io.trtc.tuikit.atomicxcore.api.room.GetRoomInfoCompletionHandler
 import io.trtc.tuikit.atomicxcore.api.room.RoomInfo
@@ -33,29 +29,28 @@ class RoomQuickStartView @JvmOverloads constructor(
     private val cameraSwitch: SwitchCompat
     private var isGeneratingRoomID = false
 
+    var onBack: (() -> Unit)? = null
+    var onCreateMeeting: ((String, String, Boolean, Boolean, Boolean) -> Unit)? = null
+
     init {
-        LayoutInflater.from(context).inflate(R.layout.app_quick_start_view, this, true)
+        LayoutInflater.from(context).inflate(R.layout.roomkit_quick_start_view, this, true)
 
         nameInput = findViewById(R.id.meeting_name_input)
         microphoneSwitch = findViewById(R.id.microphone_switch)
         speakerSwitch = findViewById(R.id.speaker_switch)
         cameraSwitch = findViewById(R.id.camera_switch)
 
-
         LoginStore.shared.loginState.loginUserInfo.value?.let { profile ->
-            nameInput.setText(
-                context.getString(
-                    R.string.app_pre_room_quick_meeting_name,
-                    profile.getDisplayName().take(DISPLAY_NAME_MAX_LENGTH)
-                )
+            nameInput.text = context.getString(
+                com.tencent.uikit.app.R.string.app_pre_room_quick_meeting_name,
+                profile.getDisplayName().take(DISPLAY_NAME_MAX_LENGTH),
             )
         }
 
         findViewById<View>(R.id.toolbar).applyTopWindowInsets()
         findViewById<View>(R.id.nav_back_button).setOnClickListener {
-            (context as? Activity)?.finish()
+            onBack?.invoke()
         }
-        applyBottomWindowInsets()
         findViewById<View>(R.id.submit_button).setOnClickListener {
             startMeeting(
                 roomName = nameInput.text.toString().trim(),
@@ -71,17 +66,13 @@ class RoomQuickStartView @JvmOverloads constructor(
         isGeneratingRoomID = true
         generateUnusedRoomID(remainingAttempts = 5) { roomID ->
             isGeneratingRoomID = false
-            context.startActivity(
-                Intent(context, MeetingActivity::class.java).apply {
-                    putExtra(MeetingActivity.EXTRA_ROOM_ID, roomID)
-                    putExtra(MeetingActivity.EXTRA_ROOM_NAME, roomName.ifEmpty { roomID })
-                    putExtra(MeetingActivity.EXTRA_IS_CREATE, true)
-                    putExtra(MeetingActivity.EXTRA_AUTO_ENABLE_MICROPHONE, isMicrophoneOn)
-                    putExtra(MeetingActivity.EXTRA_AUTO_ENABLE_CAMERA, isCameraOn)
-                    putExtra(MeetingActivity.EXTRA_AUTO_ENABLE_SPEAKER, isSpeakerOn)
-                },
+            onCreateMeeting?.invoke(
+                roomID,
+                roomName.ifEmpty { roomID },
+                isMicrophoneOn,
+                isSpeakerOn,
+                isCameraOn,
             )
-            (context as? Activity)?.finish()
         }
     }
 
@@ -92,7 +83,7 @@ class RoomQuickStartView @JvmOverloads constructor(
                 if (remainingAttempts > 0) {
                     generateUnusedRoomID(remainingAttempts - 1, onReady)
                 } else {
-                    onReady(roomID + "-"+ System.currentTimeMillis().toString().take(6))
+                    onReady(roomID + "-" + System.currentTimeMillis().toString().take(6))
                 }
             }
 

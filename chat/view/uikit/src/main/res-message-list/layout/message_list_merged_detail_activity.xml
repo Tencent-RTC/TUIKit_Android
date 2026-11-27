@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/message_list_merged_root"
+    android:orientation="vertical"
+    android:layoutDirection="locale">
+
+    <LinearLayout
+        android:id="@+id/message_list_merged_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:id="@+id/message_list_merged_back_button"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/uikit_ic_back"
+            android:contentDescription="@string/uikit_back"
+            android:scaleType="centerInside" />
+
+        <TextView
+            android:id="@+id/message_list_merged_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="17sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="16dp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/message_list_merged_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <ProgressBar
+        android:id="@+id/message_list_merged_loading"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/message_list_merged_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp" />
+
+</LinearLayout>

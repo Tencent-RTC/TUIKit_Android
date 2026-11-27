@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.text.Editable
 import android.text.Selection
+import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -30,10 +31,14 @@ internal open class LiveTextInputView @JvmOverloads constructor(
     private var isApplyingLimit = false
     private var committedText = ""
     private var editBefore = ""
+    private var editContentBefore = SpannableStringBuilder()
     private var editStart = 0
     private var editRemoved = 0
     private var editAdded = 0
     private val placeholder = hint
+
+    var characterLength: ((String) -> Int)? = null
+    var characterPrefix: ((String, Int) -> String)? = null
 
     init {
         setHorizontallyScrolling(false)
@@ -41,6 +46,7 @@ internal open class LiveTextInputView @JvmOverloads constructor(
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 if (isApplyingLimit) return
                 editBefore = s?.toString().orEmpty()
+                editContentBefore = SpannableStringBuilder(s)
                 editStart = start
                 editRemoved = count
                 editAdded = after
@@ -66,7 +72,8 @@ internal open class LiveTextInputView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         if (!placeholder.isNullOrEmpty() && MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED) {
-            val width = (MeasureSpec.getSize(widthMeasureSpec) - compoundPaddingLeft - compoundPaddingRight).coerceAtLeast(0)
+            val width =
+                (MeasureSpec.getSize(widthMeasureSpec) - compoundPaddingLeft - compoundPaddingRight).coerceAtLeast(0)
             val fitted = TextUtils.ellipsize(placeholder, paint, width.toFloat(), TextUtils.TruncateAt.END)
             if (!TextUtils.equals(hint, fitted)) hint = fitted
         }
@@ -110,13 +117,13 @@ internal open class LiveTextInputView @JvmOverloads constructor(
         }
         val before = characters(committedText)
         val prefixCount = before.zip(valueCharacters).takeWhile { it.first == it.second }.size
-        val suffixCount = before.drop(prefixCount).asReversed()
-            .zip(valueCharacters.drop(prefixCount).asReversed()).takeWhile { it.first == it.second }.size
+        val suffixCount = before.drop(prefixCount).asReversed().zip(
+            valueCharacters.drop(prefixCount).asReversed()).takeWhile { it.first == it.second }.size
         var prefix = valueCharacters.take(prefixCount).joinToString("")
         var suffix = valueCharacters.takeLast(suffixCount).joinToString("")
         var insertion = valueCharacters.drop(prefixCount).dropLast(suffixCount).joinToString("")
-        if (editStart + editRemoved <= editBefore.length && editStart + editAdded <= value.length &&
-            inputLength(editBefore) <= inputLimit
+        if (editStart + editRemoved <= editBefore.length && editStart + editAdded <= value.length && inputLength(
+                editBefore) <= inputLimit
         ) {
             val originalPrefix = editBefore.substring(0, editStart)
             val originalSuffix = editBefore.substring(editStart + editRemoved)
@@ -128,22 +135,31 @@ internal open class LiveTextInputView @JvmOverloads constructor(
         }
         val available = (inputLimit - inputLength(prefix) - inputLength(suffix)).coerceAtLeast(0)
         val accepted = limitedPrefix(insertion, available)
+        val updated = SpannableStringBuilder(editContentBefore)
+        BaseInputConnection.removeComposingSpans(updated)
+        updated.replace(prefix.length, (editBefore.length - suffix.length).coerceAtLeast(prefix.length), accepted)
         isApplyingLimit = true
-        editable.replace(0, editable.length, prefix + accepted + suffix)
+        editable.replace(0, editable.length, updated)
+        BaseInputConnection.removeComposingSpans(editable)
         Selection.setSelection(editable, prefix.length + accepted.length)
         isApplyingLimit = false
         committedText = editable.toString()
+        showLimitExceeded()
+    }
+
+    fun showLimitExceeded() {
         if (limitMessage != 0 && isAttachedToWindow) {
             LiveToast.show(context, context.getString(limitMessage, inputLimit))
         }
     }
 
     private fun inputLength(value: String): Int = when (limitUnit) {
-        LimitUnit.CHARACTERS -> characters(value).size
+        LimitUnit.CHARACTERS -> characterLength?.invoke(value) ?: characters(value).size
         LimitUnit.UTF8_BYTES -> value.toByteArray(Charsets.UTF_8).size
     }
 
     private fun limitedPrefix(value: String, budget: Int): String {
+        if (limitUnit == LimitUnit.CHARACTERS) characterPrefix?.let { return it(value, budget) }
         var remaining = budget.coerceAtLeast(0)
         return characters(value).takeWhile { character ->
             val length = inputLength(character)

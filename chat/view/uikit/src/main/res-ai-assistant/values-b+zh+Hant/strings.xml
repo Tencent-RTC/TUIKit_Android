@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="uikit_ai_page_title">AI 助手</string>
+    <string name="uikit_ai_transfer_to_human">轉人工</string>
+    <string name="uikit_ai_select_agent">選擇助手</string>
+    <string name="uikit_ai_agents_empty">暫無可用助手</string>
+    <string name="uikit_ai_call_button">語音通話</string>
+    <string name="uikit_ai_call_handoff_waiting">正在排隊等待人工接入，請稍後再試</string>
+    <string name="uikit_ai_call_handoff_required">請先轉人工後再發起通話</string>
+    <string name="uikit_ai_call_mode_free">自由對話</string>
+    <string name="uikit_ai_call_listening">正在聽...</string>
+    <string name="uikit_ai_call_thinking">思考中...</string>
+    <string name="uikit_ai_call_speaking">可繼續說話</string>
+    <string name="uikit_ai_call_muted">已靜音</string>
+    <string name="uikit_ai_call_disclaimer">內容由 AI 生成</string>
+    <string name="uikit_ai_call_permission_denied">語音對話需要麥克風權限</string>
+    <string name="uikit_ai_call_start_failed">語音辨識啟動失敗，請重試</string>
+    <string name="uikit_ai_call_asr_unavailable_title">語音辨識不可用</string>
+    <string name="uikit_ai_call_asr_unavailable_content">目前應用的語音辨識資源包已用完或未開通，暫時無法進行語音通話。</string>
+    <string name="uikit_ai_call_asr_unavailable_exit">結束通話</string>
+    <string name="uikit_ai_call_start_failed_retry">連線失敗，點麥克風重試</string>
+    <string name="uikit_ai_call_send_failed">傳送失敗，請重試</string>
+    <string name="uikit_ai_call_reply_timeout">助手沒有回應，請重試</string>
+    <string name="uikit_ai_call_audio_unavailable">麥克風不可用</string>
+    <string name="uikit_ai_call_voiceprint_enrolled">我已記住你的聲音，後續說話只會回應你的聲音</string>
+    <string name="uikit_ai_call_playback_unavailable">語音播放不可用，回覆將以文字顯示</string>
+    <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">試試說：「%1$s」</string>
+    <string name="uikit_ai_call_duration">通話中 %1$s</string>
+    <string name="uikit_ai_call_connecting">正在接通…</string>
+    <string name="uikit_ai_call_label_mute">靜音</string>
+    <string name="uikit_ai_call_label_unmute">取消靜音</string>
+    <string name="uikit_ai_call_label_subtitle">字幕</string>
+    <string name="uikit_ai_call_label_hangup">掛斷</string>
+</resources>

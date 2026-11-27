@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="emoji_picker_recent">最近使用</string>
+    <string name="emoji_picker_all">所有表情</string>
+    <string name="emoji_picker_send">發送</string>
+
+</resources>
+
+

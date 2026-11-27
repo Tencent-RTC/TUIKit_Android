@@ -19,6 +19,7 @@ import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.live.CoGuestStore
 import io.trtc.tuikit.atomicxcore.api.live.GuestListener
 import io.trtc.tuikit.atomicxcore.api.live.HostListener
+import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import io.trtc.tuikit.atomicxcore.api.live.NoResponseReason
 import io.trtc.tuikit.atomicxcore.api.live.SeatUserInfo
@@ -43,7 +44,6 @@ internal class VoiceLoungeCoGuestStore {
 
     var onToast: ((String) -> Unit)? = null
     var onMicOpenRequested: (() -> Unit)? = null
-    var onHostPauseChanged: ((Boolean) -> Unit)? = null
     var onMicrophoneDenied: (() -> Unit)? = null
 
     val invitationEvents = VoiceLoungeEvents<InvitationEvent>()
@@ -73,7 +73,6 @@ internal class VoiceLoungeCoGuestStore {
         private set
     var connectedUsers: List<SeatUserInfo> = emptyList()
         private set
-    private val recentlyCancelled = HashMap<String, Long>()
 
     private var store: CoGuestStore? = null
     private var barrageStore: BarrageStore? = null
@@ -83,6 +82,7 @@ internal class VoiceLoungeCoGuestStore {
     private var pendingInviterID: String? = null
     private var pendingInviter: LiveUserInfo? = null
     private var pendingInviteDeadline: Long = 0L
+    private var pendingApplySeatIndex: Int = -1
     private val logger = LiveKitLog.getVoiceRoomLogger("VoiceLoungeCoGuestStore")
 
     private val selfUserID: String get() = LoginStore.shared.loginState.loginUserInfo.value?.userID.orEmpty()
@@ -102,7 +102,7 @@ internal class VoiceLoungeCoGuestStore {
             VoiceLoungeMain.post {
                 if (isAccept) {
                     guestStatus = GuestStatus.ON_SEAT
-                    toast(R.string.livekit_voiceroom_comic_accepted)
+                    takeSeatAfterAccept()
                     openMicrophone()
                 } else {
                     guestStatus = GuestStatus.IDLE
@@ -129,7 +129,6 @@ internal class VoiceLoungeCoGuestStore {
             VoiceLoungeMain.post {
                 DeviceStore.shared().closeLocalMicrophone()
                 guestStatus = GuestStatus.IDLE
-                toast(R.string.livekit_player_coguest_error_kicked_off)
             }
         }
 
@@ -152,40 +151,17 @@ internal class VoiceLoungeCoGuestStore {
     }
 
     private val hostListener = object : HostListener() {
-        override fun onGuestApplicationReceived(guestUser: LiveUserInfo) {
-            VoiceLoungeMain.post {
-                val cancelledAt = recentlyCancelled[guestUser.userID]
-                if (cancelledAt != null && SystemClock.elapsedRealtime() - cancelledAt < RECENT_CANCEL_WINDOW_MS) {
-                    recentlyCancelled.remove(guestUser.userID)
-                    return@post
-                }
-                onToast?.invoke(vlString(R.string.livekit_voiceroom_comic_new_applicant, displayName(guestUser)))
-            }
-        }
-
-        override fun onGuestApplicationCancelled(guestUser: LiveUserInfo) {
-            VoiceLoungeMain.post { recentlyCancelled[guestUser.userID] = SystemClock.elapsedRealtime() }
-        }
-
         override fun onHostInvitationResponded(isAccept: Boolean, guestUser: LiveUserInfo) {
             VoiceLoungeMain.post {
-                val name = displayName(guestUser)
-                onToast?.invoke(
-                    vlString(
-                        if (isAccept) {
-                            R.string.livekit_voiceroom_comic_invite_accepted
-                        } else {
-                            R.string.livekit_voiceroom_comic_invite_rejected
-                        },
-                        name,
-                    ),
-                )
+                if (!isAccept) {
+                    onToast?.invoke(vlString(R.string.livekit_voicelounge_comic_invite_rejected, displayName(guestUser)))
+                }
             }
         }
 
         override fun onHostInvitationNoResponse(guestUser: LiveUserInfo, reason: NoResponseReason) {
             VoiceLoungeMain.post {
-                onToast?.invoke(vlString(R.string.livekit_voiceroom_comic_invite_timeout, displayName(guestUser)))
+                onToast?.invoke(vlString(R.string.livekit_voicelounge_comic_invite_timeout, displayName(guestUser)))
             }
         }
     }
@@ -246,23 +222,21 @@ internal class VoiceLoungeCoGuestStore {
         applicantSeatIndex = emptyMap()
         inviteeSeatIndex = emptyMap()
         connectedUsers = emptyList()
-        recentlyCancelled.clear()
         clearPendingInvitation()
+        pendingApplySeatIndex = -1
         guestStatus = GuestStatus.IDLE
         changes.send()
     }
 
-    fun apply(seatIndex: Int, quiet: Boolean = false) {
+    fun apply(seatIndex: Int) {
         val store = store ?: return
         if (role != VoiceLoungeRole.AUDIENCE || guestStatus != GuestStatus.IDLE) return
         if (promptPendingInvitation()) return
         guestStatus = GuestStatus.APPLYING
+        pendingApplySeatIndex = seatIndex
         store.applyForSeat(seatIndex, APPLY_TIMEOUT_SECONDS, "{\"mediaType\":\"audio\"}", object : CompletionHandler {
             override fun onSuccess() {
-                VoiceLoungeMain.post {
-                    if (!quiet) toast(R.string.livekit_voiceroom_comic_applied)
-                    announceSeatIntent(seatIndex)
-                }
+                VoiceLoungeMain.post { announceSeatIntent(seatIndex) }
             }
 
             override fun onFailure(code: Int, desc: String) {
@@ -282,7 +256,7 @@ internal class VoiceLoungeCoGuestStore {
             VoiceLoungeMain.post {
                 if (guestStatus == GuestStatus.APPLYING) {
                     guestStatus = GuestStatus.IDLE
-                    apply(seatIndex, quiet = true)
+                    apply(seatIndex)
                 }
             }
         }
@@ -301,7 +275,8 @@ internal class VoiceLoungeCoGuestStore {
         if (role != VoiceLoungeRole.AUDIENCE || guestStatus != GuestStatus.APPLYING) return
         store.cancelApplication(null)
         guestStatus = GuestStatus.IDLE
-        toast(R.string.livekit_voiceroom_comic_retracted)
+        pendingApplySeatIndex = -1
+        fadedSeatReleases.send()
     }
 
     fun leaveSeat() {
@@ -315,7 +290,6 @@ internal class VoiceLoungeCoGuestStore {
         })
         DeviceStore.shared().closeLocalMicrophone()
         guestStatus = GuestStatus.IDLE
-        toast(R.string.livekit_voiceroom_comic_left)
     }
 
     fun acceptInvitation() {
@@ -331,7 +305,6 @@ internal class VoiceLoungeCoGuestStore {
             override fun onSuccess() {
                 VoiceLoungeMain.post {
                     guestStatus = GuestStatus.ON_SEAT
-                    toast(R.string.livekit_voiceroom_comic_joined_by_invite)
                     openMicrophone()
                 }
             }
@@ -360,7 +333,7 @@ internal class VoiceLoungeCoGuestStore {
     fun invite(userID: String, seatIndex: Int) {
         if (role != VoiceLoungeRole.HOST || userID.isEmpty() || userID in pendingUserIDs) return
         inviteeSeatIndex = if (seatIndex >= 0) inviteeSeatIndex + (userID to seatIndex) else inviteeSeatIndex - userID
-        perform(userID, R.string.livekit_voiceroom_comic_invited) { store, completion ->
+        perform(userID) { store, completion ->
             store.inviteToSeat(userID, seatIndex, INVITE_TIMEOUT_SECONDS, "", completion)
         }
     }
@@ -383,11 +356,7 @@ internal class VoiceLoungeCoGuestStore {
         perform(userID) { store, completion -> store.rejectApplication(userID, completion) }
     }
 
-    private fun perform(
-        userID: String,
-        @StringRes successMessage: Int? = null,
-        action: (CoGuestStore, CompletionHandler) -> Unit,
-    ) {
+    private fun perform(userID: String, action: (CoGuestStore, CompletionHandler) -> Unit) {
         val store = store ?: return
         if (role != VoiceLoungeRole.HOST || userID.isEmpty() || userID in pendingUserIDs) return
         pendingUserIDs = pendingUserIDs + userID
@@ -397,9 +366,7 @@ internal class VoiceLoungeCoGuestStore {
             VoiceLoungeMain.post {
                 if (this.liveID != liveID) return@post
                 pendingUserIDs = pendingUserIDs - userID
-                if (code == null) {
-                    successMessage?.let { toast(it) }
-                } else {
+                if (code != null) {
                     onToast?.invoke(VoiceLoungeErrorText.coGuest(code))
                 }
                 notifyApplicants()
@@ -447,27 +414,13 @@ internal class VoiceLoungeCoGuestStore {
         barrageStore?.sendCustomMessage(MIC_OPEN_BUSINESS_ID, JSONObject().put("user", userID).toString(), null)
     }
 
-    fun broadcastPause(paused: Boolean) {
-        if (role != VoiceLoungeRole.HOST) return
-        barrageStore?.sendCustomMessage(PAUSE_BUSINESS_ID, "{\"paused\":$paused}", null)
-    }
-
     private fun handleCustomMessage(barrage: Barrage) {
         when {
             role == VoiceLoungeRole.HOST && barrage.businessID == SEAT_INTENT_BUSINESS_ID -> handleSeatIntent(barrage)
             role == VoiceLoungeRole.AUDIENCE && barrage.businessID == MIC_OPEN_BUSINESS_ID -> handleMicOpenRequest(
                 barrage
             )
-
-            role == VoiceLoungeRole.AUDIENCE && barrage.businessID == PAUSE_BUSINESS_ID -> handlePauseSignal(barrage)
         }
-    }
-
-    private fun handlePauseSignal(barrage: Barrage) {
-        val json = parse(barrage.data) ?: return
-        if (!json.has("paused")) return
-        val paused = json.opt("paused") as? Boolean ?: return
-        onHostPauseChanged?.invoke(paused)
     }
 
     private fun handleMicOpenRequest(barrage: Barrage) {
@@ -492,6 +445,25 @@ internal class VoiceLoungeCoGuestStore {
         onToast?.invoke(vlString(id))
     }
 
+    private fun takeSeatAfterAccept() {
+        if (liveID.isEmpty()) return
+        val seatIndex = pendingApplySeatIndex
+        pendingApplySeatIndex = -1
+        if (seatIndex < 0) {
+            logger.warn("takeSeatAfterAccept skipped: pendingApplySeatIndex missing")
+            return
+        }
+        LiveSeatStore.create(liveID).takeSeat(seatIndex, object : CompletionHandler {
+            override fun onSuccess() {
+                logger.info("takeSeatAfterAccept success seatIndex=$seatIndex")
+            }
+
+            override fun onFailure(code: Int, desc: String) {
+                logger.error("takeSeatAfterAccept failed code=$code desc=$desc")
+            }
+        })
+    }
+
     private fun openMicrophone() {
         CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).launch {
             if (LiveDevicePermission.requestMicrophonePermission(voiceLoungeAppContext)) {
@@ -505,10 +477,8 @@ internal class VoiceLoungeCoGuestStore {
     companion object {
         const val SEAT_INTENT_BUSINESS_ID = "vl_seat_apply"
         const val MIC_OPEN_BUSINESS_ID = "vl_mic_open"
-        const val PAUSE_BUSINESS_ID = "vl_pause"
         private const val APPLY_TIMEOUT_SECONDS = 60
         private const val INVITE_TIMEOUT_SECONDS = 30
-        private const val RECENT_CANCEL_WINDOW_MS = 5_000L
 
         private fun displayName(user: LiveUserInfo): String = user.userName.ifEmpty { user.userID }
     }

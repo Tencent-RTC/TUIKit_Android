@@ -31,6 +31,7 @@ import com.trtc.uikit.livekit.voicelounge.settings.theme.VoiceLoungeColor
 import com.trtc.uikit.livekit.voicelounge.voiceLoungeText
 import com.trtc.uikit.livekit.voicelounge.whiteAlpha
 import com.trtc.uikit.livekit.voicelounge.withAlpha
+import io.trtc.tuikit.atomicxcore.api.live.LiveSummaryData
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -38,12 +39,7 @@ import java.util.Locale
 internal data class VoiceLoungeSummaryData(
     val startTimeMillis: Long? = null,
     val endTimeMillis: Long = System.currentTimeMillis(),
-    val giftCount: Int = 0,
-    val newFollowers: Int = 0,
-    val viewers: Int = 0,
-    val fanViewers: Int = 0,
-    val gifters: Int = 0,
-    val likes: Int = 0,
+    val summary: LiveSummaryData? = null,
 )
 
 internal class VoiceLoungeSummaryView(context: Context) : FrameLayout(context) {
@@ -57,26 +53,26 @@ internal class VoiceLoungeSummaryView(context: Context) : FrameLayout(context) {
     private val durationLabel = TextView(context)
     private val statCards = listOf(
         StatCard(
-            context, R.string.livekit_voiceroom_summary_gift, R.string.livekit_voiceroom_summary_unit_items, GIFT_ACCENT
+            context, R.string.livekit_voicelounge_summary_gift, R.string.livekit_voicelounge_summary_unit_items, GIFT_ACCENT
         ),
         StatCard(
-            context, R.string.livekit_voiceroom_summary_followers, R.string.livekit_voiceroom_summary_unit_people,
-            FOLLOWERS_ACCENT,
+            context, R.string.livekit_summaryview_stat_gift_value, R.string.livekit_summaryview_unit_coins,
+            COINS_ACCENT,
         ),
         StatCard(
-            context, R.string.livekit_voiceroom_summary_viewers, R.string.livekit_voiceroom_summary_unit_people,
+            context, R.string.livekit_voicelounge_summary_viewers, R.string.livekit_voicelounge_summary_unit_people,
             VIEWERS_ACCENT,
         ),
         StatCard(
-            context, R.string.livekit_voiceroom_summary_fan_viewers, R.string.livekit_voiceroom_summary_unit_people,
-            FAN_ACCENT,
+            context, R.string.livekit_summaryview_stat_comments, R.string.livekit_pusher_status_unit_messages,
+            COMMENTS_ACCENT,
         ),
         StatCard(
-            context, R.string.livekit_voiceroom_summary_gifters, R.string.livekit_voiceroom_summary_unit_people,
+            context, R.string.livekit_voicelounge_summary_gifters, R.string.livekit_voicelounge_summary_unit_people,
             GIFTERS_ACCENT,
         ),
         StatCard(
-            context, R.string.livekit_voiceroom_summary_likes, R.string.livekit_voiceroom_summary_unit_times,
+            context, R.string.livekit_voicelounge_summary_likes, R.string.livekit_voicelounge_summary_unit_times,
             LIKES_ACCENT
         ),
     )
@@ -101,13 +97,13 @@ internal class VoiceLoungeSummaryView(context: Context) : FrameLayout(context) {
         contentColumn.addView(makeHeroCard(), linearParams(MATCH, dp(210), start = dp(16), top = dp(10), end = dp(16)))
         val sectionTitle = voiceLoungeText(
             context, LiveTheme.TextRole.PROMINENT, LiveTheme.TextTone.PRIMARY,
-            text = context.getString(R.string.livekit_voiceroom_summary_section),
+            text = context.getString(R.string.livekit_voicelounge_summary_section),
         )
         contentColumn.addView(sectionTitle, linearParams(WRAP, WRAP, start = dp(19), top = dp(20)))
         contentColumn.addView(makeStatGrid(), linearParams(MATCH, dp(252), start = dp(16), top = dp(10), end = dp(16)))
         val note = voiceLoungeText(
             context, LiveTheme.TextRole.METADATA, LiveTheme.TextTone.TERTIARY, Gravity.CENTER,
-            text = context.getString(R.string.livekit_voiceroom_summary_note),
+            text = context.getString(R.string.livekit_voicelounge_summary_note),
         )
         contentColumn.addView(
             note, linearParams(MATCH, WRAP, start = dp(16), top = dp(16), end = dp(16), bottom = dp(24))
@@ -132,13 +128,17 @@ internal class VoiceLoungeSummaryView(context: Context) : FrameLayout(context) {
         val start = input.startTimeMillis?.let { formatter.format(Date(it)) } ?: "--:--"
         val end = formatter.format(Date(input.endTimeMillis))
         timeRangeLabel.text = "$start ~ $end"
-        val duration = input.startTimeMillis?.let { maxOf(0L, (input.endTimeMillis - it) / 1000).toInt() } ?: 0
-        durationLabel.text = formatDuration(duration)
+        val summary = input.summary
+        durationLabel.text = summary?.let { formatDuration((it.totalDuration / 1000).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()) } ?: UNKNOWN_VALUE
         scrollView.scrollTo(0, 0)
 
-        val values =
-            listOf(input.giftCount, input.newFollowers, input.viewers, input.fanViewers, input.gifters, input.likes)
-        statCards.zip(values).forEach { (card, value) -> card.bind(value) }
+        val values = summary?.let {
+            listOf(
+                it.totalGiftsSent, it.totalGiftCoins, it.totalViewers, it.totalMessageSent,
+                it.totalGiftUniqueSenders, it.totalLikesReceived,
+            )
+        }
+        statCards.forEachIndexed { index, card -> card.bind(values?.get(index)) }
     }
 
     private fun setupHeader() {
@@ -151,7 +151,7 @@ internal class VoiceLoungeSummaryView(context: Context) : FrameLayout(context) {
         header.addView(back, frameParams(dp(34), dp(34), Gravity.CENTER_VERTICAL or Gravity.START, start = dp(12)))
         val title = voiceLoungeText(
             context, LiveTheme.TextRole.SHEET_TITLE, LiveTheme.TextTone.PRIMARY, Gravity.CENTER,
-            text = context.getString(R.string.livekit_voiceroom_summary_title),
+            text = context.getString(R.string.livekit_voicelounge_summary_title),
         )
         header.addView(title, frameParams(WRAP, WRAP, Gravity.CENTER, start = dp(46), end = dp(46)))
     }
@@ -186,9 +186,9 @@ internal class VoiceLoungeSummaryView(context: Context) : FrameLayout(context) {
         }
         column.addView(ring, linearParams(dp(52), dp(52), top = dp(16)))
         val ended = TextView(context).apply {
-            text = context.getString(R.string.livekit_voiceroom_summary_ended)
+            text = context.getString(R.string.livekit_voicelounge_summary_ended)
             setTextColor(whiteAlpha(0.95f))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
             includeFontPadding = false
@@ -196,16 +196,16 @@ internal class VoiceLoungeSummaryView(context: Context) : FrameLayout(context) {
         column.addView(ended, linearParams(MATCH, WRAP, start = dp(30), top = dp(12), end = dp(30)))
         column.addView(timeRangeLabel, linearParams(MATCH, WRAP, start = dp(30), top = dp(6), end = dp(30)))
         val durationTitle = TextView(context).apply {
-            text = context.getString(R.string.livekit_voiceroom_summary_duration)
+            text = context.getString(R.string.livekit_voicelounge_summary_duration)
             setTextColor(whiteAlpha(0.48f))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
             typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             gravity = Gravity.CENTER
             includeFontPadding = false
         }
         column.addView(durationTitle, linearParams(MATCH, WRAP, start = dp(30), top = dp(14), end = dp(30)))
         durationLabel.setTextColor(VoiceLoungeColor.statHighlight)
-        durationLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 31f)
+        durationLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28f)
         durationLabel.typeface = Typeface.DEFAULT_BOLD
         durationLabel.gravity = Gravity.CENTER
         durationLabel.includeFontPadding = false
@@ -275,21 +275,24 @@ internal class VoiceLoungeSummaryView(context: Context) : FrameLayout(context) {
             addView(column, frameParams(MATCH, WRAP, Gravity.TOP, start = dp(13), top = dp(27), end = dp(13)))
         }
 
-        fun bind(value: Int) {
-            valueLabel.text = maxOf(0, value).toString()
+        fun bind(value: Int?) {
+            valueLabel.text = value?.let { maxOf(0, it).toString() } ?: UNKNOWN_VALUE
         }
     }
 
     private companion object {
+        const val UNKNOWN_VALUE = "--"
         val GIFT_ACCENT = rgb(0.941f, 0.737f, 0.373f)
-        val FOLLOWERS_ACCENT = rgb(1f, 0.431f, 0.616f)
+        val COINS_ACCENT = rgb(1f, 0.431f, 0.616f)
         val VIEWERS_ACCENT = rgb(0.412f, 0.659f, 1f)
-        val FAN_ACCENT = rgb(0.745f, 0.514f, 1f)
+        val COMMENTS_ACCENT = rgb(0.745f, 0.514f, 1f)
         val GIFTERS_ACCENT = rgb(0.341f, 0.835f, 0.749f)
         val LIKES_ACCENT = rgb(1f, 0.482f, 0.447f)
 
-        fun formatDuration(seconds: Int): String =
-            String.format(Locale.US, "%02d:%02d:%02d", seconds / 3600, seconds % 3600 / 60, seconds % 60)
+        fun formatDuration(duration: Int): String {
+            val seconds = maxOf(0, duration)
+            return String.format(Locale.US, "%02d:%02d:%02d", seconds / 3600, seconds % 3600 / 60, seconds % 60)
+        }
 
         fun cardBackground(
             radius: Float,

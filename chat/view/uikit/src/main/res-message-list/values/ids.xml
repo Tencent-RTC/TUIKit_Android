@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="message_list_render_context_tag" type="id" />
+    <item name="message_list_sound_play_runnable_tag" type="id" />
+    <item name="message_list_sound_voice_layer_dot" type="id" />
+    <item name="message_list_sound_voice_layer_arc_inner" type="id" />
+    <item name="message_list_sound_voice_layer_arc_outer" type="id" />
+    <item name="message_list_sending_rotator_tag" type="id" />
+    <item name="message_list_text_bind_token_tag" type="id" />
+    <item name="message_list_message_touch_target_tag" type="id" />
+</resources>

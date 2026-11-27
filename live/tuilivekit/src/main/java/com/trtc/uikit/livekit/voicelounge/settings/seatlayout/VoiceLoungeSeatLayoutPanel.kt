@@ -63,15 +63,15 @@ internal class VoiceLoungeSeatLayoutPanel(context: Context) : BottomSheetView(co
         contentView.addView(
             defaultCheckbox,
             frameParams(
-                WRAP, context.dp(20), start = context.dp(18), end = context.dp(18), top = context.dp(64 + 128 + 14)
+                WRAP, context.dp(20), Gravity.TOP or Gravity.CENTER_HORIZONTAL, top = context.dp(64 + 128 + 14)
             ),
         )
     }
 
     private fun setupStyles() {
-        sheetTitle = context.getString(R.string.livekit_voiceroom_layout_title)
+        sheetTitle = context.getString(R.string.livekit_voicelounge_layout_title)
         cardRow.orientation = LinearLayout.HORIZONTAL
-        defaultCheckbox.setTitle(context.getString(R.string.livekit_voiceroom_layout_default_hint))
+        defaultCheckbox.setTitle(context.getString(R.string.livekit_voicelounge_layout_default_hint))
     }
 
     private fun rebuildCards() {
@@ -100,7 +100,7 @@ internal class VoiceLoungeSeatLayoutPanel(context: Context) : BottomSheetView(co
     }
 
     private companion object {
-        const val SHEET_HEIGHT = 250
+        const val SHEET_HEIGHT = 270
     }
 }
 

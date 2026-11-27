@@ -20,7 +20,6 @@ internal object CallAccessRowFactory {
         onTap: () -> Unit,
     ): View {
         val row = LayoutInflater.from(context).inflate(R.layout.callaccess_option_row, null)
-        // inflate(null) 不会为根节点生成 LayoutParams，显式恢复 XML 声明的 52dp 行高
         row.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 52.dp(context))
         val titleView = row.findViewById<TextView>(R.id.option_title)
         titleView.text = title
