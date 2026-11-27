@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<resources>
+    <color name="home_dark">#101116</color>
+    <color name="home_light">#EBEDF5</color>
+    <color name="home_white">#FFFFFF</color>
+    <color name="home_text">#171822</color>
+    <color name="home_inactive_dark">#8C93A1</color>
+    <color name="home_inactive_light">#67686F</color>
+    <color name="home_broadcast_inactive">#8B90A0</color>
+    <color name="home_preview_inactive">#C7FFFFFF</color>
+    <color name="home_cover_hint">#8CFFFFFF</color>
+    <color name="home_selector">#20232C</color>
+    <color name="home_selection">#424754</color>
+    <color name="home_header_inactive">#A0A7B5</color>
+    <color name="home_preview_selector">#5920232C</color>
+    <color name="home_preview_selection">#2EFFFFFF</color>
+    <color name="home_preview_start">#4D1C1E26</color>
+    <color name="home_preview_border">#1FFFFFFF</color>
+    <color name="home_start_fill">#0DFFFFFF</color>
+    <color name="home_start_border">#1AFFFFFF</color>
+</resources>

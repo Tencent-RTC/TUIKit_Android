@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="uikit_page_background">#FF1C1C1E</color>
+    <color name="uikit_surface_background">#FF2C2C2E</color>
+    <color name="uikit_nav_background">#FF1C1C1E</color>
+    <color name="uikit_search_bar_background">#FF3A3A3C</color>
+    <color name="uikit_text_primary">#FFFFFFFF</color>
+    <color name="uikit_text_secondary">#FF8E8E93</color>
+    <color name="uikit_text_hint">#FF8E8E93</color>
+    <color name="uikit_divider">#FF38383A</color>
+</resources>

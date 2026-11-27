@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<resources>
+    <string name="home_tab_meeting">会议</string>
+    <string name="home_tab_live">直播</string>
+    <string name="home_tab_call">通话</string>
+    <string name="home_tab_messages">消息</string>
+    <string name="home_tab_profile">我的</string>
+    <string name="home_coming_soon">暂未开放</string>
+    <string name="home_room_id_empty">请输入会议号</string>
+    <string name="home_quick_meeting_name">%1$s的会议</string>
+    <string name="home_back">返回</string>
+    <string name="home_more">更多</string>
+    <string name="home_live_title">在线直播</string>
+    <string name="home_grid">双列</string>
+    <string name="home_preview">预览</string>
+    <string name="home_start">开播</string>
+    <string name="home_untitled">未命名直播</string>
+    <string name="home_unknown_host">主播</string>
+    <string name="home_empty">暂无直播</string>
+    <string name="home_load_failed">加载失败，请重试</string>
+    <string name="home_retry">重试</string>
+    <string name="home_card_description">%1$s，%2$s，%3$s次观看</string>
+    <string name="home_enter">进入直播间</string>
+    <string name="home_ended">直播已结束</string>
+    <string name="home_live_badge">直播中</string>
+    <string name="home_preview_owner">@%1$s</string>
+    <string name="home_preview_viewers">%1$s次观看</string>
+    <string name="home_close">关闭</string>
+    <string name="home_back_preview">返回预览</string>
+    <string name="home_join_failed">进入直播间失败，请重试</string>
+    <string name="home_own_live">不能观看自己的直播</string>
+    <string name="home_broadcast_video">视频</string>
+    <string name="home_broadcast_voice">语音</string>
+    <string name="home_broadcast_game">游戏</string>
+    <string name="home_cover_unavailable">暂无封面</string>
+</resources>

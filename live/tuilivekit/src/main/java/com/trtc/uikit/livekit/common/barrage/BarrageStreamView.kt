@@ -40,11 +40,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.trtc.uikit.livekit.R
+import com.trtc.uikit.livekit.common.barrage.emoji.BarrageEmojiConverter
 import com.trtc.uikit.livekit.common.gift.LiveGiftBarrage
 import com.trtc.uikit.livekit.common.theme.LevelBadgeDrawable
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
-import java.text.BreakIterator
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -296,8 +296,7 @@ class BarrageStreamView @JvmOverloads constructor(
             }
         }
         val clippedTop = (MeasureSpec.getSize(heightMeasureSpec) - (maximumVisibleHeight ?: MeasureSpec.getSize(
-            heightMeasureSpec
-        ))).coerceAtLeast(0)
+            heightMeasureSpec))).coerceAtLeast(0)
         val padding = clippedTop + dimension(R.dimen.livekit_comment_fade_height)
         if (recyclerView.paddingTop != padding) recyclerView.setPadding(0, padding, 0, 0)
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -432,8 +431,7 @@ class BarrageStreamView @JvmOverloads constructor(
         }
         val entry = candidates.lastOrNull {
             layoutManager.getDecoratedTop(it.second) < recyclerView.height && layoutManager.getDecoratedBottom(
-                it.second
-            ) > height - visibleHeight
+                it.second) > height - visibleHeight
         } ?: candidates.firstOrNull { layoutManager.getDecoratedBottom(it.second) > height - visibleHeight }
         ?: candidates.lastOrNull() ?: return null
         return ReadingAnchor(entry.first, recyclerView.height - layoutManager.getDecoratedTop(entry.second))
@@ -473,8 +471,7 @@ class BarrageStreamView @JvmOverloads constructor(
 
     private fun updateNewMessageView() {
         newMessageView.visibility = if (unreadCount == 0 || visibleHeight < dimension(
-                R.dimen.livekit_comment_new_message_height
-            )
+                R.dimen.livekit_comment_new_message_height)
         ) GONE else VISIBLE
         newMessageView.text =
             resources.getQuantityString(R.plurals.livekit_pusher_new_messages, unreadCount, unreadCount)
@@ -485,8 +482,7 @@ class BarrageStreamView @JvmOverloads constructor(
         if (last < 0 || layoutManager.findLastVisibleItemPosition() < last) return last < 0
         val view = layoutManager.findViewByPosition(last) ?: return false
         return layoutManager.getDecoratedBottom(view) - recyclerView.height <= dimension(
-            R.dimen.livekit_comment_bottom_threshold
-        )
+            R.dimen.livekit_comment_bottom_threshold)
     }
 
     private fun createMessageScrollListener() = object : RecyclerView.OnScrollListener() {
@@ -576,8 +572,8 @@ private class LiveMessageAdapter : ListAdapter<BarrageStreamView.Message, Recycl
                 LayoutInflater.from(parent.context).inflate(R.layout.livekit_pusher_gift_message_row, parent, false)
             return GiftCommentRow(row).apply { metricsWillChange = { rowMetricsWillChange?.invoke() } }
         }
-        val label = LayoutInflater.from(parent.context)
-            .inflate(R.layout.livekit_pusher_live_message_item, parent, false) as AppCompatTextView
+        val label = LayoutInflater.from(parent.context).inflate(R.layout.livekit_pusher_live_message_item, parent,
+            false) as AppCompatTextView
         label.typeface = commentTypeface()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             label.breakStrategy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -625,9 +621,8 @@ private class LiveMessageAdapter : ListAdapter<BarrageStreamView.Message, Recycl
             val text = makeText(message)
             label.text = text
             label.contentDescription = if (message.isSystemAnnouncement) message.content else {
-                label.context.getString(
-                    R.string.livekit_pusher_message_sender_format, message.userName
-                ) + displayContent(message.content)
+                label.context.getString(R.string.livekit_pusher_message_sender_format,
+                    message.userName) + displayContent(message.content)
             }
             val verticalPadding = label.dimension(R.dimen.livekit_comment_row_vertical_inset)
             val horizontalPadding = label.resources.getDimension(R.dimen.livekit_comment_row_horizontal_inset).toInt()
@@ -637,7 +632,7 @@ private class LiveMessageAdapter : ListAdapter<BarrageStreamView.Message, Recycl
         private fun makeText(message: BarrageStreamView.Message): SpannableStringBuilder {
             val text = SpannableStringBuilder()
             if (message.isSystemAnnouncement) {
-                text.append(message.content)
+                text.append(BarrageEmojiConverter.parse(label.context, displayContent(message.content), label.paint))
                 text.setSpan(
                     ForegroundColorSpan(ContextCompat.getColor(label.context, R.color.livekit_pusher_message_name)),
                     0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
@@ -659,7 +654,7 @@ private class LiveMessageAdapter : ListAdapter<BarrageStreamView.Message, Recycl
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
             )
             val bodyStart = text.length
-            text.append(displayContent(message.content))
+            text.append(BarrageEmojiConverter.parse(label.context, displayContent(message.content), label.paint))
             text.setSpan(
                 ForegroundColorSpan(ContextCompat.getColor(label.context, R.color.livekit_pusher_message_body)),
                 bodyStart,
@@ -670,14 +665,8 @@ private class LiveMessageAdapter : ListAdapter<BarrageStreamView.Message, Recycl
         }
 
         private fun displayContent(content: String): String {
-            val iterator = BreakIterator.getCharacterInstance().apply { setText(content) }
-            var end = iterator.first()
-            repeat(200) {
-                val next = iterator.next()
-                if (next == BreakIterator.DONE) return content
-                end = next
-            }
-            return if (end < content.length) content.substring(0, end) + "..." else content
+            if (BarrageEmojiConverter.visibleLength(content) <= 200) return content
+            return BarrageEmojiConverter.visiblePrefix(content, 200) + "..."
         }
 
         private fun appendBadge(text: SpannableStringBuilder, drawable: Drawable) {
@@ -723,10 +712,8 @@ private class InlineBadgeSpan(
     private val width =
         (drawable.intrinsicWidth * height.toFloat() / drawable.intrinsicHeight.coerceAtLeast(1)).roundToInt()
     private val clipPath = android.graphics.Path().apply {
-        addRoundRect(
-            RectF(0f, 0f, width.toFloat(), height.toFloat()), height / 2f, height / 2f,
-            android.graphics.Path.Direction.CW
-        )
+        addRoundRect(RectF(0f, 0f, width.toFloat(), height.toFloat()), height / 2f, height / 2f,
+            android.graphics.Path.Direction.CW)
     }
 
     override fun getSize(paint: Paint, text: CharSequence?, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
@@ -743,10 +730,8 @@ private class InlineBadgeSpan(
         val save = canvas.save()
         canvas.translate(x, translationY)
         canvas.clipPath(clipPath)
-        canvas.scale(
-            width.toFloat() / drawable.bounds.width().coerceAtLeast(1),
-            height.toFloat() / drawable.bounds.height().coerceAtLeast(1)
-        )
+        canvas.scale(width.toFloat() / drawable.bounds.width().coerceAtLeast(1),
+            height.toFloat() / drawable.bounds.height().coerceAtLeast(1))
         drawable.draw(canvas)
         canvas.restoreToCount(save)
     }
@@ -794,8 +779,7 @@ private class LiveHostBadgeDrawable private constructor(private val context: Con
     private val width = maxOf(
         context.resources.getDimensionPixelSize(R.dimen.livekit_comment_host_min_width),
         ceil(textPaint.measureText(title)).toInt() + context.resources.getDimensionPixelSize(
-            R.dimen.livekit_comment_host_horizontal_inset
-        ) * 2,
+            R.dimen.livekit_comment_host_horizontal_inset) * 2,
     )
     private val rect = RectF()
 
@@ -916,8 +900,9 @@ internal class GiftCommentRow(itemView: View) : RecyclerView.ViewHolder(itemView
     private fun render() {
         val comment = comment ?: return
         val context = label.context
-        val sender = comment.senderName.ifEmpty { comment.senderID }
-            .ifEmpty { context.getString(R.string.livekit_common_viewer) }
+        val sender = comment.senderName.ifEmpty { comment.senderID }.ifEmpty {
+            context.getString(R.string.livekit_common_viewer)
+        }
         val action = context.getString(R.string.livekit_common_gift_sent)
         val count = context.getString(R.string.livekit_pusher_gift_count_format, comment.count.toString())
         val text = SpannableStringBuilder()
@@ -925,20 +910,16 @@ internal class GiftCommentRow(itemView: View) : RecyclerView.ViewHolder(itemView
         fun append(value: String, @ColorRes color: Int) {
             val start = text.length
             text.append(value)
-            text.setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(context, color)), start, text.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            text.setSpan(ForegroundColorSpan(ContextCompat.getColor(context, color)), start, text.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
 
         val badge = LevelBadgeDrawable.forLevel(context, comment.senderLevel)
         badge.setBounds(0, 0, badge.intrinsicWidth, badge.intrinsicHeight)
         text.append("\uFFFC")
         text.setSpan(
-            InlineBadgeSpan(
-                badge, label.dimension(R.dimen.livekit_comment_badge_spacing),
-                label.dimension(R.dimen.livekit_comment_badge_height)
-            ),
+            InlineBadgeSpan(badge, label.dimension(R.dimen.livekit_comment_badge_spacing),
+                label.dimension(R.dimen.livekit_comment_badge_height)),
             0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
         )
         append(displayCommentUserName(sender), R.color.livekit_pusher_gift_message_sender)
@@ -947,10 +928,8 @@ internal class GiftCommentRow(itemView: View) : RecyclerView.ViewHolder(itemView
         if (showsIcon) {
             val start = text.length
             text.append("\uFFFC")
-            text.setSpan(
-                GiftIconSpan(icon, label.dimension(R.dimen.livekit_comment_gift_icon_size)), start, text.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            text.setSpan(GiftIconSpan(icon, label.dimension(R.dimen.livekit_comment_gift_icon_size)), start,
+                text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             append(" ", R.color.livekit_pusher_gift_message_highlight)
         }
         val countStart = text.length
@@ -967,9 +946,8 @@ private class GiftIconSpan(private val drawable: Drawable?, private val size: In
         return size
     }
 
-    override fun draw(
-        canvas: Canvas, text: CharSequence?, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint
-    ) {
+    override fun draw(canvas: Canvas, text: CharSequence?, start: Int, end: Int, x: Float, top: Int, y: Int,
+                      bottom: Int, paint: Paint) {
         val drawable = drawable ?: return
         val scale = size.toFloat() / maxOf(1, drawable.intrinsicWidth, drawable.intrinsicHeight)
         val width = (drawable.intrinsicWidth.coerceAtLeast(1) * scale).toInt()
@@ -984,32 +962,6 @@ private class GiftIconSpan(private val drawable: Drawable?, private val size: In
 
 private fun displayCommentUserName(raw: String): String {
     val name = raw.replace(Regex("\\r\\n|[\\n\\r\\u000B\\u000C\\u0085\\u2028\\u2029]"), " ")
-    val iterator = BreakIterator.getCharacterInstance().apply { setText(name) }
-    var count = 0
-    iterator.first()
-    while (true) {
-        val next = iterator.next()
-        if (next == BreakIterator.DONE) return name
-        // Older Android Unicode tables split joined emoji, modifiers and flag pairs.
-        if (next < name.length && continuesCommentCharacter(name, next)) continue
-        count += 1
-        if (count == 20) return if (next < name.length) name.substring(0, next) + "…" else name
-    }
-}
-
-private fun continuesCommentCharacter(text: String, boundary: Int): Boolean {
-    val next = Character.codePointAt(text, boundary)
-    val previous = Character.codePointBefore(text, boundary)
-    val type = Character.getType(next)
-    if (previous == 0x200D || next == 0x200D || next in 0x1F3FB..0x1F3FF || next in 0xE0020..0xE007F || type == Character.NON_SPACING_MARK.toInt() || type == Character.COMBINING_SPACING_MARK.toInt() || type == Character.ENCLOSING_MARK.toInt()) return true
-    if (next !in 0x1F1E6..0x1F1FF) return false
-    var position = boundary
-    var regionalIndicators = 0
-    while (position > 0) {
-        val codePoint = Character.codePointBefore(text, position)
-        if (codePoint !in 0x1F1E6..0x1F1FF) break
-        regionalIndicators += 1
-        position -= Character.charCount(codePoint)
-    }
-    return regionalIndicators % 2 == 1
+    val prefix = BarrageEmojiConverter.plainPrefix(name, 20)
+    return if (prefix.length < name.length) prefix + "…" else name
 }

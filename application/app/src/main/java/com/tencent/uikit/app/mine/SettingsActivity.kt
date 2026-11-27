@@ -2,7 +2,6 @@ package com.tencent.uikit.app.mine
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -30,15 +29,11 @@ private data class SettingItem(val type: SettingType, val title: String)
 private enum class SettingType { AVATAR, NICKNAME, LANGUAGE, ACCOUNT }
 
 private class SettingsAdapter(
-    private val items: List<SettingItem>,
-    private val onItemClick: (SettingItem) -> Unit,
-    private val getNickName: () -> String?,
-    private val getFaceUrl: () -> String?
-) :
-    RecyclerView.Adapter<SettingsVH>() {
+    private val items: List<SettingItem>, private val onItemClick: (SettingItem) -> Unit,
+    private val getNickName: () -> String?, private val getFaceUrl: () -> String?
+) : RecyclerView.Adapter<SettingsVH>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SettingsVH {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.app_item_settings, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.app_item_settings, parent, false)
         return SettingsVH(view, getNickName, getFaceUrl)
     }
 
@@ -51,8 +46,7 @@ private class SettingsAdapter(
 }
 
 private class SettingsVH(
-    itemView: View, private val getNickName: () -> String?,
-    private val getFaceUrl: () -> String?
+    itemView: View, private val getNickName: () -> String?, private val getFaceUrl: () -> String?
 ) : RecyclerView.ViewHolder(itemView) {
     private val title: TextView = itemView.findViewById(R.id.tv_title)
     private val rightIcon: ImageView = itemView.findViewById(R.id.iv_right)
@@ -93,107 +87,96 @@ private class SettingsVH(
 }
 
 class SettingsActivity : BaseActivity() {
-
-    private var nickName: String? = null
-    private var faceUrl: String? = null
-
-    private val CHOOSE_AVATAR_REQUEST_CODE = 1001
-
-    private lateinit var settingsAdapter: SettingsAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.app_mine_settings)
-        nickName = LoginStore.shared.loginState.loginUserInfo.value?.nickname ?: ""
-        faceUrl = LoginStore.shared.loginState.loginUserInfo.value?.avatarURL ?: ""
-
-        initView()
+        if (savedInstanceState == null) supportFragmentManager.beginTransaction()
+            .replace(android.R.id.content, SettingsFragment()).commit()
     }
+}
 
-    private fun initView() {
-        findViewById<ImageView>(R.id.img_back_with_line)?.setOnClickListener { finish() }
-
-        val recycler = findViewById<RecyclerView>(R.id.recycler_settings)
-        recycler.layoutManager = LinearLayoutManager(this)
-        recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-
-        val items = listOf(
-            SettingItem(SettingType.AVATAR, getString(R.string.app_user_avatar)),
-            SettingItem(SettingType.NICKNAME, getString(R.string.app_user_nickname)),
-//            SettingItem(SettingType.LANGUAGE, getString(R.string.app_language)),
-        )
-        settingsAdapter = SettingsAdapter(
-            items, { item ->
-                when (item.type) {
-                    SettingType.AVATAR -> {
-                        val faceList = ArrayList<ImageSelectActivity.ImageBean>()
-                        for (i in 0..<AVATAR_FACE_COUNT) {
-                            val imageBean = ImageSelectActivity.ImageBean()
-                            imageBean.setThumbnailUri(
-                                String.format(AVATAR_FACE_URL, (i + 1).toString() + "")
-                            )
-                            imageBean.setImageUri(String.format(AVATAR_FACE_URL, (i + 1).toString() + ""))
-                            faceList.add(imageBean)
-                        }
-                        val intent = Intent(this@SettingsActivity, ImageSelectActivity::class.java)
-                        intent.putExtra(ImageSelectActivity.TITLE, getString(R.string.app_choose_avatar))
-                        intent.putExtra(ImageSelectActivity.SPAN_COUNT, 4)
-                        val itemWidth = (ScreenUtil.getScreenWidth(this) * 0.2f).toInt()
-                        intent.putExtra(ITEM_WIDTH, itemWidth)
-                        intent.putExtra(ITEM_HEIGHT, itemWidth)
-                        intent.putExtra(ImageSelectActivity.DATA, faceList)
-                        intent.putExtra(
-                            ImageSelectActivity.SELECTED,
-                            ImageSelectActivity.ImageBean(faceUrl, faceUrl, false)
-                        )
-                        startActivityForResult(intent, CHOOSE_AVATAR_REQUEST_CODE)
-                    }
-
-                    SettingType.LANGUAGE -> LanguageSelectActivity.startSelectLanguage(this)
-                    SettingType.NICKNAME -> {
-                        val popupInputCard = PopupInputCard(this)
-                        popupInputCard.setContent(nickName ?: "")
-                        popupInputCard.setTitle(getString(R.string.app_self_detail_modify_nickname))
-                        val description: String = getString(R.string.app_self_detail_modify_nickname_rule)
-                        popupInputCard.setDescription(description)
-                        popupInputCard.setOnPositive((PopupInputCard.OnClickListener { result: String? ->
-                            nickName = result
-                            settingsAdapter.notifyItemChanged(1)
-                            updateProfile()
-                        }))
-                        val rootView = findViewById<View?>(android.R.id.content)
-                        popupInputCard.show(rootView, Gravity.BOTTOM)
-                    }
-
-                    else -> {}
-                }
-            },
-            { if (nickName.isNullOrEmpty()) LoginStore.shared.loginState.loginUserInfo.value?.nickname else nickName },
-            { if (faceUrl.isNullOrEmpty()) LoginStore.shared.loginState.loginUserInfo.value?.avatarURL else faceUrl }
-        )
-        recycler.adapter = settingsAdapter
-    }
-
-    private fun updateProfile() {
-        val v2TIMUserFullInfo = V2TIMUserFullInfo()
-        if (!faceUrl.isNullOrEmpty()) {
-            v2TIMUserFullInfo.faceUrl = faceUrl
+class SettingsFragment : androidx.fragment.app.Fragment(R.layout.app_mine_settings) {
+    private var nickname = ""
+    private var avatarURL = ""
+    private var saving = false
+    private lateinit var adapter: SettingsAdapter
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val profile = LoginStore.shared.loginState.loginUserInfo.value
+        nickname = profile?.nickname.orEmpty()
+        avatarURL = profile?.avatarURL.orEmpty()
+        view.findViewById<View>(R.id.rl_title).let { toolbar ->
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(toolbar) { v, insets ->
+                val lp = v.layoutParams as ViewGroup.MarginLayoutParams
+                lp.topMargin = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars()).top
+                v.layoutParams = lp
+                insets
+            }
         }
+        view.findViewById<View>(R.id.img_back_with_line).setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+        adapter = SettingsAdapter(
+            listOf(
+            SettingItem(SettingType.AVATAR, getString(R.string.app_user_avatar)),
+            SettingItem(SettingType.NICKNAME, getString(R.string.app_user_nickname))
+        ), { item ->
+            if (!saving) when (item.type) {
+                SettingType.AVATAR -> {
+                    val faces = ArrayList((1..26).map { index ->
+                        val url = "https://im.sdk.qcloud.com/download/tuikit-resource/avatar/avatar_$index.png"
+                        ImageSelectActivity.ImageBean(url, url, false)
+                    })
+                    startActivityForResult(Intent(requireContext(), ImageSelectActivity::class.java).apply {
+                        putExtra(ImageSelectActivity.TITLE, getString(R.string.app_choose_avatar))
+                        putExtra(ImageSelectActivity.SPAN_COUNT, 4)
+                        putExtra("itemWidth", (resources.displayMetrics.widthPixels * .2f).toInt())
+                        putExtra("itemHeight", (resources.displayMetrics.widthPixels * .2f).toInt())
+                        putExtra(ImageSelectActivity.DATA, faces)
+                        putExtra(
+                            ImageSelectActivity.SELECTED, ImageSelectActivity.ImageBean(avatarURL, avatarURL, false)
+                        )
+                    }, 1001)
+                }
 
-        v2TIMUserFullInfo.setNickname(nickName)
-        UserManager.getInstance().updateSelfUserInfo(v2TIMUserFullInfo, object : V2TIMCallback {
-            override fun onError(code: Int, desc: String?) {
-                Log.e(
-                    "SettingsActivity", "modifySelfProfile err code = " + code + ", desc = " + desc
-                )
-                Toast.makeText(this@SettingsActivity, "Error code = $code, desc = $desc", Toast.LENGTH_SHORT).show()
+                SettingType.NICKNAME -> {
+                    val card = PopupInputCard(requireActivity())
+                    card.setContent(nickname)
+                    card.setTitle(getString(R.string.app_self_detail_modify_nickname))
+                    card.setDescription(getString(R.string.app_self_detail_modify_nickname_rule))
+                    card.setOnPositive(PopupInputCard.OnClickListener { value ->
+                        nickname = value.orEmpty()
+                        save()
+                    })
+                    card.show(requireView(), Gravity.BOTTOM)
+                }
+
+                else -> Unit
+            }
+        }, { nickname }, { avatarURL })
+        view.findViewById<RecyclerView>(R.id.recycler_settings).apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = this@SettingsFragment.adapter
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        }
+    }
+
+    private fun save() {
+        if (saving) return
+        saving = true
+        val info = V2TIMUserFullInfo().apply { setNickname(nickname); faceUrl = avatarURL }
+        UserManager.updateSelfUserInfo(info, object : V2TIMCallback {
+            override fun onSuccess() {
+                activity?.runOnUiThread {
+                    saving = false
+                    if (view != null) adapter.notifyDataSetChanged()
+                }
             }
 
-            override fun onSuccess() {
-                Log.i("SettingsActivity", "modifySelfProfile success")
-                runOnUiThread {
-                    settingsAdapter.notifyItemChanged(0)
-                    settingsAdapter.notifyItemChanged(1)
+            override fun onError(code: Int, desc: String?) {
+                activity?.runOnUiThread {
+                    saving = false
+                    if (view != null) Toast.makeText(
+                        context, getString(R.string.app_toast_failed_to_set, desc.orEmpty()), Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         })
@@ -201,23 +184,10 @@ class SettingsActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CHOOSE_AVATAR_REQUEST_CODE && resultCode == ImageSelectActivity.RESULT_CODE_SUCCESS) {
-            if (data != null) {
-                val imageBean =
-                    data.getSerializableExtra(ImageSelectActivity.DATA) as? ImageSelectActivity.ImageBean
-                if (imageBean != null) {
-                    faceUrl = imageBean.imageUri
-                    settingsAdapter.notifyItemChanged(0)
-                    updateProfile()
-                }
-            }
+        if (requestCode == 1001 && resultCode == ImageSelectActivity.RESULT_CODE_SUCCESS) {
+            val bean = data?.getSerializableExtra(ImageSelectActivity.DATA) as? ImageSelectActivity.ImageBean ?: return
+            avatarURL = bean.imageUri.orEmpty()
+            save()
         }
-    }
-
-    companion object {
-        const val AVATAR_FACE_URL = "https://im.sdk.qcloud.com/download/tuikit-resource/avatar/avatar_%s.png"
-        const val AVATAR_FACE_COUNT = 26
-        const val ITEM_HEIGHT: String = "itemHeight"
-        const val ITEM_WIDTH: String = "itemWidth"
     }
 }

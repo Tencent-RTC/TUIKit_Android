@@ -1,0 +1,50 @@
+<resources>
+
+    <string name="message_input_open_file_tips">選擇要打開此文件的應用</string>
+    <string name="message_input_edit_text_hint">發消息或按住說話...</string>
+    <string name="message_input_edit_text_hint_text_only">發消息...</string>
+    <string name="message_input_cancel">取消</string>
+    <string name="message_input_album">相簿</string>
+    <string name="message_input_take_photo">拍照</string>
+    <string name="message_input_record_video">錄影</string>
+    <string name="message_input_file">文件</string>
+    <string name="message_input_audio_call">語音通話</string>
+    <string name="message_input_video_call">視訊通話</string>
+    <string name="message_input_custom_message">自訂消息</string>
+    <string name="message_input_more">更多</string>
+    <string name="message_input_audio">語音</string>
+    <string name="message_input_emoji">表情</string>
+    <string name="message_input_press_to_talk">按住說話</string>
+    <string name="message_input_send">傳送</string>
+    <string name="message_input_swipe_cancel_hint">移出按鈕取消</string>
+    <string name="message_input_release_cancel_hint">鬆開取消</string>
+    <string name="message_input_release_send_hint">鬆開發送</string>
+    <string name="message_input_recording_too_short">錄製時間太短</string>
+    <string name="uikit_cancel">取消</string>
+    <string name="uikit_confirm">確認</string>
+    <string name="message_input_recording_status">錄製中...</string>
+    <string name="message_input_audio_too_short">語音錄製時間太短</string>
+    <string name="message_input_audio_time_limit_reached">語音錄製時間已達上限</string>
+    <string name="message_input_record_audio_permission_settings_tip">請在系統設定中開啟麥克風權限。</string>
+    <string name="message_input_send_failed">發送失敗</string>
+    <string name="message_input_mention_all">所有人</string>
+    <string name="message_input_mention_select_member">選擇群成員</string>
+    <string name="message_input_back">返回</string>
+    <string name="message_input_chatbot_waiting_tips">請等待回答完成或點擊停止回答</string>
+    <string name="message_input_chatbot_stop">停止回答</string>
+    <string name="message_input_release_transcribe_hint">鬆開轉文字</string>
+    <string name="message_input_transcribe_to_text">轉文字</string>
+    <string name="message_input_auto_stop_countdown">%1$d秒後將停止錄音</string>
+    <string name="message_input_convert_to_text_failed">轉文字失敗</string>
+    <string name="message_input_send_original_voice">發送原語音</string>
+    <string name="message_input_voice_transcription_empty">未識別到文字內容</string>
+    <string name="message_input_minimal_hint">輸入訊息</string>
+    <string name="message_input_message_type_image">[圖片]</string>
+    <string name="message_input_message_type_voice">[語音]</string>
+    <string name="message_input_message_type_video">[影片]</string>
+    <string name="message_input_message_type_file">[檔案]</string>
+    <string name="message_input_message_type_animate_emoji">[動畫表情]</string>
+    <string name="message_input_max_select_count">最多可選擇 %1$d 人</string>
+    <string name="message_input_group_call_in_progress">目前群組已有正在進行的通話</string>
+
+</resources>

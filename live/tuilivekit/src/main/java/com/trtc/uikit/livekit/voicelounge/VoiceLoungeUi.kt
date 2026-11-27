@@ -156,12 +156,15 @@ internal fun gradientDrawable(
 ): GradientDrawable = GradientDrawable(orientation, colors).apply { cornerRadius = radius }
 
 internal fun TextView.applyFont(sizeSp: Float, semibold: Boolean = false) {
-    setTextSize(TypedValue.COMPLEX_UNIT_SP, sizeSp)
+    setTextSize(TypedValue.COMPLEX_UNIT_SP, sizeSp - 3f)
     typeface = Typeface.create(if (semibold) "sans-serif-medium" else "sans-serif", Typeface.NORMAL)
 }
 
 internal object VoiceLoungeFont {
-    fun size(base: Float): Float = if (base < 13f) base + 2f else base + 1f
+    fun size(base: Float): Float {
+        val scaled = if (base < 13f) base + 2f else base + 1f
+        return scaled - if (base >= 15f) 4f else 3f
+    }
 }
 
 internal fun voiceLoungeText(

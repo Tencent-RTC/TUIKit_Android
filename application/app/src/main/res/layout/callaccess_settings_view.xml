@@ -14,7 +14,7 @@
         android:paddingStart="16dp"
         android:paddingTop="10dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="24dp">
+        android:paddingBottom="0dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -60,7 +60,6 @@
                         android:layout_width="34dp"
                         android:layout_height="34dp"
                         android:background="@drawable/callaccess_bg_avatar"
-                        android:clipToOutline="true"
                         android:contentDescription="@null"
                         android:outlineProvider="background"
                         android:scaleType="centerCrop" />
@@ -70,6 +69,7 @@
                         android:layout_height="16dp"
                         android:layout_marginStart="4dp"
                         android:contentDescription="@null"
+                        android:scaleType="center"
                         android:src="@drawable/callaccess_icon_chevron"
                         app:tint="@color/callaccess_arrow" />
                 </LinearLayout>
@@ -121,6 +121,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:contentDescription="@null"
+                        android:scaleType="center"
                         android:src="@drawable/callaccess_icon_chevron"
                         app:tint="@color/callaccess_arrow" />
                 </LinearLayout>
@@ -189,6 +190,7 @@
                         android:layout_height="16dp"
                         android:layout_marginStart="4dp"
                         android:contentDescription="@null"
+                        android:scaleType="center"
                         android:src="@drawable/callaccess_icon_chevron"
                         app:tint="@color/callaccess_arrow" />
                 </LinearLayout>
@@ -321,52 +323,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/callaccess_line" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/callaccess_settings_pro_beauty"
-                        android:textColor="@color/callaccess_text"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="22dp"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/callaccess_bg_pro_badge"
-                        android:fontFamily="serif"
-                        android:gravity="center_vertical"
-                        android:paddingStart="14dp"
-                        android:paddingEnd="14dp"
-                        android:text="@string/callaccess_symbol_pro"
-                        android:textColor="@color/callaccess_pro_text"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <com.tencent.uikit.app.call.common.CallAccessToggle
-                    android:id="@+id/pro_toggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
         </LinearLayout>
 
         <com.tencent.uikit.app.call.common.CallAccessTapRow
@@ -394,6 +350,7 @@
                     android:layout_height="12dp"
                     android:layout_marginStart="4dp"
                     android:contentDescription="@null"
+                    android:scaleType="center"
                     android:src="@drawable/callaccess_icon_chevron"
                     app:tint="@color/callaccess_arrow" />
             </LinearLayout>
@@ -467,6 +424,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:contentDescription="@null"
+                        android:scaleType="center"
                         android:src="@drawable/callaccess_icon_chevron"
                         app:tint="@color/callaccess_arrow" />
                 </LinearLayout>
@@ -542,6 +500,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:contentDescription="@null"
+                        android:scaleType="center"
                         android:src="@drawable/callaccess_icon_chevron"
                         app:tint="@color/callaccess_arrow" />
                 </LinearLayout>
@@ -601,6 +560,7 @@
                     <EditText
                         android:id="@+id/extended_info_input"
                         android:layout_width="0dp"
+                        android:hint="@string/callaccess_settings_extended_info_placeholder"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@null"
@@ -618,6 +578,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:contentDescription="@null"
+                        android:scaleType="center"
                         android:src="@drawable/callaccess_icon_chevron"
                         app:tint="@color/callaccess_arrow" />
                 </LinearLayout>

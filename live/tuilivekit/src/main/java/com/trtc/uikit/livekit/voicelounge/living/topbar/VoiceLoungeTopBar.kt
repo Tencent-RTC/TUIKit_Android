@@ -49,11 +49,12 @@ import com.trtc.uikit.livekit.voicelounge.voiceLoungeText
 import com.trtc.uikit.livekit.voicelounge.whiteAlpha
 import com.trtc.uikit.livekit.voicelounge.withAlpha
 import io.trtc.tuikit.atomicxcore.api.live.LikeStore
-import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -86,9 +87,9 @@ internal class VoiceLoungeTopBar(
     private var followCheckedUserID = ""
     private var lastFollowTapTime = 0L
 
-    private val giftRankPill = PillButton(context, context.getString(R.string.livekit_voiceroom_room_gift_rank))
+    private val giftRankPill = PillButton(context, context.getString(R.string.livekit_voicelounge_room_gift_rank))
     private val plazaPill =
-        PillButton(context, context.getString(R.string.livekit_voiceroom_room_plaza), showsChevron = true)
+        PillButton(context, context.getString(R.string.livekit_voicelounge_room_plaza), showsChevron = true)
     private var skin = VoiceLoungeSkin.defaultSkin
     private val logger = LiveKitLog.getVoiceRoomLogger("VoiceLoungeTopBar")
 
@@ -154,18 +155,18 @@ internal class VoiceLoungeTopBar(
         endButton.background = ovalDrawable(VoiceLoungeColor.card)
         hostAvatarView.scaleType = ImageView.ScaleType.CENTER_CROP
         hostAvatarView.clipOval()
-        roomNameLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        roomNameLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         roomNameLabel.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         roomNameLabel.singleLineEnd()
         hifiBadge.text = "HiFi"
-        hifiBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+        hifiBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
         hifiBadge.typeface = Typeface.DEFAULT_BOLD
         hifiBadge.includeFontPadding = false
         hifiBadge.maxLines = 1
         hifiBadge.gravity = Gravity.CENTER
         hifiBadge.setPadding(dp(5), dp(1), dp(5), dp(1))
         hifiBadge.background = roundedDrawable(Color.TRANSPARENT, dp(7).toFloat(), dp(1), whiteAlpha(0.3f))
-        followButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+        followButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
         followButton.typeface = Typeface.DEFAULT_BOLD
         followButton.gravity = Gravity.CENTER
         followButton.includeFontPadding = false
@@ -184,11 +185,23 @@ internal class VoiceLoungeTopBar(
         plazaPill.setOnClickListener { if (role == VoiceLoungeRole.HOST) statusPanel.show() }
         settings.changes.subscribe { renderRoom() }.addTo(bindings)
         giftRankStore.changes.subscribe { renderCounts() }.addTo(bindings)
+        audiencePresence.giftCoinsProvider = { userID ->
+            giftRankStore.ranking.firstOrNull { it.userID == userID }?.coins
+        }
+        audiencePresence.giftUpdates = callbackFlow {
+            val closeable = giftRankStore.changes.subscribe { trySend(Unit) }
+            awaitClose { closeable.close() }
+        }
+        if (role == VoiceLoungeRole.HOST) {
+            audiencePresence.onMemberClick = { user ->
+                VoiceLoungeAudienceManagePanel(context, liveID, user).show()
+            }
+        }
     }
 
     fun activate() {
         if (countScope != null) return
-        audiencePresence.bind(LiveInfo().apply { liveID = this@VoiceLoungeTopBar.liveID })
+        audiencePresence.bind(liveID)
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         countScope = scope
         scope.launch {
@@ -233,19 +246,19 @@ internal class VoiceLoungeTopBar(
     private fun renderCounts() {
         statLabel.setItems(
             listOf(
-                vlString(R.string.livekit_voiceroom_room_like_stat, likeCount.toString()),
-                vlString(R.string.livekit_voiceroom_room_gift_stat, giftRankStore.giftCount.toString()),
+                vlString(R.string.livekit_voicelounge_room_like_stat, likeCount.toString()),
+                vlString(R.string.livekit_voicelounge_room_gift_stat, giftRankStore.giftCount.toString()),
             ),
         )
     }
 
     private fun renderFollowButton() {
         if (isFollowed) {
-            followButton.text = context.getString(R.string.livekit_voiceroom_room_followed)
+            followButton.text = context.getString(R.string.livekit_voicelounge_room_followed)
             followButton.background = roundedDrawable(VoiceLoungeColor.overlayMarked, dp(FOLLOW_HEIGHT / 2).toFloat())
             followButton.setTextColor(LiveTheme.Color.text(LiveTheme.TextTone.SECONDARY))
         } else {
-            followButton.text = context.getString(R.string.livekit_voiceroom_room_follow)
+            followButton.text = context.getString(R.string.livekit_voicelounge_room_follow)
             followButton.background = roundedDrawable(VoiceLoungeColor.rose, dp(FOLLOW_HEIGHT / 2).toFloat())
             followButton.setTextColor(Color.WHITE)
         }

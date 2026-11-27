@@ -1,0 +1,18 @@
+<resources>
+
+    <string name="base_component_cancel">取消</string>
+    <string name="base_component_confirm">確認</string>
+    <string name="base_component_i_know">我知道了</string>
+    <string name="base_component_switch_open">開</string>
+    <string name="base_component_switch_close">關</string>
+
+    <string name="uikit_chat_permission_mic_reason_title">%s申請獲取麥克風權限</string>
+    <string name="uikit_chat_permission_mic_reason">為方便您發送語音消息，進行攝像和音視頻通話，以及使用音色克隆功能，請允許我們訪問麥克風。</string>
+    <string name="uikit_chat_permission_camera_reason_title">%s申請獲取相機權限</string>
+    <string name="uikit_chat_permission_camera_reason">為方便您拍攝照片或視頻以發送給朋友，以及進行視頻通話，請允許我們訪問攝像頭。</string>
+    <string name="uikit_chat_permission_storage_reason_title">%s申請獲取存儲權限</string>
+    <string name="uikit_chat_permission_storage_reason">為方便您保存照片和視頻到設備，請允許我們寫入照片和視頻到設備。</string>
+    <string name="uikit_chat_permission_mic_dialog_alert">在設置-應用-%s-權限中開啟麥克風權限，以正常使用語音消息、攝像、音視頻通話和音色克隆功能</string>
+    <string name="uikit_chat_permission_camera_dialog_alert">在設置-應用-%s-權限中開啟相機權限，以正常使用拍照、攝像和視頻通話功能</string>
+    <string name="uikit_chat_permission_storage_dialog_alert">在設置-應用-%s-權限中開啟存儲權限，以正常使用保存照片和視頻功能</string>
+</resources>

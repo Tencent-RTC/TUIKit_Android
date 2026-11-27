@@ -85,6 +85,7 @@ class LivingView @JvmOverloads constructor(
     private val audienceWelcomeView: AudienceWelcomeView
     private val messageListView: BarrageStreamView
     private val commentEntryView: View
+    private val commentEmojiEntryView: View
     private val commentComposerView: BarrageInputView
     private val likeView: ImageView
     private val moreView: ImageView
@@ -128,8 +129,8 @@ class LivingView @JvmOverloads constructor(
     }
 
     private fun updateCoHostStatus() {
-        val top = videoSeatRegions?.invoke()?.filter { !it.isEmpty && it.bottom > 0 && it.top < height }
-            ?.minOfOrNull { it.top }
+        val top =
+            videoSeatRegions?.invoke()?.filter { !it.isEmpty && it.bottom > 0 && it.top < height }?.minOfOrNull { it.top }
         coHostStatusView.visibility =
             if (isCoHostConnected && isJoinedChannel && !isCleanMode && top != null && top >= dp(22)) VISIBLE else GONE
         if (top != null) coHostStatusView.translationY = top - dp(22)
@@ -138,9 +139,8 @@ class LivingView @JvmOverloads constructor(
     private val cleanableViews: List<View>
     private val cleanTranslationX: Float = resources.displayMetrics.widthPixels.toFloat()
     private val touchSlop: Int = ViewConfiguration.get(context).scaledTouchSlop
-    private val swipeThreshold: Float = minOf(
-        54f * resources.displayMetrics.density, resources.displayMetrics.widthPixels * 0.14f
-    )
+    private val swipeThreshold: Float =
+        minOf(54f * resources.displayMetrics.density, resources.displayMetrics.widthPixels * 0.14f)
 
     private var swipeAxis: SwipeAxis = SwipeAxis.NONE
     private var swipeStartX = 0f
@@ -148,10 +148,9 @@ class LivingView @JvmOverloads constructor(
     private var swipeConsumed = false
     private var messageListGesture = false
     private var audienceEnteredJob: Job? = null
-    private val gestureDetector = GestureDetector(
-        context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onSingleTapUp(e: MotionEvent): Boolean = false
-        })
+    private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapUp(e: MotionEvent): Boolean = false
+    })
 
     init {
         LayoutInflater.from(context).inflate(R.layout.livekit_player_overlay_view, this, true)
@@ -164,6 +163,7 @@ class LivingView @JvmOverloads constructor(
         audienceWelcomeView = findViewById(R.id.livekit_audience_welcome)
         messageListView = findViewById(R.id.livekit_overlay_message_list)
         commentEntryView = findViewById(R.id.livekit_overlay_comment_entry)
+        commentEmojiEntryView = findViewById(R.id.livekit_overlay_comment_emoji)
         commentComposerView = findViewById(R.id.livekit_overlay_comment_composer)
         likeView = findViewById(R.id.livekit_overlay_like_view)
         moreView = findViewById(R.id.livekit_living_more_view)
@@ -174,16 +174,11 @@ class LivingView @JvmOverloads constructor(
 
         cleanableViews = listOf(
             giftDisplayView, likeAnimationView, hostInfoView, audienceListView, audienceWelcomeView, messageListView,
-            commentEntryView, likeView, moreView, giftView, coGuestView, coHostStatusView
+            commentEntryView, commentEmojiEntryView, likeView, moreView, giftView, coGuestView, coHostStatusView
         )
 
-        commentEntryView.setDebounceClickListener {
-            if (isSelfMessageBanned()) {
-                showCommentError(BarrageUIStore.sendErrorResource(10017))
-                return@setDebounceClickListener
-            }
-            commentComposerView.show()
-        }
+        commentEntryView.setDebounceClickListener { presentCommentComposer(emojiDirectly = false) }
+        commentEmojiEntryView.setDebounceClickListener { presentCommentComposer(emojiDirectly = true) }
         commentComposerView.onSend = ::sendComment
         commentComposerView.onPresentationChanged = { isPresented, _, messageListBottom ->
             updateCommentComposerLayout(isPresented, messageListBottom)
@@ -286,6 +281,7 @@ class LivingView @JvmOverloads constructor(
         audienceListView.visibility = businessVisibility
         messageListView.visibility = businessVisibility
         commentEntryView.visibility = businessVisibility
+        commentEmojiEntryView.visibility = businessVisibility
         likeView.visibility = businessVisibility
         moreView.visibility = businessVisibility
         giftView.visibility = businessVisibility
@@ -308,8 +304,7 @@ class LivingView @JvmOverloads constructor(
             }
         }
         giftBarrageStore.setApplicationActive(
-            lifecycleOwner?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true
-        )
+            lifecycleOwner?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true)
     }
 
     override fun onDetachedFromWindow() {
@@ -358,8 +353,7 @@ class LivingView @JvmOverloads constructor(
         giftBarrageStore.activate(liveID)
         giftBarrageStore.setCollectionEnabled(!isCleanMode)
         giftBarrageStore.setApplicationActive(
-            lifecycleOwner?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true
-        )
+            lifecycleOwner?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true)
         commentComposerView.bind(liveID)
         giftDisplayView.bind(liveID)
         giftDisplayView.setSuspended(isCleanMode)
@@ -404,6 +398,14 @@ class LivingView @JvmOverloads constructor(
         giftDisplayView.setSuspended(true)
         giftDisplayView.reset()
         updateInteractionLayout()
+    }
+
+    private fun presentCommentComposer(emojiDirectly: Boolean) {
+        if (isSelfMessageBanned()) {
+            showCommentError(BarrageUIStore.sendErrorResource(10017))
+            return
+        }
+        commentComposerView.show(emojiDirectly)
     }
 
     private fun sendComment(text: String) {
@@ -462,8 +464,9 @@ class LivingView @JvmOverloads constructor(
     private fun interactionTopBoundary(): Int? {
         if (!isJoinedChannel || width <= 0 || height <= 0) return null
         val bounds = RectF(0f, 0f, width.toFloat(), height.toFloat())
-        val seatBottom = videoSeatRegions?.invoke()?.filter { !it.isEmpty && RectF.intersects(it, bounds) }
-            ?.maxOfOrNull { it.bottom } ?: return null
+        val seatBottom = videoSeatRegions?.invoke()?.filter {
+            !it.isEmpty && RectF.intersects(it, bounds)
+        }?.maxOfOrNull { it.bottom } ?: return null
         val top = (seatBottom.toInt() + dp(8)).coerceIn(0, height)
         // Notifications, the input method and the gift sheet must not change this normal-layout gate.
         val normalBottom = commentEntryView.top - dp(14)
@@ -542,8 +545,7 @@ class LivingView @JvmOverloads constructor(
                     when {
                         dx > dy * 1.15f -> parent?.requestDisallowInterceptTouchEvent(true)
                         dy > dx * 1.15f -> parent?.requestDisallowInterceptTouchEvent(
-                            messageListView.canScrollMessages(if (ev.rawY > swipeStartY) -1 else 1)
-                        )
+                            messageListView.canScrollMessages(if (ev.rawY > swipeStartY) -1 else 1))
                     }
                 }
             }
@@ -662,8 +664,8 @@ class LivingView @JvmOverloads constructor(
                 return@forEach
             }
             if (clean) {
-                view.animate().translationX(targetTranslation).alpha(targetAlpha)
-                    .setDuration(CLEAN_ANIMATION_DURATION_MS).withEndAction { view.visibility = GONE }.start()
+                view.animate().translationX(targetTranslation).alpha(targetAlpha).setDuration(
+                    CLEAN_ANIMATION_DURATION_MS).withEndAction { view.visibility = GONE }.start()
             } else {
                 view.translationX = cleanTranslationX
                 view.alpha = 0f
@@ -678,9 +680,8 @@ class LivingView @JvmOverloads constructor(
             controlsRestoreView.translationX = cleanTranslationX * 0.05f
             controlsRestoreView.visibility = VISIBLE
             if (animate) {
-                controlsRestoreView.animate().alpha(1f).translationX(0f)
-                    .setStartDelay(CLEAN_RESTORE_BUTTON_ENTER_DELAY_MS)
-                    .setDuration(CLEAN_RESTORE_BUTTON_ENTER_DURATION_MS).start()
+                controlsRestoreView.animate().alpha(1f).translationX(0f).setStartDelay(
+                    CLEAN_RESTORE_BUTTON_ENTER_DELAY_MS).setDuration(CLEAN_RESTORE_BUTTON_ENTER_DURATION_MS).start()
             } else {
                 controlsRestoreView.alpha = 1f
                 controlsRestoreView.translationX = 0f

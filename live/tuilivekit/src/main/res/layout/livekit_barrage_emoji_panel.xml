@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/livekit_barrage_emoji_panel_title"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/livekit_barrage_emoji_panel_title_height"
+        android:layout_marginStart="@dimen/spacing_16"
+        android:layout_marginTop="@dimen/livekit_barrage_emoji_panel_title_top"
+        android:layout_marginEnd="@dimen/spacing_16"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:text="@string/livekit_barrage_emoji_title"
+        android:textColor="@color/livekit_barrage_emoji_title"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/livekit_barrage_emoji_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/livekit_barrage_emoji_panel_list_top"
+        android:clipToPadding="false"
+        android:paddingStart="@dimen/livekit_barrage_emoji_panel_list_inset"
+        android:paddingEnd="@dimen/livekit_barrage_emoji_panel_list_inset"
+        android:paddingBottom="@dimen/livekit_barrage_emoji_controls_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/livekit_barrage_emoji_item" />
+
+    <com.trtc.uikit.livekit.common.barrage.emoji.BarrageEmojiControlsGradientView
+        android:id="@+id/livekit_barrage_emoji_controls_gradient"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/livekit_barrage_emoji_controls_height"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/livekit_barrage_emoji_page_down"
+        android:layout_width="@dimen/livekit_barrage_emoji_page_down_width"
+        android:layout_height="@dimen/livekit_barrage_emoji_page_down_height"
+        android:layout_marginStart="@dimen/livekit_barrage_emoji_controls_inset"
+        android:layout_marginBottom="@dimen/livekit_barrage_emoji_page_down_bottom"
+        android:clickable="true"
+        android:contentDescription="@string/livekit_barrage_emoji_page_down"
+        android:focusable="true"
+        android:scaleType="center"
+        android:src="@drawable/live_barrage_collapse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/livekit_barrage_emoji_delete"
+        android:layout_width="@dimen/livekit_barrage_emoji_delete_width"
+        android:layout_height="@dimen/livekit_barrage_emoji_send_height"
+        android:layout_marginEnd="@dimen/spacing_8"
+        android:layout_marginBottom="@dimen/livekit_barrage_emoji_controls_bottom"
+        android:clickable="true"
+        android:contentDescription="@string/livekit_barrage_emoji_delete"
+        android:enabled="false"
+        android:focusable="true"
+        android:background="@drawable/livekit_barrage_emoji_delete_background"
+        android:scaleType="center"
+        android:src="@drawable/live_barrage_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/livekit_barrage_emoji_send" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/livekit_barrage_emoji_send"
+        android:layout_width="@dimen/livekit_barrage_emoji_send_width"
+        android:layout_height="@dimen/livekit_barrage_emoji_send_height"
+        android:layout_marginEnd="@dimen/livekit_barrage_emoji_controls_inset"
+        android:layout_marginBottom="@dimen/livekit_barrage_emoji_controls_bottom"
+        android:background="@drawable/livekit_comment_send_background"
+        android:clickable="true"
+        android:enabled="false"
+        android:focusable="true"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/live_barrage_btn_send"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</merge>

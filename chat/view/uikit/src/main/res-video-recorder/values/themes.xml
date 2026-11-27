@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="video_recorder_authorization_prompter_dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowMinWidthMajor">@dimen/video_recorder_dialog_min_width</item>
+        <item name="android:windowMinWidthMinor">@dimen/video_recorder_dialog_min_width</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+</resources>

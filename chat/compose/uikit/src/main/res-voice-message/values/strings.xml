@@ -1,0 +1,22 @@
+<resources>
+    <string name="voice_message_translate">Translate</string>
+    <string name="voice_message_undo_translate">Undo Translate</string>
+    <string name="voice_message_switch_language">Switch Language</string>
+    <string name="voice_message_read_aloud">Read Aloud</string>
+    <string name="voice_message_stop">Stop</string>
+    <string name="voice_message_select_language">Select Language</string>
+    <string name="voice_message_translate_failed">Translation failed</string>
+    <string name="voice_message_speak_failed">Read aloud failed</string>
+    <string name="voice_message_listen_from_here">Listen</string>
+    <string name="voice_message_listen_self_speaker">I</string>
+    <string name="voice_message_listen_says">"%1$s said: "</string>
+    <string name="voice_message_listen_sent_image">%1$s sent an image</string>
+    <string name="voice_message_listen_sent_video">%1$s sent a video</string>
+    <string name="voice_message_listen_sent_file">%1$s sent a file</string>
+    <string name="voice_message_listen_sent_merged">%1$s sent: %2$s</string>
+    <string name="voice_message_voice_default">Default</string>
+    <string name="voice_message_voice_xiaoxu">Xiaoxu (Male)</string>
+    <string name="voice_message_voice_xiaomei">Xiaomei (Female)</string>
+    <string name="voice_message_voice_xiaoxin">Xiaoxin (Female)</string>
+    <string name="voice_message_voice_xiaoyue">Xiaoyue (Female)</string>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<resources>
+    <string name="home_tab_meeting">Meeting</string>
+    <string name="home_tab_live">Live</string>
+    <string name="home_tab_call">Call</string>
+    <string name="home_tab_messages">Messages</string>
+    <string name="home_tab_profile">Profile</string>
+    <string name="home_coming_soon">Coming soon</string>
+    <string name="home_room_id_empty">Enter a meeting ID</string>
+    <string name="home_quick_meeting_name">%1$s’s meeting</string>
+    <string name="home_back">Back</string>
+    <string name="home_more">More</string>
+    <string name="home_live_title">Online Live</string>
+    <string name="home_grid">Grid</string>
+    <string name="home_preview">Preview</string>
+    <string name="home_start">Go Live</string>
+    <string name="home_untitled">Live</string>
+    <string name="home_unknown_host">Host</string>
+    <string name="home_empty">No live broadcasts</string>
+    <string name="home_load_failed">Could not load live broadcasts</string>
+    <string name="home_retry">Retry</string>
+    <string name="home_card_description">%1$s, %2$s, %3$s views</string>
+    <string name="home_enter">Enter live room</string>
+    <string name="home_ended">Live ended</string>
+    <string name="home_live_badge">Live</string>
+    <string name="home_preview_owner">@%1$s</string>
+    <string name="home_preview_viewers">%1$s views</string>
+    <string name="home_close">Close</string>
+    <string name="home_back_preview">Back to preview</string>
+    <string name="home_join_failed">Unable to enter live room</string>
+    <string name="home_own_live">You cannot enter your own live room</string>
+    <string name="home_broadcast_video">Video</string>
+    <string name="home_broadcast_voice">Voice</string>
+    <string name="home_broadcast_game">Game</string>
+    <string name="home_cover_unavailable">暂无封面</string>
+</resources>

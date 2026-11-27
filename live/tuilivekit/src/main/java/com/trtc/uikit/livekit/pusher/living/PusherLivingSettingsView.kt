@@ -138,6 +138,10 @@ class PusherLivingSettingsView(context: Context) : BottomSheetView(context) {
         if (previous?.isMirrorEnabled != settings.isMirrorEnabled) {
             renderMirror(settings.isMirrorEnabled)
         }
+        if (previous?.isFrontCamera != settings.isFrontCamera) {
+            mirrorItem.isEnabled = settings.isFrontCamera
+            mirrorItem.alpha = if (settings.isFrontCamera) 1f else 0.46f
+        }
         if (previous?.captureVolume != settings.captureVolume) {
             audio.bindCaptureVolume(settings.captureVolume)
         }

@@ -21,6 +21,7 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.theme.BottomSheetView
+import com.trtc.uikit.livekit.common.theme.LiveSlider
 import com.trtc.uikit.livekit.voicelounge.MATCH
 import com.trtc.uikit.livekit.voicelounge.VoiceLoungeBag
 import com.trtc.uikit.livekit.voicelounge.VoiceLoungeMain
@@ -45,6 +46,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context) {
 
@@ -62,31 +65,60 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
         @DrawableRes val coverRes: Int,
     )
 
-    private val tracks: List<Track> = listOf(
-        Track(
-            title = context.getString(R.string.livekit_pusher_music_happy),
-            artist = "TUIKit",
-            url = "https://dldir1.qq.com/hudongzhibo/TUIKit/resource/music/PositiveHappyAdvertising.mp3",
-            duration = "5:45",
-            coverRes = R.drawable.livekit_voicefx_r_loud,
-        ),
-        Track(
-            title = context.getString(R.string.livekit_pusher_music_sad),
-            artist = "TUIKit",
-            url = "https://dldir1.qq.com/hudongzhibo/TUIKit/resource/music/SadCinematicPiano.mp3",
-            duration = "6:06",
-            coverRes = R.drawable.livekit_voicefx_r_deep,
-        ),
-        Track(
-            title = context.getString(R.string.livekit_pusher_music_wonder_world),
-            artist = "TUIKit",
-            url = "https://dldir1.qq.com/hudongzhibo/TUIKit/resource/music/WonderWorld.mp3",
-            duration = "2:05",
-            coverRes = R.drawable.livekit_voicefx_r_ktv,
-        ),
-    )
+    private val tracks: List<Track> = buildTracks()
 
-    private val countLabel = TextView(context)
+    private fun buildTracks(): List<Track> {
+        val list = mutableListOf(
+            Track(
+                title = context.getString(R.string.livekit_pusher_music_happy),
+                artist = "TUIKit",
+                url = "https://dldir1.qq.com/hudongzhibo/TUIKit/resource/music/PositiveHappyAdvertising.mp3",
+                duration = "5:45",
+                coverRes = R.drawable.livekit_voicefx_r_loud,
+            ),
+            Track(
+                title = context.getString(R.string.livekit_pusher_music_sad),
+                artist = "TUIKit",
+                url = "https://dldir1.qq.com/hudongzhibo/TUIKit/resource/music/SadCinematicPiano.mp3",
+                duration = "6:06",
+                coverRes = R.drawable.livekit_voicefx_r_deep,
+            ),
+            Track(
+                title = context.getString(R.string.livekit_pusher_music_wonder_world),
+                artist = "TUIKit",
+                url = "https://dldir1.qq.com/hudongzhibo/TUIKit/resource/music/WonderWorld.mp3",
+                duration = "2:05",
+                coverRes = R.drawable.livekit_voicefx_r_ktv,
+            ),
+        )
+        rainTrackPath()?.let { path ->
+            list.add(
+                Track(
+                    title = context.getString(R.string.livekit_pusher_music_rain),
+                    artist = "TUIKit",
+                    url = path,
+                    duration = "5:15",
+                    coverRes = R.drawable.livekit_voicebgm_cover_rain,
+                )
+            )
+        }
+        return list
+    }
+
+    private fun rainTrackPath(): String? = try {
+        val outFile = File(context.cacheDir, "livekit_voicebgm_rain.mp3")
+        if (!outFile.exists() || outFile.length() == 0L) {
+            context.resources.openRawResource(R.raw.livekit_voicebgm_rain).use { input ->
+                FileOutputStream(outFile).use { output -> input.copyTo(output) }
+            }
+        }
+        outFile.absolutePath
+    } catch (e: Exception) {
+        null
+    }
+
+    private val volumeLabel = TextView(context)
+    private val volumeSlider = LiveSlider(context)
     private val modeButton = MusicModeButton(context)
     private val prevButton = MusicControlButton(context, R.drawable.livekit_voicebgm_prev)
     private val nextButton = MusicControlButton(context, R.drawable.livekit_voicebgm_next)
@@ -96,6 +128,7 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
     private var musicStore: MusicStore? = null
     private var boundLiveID = ""
     private var currentIndex = 0
+    private var volume = 100
     private var mode = PlayMode.ORDER
     private val history = ArrayDeque<Int>()
     private var playURL: String? = null
@@ -117,7 +150,7 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
         get() = context.dp(LIST_TOP) + tracks.size * context.dp(ROW_HEIGHT + ROW_SPACING) + context.dp(BOTTOM_INSET)
 
     init {
-        sheetTitle = context.getString(R.string.livekit_voiceroom_living_bgm)
+        sheetTitle = context.getString(R.string.livekit_voicelounge_living_bgm)
         setupViews()
         setupStyles()
         setupBindings()
@@ -138,31 +171,23 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
         val hInset = context.dp(HORIZONTAL_INSET)
         val toolbarTop = context.dp(TOOLBAR_TOP + 2)
         val control = context.dp(CONTROL_SIZE)
-        contentView.addView(
-            nextButton,
-            frameParams(control, control, Gravity.TOP or Gravity.END, top = toolbarTop, end = hInset + context.dp(4)),
+        val toolbar = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        toolbar.addView(volumeLabel, linearParams(WRAP, WRAP))
+        toolbar.addView(
+            volumeSlider,
+            linearParams(0, context.dp(24), weight = 1f, start = context.dp(8), end = context.dp(10)),
         )
+        toolbar.addView(modeButton, linearParams(WRAP, context.dp(24)))
+        toolbar.addView(prevButton, linearParams(control, control, start = context.dp(6)))
+        toolbar.addView(nextButton, linearParams(control, control, start = context.dp(6)))
         contentView.addView(
-            prevButton,
+            toolbar,
             frameParams(
-                control, control, Gravity.TOP or Gravity.END, top = toolbarTop,
-                end = hInset + context.dp(4) + control + context.dp(6)
-            ),
-        )
-        contentView.addView(
-            modeButton,
-            frameParams(
-                WRAP, context.dp(24),
-                Gravity.TOP or Gravity.END,
-                top = toolbarTop + (control - context.dp(24)) / 2,
-                end = hInset + context.dp(4) + control * 2 + context.dp(12),
-            ),
-        )
-        contentView.addView(
-            countLabel,
-            frameParams(
-                WRAP, WRAP, Gravity.TOP or Gravity.START, start = hInset + context.dp(4),
-                top = toolbarTop + (control - context.dp(14)) / 2
+                MATCH, control, Gravity.TOP,
+                start = hInset + context.dp(4), end = hInset + context.dp(4), top = toolbarTop,
             ),
         )
         rowsStack.orientation = LinearLayout.VERTICAL
@@ -172,18 +197,28 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
     }
 
     private fun setupStyles() {
-        countLabel.setTextColor(whiteAlpha(0.45f))
-        countLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-        countLabel.includeFontPadding = false
-        countLabel.text = context.getString(R.string.livekit_voiceroom_bgm_track_count, tracks.size)
-        prevButton.contentDescription = context.getString(R.string.livekit_voiceroom_bgm_prev)
-        nextButton.contentDescription = context.getString(R.string.livekit_voiceroom_bgm_next)
+        volumeLabel.setTextColor(whiteAlpha(0.72f))
+        volumeLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
+        volumeLabel.includeFontPadding = false
+        volumeLabel.text = context.getString(R.string.livekit_voicelounge_bgm_volume)
+        volumeSlider.setRange(0, 100, 1)
+        volumeSlider.setValue(volume)
+        volumeSlider.minimumTrackColor = skin.mid
+        volumeSlider.contentDescription = context.getString(R.string.livekit_voicelounge_bgm_volume)
+        prevButton.contentDescription = context.getString(R.string.livekit_voicelounge_bgm_prev)
+        nextButton.contentDescription = context.getString(R.string.livekit_voicelounge_bgm_next)
     }
 
     private fun setupBindings() {
         modeButton.setOnClickListener { switchMode() }
         prevButton.setOnClickListener { step(-1) }
         nextButton.setOnClickListener { step(1) }
+        volumeSlider.onValueChanged = { handleVolumeChanged(it) }
+    }
+
+    private fun handleVolumeChanged(value: Int) {
+        volume = value
+        musicStore?.setMusicVolume(volume)
     }
 
     fun bind(liveID: String) {
@@ -253,6 +288,7 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
         if (this.skin == skin) return
         this.skin = skin
         modeButton.applySkin(skin)
+        volumeSlider.minimumTrackColor = skin.mid
         rows.forEach { it.applySkin(skin) }
     }
 
@@ -321,6 +357,7 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
         val store = musicStore ?: return
         if (playURL != null && playStatus != MusicPlayStatus.IDLE) store.stopPlay()
         store.setPitch(0.0)
+        store.setMusicVolume(volume)
         store.startPlay(AudioMusicParam(path = url), null)
     }
 
@@ -348,14 +385,14 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
         mode = mode.next()
         modeButton.bind(mode)
         modeButton.contentDescription = context.getString(
-            R.string.livekit_voiceroom_bgm_mode_tip, context.getString(modeLabelRes(mode)),
+            R.string.livekit_voicelounge_bgm_mode_tip, context.getString(modeLabelRes(mode)),
         )
     }
 
     private fun modeLabelRes(mode: PlayMode): Int = when (mode) {
-        PlayMode.ORDER -> R.string.livekit_voiceroom_bgm_mode_order
-        PlayMode.SINGLE -> R.string.livekit_voiceroom_bgm_mode_single
-        PlayMode.SHUFFLE -> R.string.livekit_voiceroom_bgm_mode_shuffle
+        PlayMode.ORDER -> R.string.livekit_voicelounge_bgm_mode_order
+        PlayMode.SINGLE -> R.string.livekit_voicelounge_bgm_mode_single
+        PlayMode.SHUFFLE -> R.string.livekit_voicelounge_bgm_mode_shuffle
     }
 
     private inner class MusicModeButton(context: Context) : LinearLayout(context) {
@@ -368,7 +405,7 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
             setPadding(context.dp(10), 0, context.dp(10), 0)
             iconView.scaleType = ImageView.ScaleType.FIT_CENTER
             addView(iconView, linearParams(context.dp(12), context.dp(12)))
-            titleLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+            titleLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
             titleLabel.includeFontPadding = false
             titleLabel.gravity = Gravity.CENTER_VERTICAL
             addView(titleLabel, linearParams(WRAP, WRAP, start = context.dp(4)))
@@ -417,7 +454,6 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
         private val equalizer = MusicEqualizerView(context)
         private val cover = ImageView(context)
         private val titleLabel = TextView(context)
-        private val artistLabel = TextView(context)
         private val durationLabel = TextView(context)
         private val playButton = FrameLayout(context)
         private val playIcon = ImageView(context)
@@ -437,7 +473,7 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
         init {
             setBackground(background)
             indexLabel.setTextColor(whiteAlpha(0.45f))
-            indexLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+            indexLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
             indexLabel.gravity = Gravity.CENTER
             indexLabel.text = "%02d".format(index + 1)
             addView(
@@ -464,28 +500,19 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
                     start = context.dp(6 + 22 + 8)
                 ),
             )
-            titleLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            titleLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
             titleLabel.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             titleLabel.setTextColor(Color.WHITE)
             titleLabel.includeFontPadding = false
             titleLabel.maxLines = 1
             titleLabel.ellipsize = android.text.TextUtils.TruncateAt.END
             titleLabel.text = track.title
-            artistLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-            artistLabel.setTextColor(whiteAlpha(0.45f))
-            artistLabel.includeFontPadding = false
-            artistLabel.maxLines = 1
-            artistLabel.text = track.artist
             val titleRow = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 addView(
                     titleLabel,
                     LinearLayout.LayoutParams(0, WRAP, 1f),
-                )
-                addView(
-                    artistLabel,
-                    LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = context.dp(6) },
                 )
             }
             val titleRowStart = context.dp(6 + 22 + 8 + 40 + 10)
@@ -498,7 +525,7 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
                 ),
             )
             durationLabel.setTextColor(whiteAlpha(0.45f))
-            durationLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+            durationLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
             durationLabel.gravity = Gravity.END
             durationLabel.text = track.duration
             addView(
@@ -630,8 +657,8 @@ internal class VoiceLoungeMusicView(context: Context) : BottomSheetView(context)
     companion object {
         private const val HORIZONTAL_INSET = 16
         private const val TOOLBAR_TOP = 58
-        private const val LIST_TOP = 96
-        private const val BOTTOM_INSET = 20
+        private const val LIST_TOP = 104
+        private const val BOTTOM_INSET = 44
         private const val ROW_HEIGHT = 52
         private const val ROW_SPACING = 2
         private const val CONTROL_SIZE = 26

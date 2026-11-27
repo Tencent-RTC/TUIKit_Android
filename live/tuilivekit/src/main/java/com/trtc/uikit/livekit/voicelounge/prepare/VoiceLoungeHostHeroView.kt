@@ -215,7 +215,7 @@ internal class VoiceLoungeHostHeroView(context: Context) : FrameLayout(context) 
             fun of(layout: VoiceLoungeSeatLayout, context: Context): SecondarySpec? = when (layout) {
                 VoiceLoungeSeatLayout.ONE_V8, VoiceLoungeSeatLayout.ONE_V8X -> null
                 VoiceLoungeSeatLayout.TWO_V8 -> SecondarySpec(
-                    context.getString(R.string.livekit_voiceroom_layout_cohost), -72, 72, 10,
+                    context.getString(R.string.livekit_voicelounge_layout_cohost), -72, 72, 10,
                 )
 
                 VoiceLoungeSeatLayout.DUO -> SecondarySpec("", -60, 60, 40)

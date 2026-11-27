@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/uikit_ai_call_window"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121417">
+
+    <LinearLayout
+        android:id="@+id/uikit_ai_call_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+
+            <TextView
+                android:id="@+id/uikit_ai_call_mode_pill"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:background="@drawable/uikit_ai_bg_call_mode_pill"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:text="@string/uikit_ai_call_mode_free"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/uikit_ai_call_debug"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/uikit_ai_bg_call_mode_pill"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:text="@string/uikit_ai_call_debug_toggle"
+                android:contentDescription="@string/uikit_ai_call_debug_toggle"
+                android:textColor="#8A9099"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/uikit_ai_call_orb_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <io.trtc.tuikit.chat.uikit.components.aiassistant.call.ui.VoiceOrbView
+                android:id="@+id/uikit_ai_call_orb"
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/uikit_ai_transcript_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.4"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/uikit_ai_call_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:textColor="#B8BDC4"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="24dp">
+
+            <ImageView
+                android:id="@+id/uikit_ai_call_mic"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/uikit_ai_bg_call_button"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/uikit_ai_ic_call_mic" />
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="1dp" />
+
+            <ImageView
+                android:id="@+id/uikit_ai_call_subtitle"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/uikit_ai_bg_call_button"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/uikit_ai_ic_call_subtitle" />
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="1dp" />
+
+            <ImageView
+                android:id="@+id/uikit_ai_call_hangup"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/uikit_ai_bg_call_hangup"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/uikit_ai_ic_call_hangup" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="@string/uikit_ai_call_disclaimer"
+            android:textColor="#6E747C"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <io.trtc.tuikit.chat.uikit.components.aiassistant.call.ui.DebugOverlayView
+        android:id="@+id/uikit_ai_call_debug_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="168dp"
+        android:layout_marginHorizontal="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
+
+</FrameLayout>

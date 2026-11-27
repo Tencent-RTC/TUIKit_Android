@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/message_input_top_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp" />
+
+    <LinearLayout
+        android:id="@+id/message_input_voice_transcription_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone">
+
+        <io.trtc.tuikit.chat.uikit.components.messageinput.ui.AtomicEditText
+            android:id="@+id/message_input_voice_transcription_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:inputType="textMultiLine"
+            android:maxLines="5"
+            android:minLines="2"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/message_input_voice_transcription_action_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/message_input_voice_transcription_cancel"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/message_input_cancel"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/message_input_voice_transcription_send_audio"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/message_input_send_original_voice"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/message_input_voice_transcription_send_text"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/message_input_send"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/message_input_toolbar_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="56dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <FrameLayout
+            android:id="@+id/message_input_btn_audio_record"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:contentDescription="@string/message_input_audio">
+
+            <ImageView
+                android:id="@+id/message_input_btn_audio_record_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/message_input_audio_icon" />
+
+        </FrameLayout>
+
+        <android.widget.Space
+            android:id="@+id/message_input_space_after_audio_record"
+            android:layout_width="8dp"
+            android:layout_height="0dp" />
+
+        <FrameLayout
+            android:id="@+id/message_input_switch_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="34dp">
+
+            <LinearLayout
+                android:id="@+id/message_input_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:minHeight="34dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+
+                <io.trtc.tuikit.chat.uikit.components.messageinput.ui.AtomicEditText
+                    android:id="@+id/message_input_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/message_input_edit_text_hint"
+                    android:imeOptions="actionSend"
+                    android:inputType="textMultiLine"
+                    android:maxLines="6"
+                    android:minLines="1"
+                    android:padding="4dp"
+                    android:scrollbars="vertical"
+                    android:textAlignment="viewStart"
+                    android:textDirection="locale"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <io.trtc.tuikit.chat.uikit.components.messageinput.ui.AudioRecorderView
+                android:id="@+id/message_input_btn_press_to_talk"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:gravity="center"
+                android:text="@string/message_input_press_to_talk"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <android.widget.Space
+            android:layout_width="8dp"
+            android:layout_height="0dp" />
+
+        <FrameLayout
+            android:id="@+id/message_input_btn_emoji"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:contentDescription="@string/message_input_emoji">
+
+            <ImageView
+                android:id="@+id/message_input_btn_emoji_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/message_input_emoji_icon" />
+
+        </FrameLayout>
+
+        <android.widget.Space
+            android:id="@+id/message_input_space_after_emoji"
+            android:layout_width="8dp"
+            android:layout_height="0dp" />
+
+        <FrameLayout
+            android:id="@+id/message_input_btn_send"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:visibility="gone"
+            android:contentDescription="@string/message_input_send">
+
+            <ImageView
+                android:id="@+id/message_input_btn_send_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/message_input_send_icon" />
+
+            <TextView
+                android:id="@+id/message_input_btn_send_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/message_input_btn_send_red_dot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_gravity="top|end"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <!-- Only visible when keepSendButtonVisible puts the send and more buttons side by side. -->
+        <android.widget.Space
+            android:id="@+id/message_input_space_after_send"
+            android:layout_width="8dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/message_input_btn_more"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:contentDescription="@string/message_input_more">
+
+            <ImageView
+                android:id="@+id/message_input_btn_more_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/message_input_more_icon" />
+
+            <View
+                android:id="@+id/message_input_btn_more_red_dot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_gravity="top|end"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/message_input_btn_chatbot_stop"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:contentDescription="@string/message_input_chatbot_stop"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/message_input_btn_chatbot_stop_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/message_input_chatbot_stop_icon" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/message_input_quote_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/message_input_quote_summary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:textDirection="locale"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/message_input_quote_close"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="×"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/message_input_panel_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+</LinearLayout>

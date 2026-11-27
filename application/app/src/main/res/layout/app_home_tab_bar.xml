@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_meeting" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:text="@string/home_tab_meeting"/>
+        <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_live" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:text="@string/home_tab_live"/>
+        <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_call" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:text="@string/home_tab_call"/>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_messages" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:text="@string/home_tab_messages"/>
+            <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_unread" android:layout_width="wrap_content" android:layout_height="16dp" android:minWidth="20dp" android:layout_gravity="top|end" android:layout_marginTop="6dp" android:layout_marginEnd="6dp" android:paddingHorizontal="3dp" android:background="@drawable/home_unread_background" android:textColor="@color/home_white" android:textSize="10sp" android:gravity="center" android:visibility="gone"/>
+        </FrameLayout>
+        <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_profile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:text="@string/home_tab_profile"/>
+    </LinearLayout>
+</merge>

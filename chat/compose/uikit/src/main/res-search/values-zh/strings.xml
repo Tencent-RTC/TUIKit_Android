@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_search_text">搜索</string>
+    <string name="search_category_contact">用户</string>
+    <string name="search_category_group">群聊</string>
+    <string name="search_category_chat_record">聊天记录</string>
+    <string name="search_more">更多</string>
+    <string name="search_view_more_contacts">查看更多用户</string>
+    <string name="search_view_more_groups">查看更多群聊</string>
+    <string name="search_view_more_messages">查看更多聊天记录</string>
+    <string name="search_related_chat_record_count">%d条相关记录</string>
+    <string name="search_no_result">未找到相关结果</string>
+    <string name="search_cannot_found_chat_record">未找到相关聊天记录</string>
+    <string name="search_cannot_found_contact">未找到相关联系人</string>
+    <string name="search_cannot_found_group">未找到相关群组</string>
+    <string name="search_group_id">群 ID</string>
+    <string name="search_include_member">包含群成员%s</string>
+</resources>

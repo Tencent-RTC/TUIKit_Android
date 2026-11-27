@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="uikit_ai_page_title">AI 어시스턴트</string>
+    <string name="uikit_ai_transfer_to_human">상담원 연결</string>
+    <string name="uikit_ai_select_agent">어시스턴트 선택</string>
+    <string name="uikit_ai_agents_empty">사용 가능한 어시스턴트가 없습니다</string>
+    <string name="uikit_ai_call_button">음성 통화</string>
+    <string name="uikit_ai_call_handoff_waiting">상담원 연결을 기다리는 중입니다. 잠시 후 다시 시도해 주세요</string>
+    <string name="uikit_ai_call_handoff_required">통화를 걸기 전에 먼저 상담원에게 연결해 주세요</string>
+    <string name="uikit_ai_call_mode_free">자유 대화</string>
+    <string name="uikit_ai_call_listening">듣고 있습니다...</string>
+    <string name="uikit_ai_call_thinking">생각 중...</string>
+    <string name="uikit_ai_call_speaking">계속 말씀하셔도 됩니다</string>
+    <string name="uikit_ai_call_muted">음소거됨</string>
+    <string name="uikit_ai_call_disclaimer">AI가 생성한 콘텐츠</string>
+    <string name="uikit_ai_call_permission_denied">음성 대화에는 마이크 권한이 필요합니다</string>
+    <string name="uikit_ai_call_start_failed">음성 인식을 시작하지 못했습니다. 다시 시도해 주세요</string>
+    <string name="uikit_ai_call_asr_unavailable_title">음성 인식을 사용할 수 없음</string>
+    <string name="uikit_ai_call_asr_unavailable_content">이 앱의 음성 인식 리소스 패키지가 모두 소진되었거나 활성화되지 않아 음성 통화를 일시적으로 사용할 수 없습니다.</string>
+    <string name="uikit_ai_call_asr_unavailable_exit">통화 종료</string>
+    <string name="uikit_ai_call_start_failed_retry">연결에 실패했습니다. 마이크를 눌러 다시 시도하세요</string>
+    <string name="uikit_ai_call_send_failed">전송에 실패했습니다. 다시 시도해 주세요</string>
+    <string name="uikit_ai_call_reply_timeout">어시스턴트가 응답하지 않았습니다. 다시 시도해 주세요</string>
+    <string name="uikit_ai_call_audio_unavailable">마이크를 사용할 수 없습니다</string>
+    <string name="uikit_ai_call_voiceprint_enrolled">목소리를 기억했어요. 이제 당신의 목소리에만 응답합니다</string>
+    <string name="uikit_ai_call_playback_unavailable">음성 재생을 사용할 수 없어 답변이 텍스트로 표시됩니다</string>
+    <string name="uikit_ai_call_debug_toggle">LOG</string>
+    <string name="uikit_ai_call_try_saying">이렇게 말해 보세요: \"%1$s\"</string>
+    <string name="uikit_ai_call_duration">통화 중 %1$s</string>
+    <string name="uikit_ai_call_connecting">연결 중…</string>
+    <string name="uikit_ai_call_label_mute">음소거</string>
+    <string name="uikit_ai_call_label_unmute">음소거 해제</string>
+    <string name="uikit_ai_call_label_subtitle">자막</string>
+    <string name="uikit_ai_call_label_hangup">끊기</string>
+</resources>

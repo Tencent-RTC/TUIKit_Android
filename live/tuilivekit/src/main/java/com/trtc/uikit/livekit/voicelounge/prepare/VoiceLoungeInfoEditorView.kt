@@ -139,10 +139,10 @@ internal class VoiceLoungeInfoEditorView(context: Context) : LinearLayout(contex
             COVER_BACKGROUND, dp(COVER_CORNER).toFloat(), dp(1), whiteAlpha(0.16f),
         )
         coverImageView.scaleType = ImageView.ScaleType.CENTER_CROP
-        coverHintLabel.text = context.getString(R.string.livekit_voiceroom_prepare_change_cover)
+        coverHintLabel.text = context.getString(R.string.livekit_voicelounge_prepare_change_cover)
         coverHintLabel.setTextColor(Color.WHITE)
         coverHintLabel.gravity = Gravity.CENTER
-        coverHintLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+        coverHintLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 7f)
         coverHintLabel.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         coverHintLabel.includeFontPadding = false
         coverHintLabel.setPadding(dp(2), 0, dp(2), 0)
@@ -153,7 +153,7 @@ internal class VoiceLoungeInfoEditorView(context: Context) : LinearLayout(contex
         roomNameInput.background = null
         roomNameInput.setPadding(0, 0, 0, 0)
         roomNameInput.setTextColor(Color.WHITE)
-        roomNameInput.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+        roomNameInput.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
         roomNameInput.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         roomNameInput.includeFontPadding = false
         roomNameInput.gravity = Gravity.START or Gravity.TOP
@@ -162,14 +162,14 @@ internal class VoiceLoungeInfoEditorView(context: Context) : LinearLayout(contex
         roomNameInput.imeOptions = EditorInfo.IME_ACTION_DONE
         roomNameInput.setHorizontallyScrolling(false)
         roomNameInput.setInputLimit(
-            ROOM_NAME_BYTE_LIMIT, R.string.livekit_voiceroom_prepare_room_name_byte_limit,
+            ROOM_NAME_BYTE_LIMIT, R.string.livekit_voicelounge_prepare_room_name_byte_limit,
             LiveTextInputView.LimitUnit.UTF8_BYTES,
         )
 
         editIconView.setImageResource(R.drawable.livekit_voiceprepare_edit)
         editIconView.scaleType = ImageView.ScaleType.FIT_CENTER
         editIconView.tint(whiteAlpha(0.7f))
-        editButton.contentDescription = context.getString(R.string.livekit_voiceroom_prepare_room_name_edit)
+        editButton.contentDescription = context.getString(R.string.livekit_voicelounge_prepare_room_name_edit)
 
         underlineView.setBackgroundColor(whiteAlpha(0.22f))
 
@@ -184,7 +184,7 @@ internal class VoiceLoungeInfoEditorView(context: Context) : LinearLayout(contex
         topicArrowView.tint(whiteAlpha(0.78f))
 
         topicLabel.setTextColor(whiteAlpha(0.78f))
-        topicLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+        topicLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
         topicLabel.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         topicLabel.includeFontPadding = false
         topicLabel.maxLines = 1
@@ -215,9 +215,9 @@ internal class VoiceLoungeInfoEditorView(context: Context) : LinearLayout(contex
     private fun bindTopic(topic: String) {
         val trimmed = topic.trim()
         topicLabel.text = if (trimmed.isEmpty()) {
-            context.getString(R.string.livekit_voiceroom_prepare_topic_placeholder)
+            context.getString(R.string.livekit_voicelounge_prepare_topic_placeholder)
         } else {
-            context.getString(R.string.livekit_voiceroom_prepare_topic_picked, trimmed)
+            context.getString(R.string.livekit_voicelounge_prepare_topic_picked, trimmed)
         }
         topicButton.contentDescription = topicLabel.text
     }

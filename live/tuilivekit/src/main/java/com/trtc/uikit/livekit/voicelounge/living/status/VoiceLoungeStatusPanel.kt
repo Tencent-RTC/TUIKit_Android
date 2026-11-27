@@ -19,8 +19,8 @@ import com.trtc.uikit.livekit.voicelounge.living.VoiceLoungeLiveClock
 import com.trtc.uikit.livekit.voicelounge.ovalDrawable
 import com.trtc.uikit.livekit.voicelounge.settings.theme.VoiceLoungeColor
 import com.trtc.uikit.livekit.voicelounge.voiceLoungeText
-import io.trtc.tuikit.atomicxcore.api.live.AtomicPusher
 import io.trtc.tuikit.atomicxcore.api.live.LikeStore
+import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSummaryData
 import io.trtc.tuikit.atomicxcore.api.live.LiveSummaryStore
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +38,7 @@ internal class VoiceLoungeStatusPanel(
     private val clock: VoiceLoungeLiveClock,
 ) : BottomSheetView(context) {
     private val summaryStore = LiveSummaryStore.create(liveID)
+    private val audienceStore = LiveAudienceStore.create(liveID)
     private val likeStore = LikeStore.create(liveID)
     private var scope: CoroutineScope? = null
     private var summaryData = LiveSummaryData()
@@ -45,7 +46,7 @@ internal class VoiceLoungeStatusPanel(
     private var likeCount = 0
 
     private val titleLabel = voiceLoungeText(
-        context, LiveTheme.TextRole.PAGE_TITLE, text = context.getString(R.string.livekit_voiceroom_status_title),
+        context, LiveTheme.TextRole.PAGE_TITLE, text = context.getString(R.string.livekit_voicelounge_status_title),
     )
     private val durationDot = View(context)
     private val durationLabel = TextView(context)
@@ -84,7 +85,7 @@ internal class VoiceLoungeStatusPanel(
         contentView.addView(statisticsView, frameParams(MATCH, WRAP, Gravity.TOP, top = context.dp(40 + 28 + 24)))
         durationDot.background = ovalDrawable(VoiceLoungeColor.brandBlue)
         durationLabel.setTextColor(Color.rgb(230, 230, 230))
-        durationLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+        durationLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
         durationLabel.typeface = Typeface.MONOSPACE
         durationLabel.gravity = Gravity.CENTER
         durationLabel.includeFontPadding = false
@@ -111,10 +112,11 @@ internal class VoiceLoungeStatusPanel(
             }
         }
         activeScope.launch {
-            AtomicPusher.shared().state.totalViewerCount.map { maxOf(0, it) }.distinctUntilChanged().collect {
-                onlineCount = it
-                refreshStatistics()
-            }
+            audienceStore.liveAudienceState.audienceCount
+                .map { maxOf(0, it) }.distinctUntilChanged().collect {
+                    onlineCount = it
+                    refreshStatistics()
+                }
         }
         activeScope.launch {
             likeStore.likeState.totalLikeCount.map { it.toInt() }.distinctUntilChanged().collect {

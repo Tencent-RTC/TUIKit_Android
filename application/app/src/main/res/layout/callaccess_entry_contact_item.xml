@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/contact_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/callaccess_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="10dp">
+
+        <ImageView
+            android:id="@+id/contact_avatar"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/callaccess_bg_avatar_circle"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/contact_name"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/callaccess_text"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/contact_id"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/callaccess_text2"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/contact_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/callaccess_bg_tag"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:text="@string/callaccess_entry_friend_tag"
+            android:textColor="@color/callaccess_brand"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/contact_check"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@null"
+            android:padding="4dp" />
+
+        <TextView
+            android:id="@+id/contact_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>

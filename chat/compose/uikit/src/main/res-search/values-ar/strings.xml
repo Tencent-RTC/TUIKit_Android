@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_search_text">بحث</string>
+    <string name="search_category_contact">المستخدمون</string>
+    <string name="search_category_group">الدردشات الجماعية</string>
+    <string name="search_category_chat_record">سجل المحادثة</string>
+    <string name="search_more">المزيد</string>
+    <string name="search_view_more_contacts">عرض المزيد من المستخدمين</string>
+    <string name="search_view_more_groups">عرض المزيد من الدردشات الجماعية</string>
+    <string name="search_view_more_messages">عرض المزيد من سجل المحادثة</string>
+    <string name="search_related_chat_record_count">%d سجل ذو صلة</string>
+    <string name="search_no_result">لم يتم العثور على نتائج</string>
+    <string name="search_cannot_found_chat_record">لم يتم العثور على سجلات محادثة ذات صلة</string>
+    <string name="search_cannot_found_contact">لم يتم العثور على جهات اتصال ذات صلة</string>
+    <string name="search_cannot_found_group">لم يتم العثور على مجموعات ذات صلة</string>
+    <string name="search_group_id">معرف المجموعة</string>
+    <string name="search_include_member">يتضمن عضو %s</string>
+</resources>

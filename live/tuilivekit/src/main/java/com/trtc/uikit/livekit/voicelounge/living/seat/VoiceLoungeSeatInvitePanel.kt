@@ -174,8 +174,8 @@ internal class VoiceLoungeSeatInvitePanel(
     }
 
     private fun setupStyles() {
-        sheetTitle = context.getString(R.string.livekit_voiceroom_seat_sheet_title)
-        lockLabel.text = context.getString(R.string.livekit_voiceroom_seat_lock_toggle)
+        sheetTitle = context.getString(R.string.livekit_voicelounge_seat_sheet_title)
+        lockLabel.text = context.getString(R.string.livekit_voicelounge_seat_lock_toggle)
         listOf(profileCard, lockCard, card).forEach {
             it.background = roundedDrawable(
                 blackAlpha(0.25f), context.dp(16).toFloat(), context.dp(1), VoiceLoungeColor.overlayHair
@@ -189,7 +189,7 @@ internal class VoiceLoungeSeatInvitePanel(
         )
         profileMicIcon.scaleType = ImageView.ScaleType.FIT_CENTER
         profileLockIcon.strokeColor = InviteStyle.profileIconTint
-        profileTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
+        profileTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
         profileTitle.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         profileTitle.singleLineEnd()
         profileMeta.singleLineEnd()
@@ -299,10 +299,10 @@ internal class VoiceLoungeSeatInvitePanel(
         lockSwitch.setChecked(locked, animate = false)
         lockSwitch.isEnabled = pendingLock == null
         renderProfile(locked)
-        cardTitle.text = context.getString(R.string.livekit_voiceroom_seat_invitable, audience.size.toString())
+        cardTitle.text = context.getString(R.string.livekit_voicelounge_seat_invitable, audience.size.toString())
         card.visibility = if (locked) View.GONE else View.VISIBLE
         listView.removeAllViews()
-        emptyLabel.text = context.getString(R.string.livekit_voiceroom_comic_invite_empty)
+        emptyLabel.text = context.getString(R.string.livekit_voicelounge_comic_invite_empty)
         emptyLabel.visibility = if (locked || audience.isNotEmpty()) View.GONE else View.VISIBLE
         if (!locked) {
             audience.forEach { user ->
@@ -323,12 +323,12 @@ internal class VoiceLoungeSeatInvitePanel(
 
     private fun renderProfile(locked: Boolean) {
         val status = context.getString(
-            if (locked) R.string.livekit_voiceroom_seat_locked_seat else R.string.livekit_voiceroom_seat_empty_seat,
+            if (locked) R.string.livekit_voicelounge_seat_locked_seat else R.string.livekit_voicelounge_seat_empty_seat,
         )
         profileMicIcon.visibility = if (locked) View.GONE else View.VISIBLE
         profileLockIcon.visibility = if (locked) View.VISIBLE else View.GONE
         profileTitle.text = status
-        profileMeta.text = context.getString(R.string.livekit_voiceroom_seat_seat_meta, seatIndex, status)
+        profileMeta.text = context.getString(R.string.livekit_voicelounge_seat_seat_meta, seatIndex, status)
     }
 
     private fun toggleInvite(user: LiveUserInfo) {
@@ -370,7 +370,7 @@ internal class VoiceLoungeSeatInvitePanel(
                 nameLabel, frameParams(MATCH, WRAP, Gravity.CENTER_VERTICAL, start = dp(68), end = dp(16 + 76 + 12)),
             )
             button.gravity = Gravity.CENTER
-            button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+            button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             button.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
             button.includeFontPadding = false
             button.setOnClickListener { onTap?.invoke() }
@@ -385,9 +385,9 @@ internal class VoiceLoungeSeatInvitePanel(
             val muted = isInvited && !isApplicant
             button.text = context.getString(
                 when {
-                    isApplicant -> R.string.livekit_voiceroom_comic_connect
-                    isInvited -> R.string.livekit_voiceroom_comic_cancel_invite
-                    else -> R.string.livekit_voiceroom_comic_invite
+                    isApplicant -> R.string.livekit_voicelounge_comic_connect
+                    isInvited -> R.string.livekit_voicelounge_comic_cancel_invite
+                    else -> R.string.livekit_voicelounge_comic_invite
                 },
             )
             button.setTextColor(whiteAlpha(if (muted) 0.7f else 0.9f))

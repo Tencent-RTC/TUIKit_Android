@@ -22,7 +22,7 @@ internal class VoiceLoungeAudioEffectPanel(context: Context) : BottomSheetView(c
 
     init {
         contentView.addView(audioEffectView, frameParams(MATCH, MATCH, top = context.dp(CONTENT_TOP_DP)))
-        sheetTitle = context.getString(R.string.livekit_voiceroom_audio_title)
+        sheetTitle = context.getString(R.string.livekit_voicelounge_audio_title)
         audioEffectView.onSetCaptureVolume = { volume -> onSetCaptureVolume?.invoke(volume) }
     }
 

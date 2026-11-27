@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="demo_page_background">#FFF6F6F6</color>
+    <color name="demo_surface_background">#FFFFFFFF</color>
+    <color name="demo_nav_background">#FFFFFFFF</color>
+    <color name="demo_search_bar_background">#FFF5F5F5</color>
+    <color name="demo_text_primary">#FF000000</color>
+    <color name="demo_text_secondary">#FF999999</color>
+    <color name="demo_text_hint">#FFBBBBBB</color>
+    <color name="demo_divider">#FFE5E5E5</color>
+    <color name="demo_icon_default">#FF333333</color>
+    <color name="demo_tab_selected">#FF147AFF</color>
+    <color name="demo_tab_unselected">#FF999999</color>
+    <color name="demo_input_background">#FFF5F5F5</color>
+    <color name="demo_text_error">#FFFF3B30</color>
+    <color name="demo_avatar_placeholder">#FF147AFF</color>
+    <color name="demo_switch_active">#FF147AFF</color>
+    <color name="demo_text_link">#FF147AFF</color>
+    <color name="demo_icon_arrow">#FFCCCCCC</color>
+</resources>

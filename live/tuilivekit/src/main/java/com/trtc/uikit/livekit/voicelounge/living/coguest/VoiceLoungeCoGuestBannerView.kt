@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.theme.LiveTheme
-import com.trtc.uikit.livekit.common.theme.LiveToast
 import com.trtc.uikit.livekit.voicelounge.MATCH
 import com.trtc.uikit.livekit.voicelounge.VoiceLoungeBag
 import com.trtc.uikit.livekit.voicelounge.WRAP
@@ -72,20 +71,20 @@ internal class VoiceLoungeCoGuestBannerView(
         titleLabel.singleLineEnd()
         titleLabel.text = context.getString(
             when (kind) {
-                Kind.INVITATION -> R.string.livekit_voiceroom_comic_invite_bar_title
-                Kind.REQUESTING -> R.string.livekit_voiceroom_comic_retract_title
-                Kind.LEAVING -> R.string.livekit_voiceroom_comic_leave_title
+                Kind.INVITATION -> R.string.livekit_voicelounge_comic_invite_bar_title
+                Kind.REQUESTING -> R.string.livekit_voicelounge_comic_retract_title
+                Kind.LEAVING -> R.string.livekit_voicelounge_comic_leave_title
             },
         )
         actionButton.text = context.getString(
             when (kind) {
-                Kind.INVITATION -> R.string.livekit_voiceroom_comic_connect
-                Kind.REQUESTING -> R.string.livekit_voiceroom_comic_retract
-                Kind.LEAVING -> R.string.livekit_voiceroom_comic_leave_confirm
+                Kind.INVITATION -> R.string.livekit_voicelounge_comic_connect
+                Kind.REQUESTING -> R.string.livekit_voicelounge_comic_retract
+                Kind.LEAVING -> R.string.livekit_voicelounge_comic_leave_confirm
             },
         )
         actionButton.setTextColor(Color.WHITE)
-        actionButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        actionButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         actionButton.typeface = Typeface.DEFAULT_BOLD
         actionButton.gravity = Gravity.CENTER
         actionButton.includeFontPadding = false
@@ -152,7 +151,6 @@ internal class VoiceLoungeCoGuestBannerView(
             is VoiceLoungeCoGuestStore.InvitationEvent.Cancelled -> {
                 if (visibility != View.VISIBLE) return
                 hide()
-                LiveToast.show(context, context.getString(R.string.livekit_voiceroom_comic_invite_cancelled))
             }
         }
     }

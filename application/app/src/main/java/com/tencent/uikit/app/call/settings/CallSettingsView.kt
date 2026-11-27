@@ -21,7 +21,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
-import com.tencent.uikit.app.App
 import com.tencent.uikit.app.R
 import com.tencent.uikit.app.call.common.CallAccessLogger
 import com.tencent.uikit.app.call.common.CallAccessRowFactory
@@ -31,6 +30,7 @@ import com.tencent.uikit.app.call.common.CallAccessToast
 import com.tencent.uikit.app.call.common.CallAccessToggle
 import com.tencent.uikit.app.call.common.dp
 import com.tencent.uikit.app.call.entry.CallEntryState
+import com.tencent.uikit.app.main.MainActivity
 import com.tencent.qcloud.tuikit.tuicallkit.TUICallKit
 import io.trtc.tuikit.atomicxcore.api.login.UserProfile
 
@@ -40,7 +40,8 @@ internal class CallSettingsView @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val state = (findHostingActivity().application as App).callEntryState
+    private val state: CallEntryState
+        get() = (findHostingActivity() as MainActivity).callEntryState
     private val facade by lazy { TUICallKit.createInstance(context) }
 
     private val scrollView: ScrollView
@@ -61,11 +62,13 @@ internal class CallSettingsView @JvmOverloads constructor(
     private var currentNickname: String = ""
     private var activeEditingHint: TextView? = null
     private var activeEditingInput: EditText? = null
+    private var activeSheet: CallAccessSheet? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.callaccess_settings_view, this, true)
         scrollView = findViewById(R.id.settings_scroll)
         avatarImage = findViewById(R.id.avatar_image)
+        avatarImage.clipToOutline = true
         nicknameInput = findViewById(R.id.nickname_input)
         nicknameHint = findViewById(R.id.nickname_hint)
         ringtoneValue = findViewById(R.id.ringtone_value)
@@ -102,7 +105,7 @@ internal class CallSettingsView @JvmOverloads constructor(
                 scrollView.paddingLeft,
                 scrollView.paddingTop,
                 scrollView.paddingRight,
-                initialPaddingBottom + kotlin.math.max(ime, nav)
+                initialPaddingBottom + maxOf(ime, nav)
             )
             if (ime > 0 && activeEditingInput != null) {
                 scrollView.post { scrollEditorIntoView() }
@@ -211,12 +214,6 @@ internal class CallSettingsView @JvmOverloads constructor(
             state.blurBackgroundOn = isOn
             facade.enableVirtualBackground(isOn)
         }
-        val proToggle = findViewById<CallAccessToggle>(R.id.pro_toggle)
-        proToggle.isOn = state.proBeautyOn
-        proToggle.onChange = { isOn ->
-            dismissActiveEditor()
-            state.proBeautyOn = isOn
-        }
     }
 
     private fun setupAdvancedCard() {
@@ -228,9 +225,15 @@ internal class CallSettingsView @JvmOverloads constructor(
         findViewById<CallAccessTapRow>(R.id.timeout_row).onTap = { beginEditing(timeoutInput, timeoutHint) }
         findViewById<CallAccessTapRow>(R.id.extended_info_row).onTap = { beginEditing(extendedInfoInput, extendedInfoHint) }
 
-        roomIDInput.doOnTextChanged { text, _, _, _ -> capLength(roomIDInput, text?.toString(), MAX_ROOM_ID_LENGTH) }
-        timeoutInput.doOnTextChanged { text, _, _, _ -> capLength(timeoutInput, text?.toString(), MAX_TIMEOUT_LENGTH) }
-        extendedInfoInput.doOnTextChanged { text, _, _, _ -> capLength(extendedInfoInput, text?.toString(), MAX_EXTENDED_INFO_LENGTH) }
+        roomIDInput.doOnTextChanged { text, _, _, _ ->
+            if (capLength(roomIDInput, text?.toString(), MAX_ROOM_ID_LENGTH)) return@doOnTextChanged
+            val value = text.toString().trim()
+            markHint(roomIDInput, roomIDHint, value.isEmpty() || isValidRoomID(value))
+        }
+        timeoutInput.doOnTextChanged { text, _, _, _ ->
+            if (capLength(timeoutInput, text?.toString(), MAX_TIMEOUT_LENGTH)) return@doOnTextChanged
+            markHint(timeoutInput, timeoutHint, isValidTimeout(text.toString().trim()))
+        }
 
         roomIDInput.setOnEditorActionListener { _, _, _ -> commitRoomID(); true }
         roomIDInput.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) commitRoomID() }
@@ -325,9 +328,9 @@ internal class CallSettingsView @JvmOverloads constructor(
         if (!timeoutInput.isEnabled) {
             return
         }
-        val seconds = timeoutInput.text.toString().trim().toIntOrNull()
-        if (seconds != null && seconds in 1..MAX_TIMEOUT_SECONDS) {
-            state.timeoutSeconds = seconds
+        val value = timeoutInput.text.toString().trim()
+        if (isValidTimeout(value)) {
+            state.timeoutSeconds = value.toInt()
         }
         timeoutInput.setText(state.timeoutSeconds.toString())
         endEditing(timeoutInput, timeoutHint)
@@ -337,22 +340,31 @@ internal class CallSettingsView @JvmOverloads constructor(
         if (!extendedInfoInput.isEnabled) {
             return
         }
-        val value = extendedInfoInput.text.toString()
-        if (value.length <= MAX_EXTENDED_INFO_LENGTH) {
-            state.extendedInfo = value
-        }
+        state.extendedInfo = extendedInfoInput.text.toString().trim()
         extendedInfoInput.setText(
             state.extendedInfo.ifEmpty { context.getString(R.string.callaccess_settings_extended_info_empty) }
         )
         endEditing(extendedInfoInput, extendedInfoHint)
     }
 
-    private fun capLength(input: EditText, value: String?, limit: Int) {
+    private fun capLength(input: EditText, value: String?, limit: Int): Boolean {
         val text = value.orEmpty()
         if (text.length > limit) {
             input.setText(text.take(limit))
             input.setSelection(limit)
+            return true
         }
+        return false
+    }
+
+    private fun markHint(input: EditText, hint: TextView, valid: Boolean) {
+        if (!input.isEnabled) return
+        hint.setTextColor(ContextCompat.getColor(context, if (valid) R.color.callaccess_text3 else R.color.callaccess_red))
+    }
+
+    private fun isValidTimeout(value: String): Boolean {
+        val seconds = value.takeIf { it.matches(Regex("^\\d+$")) }?.toIntOrNull() ?: return false
+        return seconds in 1..MAX_TIMEOUT_SECONDS
     }
 
     private fun isValidNickname(value: String): Boolean {
@@ -368,7 +380,6 @@ internal class CallSettingsView @JvmOverloads constructor(
         val sheet = CallAccessSheet(activity)
         sheet.setTitle(activity.getString(R.string.callaccess_avatar_picker_title))
 
-        // 统一抽屉口径：点选只换高亮，右上动作键落地；所选==当前=取消，不同=确定
         val cells = mutableMapOf<String, FrameLayout>()
         var picked = currentAvatarURL
         fun syncAction() {
@@ -415,12 +426,13 @@ internal class CallSettingsView @JvmOverloads constructor(
         }
         syncAction()
         sheet.setContent(grid)
-        sheet.present(activity.findViewById(android.R.id.content))
+        presentSheet(activity, sheet)
     }
 
     private fun makeAvatarCell(activity: Activity, url: String): FrameLayout {
         val cell = LayoutInflater.from(activity).inflate(R.layout.callaccess_avatar_cell, null) as FrameLayout
         val avatar = cell.findViewById<ImageView>(R.id.avatar_cell_image)
+        avatar.clipToOutline = true
         Glide.with(avatar).load(url).into(avatar)
         return cell
     }
@@ -498,7 +510,7 @@ internal class CallSettingsView @JvmOverloads constructor(
         }
         syncAction()
         sheet.setContent(list)
-        sheet.present(activity.findViewById(android.R.id.content))
+        presentSheet(activity, sheet)
     }
 
     private fun String.normalizedRingtone(): String {
@@ -518,9 +530,8 @@ internal class CallSettingsView @JvmOverloads constructor(
             state.ringtone = id
             facade.setCallingBell(path)
         }
-        val label = state.ringtoneLabel(activity)
-        ringtoneValue.text = label
-        CallAccessToast.show(activity, activity.getString(R.string.callaccess_settings_ringtone_set_toast, label))
+        ringtoneValue.text = state.ringtoneLabel(activity)
+        CallAccessToast.show(activity, activity.getString(R.string.callaccess_settings_ringtone_set_toast))
     }
 
     private fun ensureBuiltinRingtoneFile(activity: Activity): String? {
@@ -551,6 +562,25 @@ internal class CallSettingsView @JvmOverloads constructor(
         }
     }
 
+    fun dismissSheet(): Boolean {
+        val sheet = activeSheet?.takeIf { it.isShowing } ?: return false
+        sheet.dismiss()
+        return true
+    }
+
+    override fun onDetachedFromWindow() {
+        activeSheet?.let { (it.parent as? ViewGroup)?.removeView(it) }
+        activeSheet = null
+        super.onDetachedFromWindow()
+    }
+
+    private fun presentSheet(activity: Activity, sheet: CallAccessSheet) {
+        activeSheet?.takeIf { it.isShowing }?.dismiss()
+        activeSheet = sheet
+        sheet.onDismiss = { if (activeSheet === sheet) activeSheet = null }
+        sheet.present(activity.findViewById(android.R.id.content))
+    }
+
     private fun findHostingActivity(): Activity {
         var current = context
         while (current is ContextWrapper) {
@@ -567,7 +597,6 @@ internal class CallSettingsView @JvmOverloads constructor(
         private const val MAX_ROOM_ID_LENGTH = 32
         private const val MAX_TIMEOUT_LENGTH = 3
         private const val MAX_TIMEOUT_SECONDS = 180
-        private const val MAX_EXTENDED_INFO_LENGTH = 64
         private const val AVATAR_COLUMNS = 4
         private val PRESET_AVATAR_URLS: List<String> = (1..24).map {
             "https://liteav.sdk.qcloud.com/app/res/picture/voiceroom/avatar/user_avatar$it.png"

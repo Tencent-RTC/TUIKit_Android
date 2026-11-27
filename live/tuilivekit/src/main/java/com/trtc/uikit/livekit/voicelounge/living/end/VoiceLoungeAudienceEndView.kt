@@ -15,7 +15,7 @@ import com.trtc.uikit.livekit.voicelounge.MATCH
 import com.trtc.uikit.livekit.voicelounge.dp
 import com.trtc.uikit.livekit.voicelounge.frameParams
 import com.trtc.uikit.livekit.voicelounge.rgb
-import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
+import io.trtc.tuikit.atomicxcore.api.live.VoiceLoungeInfo
 
 internal class VoiceLoungeAudienceEndView(context: Context) : FrameLayout(context) {
     var onBack: (() -> Unit)? = null
@@ -74,8 +74,13 @@ internal class VoiceLoungeAudienceEndView(context: Context) : FrameLayout(contex
         return super.onTouchEvent(event)
     }
 
-    fun show(liveInfo: LiveInfo, reason: String? = null) {
-        summaryView.bind(liveInfo, reason)
+    fun show(lounge: VoiceLoungeInfo, reason: String? = null) {
+        summaryView.bind(
+            ownerName = lounge.ownerInfo.userName.ifEmpty { lounge.ownerInfo.userID },
+            ownerAvatarURL = lounge.ownerInfo.avatarURL,
+            backgroundURL = lounge.backgroundURL.ifEmpty { lounge.coverURL },
+            reason = reason,
+        )
         visibility = View.VISIBLE
         bringToFront()
     }

@@ -71,9 +71,9 @@ internal class VoiceLoungeSeatUserPanel(
 
     private val cardStack = LinearLayout(context)
     private val togglesCard = LinearLayout(context)
-    private val muteRow = ToggleRow(context, PanelGlyph.MIC, vlString(R.string.livekit_voiceroom_comic_disable_mic))
-    private val adminRow = ToggleRow(context, PanelGlyph.CROWN, vlString(R.string.livekit_voiceroom_admin_set))
-    private val cohostRow = ToggleRow(context, PanelGlyph.STAR, vlString(R.string.livekit_voiceroom_cohost_set))
+    private val muteRow = ToggleRow(context, PanelGlyph.MIC, vlString(R.string.livekit_voicelounge_comic_disable_mic))
+    private val adminRow = ToggleRow(context, PanelGlyph.CROWN, vlString(R.string.livekit_voicelounge_admin_set))
+    private val cohostRow = ToggleRow(context, PanelGlyph.STAR, vlString(R.string.livekit_voicelounge_cohost_set))
     private val inviteCard = FrameLayout(context)
     private val inviteRow = ActionRow(context, PanelGlyph.INVITE)
     private val leaveCard = FrameLayout(context)
@@ -184,7 +184,7 @@ internal class VoiceLoungeSeatUserPanel(
     }
 
     private fun setupStyles() {
-        sheetTitle = vlString(R.string.livekit_voiceroom_seat_sheet_title)
+        sheetTitle = vlString(R.string.livekit_voicelounge_seat_sheet_title)
         val radius = context.dp(PanelStyle.CARD_RADIUS).toFloat()
         profileCard.background = roundedDrawable(VoiceLoungeColor.overlayHair, radius)
         listOf<View>(togglesCard, inviteCard, leaveCard).forEach { card ->
@@ -196,8 +196,8 @@ internal class VoiceLoungeSeatUserPanel(
         avatarView.clipOval()
         nameLabel.singleLineEnd()
         subtitleLabel.singleLineEnd()
-        adminBadge.text = vlString(R.string.livekit_voiceroom_seat_badge_admin)
-        mutedBadge.text = vlString(R.string.livekit_voiceroom_seat_badge_muted)
+        adminBadge.text = vlString(R.string.livekit_voicelounge_seat_badge_admin)
+        mutedBadge.text = vlString(R.string.livekit_voicelounge_seat_badge_muted)
         mutedBadge.apply(PanelStyle.DESTRUCTIVE_TINT)
     }
 
@@ -222,7 +222,7 @@ internal class VoiceLoungeSeatUserPanel(
         adminBadge.apply(store.skin.mid)
         when (mode) {
             Mode.ON_MIC -> {
-                subtitleLabel.text = seatMeta(seat.index, R.string.livekit_voiceroom_seat_status_on_mic)
+                subtitleLabel.text = seatMeta(seat.index, R.string.livekit_voicelounge_seat_status_on_mic)
                 adminBadge.visibility = if (seat.isAdmin) View.VISIBLE else View.GONE
                 mutedBadge.visibility = if (seat.isMuted) View.VISIBLE else View.GONE
                 if (!isMuteRequestInFlight) muteRow.setOn(seat.isMuted)
@@ -235,21 +235,21 @@ internal class VoiceLoungeSeatUserPanel(
                 cohostRow.visibility = if (store.layout == VoiceLoungeSeatLayout.TWO_V8) View.VISIBLE else View.GONE
                 inviteCard.visibility = View.GONE
                 leaveCard.visibility = View.VISIBLE
-                leaveRow.title = vlString(R.string.livekit_voiceroom_comic_kick)
+                leaveRow.title = vlString(R.string.livekit_voicelounge_comic_kick)
             }
 
             Mode.PENDING -> {
                 val applying = isApplicant(seat.userID)
-                subtitleLabel.text = seatMeta(seat.index, R.string.livekit_voiceroom_seat_status_pending)
+                subtitleLabel.text = seatMeta(seat.index, R.string.livekit_voicelounge_seat_status_pending)
                 adminBadge.visibility = View.GONE
                 mutedBadge.visibility = View.GONE
                 inviteRow.title = vlString(
-                    if (applying) R.string.livekit_voiceroom_comic_connect else R.string.livekit_voiceroom_comic_cancel_invite
+                    if (applying) R.string.livekit_voicelounge_comic_connect else R.string.livekit_voicelounge_comic_cancel_invite
                 )
                 togglesCard.visibility = View.GONE
                 inviteCard.visibility = View.VISIBLE
                 leaveCard.visibility = if (applying) View.VISIBLE else View.GONE
-                leaveRow.title = vlString(R.string.livekit_voiceroom_comic_reject_apply)
+                leaveRow.title = vlString(R.string.livekit_voicelounge_comic_reject_apply)
             }
         }
         (adminBadge.layoutParams as LinearLayout.LayoutParams).marginStart =
@@ -261,7 +261,7 @@ internal class VoiceLoungeSeatUserPanel(
     }
 
     private fun seatMeta(index: Int, statusRes: Int): String =
-        vlString(R.string.livekit_voiceroom_seat_seat_meta, index, vlString(statusRes))
+        vlString(R.string.livekit_voicelounge_seat_seat_meta, index, vlString(statusRes))
 
     private fun handleMuteToggle(isOn: Boolean) {
         val userID = currentUserID
@@ -317,7 +317,7 @@ internal class VoiceLoungeSeatUserPanel(
                     .minOfOrNull { it.index }
             if (freeIndex == null) {
                 cohostRow.setOn(true)
-                LiveToast.show(voiceLoungeAppContext, vlString(R.string.livekit_voiceroom_cohost_no_free_seat))
+                LiveToast.show(voiceLoungeAppContext, vlString(R.string.livekit_voicelounge_cohost_no_free_seat))
                 return
             }
             moveUser(userID, freeIndex, MoveSeatPolicy.ABORT_WHEN_OCCUPIED)
@@ -333,9 +333,9 @@ internal class VoiceLoungeSeatUserPanel(
         dismiss()
         VoiceLoungeMain.postDelayed(ACTION_DELAY_MS) {
             onConfirm?.invoke(
-                vlString(R.string.livekit_voiceroom_cohost_replace_title),
-                vlString(R.string.livekit_voiceroom_cohost_replace_message, occupantName),
-                vlString(R.string.livekit_voiceroom_cohost_replace_confirm),
+                vlString(R.string.livekit_voicelounge_cohost_replace_title),
+                vlString(R.string.livekit_voicelounge_cohost_replace_message, occupantName),
+                vlString(R.string.livekit_voicelounge_cohost_replace_confirm),
             ) { moveUser(userID, cohostIndex, MoveSeatPolicy.SWAP_POSITION) }
         }
     }
@@ -515,7 +515,7 @@ private class GlyphView(context: Context, private val glyph: PanelGlyph) : View(
 
 private class BadgeLabel(context: Context) : TextView(context) {
     init {
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         includeFontPadding = false
         maxLines = 1
@@ -544,7 +544,7 @@ private class ActionRow(context: Context, glyph: PanelGlyph, tint: Int = PanelSt
         val glyphSize = context.dp(PanelStyle.GLYPH_SIZE)
         val inset = context.dp(PanelStyle.ROW_INSET)
         addView(iconView, frameParams(glyphSize, glyphSize, Gravity.CENTER_VERTICAL or Gravity.START, start = inset))
-        titleLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        titleLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         val isDestructive = tint == PanelStyle.DESTRUCTIVE_TINT
         titleLabel.typeface = Typeface.create(if (isDestructive) "sans-serif-medium" else "sans-serif", Typeface.NORMAL)
         titleLabel.setTextColor(tint)
@@ -585,7 +585,7 @@ private class ToggleRow(context: Context, glyph: PanelGlyph, title: String) : Fr
         addView(iconView, frameParams(glyphSize, glyphSize, Gravity.CENTER_VERTICAL or Gravity.START, start = inset))
         val titleLabel = TextView(context).apply {
             text = title
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             setTextColor(PanelStyle.ROW_TINT)
             includeFontPadding = false
             maxLines = 1

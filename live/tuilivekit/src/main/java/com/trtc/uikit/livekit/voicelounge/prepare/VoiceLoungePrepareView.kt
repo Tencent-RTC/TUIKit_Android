@@ -105,6 +105,7 @@ internal class VoiceLoungePrepareView(context: Context) : FrameLayout(context) {
     fun bind(input: VoiceLoungeConfig) {
         this.input = input
         applyDefaultLayout()
+        applyPersistedTranscriberDefaults()
         render()
     }
 
@@ -115,6 +116,17 @@ internal class VoiceLoungePrepareView(context: Context) : FrameLayout(context) {
         hostName = name
         applyDefaultLayout()
         render()
+    }
+
+    private fun applyPersistedTranscriberDefaults() {
+        val defaults =
+            com.trtc.uikit.livekit.voicelounge.settings.VoiceLoungeTranscriberDefaults.load(context) ?: return
+        input = input.copy(
+            isTranscriberEnabled = defaults.isEnabled,
+            transcriberShowOriginal = defaults.showOriginal,
+            transcriberScale = defaults.scale,
+            transcriberLanguage = defaults.language,
+        )
     }
 
     fun deactivate() = infoEditorView.endRoomNameEditing()
@@ -164,7 +176,7 @@ internal class VoiceLoungePrepareView(context: Context) : FrameLayout(context) {
         actionsRow.gravity = Gravity.TOP
         actionsRow.addView(
             toolButton(
-                R.string.livekit_voiceroom_prepare_action_background, R.drawable.livekit_voiceprepare_background
+                R.string.livekit_voicelounge_prepare_action_background, R.drawable.livekit_voiceprepare_background
             ) {
                 showBackground()
             },
@@ -313,12 +325,39 @@ internal class VoiceLoungePrepareView(context: Context) : FrameLayout(context) {
             input = input.copy(seatLayout = layout)
             render()
         }
-        layoutPanel.show(input.seatLayout, true, input.skin)
+        layoutPanel.show(input.seatLayout, VoiceLoungeSeatLayout.savedDefault(context) != null, input.skin)
     }
 
     private fun presentTranscriberPanel() {
-        transcriberPanel.onToggle = { isOn -> input = input.copy(isTranscriberEnabled = isOn) }
-        transcriberPanel.show(input.isTranscriberEnabled, input.skin)
+        val defaults = com.trtc.uikit.livekit.voicelounge.settings.VoiceLoungeTranscriberDefaults.load(context)
+        transcriberPanel.onStateChanged = { state ->
+            input = input.copy(
+                isTranscriberEnabled = state.isEnabled,
+                transcriberShowOriginal = state.showOriginal,
+                transcriberScale = state.scale,
+                transcriberLanguage = state.language,
+            )
+            if (state.saveAsDefault) {
+                com.trtc.uikit.livekit.voicelounge.settings.VoiceLoungeTranscriberDefaults.save(
+                    context,
+                    com.trtc.uikit.livekit.voicelounge.settings.VoiceLoungeTranscriberDefaults(
+                        isEnabled = state.isEnabled,
+                        showOriginal = state.showOriginal,
+                        scale = state.scale,
+                        language = state.language,
+                    ),
+                )
+            }
+        }
+        val initialState =
+            com.trtc.uikit.livekit.voicelounge.settings.aitranscriber.VoiceLoungeAITranscriberPanel.State(
+                isEnabled = input.isTranscriberEnabled,
+                showOriginal = input.transcriberShowOriginal,
+                scale = input.transcriberScale,
+                language = input.transcriberLanguage,
+                saveAsDefault = defaults != null,
+            )
+        transcriberPanel.show(initialState, input.skin)
     }
 
     private fun presentAudioPanel() {
@@ -334,7 +373,7 @@ internal class VoiceLoungePrepareView(context: Context) : FrameLayout(context) {
     private fun render() {
         backgroundView.show(input.background)
         startButton.applySkin(input.skin)
-        startButton.setTitle(context.getString(R.string.livekit_voiceroom_prepare_start_voice))
+        startButton.setTitle(context.getString(R.string.livekit_voicelounge_prepare_start_voice))
         infoEditorView.bind(input, hostName)
         heroView.bind(hostName, hostAvatarURL, input.skin)
         heroView.applyLayout(input.seatLayout)
@@ -431,9 +470,9 @@ internal class VoiceLoungePrepareView(context: Context) : FrameLayout(context) {
         const val EDITOR_INSET = 24
         const val HEADER_TOP = 49
         const val ACCESSORY_HEADER_TOP = 85
-        const val HERO_OFFSET = 250
+        const val HERO_OFFSET = 210
         const val HERO_MINIMUM_GAP = 36
-        const val SEAT_PREVIEW_GAP = 32
+        const val SEAT_PREVIEW_GAP = 20
         const val SEAT_PREVIEW_MINIMUM_GAP = 16
     }
 }

@@ -35,6 +35,7 @@ import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -56,10 +57,16 @@ class AudienceView @JvmOverloads constructor(
     private val adapter = AudienceAvatarAdapter()
     private var subscribeJob: Job? = null
     private var popupDialog: AudienceListPanel? = null
+
+    var onMemberClick: ((LiveUserInfo) -> Unit)? = null
+
+    var giftCoinsProvider: ((String) -> Long?)? = null
+
+    var giftUpdates: Flow<Unit>? = null
     private val mutableAudienceEntered = MutableSharedFlow<AudienceWelcome>(extraBufferCapacity = 32)
     val audienceEntered = mutableAudienceEntered.asSharedFlow()
 
-    private var liveInfo: LiveInfo = LiveInfo()
+    private var liveID: String = ""
     private val liveAudienceListener = object : LiveAudienceListener() {
         override fun onAudienceMessageDisabled(audience: LiveUserInfo, isDisable: Boolean) {
             if (audience.userID == LoginStore.shared.loginState.loginUserInfo.value?.userID) {
@@ -132,13 +139,17 @@ class AudienceView @JvmOverloads constructor(
     }
 
     fun bind(liveInfo: LiveInfo) {
+        bind(liveInfo.liveID)
+    }
+
+    fun bind(liveID: String) {
         subscribeJob?.cancel()
-        if (this.liveInfo.liveID != liveInfo.liveID) {
+        if (this.liveID != liveID) {
             popupDialog?.dismiss()
             popupDialog = null
         }
-        this.liveInfo = liveInfo
-        val store = LiveAudienceStore.create(liveInfo.liveID)
+        this.liveID = liveID
+        val store = LiveAudienceStore.create(liveID)
         val state = store.liveAudienceState
         store.fetchAudienceList(null)
         subscribeJob = CoroutineScope(Dispatchers.Main).launch {
@@ -159,8 +170,8 @@ class AudienceView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        if (liveInfo.liveID.isEmpty()) return
-        val store = LiveAudienceStore.create(liveInfo.liveID)
+        if (liveID.isEmpty()) return
+        val store = LiveAudienceStore.create(liveID)
         val state = store.liveAudienceState
         store.fetchAudienceList(null)
         subscribeJob?.cancel()
@@ -186,15 +197,16 @@ class AudienceView @JvmOverloads constructor(
         subscribeJob = null
         popupDialog?.dismiss()
         popupDialog = null
-        if (liveInfo.liveID.isEmpty()) return
-        val store = LiveAudienceStore.create(liveInfo.liveID)
+        if (liveID.isEmpty()) return
+        val store = LiveAudienceStore.create(liveID)
         store.removeLiveAudienceListener(liveAudienceListener)
     }
 
     private fun showAudienceListPanel() {
-        if (liveInfo.liveID.isEmpty()) return
+        if (liveID.isEmpty()) return
         popupDialog?.dismiss()
-        popupDialog = AudienceListPanel(context, liveInfo.liveID).also { it.show() }
+        popupDialog = AudienceListPanel(context, liveID, onMemberClick, giftCoinsProvider, giftUpdates)
+            .also { it.show() }
     }
 
     private fun dpToPx(dp: Float): Float =

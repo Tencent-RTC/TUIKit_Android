@@ -1,0 +1,18 @@
+<resources>
+
+    <string name="base_component_cancel">Cancel</string>
+    <string name="base_component_confirm">Confirm</string>
+    <string name="base_component_i_know">Got it</string>
+    <string name="base_component_switch_open">ON</string>
+    <string name="base_component_switch_close">OFF</string>
+
+    <string name="uikit_chat_permission_mic_reason_title">%s applies for access to the microphone</string>
+    <string name="uikit_chat_permission_mic_reason">In order for you to send voice messages, make video and audio and video calls, and use voice cloning, please allow us to access the microphone.</string>
+    <string name="uikit_chat_permission_camera_reason_title">%s applies for camera permission</string>
+    <string name="uikit_chat_permission_camera_reason">In order for you to take photos or videos to send to contacts, and to make video calls, please allow us to access the webcam.</string>
+    <string name="uikit_chat_permission_storage_reason_title">%s applies for storage permission</string>
+    <string name="uikit_chat_permission_storage_reason">In order for you to save photos and videos to your device, please allow us to write photos and videos to your device.</string>
+    <string name="uikit_chat_permission_mic_dialog_alert">Allow microphone access in Settings->Apps->%s to use voice messages, video cameras, audio and video calls, and voice cloning as normal</string>
+    <string name="uikit_chat_permission_camera_dialog_alert">Allow camera access in Settings->Apps->%s to use the photo, video and video calling functions as normal</string>
+    <string name="uikit_chat_permission_storage_dialog_alert">Allow storage access in Settings->Apps->%s to use the function of saving photos and videos normally</string>
+</resources>

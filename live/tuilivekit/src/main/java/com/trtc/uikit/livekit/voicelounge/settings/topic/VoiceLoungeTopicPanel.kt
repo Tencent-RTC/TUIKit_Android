@@ -106,8 +106,8 @@ internal class VoiceLoungeTopicPanel(context: Context) : BottomSheetView(context
     }
 
     private fun setupStyles() {
-        sheetTitle = context.getString(R.string.livekit_voiceroom_topic_title)
-        inputField.hint = context.getString(R.string.livekit_voiceroom_topic_placeholder)
+        sheetTitle = context.getString(R.string.livekit_voicelounge_topic_title)
+        inputField.hint = context.getString(R.string.livekit_voicelounge_topic_placeholder)
         inputField.setHintTextColor(whiteAlpha(0.4f))
         inputField.setTextColor(Color.WHITE)
         inputField.applyFont(16f)
@@ -122,9 +122,9 @@ internal class VoiceLoungeTopicPanel(context: Context) : BottomSheetView(context
         scrollView.isVerticalScrollBarEnabled = false
         scrollView.overScrollMode = View.OVER_SCROLL_NEVER
         listStack.orientation = LinearLayout.VERTICAL
-        footerLabel.text = context.getString(R.string.livekit_voiceroom_topic_footer)
+        footerLabel.text = context.getString(R.string.livekit_voicelounge_topic_footer)
         footerLabel.maxLines = 2
-        confirmButton.text = context.getString(R.string.livekit_voiceroom_topic_confirm)
+        confirmButton.text = context.getString(R.string.livekit_voicelounge_topic_confirm)
         confirmButton.setTextColor(Color.WHITE)
         confirmButton.applyFont(17f, semibold = true)
         confirmButton.gravity = Gravity.CENTER
@@ -193,14 +193,14 @@ internal class VoiceLoungeTopicPanel(context: Context) : BottomSheetView(context
             if (count > 0) skin.mid else Color.TRANSPARENT,
         )
         footerLabel.text = if (over) {
-            context.getString(R.string.livekit_voiceroom_topic_over_limit_hint, MAX_LENGTH)
+            context.getString(R.string.livekit_voicelounge_topic_over_limit_hint, MAX_LENGTH)
         } else {
-            context.getString(R.string.livekit_voiceroom_topic_footer)
+            context.getString(R.string.livekit_voicelounge_topic_footer)
         }
         footerLabel.setTextColor(if (over) VoiceLoungeColor.rose else LiveTheme.Color.text(LiveTheme.TextTone.TERTIARY))
         confirmButton.isEnabled = !over
         confirmButton.text = context.getString(
-            if (over) R.string.livekit_voiceroom_topic_over_limit else R.string.livekit_voiceroom_topic_confirm,
+            if (over) R.string.livekit_voicelounge_topic_over_limit else R.string.livekit_voicelounge_topic_confirm,
         )
         confirmButton.setTextColor(if (over) VoiceLoungeColor.rose.withAlpha(0.6f) else Color.WHITE)
         confirmButton.background = roundedDrawable(
@@ -284,12 +284,12 @@ internal data class VoiceLoungeTopic(val tag: String, val text: String) {
     companion object {
         val presets: List<VoiceLoungeTopic>
             get() = listOf(
-                R.string.livekit_voiceroom_topic_preset_tea_tag to R.string.livekit_voiceroom_topic_preset_tea_text,
-                R.string.livekit_voiceroom_topic_preset_icebreak_tag to R.string.livekit_voiceroom_topic_preset_icebreak_text,
-                R.string.livekit_voiceroom_topic_preset_awkward_tag to R.string.livekit_voiceroom_topic_preset_awkward_text,
-                R.string.livekit_voiceroom_topic_preset_whatif_tag to R.string.livekit_voiceroom_topic_preset_whatif_text,
-                R.string.livekit_voiceroom_topic_preset_latenight_tag to R.string.livekit_voiceroom_topic_preset_latenight_text,
-                R.string.livekit_voiceroom_topic_preset_happy_tag to R.string.livekit_voiceroom_topic_preset_happy_text,
+                R.string.livekit_voicelounge_topic_preset_tea_tag to R.string.livekit_voicelounge_topic_preset_tea_text,
+                R.string.livekit_voicelounge_topic_preset_icebreak_tag to R.string.livekit_voicelounge_topic_preset_icebreak_text,
+                R.string.livekit_voicelounge_topic_preset_awkward_tag to R.string.livekit_voicelounge_topic_preset_awkward_text,
+                R.string.livekit_voicelounge_topic_preset_whatif_tag to R.string.livekit_voicelounge_topic_preset_whatif_text,
+                R.string.livekit_voicelounge_topic_preset_latenight_tag to R.string.livekit_voicelounge_topic_preset_latenight_text,
+                R.string.livekit_voicelounge_topic_preset_happy_tag to R.string.livekit_voicelounge_topic_preset_happy_text,
             ).map { (tag, text) -> VoiceLoungeTopic(vlString(tag), vlString(text)) }
     }
 }

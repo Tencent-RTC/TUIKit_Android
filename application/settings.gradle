@@ -1,6 +1,16 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+    }
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
         google()
         mavenCentral()
         flatDir {
@@ -18,14 +28,10 @@ include ':app'
 
 include ':debug'
 
-include ':tuilivekit'
+include ':tuilivekit', ':tuiroomkit', ':tuicallkit-kt', ':chatkit', ':atomic_x', ':tceffectplayerkit'
 project(':tuilivekit').projectDir = file('../live/tuilivekit')
-
-include ':tuiroomkit'
-project(':tuiroomkit').projectDir = file("../room/tuiroomkit")
-
-include ':tuicallkit-kt'
+project(':tuiroomkit').projectDir = file('../room/tuiroomkit')
 project(':tuicallkit-kt').projectDir = file('../call/tuicallkit-kt')
-
-include ':atomic_x'
+project(':chatkit').projectDir = file('../chat/view/uikit')
 project(':atomic_x').projectDir = file('../atomic_x')
+project(':tceffectplayerkit').projectDir = file('../tceffectplayerkit')

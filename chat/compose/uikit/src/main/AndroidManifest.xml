@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
+    <application>
+        <activity
+            android:name="io.trtc.tuikit.chat.uikit.components.messagelist.MergedMessageDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.uikit.components.videorecorder.view.VideoRecorderBridgeActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="io.trtc.tuikit.chat.uikit.components.videorecorder.view.VideoRecorderActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="io.trtc.tuikit.chat.uikit.components.videoplayer.ui.VideoPlayerActivity"
+            android:exported="false" />
+        <activity
+            android:name="io.trtc.tuikit.chat.uikit.components.imageviewer.ui.ImageViewerActivity"
+            android:exported="true" />
+
+        <provider
+            android:name="io.trtc.tuikit.chat.uikit.components.messagelist.utils.FileProvider"
+            android:authorities="${applicationId}.MessageList.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/message_list_file_paths" />
+        </provider>
+        <provider
+            android:name="io.trtc.tuikit.chat.uikit.components.messageinput.utils.FileProvider"
+            android:authorities="${applicationId}.MessageInput.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/message_input_file_paths" />
+        </provider>
+
+        <activity
+            android:name="io.trtc.tuikit.chat.uikit.components.messageinput.utils.MessageInputAlbumPickerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Chat_UIKit_Theme.AlbumPicker" />
+        <activity
+            android:name="io.trtc.tuikit.chat.uikit.components.filepicker.impl.FilePickerBridgeActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <provider
+            android:name="io.trtc.tuikit.chat.uikit.components.common.ContextProvider"
+            android:authorities="${applicationId}.ChatUIKit.ContextProvider"
+            android:exported="false"
+            android:initOrder="10000" />
+    </application>
+
+</manifest>

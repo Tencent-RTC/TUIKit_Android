@@ -1,0 +1,1556 @@
+[
+  {
+    "name": "Chinese Mainland",
+    "chineseName": "中国大陆",
+    "arabicName": "الصين الرئيسية",
+    "codeName": "CN",
+    "code": "86"
+  },
+  {
+    "name": "Andorra",
+    "chineseName": "安道尔",
+    "arabicName": "أندورا",
+    "codeName": "AD",
+    "code": "376"
+  },
+  {
+    "name": "United Arab Emirates",
+    "chineseName": "阿拉伯联合酋长国",
+    "arabicName": "الإمارات العربية المتحدة",
+    "codeName": "AE",
+    "code": "971"
+  },
+  {
+    "name": "Afghanistan",
+    "chineseName": "阿富汗",
+    "arabicName": "أفغانستان",
+    "codeName": "AF",
+    "code": "93"
+  },
+  {
+    "name": "Antigua and Barbuda",
+    "chineseName": "安提瓜和巴布达",
+    "arabicName": "أنتيغوا وبربودا",
+    "codeName": "AG",
+    "code": "1268"
+  },
+  {
+    "name": "Anguilla",
+    "chineseName": "安圭拉",
+    "arabicName": "أنغويلا",
+    "codeName": "AI",
+    "code": "1264"
+  },
+  {
+    "name": "Albania",
+    "chineseName": "阿尔巴尼亚",
+    "arabicName": "ألبانيا",
+    "codeName": "AL",
+    "code": "355"
+  },
+  {
+    "name": "Armenia",
+    "chineseName": "亚美尼亚",
+    "arabicName": "أرمينيا",
+    "codeName": "AM",
+    "code": "374"
+  },
+  {
+    "name": "Angola",
+    "chineseName": "安哥拉",
+    "arabicName": "أنغولا",
+    "codeName": "AO",
+    "code": "244"
+  },
+  {
+    "name": "Argentina",
+    "chineseName": "阿根廷",
+    "arabicName": "الأرجنتين",
+    "codeName": "AR",
+    "code": "54"
+  },
+  {
+    "name": "American Samoa",
+    "chineseName": "美属萨摩亚",
+    "arabicName": "ساموا الأمريكية",
+    "codeName": "AS",
+    "code": "1684"
+  },
+  {
+    "name": "Austria",
+    "chineseName": "奥地利",
+    "arabicName": "النمسا",
+    "codeName": "AT",
+    "code": "43"
+  },
+  {
+    "name": "Australia",
+    "chineseName": "澳大利亚",
+    "arabicName": "أستراليا",
+    "codeName": "AU",
+    "code": "61"
+  },
+  {
+    "name": "Aruba",
+    "chineseName": "阿鲁巴",
+    "arabicName": "أروبا",
+    "codeName": "AW",
+    "code": "297"
+  },
+  {
+    "name": "Azerbaijan",
+    "chineseName": "阿塞拜疆",
+    "arabicName": "أذربيجان",
+    "codeName": "AZ",
+    "code": "994"
+  },
+  {
+    "name": "Bosnia and Herzegovina",
+    "chineseName": "波斯尼亚和黑塞哥维那",
+    "arabicName": "البوسنة والهرسك",
+    "codeName": "BA",
+    "code": "387"
+  },
+  {
+    "name": "Barbados",
+    "chineseName": "巴巴多斯",
+    "arabicName": "باربادوس",
+    "codeName": "BB",
+    "code": "1246"
+  },
+  {
+    "name": "Bangladesh",
+    "chineseName": "孟加拉国",
+    "arabicName": "بنغلاديش",
+    "codeName": "BD",
+    "code": "880"
+  },
+  {
+    "name": "Belgium",
+    "chineseName": "比利时",
+    "arabicName": "بلجيكا",
+    "codeName": "BE",
+    "code": "32"
+  },
+  {
+    "name": "Burkina Faso",
+    "chineseName": "布基纳法索",
+    "arabicName": "بوركينا فاسو",
+    "codeName": "BF",
+    "code": "226"
+  },
+  {
+    "name": "Bulgaria",
+    "chineseName": "保加利亚",
+    "arabicName": "بلغاريا",
+    "codeName": "BG",
+    "code": "359"
+  },
+  {
+    "name": "Bahrain",
+    "chineseName": "巴林",
+    "arabicName": "البحرين",
+    "codeName": "BH",
+    "code": "973"
+  },
+  {
+    "name": "Burundi",
+    "chineseName": "布隆迪",
+    "arabicName": "بوروندي",
+    "codeName": "BI",
+    "code": "257"
+  },
+  {
+    "name": "Benin",
+    "chineseName": "贝宁",
+    "arabicName": "بنين",
+    "codeName": "BJ",
+    "code": "229"
+  },
+  {
+    "name": "Bermuda",
+    "chineseName": "百慕大群岛",
+    "arabicName": "برمودا",
+    "codeName": "BM",
+    "code": "1441"
+  },
+  {
+    "name": "Brunei",
+    "chineseName": "文莱",
+    "arabicName": "بروناي",
+    "codeName": "BN",
+    "code": "673"
+  },
+  {
+    "name": "Bolivia",
+    "chineseName": "玻利维亚",
+    "arabicName": "بوليفيا",
+    "codeName": "BO",
+    "code": "591"
+  },
+  {
+    "name": "Caribisch Nederland",
+    "chineseName": "荷兰加勒比",
+    "arabicName": "الجزر الكاريبية الهولندية",
+    "codeName": "BQ",
+    "code": "599"
+  },
+  {
+    "name": "Brazil",
+    "chineseName": "巴西",
+    "arabicName": "البرازيل",
+    "codeName": "BR",
+    "code": "55"
+  },
+  {
+    "name": "Bahamas",
+    "chineseName": "巴哈马",
+    "arabicName": "الباهاما",
+    "codeName": "BS",
+    "code": "1242"
+  },
+  {
+    "name": "Bhutan",
+    "chineseName": "不丹",
+    "arabicName": "بوتان",
+    "codeName": "BT",
+    "code": "975"
+  },
+  {
+    "name": "Botswana",
+    "chineseName": "博茨瓦纳",
+    "arabicName": "بوتسوانا",
+    "codeName": "BW",
+    "code": "267"
+  },
+  {
+    "name": "Belarus",
+    "chineseName": "白俄罗斯",
+    "arabicName": "بيلاروسيا",
+    "codeName": "BY",
+    "code": "375"
+  },
+  {
+    "name": "Belize",
+    "chineseName": "伯利兹",
+    "arabicName": "بليز",
+    "codeName": "BZ",
+    "code": "501"
+  },
+  {
+    "name": "Canada",
+    "chineseName": "加拿大",
+    "arabicName": "كندا",
+    "codeName": "CA",
+    "code": "1"
+  },
+  {
+    "name": "Democratic Republic of theCongo",
+    "chineseName": "刚果民主共和国",
+    "arabicName": "جمهورية الكونغو الديمقراطية",
+    "codeName": "CD",
+    "code": "243"
+  },
+  {
+    "name": "Central African Republic",
+    "chineseName": "中非共和国",
+    "arabicName": "جمهورية أفريقيا الوسطى",
+    "codeName": "CF",
+    "code": "236"
+  },
+  {
+    "name": "Republic Of The Congo",
+    "chineseName": "刚果共和国",
+    "arabicName": "جمهورية الكونغو",
+    "codeName": "CG",
+    "code": "242"
+  },
+  {
+    "name": "Switzerland",
+    "chineseName": "瑞士",
+    "arabicName": "سويسرا",
+    "codeName": "CH",
+    "code": "41"
+  },
+  {
+    "name": "Ivory Coast",
+    "chineseName": "科特迪瓦",
+    "arabicName": "ساحل العاج",
+    "codeName": "CI",
+    "code": "225"
+  },
+  {
+    "name": "Cook Islands",
+    "chineseName": "库克群岛",
+    "arabicName": "جزر كوك",
+    "codeName": "CK",
+    "code": "682"
+  },
+  {
+    "name": "Chile",
+    "chineseName": "智利",
+    "arabicName": "تشيلي",
+    "codeName": "CL",
+    "code": "56"
+  },
+  {
+    "name": "Cameroon",
+    "chineseName": "喀麦隆",
+    "arabicName": "الكاميرون",
+    "codeName": "CM",
+    "code": "237"
+  },
+  {
+    "name": "Colombia",
+    "chineseName": "哥伦比亚",
+    "arabicName": "كولومبيا",
+    "codeName": "CO",
+    "code": "57"
+  },
+  {
+    "name": "CostaRica",
+    "chineseName": "哥斯达黎加",
+    "arabicName": "كوستاريكا",
+    "codeName": "CR",
+    "code": "506"
+  },
+  {
+    "name": "Cape Verde",
+    "chineseName": "佛得角",
+    "arabicName": "الرأس الأخضر",
+    "codeName": "CV",
+    "code": "238"
+  },
+  {
+    "name": "Curacao",
+    "chineseName": "库拉索",
+    "arabicName": "كوراساو",
+    "codeName": "CW",
+    "code": "599"
+  },
+  {
+    "name": "Cyprus",
+    "chineseName": "塞浦路斯",
+    "arabicName": "قبرص",
+    "codeName": "CY",
+    "code": "357"
+  },
+  {
+    "name": "Czech",
+    "chineseName": "捷克",
+    "arabicName": "جمهورية التشيك",
+    "codeName": "CZ",
+    "code": "420"
+  },
+  {
+    "name": "Germany",
+    "chineseName": "德国",
+    "arabicName": "ألمانيا",
+    "codeName": "DE",
+    "code": "49"
+  },
+  {
+    "name": "Djibouti",
+    "chineseName": "吉布提",
+    "arabicName": "جيبوتي",
+    "codeName": "DJ",
+    "code": "253"
+  },
+  {
+    "name": "Denmark",
+    "chineseName": "丹麦",
+    "arabicName": "الدانمرك",
+    "codeName": "DK",
+    "code": "45"
+  },
+  {
+    "name": "Dominica",
+    "chineseName": "多米尼加",
+    "arabicName": "دومينيكا",
+    "codeName": "DM",
+    "code": "1767"
+  },
+  {
+    "name": "dominican republic",
+    "chineseName": "多米尼加共和国",
+    "arabicName": "جمهورية الدومينيكان",
+    "codeName": "DO",
+    "code": "1809"
+  },
+  {
+    "name": "Algeria",
+    "chineseName": "阿尔及利亚",
+    "arabicName": "الجزائر",
+    "codeName": "DZ",
+    "code": "213"
+  },
+  {
+    "name": "Ecuador",
+    "chineseName": "厄瓜多尔",
+    "arabicName": "الإكوادور",
+    "codeName": "EC",
+    "code": "593"
+  },
+  {
+    "name": "Estonia",
+    "chineseName": "爱沙尼亚",
+    "arabicName": "إستونيا",
+    "codeName": "EE",
+    "code": "372"
+  },
+  {
+    "name": "Egypt",
+    "chineseName": "埃及",
+    "arabicName": "مصر",
+    "codeName": "EG",
+    "code": "20"
+  },
+  {
+    "name": "Eritrea",
+    "chineseName": "厄立特里亚",
+    "arabicName": "إريتريا",
+    "codeName": "ER",
+    "code": "291"
+  },
+  {
+    "name": "Spain",
+    "chineseName": "西班牙",
+    "arabicName": "إسبانيا",
+    "codeName": "ES",
+    "code": "34"
+  },
+  {
+    "name": "Ethiopia",
+    "chineseName": "埃塞俄比亚",
+    "arabicName": "إثيوبيا",
+    "codeName": "ET",
+    "code": "251"
+  },
+  {
+    "name": "Finland",
+    "chineseName": "芬兰",
+    "arabicName": "فنلندا",
+    "codeName": "FI",
+    "code": "358"
+  },
+  {
+    "name": "Fiji",
+    "chineseName": "斐济",
+    "arabicName": "فيجي",
+    "codeName": "FJ",
+    "code": "679"
+  },
+  {
+    "name": "Micronesia",
+    "chineseName": "密克罗尼西亚",
+    "arabicName": "ميكرونيزيا",
+    "codeName": "FM",
+    "code": "691"
+  },
+  {
+    "name": "Faroe Islands",
+    "chineseName": "法罗群岛",
+    "arabicName": "جزر فارو",
+    "codeName": "FO",
+    "code": "298"
+  },
+  {
+    "name": "France",
+    "chineseName": "法国",
+    "arabicName": "فرنسا",
+    "codeName": "FR",
+    "code": "33"
+  },
+  {
+    "name": "Gabon",
+    "chineseName": "加蓬",
+    "arabicName": "الغابون",
+    "codeName": "GA",
+    "code": "241"
+  },
+  {
+    "name": "United Kingdom",
+    "chineseName": "英国",
+    "arabicName": "المملكة المتحدة",
+    "codeName": "GB",
+    "code": "44"
+  },
+  {
+    "name": "Grenada",
+    "chineseName": "格林纳达",
+    "arabicName": "غرينادا",
+    "codeName": "GD",
+    "code": "1473"
+  },
+  {
+    "name": "Georgia",
+    "chineseName": "格鲁吉亚",
+    "arabicName": "جورجيا",
+    "codeName": "GE",
+    "code": "995"
+  },
+  {
+    "name": "French Guiana",
+    "chineseName": "法属圭亚那",
+    "arabicName": "غويانا الفرنسية",
+    "codeName": "GF",
+    "code": "594"
+  },
+  {
+    "name": "Ghana",
+    "chineseName": "加纳",
+    "arabicName": "غانا",
+    "codeName": "GH",
+    "code": "233"
+  },
+  {
+    "name": "Gibraltar",
+    "chineseName": "直布罗陀",
+    "arabicName": "جبل طارق",
+    "codeName": "GI",
+    "code": "350"
+  },
+  {
+    "name": "Greenland",
+    "chineseName": "格陵兰岛",
+    "arabicName": "جرينلاند",
+    "codeName": "GL",
+    "code": "299"
+  },
+  {
+    "name": "Gambia",
+    "chineseName": "冈比亚",
+    "arabicName": "غامبيا",
+    "codeName": "GM",
+    "code": "220"
+  },
+  {
+    "name": "Guinea",
+    "chineseName": "几内亚",
+    "arabicName": "غينيا",
+    "codeName": "GN",
+    "code": "224"
+  },
+  {
+    "name": "Guadeloupe",
+    "chineseName": "瓜德罗普岛",
+    "arabicName": "جوادلوب",
+    "codeName": "GP",
+    "code": "590"
+  },
+  {
+    "name": "Equatorial Guinea",
+    "chineseName": "赤道几内亚",
+    "arabicName": "غينيا الاستوائية",
+    "codeName": "GQ",
+    "code": "240"
+  },
+  {
+    "name": "Greece",
+    "chineseName": "希腊",
+    "arabicName": "اليونان",
+    "codeName": "GR",
+    "code": "30"
+  },
+  {
+    "name": "Guatemala",
+    "chineseName": "危地马拉",
+    "arabicName": "غواتيمالا",
+    "codeName": "GT",
+    "code": "502"
+  },
+  {
+    "name": "Guam",
+    "chineseName": "关岛",
+    "arabicName": "جوام",
+    "codeName": "GU",
+    "code": "1671"
+  },
+  {
+    "name": "Guinea-Bissau",
+    "chineseName": "几内亚比绍共和国",
+    "arabicName": "غينيا بيساو",
+    "codeName": "GW",
+    "code": "245"
+  },
+  {
+    "name": "Guyana",
+    "chineseName": "圭亚那",
+    "arabicName": "غيانا",
+    "codeName": "GY",
+    "code": "592"
+  },
+  {
+    "name": "Hong Kong (China)",
+    "chineseName": "中国香港",
+    "arabicName": "هونغ كونغ الصينية",
+    "codeName": "HK",
+    "code": "852"
+  },
+  {
+    "name": "Honduras",
+    "chineseName": "洪都拉斯",
+    "arabicName": "هندوراس",
+    "codeName": "HN",
+    "code": "504"
+  },
+  {
+    "name": "Croatia",
+    "chineseName": "克罗地亚",
+    "arabicName": "كرواتيا",
+    "codeName": "HR",
+    "code": "385"
+  },
+  {
+    "name": "Haiti",
+    "chineseName": "海地",
+    "arabicName": "هايتي",
+    "codeName": "HT",
+    "code": "509"
+  },
+  {
+    "name": "Hungary",
+    "chineseName": "匈牙利",
+    "arabicName": "المجر",
+    "codeName": "HU",
+    "code": "36"
+  },
+  {
+    "name": "Indonesia",
+    "chineseName": "印度尼西亚",
+    "arabicName": "إندونيسيا",
+    "codeName": "ID",
+    "code": "62"
+  },
+  {
+    "name": "Ireland",
+    "chineseName": "爱尔兰",
+    "arabicName": "أيرلندا",
+    "codeName": "IE",
+    "code": "353"
+  },
+  {
+    "name": "Israel",
+    "chineseName": "以色列",
+    "arabicName": "إسرائيل",
+    "codeName": "IL",
+    "code": "972"
+  },
+  {
+    "name": "India",
+    "chineseName": "印度",
+    "arabicName": "الهند",
+    "codeName": "IN",
+    "code": "91"
+  },
+  {
+    "name": "Iraq",
+    "chineseName": "伊拉克",
+    "arabicName": "العراق",
+    "codeName": "IQ",
+    "code": "964"
+  },
+  {
+    "name": "Iceland",
+    "chineseName": "冰岛",
+    "arabicName": "أيسلندا",
+    "codeName": "IS",
+    "code": "354"
+  },
+  {
+    "name": "Italy",
+    "chineseName": "意大利",
+    "arabicName": "إيطاليا",
+    "codeName": "IT",
+    "code": "39"
+  },
+  {
+    "name": "Jamaica",
+    "chineseName": "牙买加",
+    "arabicName": "جامايكا",
+    "codeName": "JM",
+    "code": "1876"
+  },
+  {
+    "name": "Jordan",
+    "chineseName": "约旦",
+    "arabicName": "الأردن",
+    "codeName": "JO",
+    "code": "962"
+  },
+  {
+    "name": "Japan",
+    "chineseName": "日本",
+    "arabicName": "اليابان",
+    "codeName": "JP",
+    "code": "81"
+  },
+  {
+    "name": "Kenya",
+    "chineseName": "肯尼亚",
+    "arabicName": "كينيا",
+    "codeName": "KE",
+    "code": "254"
+  },
+  {
+    "name": "Kyrgyzstan",
+    "chineseName": "吉尔吉斯斯坦",
+    "arabicName": "قيرغيزستان",
+    "codeName": "KG",
+    "code": "996"
+  },
+  {
+    "name": "Cambodia",
+    "chineseName": "柬埔寨",
+    "arabicName": "كمبوديا",
+    "codeName": "KH",
+    "code": "855"
+  },
+  {
+    "name": "Kiribati",
+    "chineseName": "基里巴斯",
+    "arabicName": "كيريباتي",
+    "codeName": "KI",
+    "code": "686"
+  },
+  {
+    "name": "Comoros",
+    "chineseName": "科摩罗",
+    "arabicName": "جزر القمر",
+    "codeName": "KM",
+    "code": "269"
+  },
+  {
+    "name": "Saint Kitts and Nevis",
+    "chineseName": "圣基茨和尼维斯",
+    "arabicName": "سانت كيتس ونيفيس",
+    "codeName": "KN",
+    "code": "1869"
+  },
+  {
+    "name": "South Korea",
+    "chineseName": "韩国",
+    "arabicName": "كوريا الجنوبية",
+    "codeName": "KR",
+    "code": "82"
+  },
+  {
+    "name": "Kuwait",
+    "chineseName": "科威特",
+    "arabicName": "الكويت",
+    "codeName": "KW",
+    "code": "965"
+  },
+  {
+    "name": "Cayman Islands",
+    "chineseName": "开曼群岛",
+    "arabicName": "جزر كايمان",
+    "codeName": "KY",
+    "code": "1345"
+  },
+  {
+    "name": "Kazakhstan",
+    "chineseName": "哈萨克斯坦",
+    "arabicName": "كازاخستان",
+    "codeName": "KZ",
+    "code": "7"
+  },
+  {
+    "name": "Laos",
+    "chineseName": "老挝",
+    "arabicName": "لاوس",
+    "codeName": "LA",
+    "code": "856"
+  },
+  {
+    "name": "Lebanon",
+    "chineseName": "黎巴嫩",
+    "arabicName": "لبنان",
+    "codeName": "LB",
+    "code": "961"
+  },
+  {
+    "name": "Saint Lucia",
+    "chineseName": "圣卢西亚",
+    "arabicName": "سانت لوسيا",
+    "codeName": "LC",
+    "code": "1758"
+  },
+  {
+    "name": "Liechtenstein",
+    "chineseName": "列支敦士登",
+    "arabicName": "ليختنشتاين",
+    "codeName": "LI",
+    "code": "423"
+  },
+  {
+    "name": "Sri Lanka",
+    "chineseName": "斯里兰卡",
+    "arabicName": "سريلانكا",
+    "codeName": "LK",
+    "code": "94"
+  },
+  {
+    "name": "Liberia",
+    "chineseName": "利比里亚",
+    "arabicName": "ليبيريا",
+    "codeName": "LR",
+    "code": "231"
+  },
+  {
+    "name": "Lesotho",
+    "chineseName": "莱索托",
+    "arabicName": "ليسوتو",
+    "codeName": "LS",
+    "code": "266"
+  },
+  {
+    "name": "Lithuania",
+    "chineseName": "立陶宛",
+    "arabicName": "ليتوانيا",
+    "codeName": "LT",
+    "code": "370"
+  },
+  {
+    "name": "Luxembourg",
+    "chineseName": "卢森堡",
+    "arabicName": "لوكسمبورغ",
+    "codeName": "LU",
+    "code": "352"
+  },
+  {
+    "name": "Latvia",
+    "chineseName": "拉脱维亚",
+    "arabicName": "لاتفيا",
+    "codeName": "LV",
+    "code": "371"
+  },
+  {
+    "name": "Libya",
+    "chineseName": "利比亚",
+    "arabicName": "ليبيا",
+    "codeName": "LY",
+    "code": "218"
+  },
+  {
+    "name": "Morocco",
+    "chineseName": "摩洛哥",
+    "arabicName": "المغرب",
+    "codeName": "MA",
+    "code": "212"
+  },
+  {
+    "name": "Monaco",
+    "chineseName": "摩纳哥",
+    "arabicName": "موناكو",
+    "codeName": "MC",
+    "code": "377"
+  },
+  {
+    "name": "Moldova",
+    "chineseName": "摩尔多瓦",
+    "arabicName": "مولدوفا",
+    "codeName": "MD",
+    "code": "373"
+  },
+  {
+    "name": "Montenegro",
+    "chineseName": "黑山",
+    "arabicName": "الجبل الأسود",
+    "codeName": "ME",
+    "code": "382"
+  },
+  {
+    "name": "Madagascar",
+    "chineseName": "马达加斯加",
+    "arabicName": "مدغشقر",
+    "codeName": "MG",
+    "code": "261"
+  },
+  {
+    "name": "Marshall Islands",
+    "chineseName": "马绍尔群岛",
+    "arabicName": "جزر مارشال",
+    "codeName": "MH",
+    "code": "692"
+  },
+  {
+    "name": "Macedonia",
+    "chineseName": "马其顿",
+    "arabicName": "مقدونيا",
+    "codeName": "MK",
+    "code": "389"
+  },
+  {
+    "name": "Mali",
+    "chineseName": "马里",
+    "arabicName": "مالي",
+    "codeName": "ML",
+    "code": "223"
+  },
+  {
+    "name": "Myanmar",
+    "chineseName": "缅甸",
+    "arabicName": "ميانمار",
+    "codeName": "MM",
+    "code": "95"
+  },
+  {
+    "name": "Mongolia",
+    "chineseName": "蒙古",
+    "arabicName": "منغوليا",
+    "codeName": "MN",
+    "code": "976"
+  },
+  {
+    "name": "Macau (China)",
+    "chineseName": "中国澳门",
+    "arabicName": "ماكاو الصينية",
+    "codeName": "MO",
+    "code": "853"
+  },
+  {
+    "name": "Mauritania",
+    "chineseName": "毛里塔尼亚",
+    "arabicName": "موريتانيا",
+    "codeName": "MR",
+    "code": "222"
+  },
+  {
+    "name": "Montserrat",
+    "chineseName": "蒙特塞拉特岛",
+    "arabicName": "مونتسيرات",
+    "codeName": "MS",
+    "code": "1664"
+  },
+  {
+    "name": "Malta",
+    "chineseName": "马耳他",
+    "arabicName": "مالطا",
+    "codeName": "MT",
+    "code": "356"
+  },
+  {
+    "name": "Mauritius",
+    "chineseName": "毛里求斯",
+    "arabicName": "موريشيوس",
+    "codeName": "MU",
+    "code": "230"
+  },
+  {
+    "name": "Maldives",
+    "chineseName": "马尔代夫",
+    "arabicName": "جزر المالديف",
+    "codeName": "MV",
+    "code": "960"
+  },
+  {
+    "name": "Malawi",
+    "chineseName": "马拉维",
+    "arabicName": "ملاوي",
+    "codeName": "MW",
+    "code": "265"
+  },
+  {
+    "name": "Mexico",
+    "chineseName": "墨西哥",
+    "arabicName": "المكسيك",
+    "codeName": "MX",
+    "code": "52"
+  },
+  {
+    "name": "Malaysia",
+    "chineseName": "马来西亚",
+    "arabicName": "ماليزيا",
+    "codeName": "MY",
+    "code": "60"
+  },
+  {
+    "name": "Mozambique",
+    "chineseName": "莫桑比克",
+    "arabicName": "موزمبيق",
+    "codeName": "MZ",
+    "code": "258"
+  },
+  {
+    "name": "Namibia",
+    "chineseName": "纳米比亚",
+    "arabicName": "ناميبيا",
+    "codeName": "NA",
+    "code": "264"
+  },
+  {
+    "name": "New Caledonia",
+    "chineseName": "新喀里多尼亚",
+    "arabicName": "كاليدونيا الجديدة",
+    "codeName": "NC",
+    "code": "687"
+  },
+  {
+    "name": "Niger",
+    "chineseName": "尼日尔",
+    "arabicName": "النيجر",
+    "codeName": "NE",
+    "code": "227"
+  },
+  {
+    "name": "Nigeria",
+    "chineseName": "尼日利亚",
+    "arabicName": "نيجيريا",
+    "codeName": "NG",
+    "code": "234"
+  },
+  {
+    "name": "Nicaragua",
+    "chineseName": "尼加拉瓜",
+    "arabicName": "نيكاراغوا",
+    "codeName": "NI",
+    "code": "505"
+  },
+  {
+    "name": "Netherlands",
+    "chineseName": "荷兰",
+    "arabicName": "هولندا",
+    "codeName": "NL",
+    "code": "31"
+  },
+  {
+    "name": "Norway",
+    "chineseName": "挪威",
+    "arabicName": "النرويج",
+    "codeName": "NO",
+    "code": "47"
+  },
+  {
+    "name": "Nepal",
+    "chineseName": "尼泊尔",
+    "arabicName": "نيبال",
+    "codeName": "NP",
+    "code": "977"
+  },
+  {
+    "name": "Nauru",
+    "chineseName": "瑙鲁",
+    "arabicName": "ناورو",
+    "codeName": "NR",
+    "code": "674"
+  },
+  {
+    "name": "New Zealand",
+    "chineseName": "新西兰",
+    "arabicName": "نيوزيلندا",
+    "codeName": "NZ",
+    "code": "64"
+  },
+  {
+    "name": "Oman",
+    "chineseName": "阿曼",
+    "arabicName": "عمان",
+    "codeName": "OM",
+    "code": "968"
+  },
+  {
+    "name": "Panama",
+    "chineseName": "巴拿马",
+    "arabicName": "بنما",
+    "codeName": "PA",
+    "code": "507"
+  },
+  {
+    "name": "Peru",
+    "chineseName": "秘鲁",
+    "arabicName": "بيرو",
+    "codeName": "PE",
+    "code": "51"
+  },
+  {
+    "name": "French Polynesia",
+    "chineseName": "法属波利尼西亚",
+    "arabicName": "بولينيزيا الفرنسية",
+    "codeName": "PF",
+    "code": "689"
+  },
+  {
+    "name": "Papua New Guinea",
+    "chineseName": "巴布亚新几内亚",
+    "arabicName": "بابوا غينيا الجديدة",
+    "codeName": "PG",
+    "code": "675"
+  },
+  {
+    "name": "Philippines",
+    "chineseName": "菲律宾",
+    "arabicName": "الفلبين",
+    "codeName": "PH",
+    "code": "63"
+  },
+  {
+    "name": "Pakistan",
+    "chineseName": "巴基斯坦",
+    "arabicName": "باكستان",
+    "codeName": "PK",
+    "code": "92"
+  },
+  {
+    "name": "Poland",
+    "chineseName": "波兰",
+    "arabicName": "بولندا",
+    "codeName": "PL",
+    "code": "48"
+  },
+  {
+    "name": "Saint Pierre and Miquelon",
+    "chineseName": "圣彼埃尔和密克隆岛",
+    "arabicName": "سان بيير وميكلون",
+    "codeName": "PM",
+    "code": "508"
+  },
+  {
+    "name": "Puerto Rico",
+    "chineseName": "波多黎各",
+    "arabicName": "بورتوريكو",
+    "codeName": "PR",
+    "code": "1787"
+  },
+  {
+    "name": "Portugal",
+    "chineseName": "葡萄牙",
+    "arabicName": "البرتغال",
+    "codeName": "PT",
+    "code": "351"
+  },
+  {
+    "name": "Palau",
+    "chineseName": "帕劳",
+    "arabicName": "بالاو",
+    "codeName": "PW",
+    "code": "680"
+  },
+  {
+    "name": "Paraguay",
+    "chineseName": "巴拉圭",
+    "arabicName": "باراغواي",
+    "codeName": "PY",
+    "code": "595"
+  },
+  {
+    "name": "Qatar",
+    "chineseName": "卡塔尔",
+    "arabicName": "قطر",
+    "codeName": "QA",
+    "code": "974"
+  },
+  {
+    "name": "Réunion Island",
+    "chineseName": "留尼汪",
+    "arabicName": "ريونيون",
+    "codeName": "RE",
+    "code": "262"
+  },
+  {
+    "name": "Romania",
+    "chineseName": "罗马尼亚",
+    "arabicName": "رومانيا",
+    "codeName": "RO",
+    "code": "40"
+  },
+  {
+    "name": "Serbia",
+    "chineseName": "塞尔维亚",
+    "arabicName": "صربيا",
+    "codeName": "RS",
+    "code": "381"
+  },
+  {
+    "name": "Russia",
+    "chineseName": "俄罗斯",
+    "arabicName": "روسيا",
+    "codeName": "RU",
+    "code": "7"
+  },
+  {
+    "name": "Rwanda",
+    "chineseName": "卢旺达",
+    "arabicName": "رواندا",
+    "codeName": "RW",
+    "code": "250"
+  },
+  {
+    "name": "Saudi Arabia",
+    "chineseName": "沙特阿拉伯",
+    "arabicName": "السعودية",
+    "codeName": "SA",
+    "code": "966"
+  },
+  {
+    "name": "Solomon Islands",
+    "chineseName": "所罗门群岛",
+    "arabicName": "جزر سليمان",
+    "codeName": "SB",
+    "code": "677"
+  },
+  {
+    "name": "Seychelles",
+    "chineseName": "塞舌尔",
+    "arabicName": "سيشل",
+    "codeName": "SC",
+    "code": "248"
+  },
+  {
+    "name": "Sudan",
+    "chineseName": "苏丹",
+    "arabicName": "السودان",
+    "codeName": "SD",
+    "code": "249"
+  },
+  {
+    "name": "Sweden",
+    "chineseName": "瑞典",
+    "arabicName": "السويد",
+    "codeName": "SE",
+    "code": "46"
+  },
+  {
+    "name": "Singapore",
+    "chineseName": "新加坡",
+    "arabicName": "سنغافورة",
+    "codeName": "SG",
+    "code": "65"
+  },
+  {
+    "name": "Slovenia",
+    "chineseName": "斯洛文尼亚",
+    "arabicName": "سلوفينيا",
+    "codeName": "SI",
+    "code": "386"
+  },
+  {
+    "name": "Slovakia",
+    "chineseName": "斯洛伐克",
+    "arabicName": "سلوفاكيا",
+    "codeName": "SK",
+    "code": "421"
+  },
+  {
+    "name": "Sierra Leone",
+    "chineseName": "塞拉利昂",
+    "arabicName": "سيراليون",
+    "codeName": "SL",
+    "code": "232"
+  },
+  {
+    "name": "San Marino",
+    "chineseName": "圣马力诺",
+    "arabicName": "سان مارينو",
+    "codeName": "SM",
+    "code": "378"
+  },
+  {
+    "name": "Senegal",
+    "chineseName": "塞内加尔",
+    "arabicName": "السنغال",
+    "codeName": "SN",
+    "code": "221"
+  },
+  {
+    "name": "Somalia",
+    "chineseName": "索马里",
+    "arabicName": "الصومال",
+    "codeName": "SO",
+    "code": "252"
+  },
+  {
+    "name": "Suriname",
+    "chineseName": "苏里南",
+    "arabicName": "سورينام",
+    "codeName": "SR",
+    "code": "597"
+  },
+  {
+    "name": "Sao Tome and Principe",
+    "chineseName": "圣多美和普林西比",
+    "arabicName": "ساو تومي وبرينسيبي",
+    "codeName": "ST",
+    "code": "239"
+  },
+  {
+    "name": "ElSalvador",
+    "chineseName": "萨尔瓦多",
+    "arabicName": "السلفادور",
+    "codeName": "SV",
+    "code": "503"
+  },
+  {
+    "name": "Swaziland",
+    "chineseName": "斯威士兰",
+    "arabicName": "سوازيلاند",
+    "codeName": "SZ",
+    "code": "268"
+  },
+  {
+    "name": "Turks and Caicos Islands",
+    "chineseName": "特克斯和凯科斯群岛",
+    "arabicName": "جزر توركس وكايكوس",
+    "codeName": "TC",
+    "code": "1649"
+  },
+  {
+    "name": "Chad",
+    "chineseName": "乍得",
+    "arabicName": "تشاد",
+    "codeName": "TD",
+    "code": "235"
+  },
+  {
+    "name": "Togo",
+    "chineseName": "多哥",
+    "arabicName": "توغو",
+    "codeName": "TG",
+    "code": "228"
+  },
+  {
+    "name": "Thailand",
+    "chineseName": "泰国",
+    "arabicName": "تايلاند",
+    "codeName": "TH",
+    "code": "66"
+  },
+  {
+    "name": "Tajikistan",
+    "chineseName": "塔吉克斯坦",
+    "arabicName": "طاجيكستان",
+    "codeName": "TJ",
+    "code": "992"
+  },
+  {
+    "name": "East Timor",
+    "chineseName": "东帝汶",
+    "arabicName": "تيمور الشرقية",
+    "codeName": "TL",
+    "code": "670"
+  },
+  {
+    "name": "Turkmenistan",
+    "chineseName": "土库曼斯坦",
+    "arabicName": "تركمانستان",
+    "codeName": "TM",
+    "code": "993"
+  },
+  {
+    "name": "Tunisia",
+    "chineseName": "突尼斯",
+    "arabicName": "تونس",
+    "codeName": "TN",
+    "code": "216"
+  },
+  {
+    "name": "Tonga",
+    "chineseName": "汤加",
+    "arabicName": "تونغا",
+    "codeName": "TO",
+    "code": "676"
+  },
+  {
+    "name": "Turkey",
+    "chineseName": "土耳其",
+    "arabicName": "تركيا",
+    "codeName": "TR",
+    "code": "90"
+  },
+  {
+    "name": "Trinidad and Tobago",
+    "chineseName": "特立尼达和多巴哥",
+    "arabicName": "ترينيداد وتوباغو",
+    "codeName": "TT",
+    "code": "1868"
+  },
+  {
+    "name": "Taiwan (China)",
+    "chineseName": "中国台湾",
+    "arabicName": "تايوان الصينية",
+    "codeName": "TW",
+    "code": "886"
+  },
+  {
+    "name": "Tanzania",
+    "chineseName": "坦桑尼亚",
+    "arabicName": "تنزانيا",
+    "codeName": "TZ",
+    "code": "255"
+  },
+  {
+    "name": "Uganda",
+    "chineseName": "乌干达",
+    "arabicName": "أوغندا",
+    "codeName": "UG",
+    "code": "256"
+  },
+  {
+    "name": "United States",
+    "chineseName": "美国",
+    "arabicName": "الولايات المتحدة",
+    "codeName": "US",
+    "code": "1"
+  },
+  {
+    "name": "Uruguay",
+    "chineseName": "乌拉圭",
+    "arabicName": "أوروغواي",
+    "codeName": "UY",
+    "code": "598"
+  },
+  {
+    "name": "Uzbekistan",
+    "chineseName": "乌兹别克斯坦",
+    "arabicName": "أوزبكستان",
+    "codeName": "UZ",
+    "code": "998"
+  },
+  {
+    "name": "Saint Vincent and The Grenadines",
+    "chineseName": "圣文森特和格林纳丁斯",
+    "arabicName": "سانت فنسنت وجزر غرينادين",
+    "codeName": "VC",
+    "code": "1784"
+  },
+  {
+    "name": "Venezuela",
+    "chineseName": "委内瑞拉",
+    "arabicName": "فنزويلا",
+    "codeName": "VE",
+    "code": "58"
+  },
+  {
+    "name": "VirginIslands,British",
+    "chineseName": "英属维尔京群岛",
+    "arabicName": "جزر العذراء البريطانية",
+    "codeName": "VG",
+    "code": "1284"
+  },
+  {
+    "name": "Vietnam",
+    "chineseName": "越南",
+    "arabicName": "فيتنام",
+    "codeName": "VN",
+    "code": "84"
+  },
+  {
+    "name": "Vanuatu",
+    "chineseName": "瓦努阿图",
+    "arabicName": "فانواتو",
+    "codeName": "VU",
+    "code": "678"
+  },
+  {
+    "name": "Samoa",
+    "chineseName": "萨摩亚",
+    "arabicName": "ساموا",
+    "codeName": "WS",
+    "code": "685"
+  },
+  {
+    "name": "Yemen",
+    "chineseName": "也门",
+    "arabicName": "اليمن",
+    "codeName": "YE",
+    "code": "967"
+  },
+  {
+    "name": "Mayotte",
+    "chineseName": "马约特",
+    "arabicName": "مايوت",
+    "codeName": "YT",
+    "code": "269"
+  },
+  {
+    "name": "South Africa",
+    "chineseName": "南非",
+    "arabicName": "جنوب أفريقيا",
+    "codeName": "ZA",
+    "code": "27"
+  },
+  {
+    "name": "Zambia",
+    "chineseName": "赞比亚",
+    "arabicName": "زامبيا",
+    "codeName": "ZM",
+    "code": "260"
+  },
+  {
+    "name": "Zimbabwe",
+    "chineseName": "津巴布韦",
+    "arabicName": "زيمبابوي",
+    "codeName": "ZW",
+    "code": "263"
+  },
+  {
+    "name": "Kosovo",
+    "chineseName": "科索沃共和国",
+    "arabicName": "كوسوفو",
+    "codeName": "XK",
+    "code": "383"
+  },
+  {
+    "name": "Virgin Islands, US",
+    "chineseName": "美属维尔京群岛",
+    "arabicName": "جزر العذراء الأمريكية",
+    "codeName": "VI",
+    "code": "1340"
+  },
+  {
+    "name": "Sint Maarten (Dutch Part)",
+    "chineseName": "荷属圣马丁",
+    "arabicName": "سانت مارتن الهولندية",
+    "codeName": "SX",
+    "code": "1721"
+  },
+  {
+    "name": "South Sudan",
+    "chineseName": "南苏丹",
+    "arabicName": "جنوب السودان",
+    "codeName": "SS",
+    "code": "211"
+  },
+  {
+    "name": "Palestinian Territory",
+    "chineseName": "巴勒斯坦",
+    "arabicName": "فلسطين",
+    "codeName": "PS",
+    "code": "970"
+  },
+  {
+    "name": "Martinique",
+    "chineseName": "马提尼克",
+    "arabicName": "مارتينيك",
+    "codeName": "MQ",
+    "code": "596"
+  },
+  {
+    "name": "Northern Mariana Islands",
+    "chineseName": "北马里亚纳群岛",
+    "arabicName": "جزر ماريانا الشمالية",
+    "codeName": "MP",
+    "code": "1670"
+  },
+  {
+    "name": "Western Sahara",
+    "chineseName": "西撒哈拉",
+    "arabicName": "الصحراء الغربية",
+    "codeName": "EH",
+    "code": "212"
+  },
+  {
+    "name": "Netherlands Antilles",
+    "chineseName": "荷属安的列斯",
+    "arabicName": "جزر الأنتيل الهولندية",
+    "codeName": "AN",
+    "code": "599"
+  },
+  {
+    "name": "Ascension Island",
+    "chineseName": "阿森松岛",
+    "arabicName": "جزيرة أسينشيون",
+    "codeName": "AC",
+    "code": "247"
+  }
+]

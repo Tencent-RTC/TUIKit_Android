@@ -29,8 +29,7 @@ class MineFragment : Fragment() {
     private var textUserId: TextView? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val rootView: View = inflater.inflate(R.layout.app_fragment_my_info, container, false)
         imageAvatar = rootView.findViewById<View?>(R.id.iv_avatar) as? RoundCornerImageView?
@@ -41,8 +40,7 @@ class MineFragment : Fragment() {
         textNickName?.text = LoginStore.shared.loginState.loginUserInfo.value?.nickname ?: ""
         textUserId?.text = LoginStore.shared.loginState.loginUserInfo.value?.userID ?: ""
         rootView.findViewById<LinearLayout>(R.id.ll_settings).setOnClickListener {
-            val intent = Intent(requireContext(), SettingsActivity::class.java)
-            startActivity(intent)
+            (requireActivity() as com.tencent.uikit.app.main.MainActivity).pushPage(SettingsFragment())
         }
         rootView.findViewById<LinearLayout>(R.id.ll_log).setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -52,9 +50,7 @@ class MineFragment : Fragment() {
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.setType("application/zip")
                         val uri = FileProvider.getUriForFile(
-                            requireContext(),
-                            "com.trtc.uikit.livekit.example.app_uikit",
-                            logFile
+                            requireContext(), "${requireContext().packageName}.app_uikit", logFile
                         )
                         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
                         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -66,11 +62,13 @@ class MineFragment : Fragment() {
         rootView.findViewById<TextView>(R.id.tv_logout).setOnClickListener {
             showLogoutDialog()
         }
-        rootView.findViewById<ImageView>(R.id.img_back_with_line).setOnClickListener {
-            val navController = Navigation.findNavController(it)
-            val handled = navController.popBackStack()
-            if (!handled) {
-                navController.popBackStack(R.id.main_fragment, false)
+        rootView.findViewById<ImageView>(R.id.img_back_with_line).visibility = View.GONE
+        rootView.findViewById<View>(R.id.rl_title).let { toolbar ->
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(toolbar) { v, insets ->
+                val lp = v.layoutParams as ViewGroup.MarginLayoutParams
+                lp.topMargin = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars()).top
+                v.layoutParams = lp
+                insets
             }
         }
         return rootView
@@ -96,6 +94,7 @@ class MineFragment : Fragment() {
             override fun onClick() {
                 logoutDialog.dismiss()
                 MMKV.defaultMMKV().putString("userId", "")
+                MMKV.defaultMMKV().putBoolean("autoLogin", false)
                 LoginStore.shared.logout(null)
             }
         })

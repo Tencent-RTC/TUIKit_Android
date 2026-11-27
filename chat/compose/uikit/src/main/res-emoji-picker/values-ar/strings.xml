@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="emoji_picker_recent">المستخدمة مؤخرا</string>
+    <string name="emoji_picker_all">كل الرموز التعبيرية</string>
+    <string name="emoji_picker_send">إرسال</string>
+
+</resources>
+
+

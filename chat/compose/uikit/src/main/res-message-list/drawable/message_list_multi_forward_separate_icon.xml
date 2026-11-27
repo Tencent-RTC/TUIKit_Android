@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:autoMirrored="true"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+    <path
+        android:fillColor="#000000"
+        android:fillType="evenOdd"
+        android:pathData="M80 40Q80 23.4315 68.2843 11.7157Q56.5685 0 40 0Q23.4315 0 11.7157 11.7157Q0 23.4315 0 40Q0 56.5685 11.7157 68.2843Q23.4315 80 40 80Q56.5685 80 68.2843 68.2843Q80 56.5685 80 40ZM14.5442 14.5442Q25.0883 4 40 4Q54.9117 4 65.4558 14.5442Q76 25.0883 76 40Q76 54.9117 65.4558 65.4558Q54.9117 76 40 76Q25.0883 76 14.5442 65.4558Q4 54.9117 4 40Q4 25.0883 14.5442 14.5442Z" />
+    <group
+        android:translateX="23"
+        android:translateY="24"
+        android:scaleX="2"
+        android:scaleY="2">
+        <path
+            android:pathData="M16.19,7.73L9.869,14.357V10.429L9.139,10.408C8.628,10.394 7.789,10.423 6.807,10.649L6.378,10.76H6.377C4.143,11.39 2.347,12.756 1.039,14.782C1.005,14.32 0.979,13.603 1.053,12.761L1.052,12.76C1.12,11.998 1.254,11.278 1.45,10.616L1.538,10.336C1.849,9.401 2.288,8.587 2.837,7.906L2.836,7.905C4.196,6.227 6.284,5.28 9.177,5.178L9.9,5.151V1.106L16.19,7.73Z"
+            android:fillColor="#00000000"
+            android:strokeColor="#000000"
+            android:strokeWidth="1.5" />
+    </group>
+</vector>

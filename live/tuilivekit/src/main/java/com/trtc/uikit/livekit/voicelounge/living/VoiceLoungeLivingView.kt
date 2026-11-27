@@ -51,10 +51,6 @@ import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveUserInfo
-import io.trtc.tuikit.atomicxcore.api.view.AtomicLiveView
-import io.trtc.tuikit.atomicxcore.api.view.AtomicLiveViewChangeAdapter
-import io.trtc.tuikit.atomicxcore.api.view.AtomicLiveViewType
-import io.trtc.tuikit.atomicxcore.api.view.UnitInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -76,10 +72,6 @@ internal class VoiceLoungeLivingView(
     var onClose: (() -> Unit)? = null
 
     val role: VoiceLoungeRole = seatStore.role
-    val coreView = AtomicLiveView(
-        context, null, 0,
-        if (role == VoiceLoungeRole.HOST) AtomicLiveViewType.PUSH_VIEW else AtomicLiveViewType.PLAY_VIEW,
-    )
 
     private val backgroundView = VoiceLoungeBackgroundView(context)
     private val backgroundDimView = View(context)
@@ -116,7 +108,6 @@ internal class VoiceLoungeLivingView(
     private var captureVolume = 100
     private val musicView = com.trtc.uikit.livekit.voicelounge.living.music.VoiceLoungeMusicView(context)
     private var isMusicActive = false
-    private var isHostPaused = false
     private var isInBackground = false
 
     private var activatedLiveID = ""
@@ -163,30 +154,12 @@ internal class VoiceLoungeLivingView(
 
     private val settings: VoiceLoungeSettings get() = seatStore.settings
 
-    private val hiddenSeatViewProvider = object : AtomicLiveViewChangeAdapter {
-        override fun onCreateUnitView(unitInfo: UnitInfo?): View? = null
-
-        override fun onUpdateUnitView(unitInfo: UnitInfo?, view: View?) = Unit
-
-        override fun onVideoViewFrameChanged(left: Float, top: Float, right: Float, bottom: Float) = Unit
-
-        override fun onVolumeChanged(unitInfo: UnitInfo?, volume: Int, view: View?) {
-            val userID = unitInfo?.userID.orEmpty()
-            if (userID.isEmpty()) return
-            post { seatStore.applyUnitVolume(userID, volume) }
-        }
-    }
-
     init {
         setBackgroundColor(rgb(0.06f, 0.07f, 0.10f))
         clipChildren = false
-        coreView.setViewChangeAdapter(hiddenSeatViewProvider)
-        coreView.isClickable = false
-        coreView.isFocusable = false
         backgroundView.clipChildren = true
         backgroundDimView.setBackgroundColor(rgb(0.051f, 0.055f, 0.078f, 0.45f))
 
-        addView(coreView, frameParams(MATCH, MATCH))
         addView(backgroundView, frameParams(MATCH, MATCH))
         addView(backgroundDimView, frameParams(MATCH, MATCH))
         addView(headerView, frameParams(MATCH, dp(82), Gravity.TOP))
@@ -194,10 +167,6 @@ internal class VoiceLoungeLivingView(
         addView(messageListView, frameParams(0, 0, Gravity.BOTTOM or Gravity.START, start = dp(14)))
         addView(audienceWelcomeView, frameParams(MATCH, dp(28), Gravity.BOTTOM))
         addView(bottomBar, frameParams(MATCH, dp(62), Gravity.BOTTOM))
-        val bannerHeight = dp(VoiceLoungeCoGuestBannerView.HEIGHT)
-        addView(requestingView, frameParams(MATCH, bannerHeight, Gravity.BOTTOM, start = dp(14), end = dp(14)))
-        addView(invitationView, frameParams(MATCH, bannerHeight, Gravity.BOTTOM, start = dp(14), end = dp(14)))
-        addView(leavingView, frameParams(MATCH, bannerHeight, Gravity.BOTTOM, start = dp(14), end = dp(14)))
         val likeSizePx = dp(VoiceLoungeLikeButton.SIZE_DP)
         addView(
             likeButton,
@@ -208,6 +177,10 @@ internal class VoiceLoungeLivingView(
         addView(likeAnimationView, frameParams(MATCH, MATCH))
         addView(giftDisplayView, frameParams(MATCH, MATCH))
         addView(commentComposer, frameParams(MATCH, MATCH))
+        val bannerHeight = dp(VoiceLoungeCoGuestBannerView.HEIGHT)
+        addView(requestingView, frameParams(MATCH, bannerHeight, Gravity.BOTTOM, start = dp(14), end = dp(14)))
+        addView(invitationView, frameParams(MATCH, bannerHeight, Gravity.BOTTOM, start = dp(14), end = dp(14)))
+        addView(leavingView, frameParams(MATCH, bannerHeight, Gravity.BOTTOM, start = dp(14), end = dp(14)))
 
         giftDisplayView.setActive(false)
         likeAnimationView.setLikeStore(likeStore)
@@ -250,7 +223,6 @@ internal class VoiceLoungeLivingView(
             }
         }
         giftBarrageStore.activate(liveID)
-        giftBarrageStore.setCollectionEnabled(!isHostPaused)
         giftBarrageStore.setApplicationActive(isHostStarted())
         noticeStore.activate(liveID, role, settings.topic)
         activateAudienceWelcome()
@@ -313,13 +285,6 @@ internal class VoiceLoungeLivingView(
         VoiceLoungeVoiceTuner.reset()
         deactivateMusic()
         activatedLiveID = ""
-    }
-
-    fun setHostPaused(paused: Boolean) {
-        isHostPaused = paused
-        updateMusicSuspension()
-        giftBarrageStore.setCollectionEnabled(!paused)
-        if (paused) dismissOverlays()
     }
 
     fun dismissOverlays() {
@@ -551,7 +516,7 @@ internal class VoiceLoungeLivingView(
     }
 
     private fun showReceivedLikes(count: Int) {
-        if (activatedLiveID.isEmpty() || isHostPaused) return
+        if (activatedLiveID.isEmpty()) return
         likeButton.pulse()
         val center = likeButton.heartCenter(likeAnimationView)
         val origin = PointF(center[0], center[1])
@@ -566,7 +531,7 @@ internal class VoiceLoungeLivingView(
     }
 
     private fun showAudienceWelcome(user: LiveUserInfo) {
-        if (activatedLiveID.isEmpty() || user.userID.isEmpty() || isHostPaused) return
+        if (activatedLiveID.isEmpty() || user.userID.isEmpty()) return
         audienceWelcomeView.enqueue(
             AudienceWelcome(
                 userID = user.userID,
@@ -588,11 +553,10 @@ internal class VoiceLoungeLivingView(
         isMusicActive = false
         musicView.deactivate()
         musicView.dismissIfShowing()
-        isHostPaused = false
     }
 
     private fun updateMusicSuspension() {
-        if (isMusicActive) musicView.setSuspended(isHostPaused || isInBackground)
+        if (isMusicActive) musicView.setSuspended(isInBackground)
     }
 
 }
@@ -602,58 +566,32 @@ internal class VoiceLoungeLiveClock {
         private set
 
     private var startUptime: Long? = null
-    private var pausedDuration = 0L
-    private var pauseStartUptime: Long? = null
-
-    val isRunning: Boolean get() = startUptime != null
 
     val elapsedSeconds: Int
         get() {
             val start = startUptime ?: return 0
-            val now = SystemClock.elapsedRealtime()
-            val currentPause = pauseStartUptime?.let { now - it } ?: 0L
-            return maxOf(0L, (now - start - pausedDuration - currentPause) / 1000).toInt()
-        }
-
-    val currentPauseSeconds: Int
-        get() {
-            val pauseStart = pauseStartUptime ?: return 0
-            return maxOf(0L, (SystemClock.elapsedRealtime() - pauseStart) / 1000).toInt()
+            return maxOf(0L, (SystemClock.elapsedRealtime() - start) / 1000).toInt()
         }
 
     fun start() {
         startTimeMillis = System.currentTimeMillis()
         startUptime = SystemClock.elapsedRealtime()
-        pausedDuration = 0
-        pauseStartUptime = null
-    }
-
-    fun pause() {
-        if (!isRunning || pauseStartUptime != null) return
-        pauseStartUptime = SystemClock.elapsedRealtime()
-    }
-
-    fun resume() {
-        val pauseStart = pauseStartUptime ?: return
-        pausedDuration += SystemClock.elapsedRealtime() - pauseStart
-        pauseStartUptime = null
     }
 
     fun stop() {
         startTimeMillis = null
         startUptime = null
-        pausedDuration = 0
-        pauseStartUptime = null
     }
 }
 
 internal class VoiceLoungeLivingActions {
     var isMuted: () -> Boolean = { false }
-    var pauseLive: () -> Unit = {}
     var toggleMute: () -> Unit = {}
     var changeLayout: (VoiceLoungeSeatLayout) -> Unit = {}
     var changeTopic: (String) -> Unit = {}
-    var toggleTranscriber: (Boolean) -> Unit = {}
+    var updateTranscriber: (com.trtc.uikit.livekit.voicelounge.settings.aitranscriber.VoiceLoungeAITranscriberPanel.State) -> Unit =
+        {}
+    var showTranscriberPanel: () -> Unit = {}
     var confirm: (title: String, message: String, confirmTitle: String, action: () -> Unit) -> Unit = { _, _, _, _ -> }
 }
 

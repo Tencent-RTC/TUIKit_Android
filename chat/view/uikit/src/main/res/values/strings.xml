@@ -1,0 +1,33 @@
+<resources>
+    <string name="uikit_search_hint">Search</string>
+    <string name="uikit_conversation_list_placeholder">No conversations</string>
+    <string name="uikit_contact_list_placeholder">No contacts</string>
+    <string name="uikit_message_list_placeholder">No messages</string>
+    <string name="uikit_message_input_hint">Type a message…</string>
+    <string name="uikit_conversations_title">Messages</string>
+    <string name="uikit_contacts_title">Contacts</string>
+    <string name="uikit_start_chat">Start Chat</string>
+    <string name="uikit_create_group">Create Group</string>
+    <string name="uikit_add_friend">Add Friend</string>
+    <string name="uikit_add_group">Add Group</string>
+
+    <!-- Base Component -->
+    <string name="uikit_cancel">Cancel</string>
+    <string name="uikit_confirm">Confirm</string>
+    <string name="uikit_switch_open">ON</string>
+    <string name="uikit_switch_close">OFF</string>
+
+    <!-- Permission -->
+    <string name="uikit_chat_permission_mic_reason_title">%s applies for access to the microphone</string>
+    <string name="uikit_chat_permission_mic_reason">In order for you to send voice messages, make video and audio and video calls, and use voice cloning, please allow us to access the microphone.</string>
+    <string name="uikit_chat_permission_camera_reason_title">%s applies for camera permission</string>
+    <string name="uikit_chat_permission_camera_reason">In order for you to take photos or videos to send to contacts, and to make video calls, please allow us to access the webcam.</string>
+    <string name="uikit_chat_permission_storage_reason_title">%s applies for storage permission</string>
+    <string name="uikit_chat_permission_storage_reason">In order for you to save photos and videos to your device, please allow us to write photos and videos to your device.</string>
+    <string name="uikit_chat_permission_mic_dialog_alert">Allow microphone access in Settings->Apps->%s to use voice messages, video cameras, audio and video calls, and voice cloning as normal</string>
+    <string name="uikit_chat_permission_camera_dialog_alert">Allow camera access in Settings->Apps->%s to use the photo, video and video calling functions as normal</string>
+    <string name="uikit_chat_permission_storage_dialog_alert">Allow storage access in Settings->Apps->%s to use the function of saving photos and videos normally</string>
+    <string name="uikit_copied">Copied</string>
+    <string name="uikit_back">Back</string>
+    <string name="uikit_empty_content">No content</string>
+</resources>

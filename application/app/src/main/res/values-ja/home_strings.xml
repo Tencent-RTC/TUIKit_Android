@@ -1,0 +1,35 @@
+<resources>
+    <string name="home_tab_meeting">会議</string>
+    <string name="home_tab_live">ライブ</string>
+    <string name="home_tab_call">通話</string>
+    <string name="home_tab_messages">メッセージ</string>
+    <string name="home_tab_profile">マイページ</string>
+    <string name="home_coming_soon">近日公開</string>
+    <string name="home_room_id_empty">会議 ID を入力してください</string>
+    <string name="home_quick_meeting_name">%1$sの会議</string>
+    <string name="home_back">戻る</string>
+    <string name="home_more">その他</string>
+    <string name="home_live_title">配信中</string>
+    <string name="home_grid">一覧</string>
+    <string name="home_preview">プレビュー</string>
+    <string name="home_start">配信開始</string>
+    <string name="home_untitled">ライブ</string>
+    <string name="home_unknown_host">配信者</string>
+    <string name="home_empty">配信中のライブはありません</string>
+    <string name="home_load_failed">ライブを読み込めませんでした</string>
+    <string name="home_retry">再試行</string>
+    <string name="home_card_description">%1$s、%2$s、視聴回数 %3$s</string>
+    <string name="home_enter">ライブに入室</string>
+    <string name="home_ended">ライブ終了</string>
+    <string name="home_live_badge">配信中</string>
+    <string name="home_preview_owner">@%1$s</string>
+    <string name="home_preview_viewers">視聴回数 %1$s</string>
+    <string name="home_close">閉じる</string>
+    <string name="home_back_preview">プレビューに戻る</string>
+    <string name="home_join_failed">ライブに入室できませんでした</string>
+    <string name="home_own_live">自分のライブには入室できません</string>
+    <string name="home_broadcast_video">ビデオ</string>
+    <string name="home_broadcast_voice">音声</string>
+    <string name="home_broadcast_game">ゲーム</string>
+    <string name="home_cover_unavailable">カバー画像はありません</string>
+</resources>

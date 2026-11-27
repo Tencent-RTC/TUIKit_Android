@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  关闭态的话筒。斜线画两道：先用按钮底色描一道粗的当"缺口"，再叠一道白的细线，
+  这样斜线不会和话筒本身糊成一团。#2F3133 是 #1FFFFFFF 叠在 #121417 上的合成色，
+  改按钮底色或页面底色时这里要跟着改。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,14C13.66,14 15,12.66 15,11V5C15,3.34 13.66,2 12,2C10.34,2 9,3.34 9,5V11C9,12.66 10.34,14 12,14Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M17,11C17,13.76 14.76,16 12,16C9.24,16 7,13.76 7,11H5C5,14.53 7.61,17.43 11,17.92V22H13V17.92C16.39,17.43 19,14.53 19,11H17Z" />
+    <path
+        android:pathData="M4,3.5 L21,20.5"
+        android:strokeColor="#2F3133"
+        android:strokeLineCap="round"
+        android:strokeWidth="4" />
+    <path
+        android:pathData="M4,3.5 L21,20.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeWidth="2" />
+</vector>

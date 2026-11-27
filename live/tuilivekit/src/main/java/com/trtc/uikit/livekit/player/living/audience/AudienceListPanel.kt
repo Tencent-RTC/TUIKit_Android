@@ -25,20 +25,25 @@ import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class AudienceListPanel(
     context: Context,
     private val liveID: String,
+    private val onMemberClick: ((LiveUserInfo) -> Unit)? = null,
+    private val giftCoinsProvider: ((String) -> Long?)? = null,
+    private val giftUpdates: Flow<Unit>? = null,
 ) : BottomSheetView(context) {
 
     private val audienceList: RecyclerView
-    private val adapter = AudienceListPanelAdapter { user ->
+    private val adapter = AudienceListPanelAdapter(giftCoinsProvider) { user ->
         val userID = user.userID.orEmpty()
         val selfUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID.orEmpty()
         if (userID.isEmpty() || userID == selfUserID) return@AudienceListPanelAdapter
         dismiss()
-        AudienceProfilePanel(context, user).show()
+        val handler = onMemberClick
+        if (handler != null) handler(user) else AudienceProfilePanel(context, user).show()
     }
 
     private var subscribeJob: Job? = null
@@ -64,8 +69,15 @@ class AudienceListPanel(
         store.fetchAudienceList(null)
         subscribeJob?.cancel()
         subscribeJob = CoroutineScope(Dispatchers.Main).launch {
-            audienceListFlow.collect { list ->
-                adapter.submit(list)
+            launch {
+                audienceListFlow.collect { list ->
+                    adapter.submit(list)
+                }
+            }
+            giftUpdates?.let { updates ->
+                launch {
+                    updates.collect { adapter.refreshGiftValues() }
+                }
             }
         }
     }
@@ -77,6 +89,7 @@ class AudienceListPanel(
     }
 
     private class AudienceListPanelAdapter(
+        private val giftCoinsProvider: ((String) -> Long?)?,
         private val onUserClick: (LiveUserInfo) -> Unit,
     ) : RecyclerView.Adapter<AudienceListPanelAdapter.ViewHolder>() {
 
@@ -86,6 +99,11 @@ class AudienceListPanel(
         fun submit(list: List<LiveUserInfo>) {
             data.clear()
             data.addAll(list)
+            notifyDataSetChanged()
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        fun refreshGiftValues() {
             notifyDataSetChanged()
         }
 
@@ -105,7 +123,8 @@ class AudienceListPanel(
             holder.ivLevelIcon.setImageDrawable(
                 LevelBadgeDrawable.forLevel(holder.ivLevelIcon.context, user.level)
             )
-            holder.tvGiftValue.text = "0"
+            val coins = giftCoinsProvider?.invoke(user.userID)
+            holder.tvGiftValue.text = if (coins != null) formatCoins(coins) else "0"
 
             val userID = user.userID
             val selfUserID = LoginStore.shared.loginState.loginUserInfo.value?.userID.orEmpty()
@@ -120,6 +139,14 @@ class AudienceListPanel(
         }
 
         override fun getItemCount(): Int = data.size
+
+        private fun formatCoins(coins: Long): String {
+            if (coins >= 10000) {
+                val value = coins / 10000.0
+                return if (value % 1.0 == 0.0) "${value.toLong()}w" else String.format("%.1fw", value)
+            }
+            return coins.toString()
+        }
 
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val tvMarker: AppCompatTextView = itemView.findViewById(R.id.tv_marker)

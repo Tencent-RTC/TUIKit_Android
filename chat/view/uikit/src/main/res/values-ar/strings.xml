@@ -1,0 +1,33 @@
+<resources>
+    <string name="uikit_search_hint">بحث</string>
+    <string name="uikit_conversation_list_placeholder">لا توجد محادثات</string>
+    <string name="uikit_contact_list_placeholder">لا توجد جهات اتصال</string>
+    <string name="uikit_message_list_placeholder">لا توجد رسائل</string>
+    <string name="uikit_message_input_hint">اكتب رسالة…</string>
+    <string name="uikit_conversations_title">الرسائل</string>
+    <string name="uikit_contacts_title">جهات الاتصال</string>
+    <string name="uikit_start_chat">بدء دردشة</string>
+    <string name="uikit_create_group">إنشاء مجموعة</string>
+    <string name="uikit_add_friend">إضافة صديق</string>
+    <string name="uikit_add_group">إضافة مجموعة</string>
+
+    <!-- Base Component -->
+    <string name="uikit_cancel">إلغاء</string>
+    <string name="uikit_confirm">تأكيد</string>
+    <string name="uikit_switch_open">تشغيل</string>
+    <string name="uikit_switch_close">إيقاف</string>
+
+    <!-- Permission -->
+    <string name="uikit_chat_permission_mic_reason_title">%s يطلب الحصول على صلاحية الميكروفون</string>
+    <string name="uikit_chat_permission_mic_reason">لتسهيل إرسال رسائل الصوت، والتصوير وإجراء المكالمات الصوتية والمرئية، واستخدام ميزة استنساخ الصوت، يرجى السماح لنا بالوصول إلى الميكروفون.</string>
+    <string name="uikit_chat_permission_camera_reason_title">%s يطلب الحصول على صلاحية الكاميرا</string>
+    <string name="uikit_chat_permission_camera_reason">لتسهيل التقاط الصور والفيديو لإرسالها للأصدقاء، وإجراء المكالمات الفيديو، يرجى السماح لنا بالوصول إلى الكاميرا.</string>
+    <string name="uikit_chat_permission_storage_reason_title">%s يطلب الحصول على صلاحية التخزين</string>
+    <string name="uikit_chat_permission_storage_reason">لتسهيل حفظ الصور والفيديو على الجهاز، يرجى السماح لنا بالوصول إلى التخزين.</string>
+    <string name="uikit_chat_permission_mic_dialog_alert">للسماح بالوصول إلى الميكروفون، اذهب إلى الإعدادات -> التطبيقات -> %s لاستخدام رسائل الصوت، وكاميرات الفيديو، ومكالمات الصوت والفيديو، واستنساخ الصوت كالمعتاد.</string>
+    <string name="uikit_chat_permission_camera_dialog_alert">السماح بالوصول إلى الكاميرا في الإعدادات -> التطبيقات -> %s لاستخدام وظائف التصوير الفوتوغرافي والفيديو والمكالمات الفيديو كالمعتاد.</string>
+    <string name="uikit_chat_permission_storage_dialog_alert">السماح بالوصول إلى التخزين في الإعدادات -> التطبيقات -> %s لاستخدام وظيفة حفظ الصور والفيديو بشكل طبيعي.</string>
+    <string name="uikit_copied">تم النسخ</string>
+    <string name="uikit_back">رجوع</string>
+    <string name="uikit_empty_content">لا يوجد محتوى</string>
+</resources>

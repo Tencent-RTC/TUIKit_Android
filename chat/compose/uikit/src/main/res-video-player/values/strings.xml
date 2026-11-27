@@ -1,0 +1,9 @@
+<resources>
+    <string name="video_player_close">Close video player</string>
+    <string name="video_player_play">Play video</string>
+    <string name="video_player_pause">Pause video</string>
+    <string name="video_player_retry">Retry</string>
+    <string name="video_player_load_failed">Unable to load video</string>
+    <string name="video_player_download_failed">Unable to prepare video resource</string>
+    <string name="video_player_invalid_source">Invalid video source</string>
+</resources>

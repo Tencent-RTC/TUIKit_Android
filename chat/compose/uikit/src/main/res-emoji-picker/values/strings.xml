@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="emoji_picker_recent">Recently used</string>
+    <string name="emoji_picker_all">All emojis</string>
+    <string name="emoji_picker_send">Send</string>
+
+</resources>

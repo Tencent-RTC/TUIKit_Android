@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -56,6 +57,8 @@ internal class CallAccessSheet @JvmOverloads constructor(
             closeButton.isVisible = value == null
         }
 
+    val isShowing: Boolean get() = parent != null && !isDismissing
+
     fun setTitle(title: CharSequence) {
         titleLabel.text = title
     }
@@ -69,10 +72,12 @@ internal class CallAccessSheet @JvmOverloads constructor(
 
     fun setContent(content: View) {
         contentContainer.removeAllViews()
-        contentContainer.addView(
-            content,
-            LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        )
+        val scroller = ScrollView(context).apply {
+            isVerticalScrollBarEnabled = false
+            overScrollMode = OVER_SCROLL_NEVER
+            addView(content, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+        }
+        contentContainer.addView(scroller, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
     }
 
     fun present(host: ViewGroup) {

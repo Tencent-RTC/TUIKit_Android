@@ -42,6 +42,7 @@ android {
         main {
             res.srcDirs = [
                     'src/main/res',
+                    'src/main/res-voicelounge',
             ]
         }
     }
@@ -61,7 +62,7 @@ dependencies {
 
     api rootProject.getChildProjects().containsKey("tuicore") ? project(':tuicore') : "com.tencent.liteav.tuikit:tuicore:8.8.7357"
     api rootProject.getProperties().containsKey("tcgiftplayerSdk") ? rootProject.ext.tcgiftplayerSdk  : "io.trtc.uikit:tcgiftplayer:1.0.0.0"
-    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:5.2.2.4"
+    api rootProject.getProperties().containsKey("atomicxCoreSdk") ? rootProject.ext.atomicxCoreSdk : "io.trtc.uikit:atomicx-core:5.3.6.22"
     api rootProject.getProperties().containsKey("liteavSdk") ? rootProject.ext.liteavSdk : "com.tencent.liteav:LiteAVSDK_Professional:13.5.0.20670"
     api rootProject.getProperties().containsKey("liteavScreenCaptureSdk") ? rootProject.ext.liteavScreenCaptureSdk : "com.tencent.liteav:LiteAVSDK_ScreenCapture:13.5.0.20670"
     api rootProject.getProperties().containsKey("imSdk") ? rootProject.ext.imSdk : "com.tencent.imsdk:imsdk-plus:8.7.7201"

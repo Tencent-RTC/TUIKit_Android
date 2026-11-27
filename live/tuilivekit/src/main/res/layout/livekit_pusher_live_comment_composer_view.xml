@@ -1,97 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
     android:clipChildren="false"
     android:clipToPadding="false">
 
+    <com.trtc.uikit.livekit.common.barrage.emoji.BarrageEmojiPanelView
+        android:id="@+id/livekit_pusher_comment_emoji_panel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_barrage_emoji_panel_initial_height"
+        android:layout_gravity="bottom"
+        android:background="@color/livekit_barrage_composer_background"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <View
+        android:id="@+id/livekit_pusher_comment_keyboard_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/livekit_barrage_emoji_panel_initial_height"
+        android:layout_gravity="bottom"
+        android:alpha="1"
+        android:background="@color/livekit_barrage_composer_background"
+        android:clickable="true" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/livekit_pusher_comment_input_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="36dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:background="@drawable/livekit_pusher_comment_input_background"
+        android:background="@color/livekit_barrage_composer_background"
         android:clickable="true"
         android:clipChildren="false"
         android:elevation="9dp"
-        android:focusable="true"
-        android:outlineAmbientShadowColor="#4D000000"
-        android:outlineSpotShadowColor="#4D000000"
-        tools:targetApi="p">
+        android:minHeight="@dimen/livekit_barrage_composer_min_height">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/livekit_pusher_comment_cancel"
-            android:layout_width="22dp"
-            android:layout_height="24dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="8dp"
-            android:clickable="true"
-            android:contentDescription="@string/livekit_comment_cancel"
-            android:focusable="true"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:text="@string/livekit_comment_cancel_symbol"
-            android:textColor="#94FFFFFF"
-            android:textSize="18sp"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <com.trtc.uikit.livekit.common.barrage.CommentEditText
-            android:id="@+id/livekit_pusher_comment_input"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/livekit_pusher_comment_input_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/livekit_pusher_comment_send"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="@dimen/livekit_barrage_composer_horizontal_inset"
+            android:layout_marginTop="@dimen/livekit_barrage_composer_vertical_inset"
+            android:layout_marginEnd="@dimen/livekit_barrage_composer_horizontal_inset"
+            android:layout_marginBottom="@dimen/livekit_barrage_composer_vertical_inset"
+            android:background="@drawable/livekit_pusher_comment_input_background"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="36dp"
-            android:layout_marginEnd="8dp"
-            android:background="@null"
-            android:gravity="center_vertical"
-            android:hint="@string/livekit_comment_friendly_placeholder"
-            android:imeOptions="actionSend"
-            android:includeFontPadding="false"
-            android:inputType="textCapSentences|textMultiLine"
-            android:padding="0dp"
-            android:minLines="1"
-            android:maxLines="4"
-            android:fontFamily="sans-serif-medium"
-            android:scrollHorizontally="false"
-            android:textColor="#FFFFFFFF"
-            android:textColorHint="#66FFFFFF"
-            android:textCursorDrawable="@null"
-            android:textSize="14sp" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/livekit_pusher_comment_send"
-            android:layout_width="60dp"
-            android:layout_height="28dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/livekit_pusher_comment_send_background"
-            android:clickable="true"
-            android:enabled="false"
-            android:focusable="true"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:text="@string/live_barrage_btn_send"
-            android:textColor="#FFFFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            tools:ignore="TouchTargetSizeCheck" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <com.trtc.uikit.livekit.common.barrage.CommentEditText
+                android:id="@+id/livekit_pusher_comment_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/livekit_barrage_input_horizontal_padding"
+                android:layout_marginTop="@dimen/livekit_barrage_input_vertical_padding"
+                android:layout_marginEnd="@dimen/spacing_8"
+                android:layout_marginBottom="@dimen/livekit_barrage_input_vertical_padding"
+                android:background="@null"
+                android:fontFamily="sans-serif"
+                android:gravity="center_vertical"
+                android:hint="@string/livekit_comment_friendly_placeholder"
+                android:imeOptions="actionSend"
+                android:includeFontPadding="false"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLines="4"
+                android:minHeight="20dp"
+                android:minLines="1"
+                android:padding="0dp"
+                android:scrollHorizontally="false"
+                android:textColor="@color/livekit_barrage_input_text"
+                android:textColorHint="@color/livekit_barrage_input_hint"
+                android:textCursorDrawable="@null"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/livekit_pusher_comment_emoji"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/livekit_pusher_comment_emoji"
+                android:layout_width="@dimen/livekit_barrage_emoji_button_size"
+                android:layout_height="@dimen/livekit_barrage_emoji_button_size"
+                android:layout_marginEnd="@dimen/livekit_barrage_input_trailing_inset"
+                android:clickable="true"
+                android:contentDescription="@string/livekit_barrage_emoji_title"
+                android:focusable="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/live_emoji_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </FrameLayout>

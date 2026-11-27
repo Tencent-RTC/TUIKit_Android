@@ -7,7 +7,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.tencent.trtc.TRTCCloud
 import com.trtc.uikit.livekit.R
 import com.trtc.uikit.livekit.common.ErrorLocalized
 import com.trtc.uikit.livekit.common.LiveScreenAwake
@@ -24,7 +24,6 @@ import com.trtc.uikit.livekit.voicelounge.living.coguest.VoiceLoungeCoGuestStore
 import com.trtc.uikit.livekit.voicelounge.living.confirm.VoiceLoungeAlertView
 import com.trtc.uikit.livekit.voicelounge.living.confirm.VoiceLoungeEndPanel
 import com.trtc.uikit.livekit.voicelounge.living.giftrank.VoiceLoungeGiftRankStore
-import com.trtc.uikit.livekit.voicelounge.living.pause.VoiceLoungePauseView
 import com.trtc.uikit.livekit.voicelounge.living.seat.VoiceLoungeMuteCache
 import com.trtc.uikit.livekit.voicelounge.living.seat.VoiceLoungeSeatStore
 import com.trtc.uikit.livekit.voicelounge.prepare.VoiceLoungePrepareView
@@ -37,24 +36,19 @@ import io.trtc.tuikit.atomicxcore.api.CompletionHandler
 import io.trtc.tuikit.atomicxcore.api.barrage.BarrageStore
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStatus
 import io.trtc.tuikit.atomicxcore.api.device.DeviceStore
-import io.trtc.tuikit.atomicxcore.api.live.AtomicPlayer
-import io.trtc.tuikit.atomicxcore.api.live.AtomicPusher
+import io.trtc.tuikit.atomicxcore.api.live.ConnectState
 import io.trtc.tuikit.atomicxcore.api.live.DeviceControlPolicy
-import io.trtc.tuikit.atomicxcore.api.live.LikeStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveAudienceStore
-import io.trtc.tuikit.atomicxcore.api.live.LiveEndedReason
 import io.trtc.tuikit.atomicxcore.api.live.LiveInfo
-import io.trtc.tuikit.atomicxcore.api.live.LiveInfoCompletionHandler
-import io.trtc.tuikit.atomicxcore.api.live.LiveListListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveListStore
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatListener
 import io.trtc.tuikit.atomicxcore.api.live.LiveSeatStore
-import io.trtc.tuikit.atomicxcore.api.live.PlayerListener
-import io.trtc.tuikit.atomicxcore.api.live.MetaDataCompletionHandler
-import io.trtc.tuikit.atomicxcore.api.live.PusherConnectState
-import io.trtc.tuikit.atomicxcore.api.live.PusherInfo
-import io.trtc.tuikit.atomicxcore.api.live.PusherListener
+import io.trtc.tuikit.atomicxcore.api.live.LiveSummaryData
+import io.trtc.tuikit.atomicxcore.api.live.LiveSummaryStore
+import io.trtc.tuikit.atomicxcore.api.live.LoungeCode
 import io.trtc.tuikit.atomicxcore.api.live.SeatMode
+import io.trtc.tuikit.atomicxcore.api.live.VoiceLoungeInfo
+import io.trtc.tuikit.atomicxcore.api.live.VoiceLoungeListener
 import io.trtc.tuikit.atomicxcore.api.login.LoginStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,7 +94,6 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     private val seatUIStore = VoiceLoungeSeatStore(liveID, role, coGuest, muteCache, roomSettings)
     private var seatStore: LiveSeatStore? = null
     private val liveClock = VoiceLoungeLiveClock()
-    private val pauseView = VoiceLoungePauseView(context, role, liveClock)
     private val livingView = VoiceLoungeLivingView(
         context, liveID, seatUIStore, giftRankStore, liveClock, livingActions, transcriberStore,
     )
@@ -125,26 +118,26 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     }
     private var isFetchingNextLive = false
     private val alertView by lazy { VoiceLoungeAlertView(context) }
+    private val transcriberPanel by lazy {
+        com.trtc.uikit.livekit.voicelounge.settings.aitranscriber.VoiceLoungeAITranscriberPanel(context)
+    }
 
-    private var pusherConfig: PusherInfo? = null
-    private var pusherListener: PusherListener? = null
+    private var loungeConfig: VoiceLoungeInfo? = null
+    private var latestLoungeInfo = VoiceLoungeInfo()
+    private var loungeListener: VoiceLoungeListener? = null
+    private var hasConnected = false
     private var hasConfiguredSeatMode = false
-    private var endSummary: PusherListener.PusherSummary? = null
-    private var totalViewerCount = 1
+    private var endSummary: LiveSummaryData? = null
     private var isEndingLive = false
     private var isMuted = false
-    private var isPaused = false
-    private var wasMutedBeforePause = false
     private var ownsAudioService = false
 
-    private val player by lazy { AtomicPlayer() }
+    private val lounge = VoiceLoungeSession.of(liveID)
     private var isLiving = false
     private var hasJoinedLive = false
     private var isPlaying = false
     private var sessionToken = 0
     private var seatListener: LiveSeatListener? = null
-    private var liveListListener: LiveListListener? = null
-    private var playerListener: PlayerListener? = null
 
     private var isReleased = false
     private val screenAwake = LiveScreenAwake(this)
@@ -158,10 +151,6 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         }
         coGuest.onToast = { LiveToast.show(context, it) }
         if (isCreating) bindCreateSession() else bindJoinSession()
-        ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
-            pauseView.bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            insets
-        }
         configureMode()
     }
 
@@ -187,7 +176,7 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         if (isReleased) return
         isReleased = true
         if (isCreating) {
-            if (stage == Stage.LIVING && !isEndingLive) AtomicPusher.shared().stopPush()
+            if (stage == Stage.LIVING && !isEndingLive) lounge.end(liveID)
             releasePushSession()
         } else {
             isLiving = false
@@ -218,9 +207,9 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     }
 
     private fun stackedViews(): List<View> = if (isCreating) {
-        listOf(prepareView, livingView, summaryView, pauseView, alertView)
+        listOf(prepareView, livingView, summaryView, alertView)
     } else {
-        listOf(livingView, pauseView, audienceEndView)
+        listOf(livingView, audienceEndView)
     }
 
     private fun configureMode() {
@@ -236,7 +225,7 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     private fun exitForEmptyLiveID() {
         LOGGER.error("liveID is empty, role=${if (isCreating) "host" else "audience"}")
         mainHandler.post {
-            LiveToast.show(context, context.getString(R.string.livekit_voiceroom_error_empty_live_id))
+            LiveToast.show(context, context.getString(R.string.livekit_voicelounge_error_empty_live_id))
             onClose?.invoke()
         }
     }
@@ -279,7 +268,6 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         summaryView.onExit = { closeSummary() }
         bindLivingActions()
         giftRankStore.onPublish = { syncRoomMetaToAudience() }
-        pauseView.onResume = { resumeLive() }
     }
 
     private fun loadHostUserInfo() {
@@ -293,7 +281,7 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     }
 
     private fun syncHostMicOff() {
-        seatUIStore.isHostMicOff = isMuted || isPaused
+        seatUIStore.isHostMicOff = isMuted
     }
 
     private fun enterLiving(input: VoiceLoungeConfig) {
@@ -318,31 +306,27 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     private fun confirmEndLive() {
         if (isEndingLive) return
         isEndingLive = true
-        AtomicPusher.shared().stopPush()
+        if (lounge.state.connectState.value == ConnectState.DISCONNECTED) {
+            // stopPush is refused while disconnected and no liveEnded follows, so finish locally.
+            endSummary = null
+            enterSummary()
+            return
+        }
+        lounge.end(liveID)
     }
 
     private fun enterSummary() {
         if (stage != Stage.LIVING) return
         stage = Stage.SUMMARY
         updateScreenAwake()
-        val summary = endSummary
-        val data = if (summary != null) {
+        summaryView.bind(
             VoiceLoungeSummaryData(
                 startTimeMillis = liveClock.startTimeMillis,
-                viewers = summary.totalViewers,
-                giftCount = summary.totalGiftsSent,
-                gifters = summary.totalUniqueGiftSenders,
-                likes = summary.totalLikesReceived,
+                endTimeMillis = System.currentTimeMillis(),
+                summary = endSummary,
             )
-        } else {
-            VoiceLoungeSummaryData(
-                startTimeMillis = liveClock.startTimeMillis,
-                viewers = totalViewerCount,
-                likes = LikeStore.create(liveID).likeState.totalLikeCount.value.coerceAtMost(Int.MAX_VALUE.toLong())
-                    .toInt(),
-            )
-        }
-        summaryView.bind(data)
+        )
+        livingView.dismissOverlays()
         if (endPanel.isShowing) endPanel.dismiss()
         alertView.dismiss()
         summaryView.visibility = View.VISIBLE
@@ -362,16 +346,17 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     }
 
     private fun startPush(liveName: String) {
-        subscribePusher()
-        AtomicPusher.shared().setView(livingView.coreView)
-        val config = PusherInfo().apply {
-            this.liveID = this@VoiceLoungeView.liveID
-            this.liveName = liveName
-            isPublicVisible = true
+        subscribeLounge()
+        hasConnected = false
+        val config = VoiceLoungeInfo().apply {
+            this.loungeID = this@VoiceLoungeView.liveID
+            this.loungeName = liveName
+            this.coverURL = roomSettings.config.coverURL
+            this.notice = roomSettings.config.topic
             metaData = roomSettings.config.metaData
         }
-        pusherConfig = config
-        AtomicPusher.shared().startPush(config)
+        loungeConfig = config
+        lounge.create(config)
         seatStore = LiveSeatStore.create(liveID)
         seatUIStore.activate()
         seatUIStore.activateAudienceList()
@@ -397,7 +382,7 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
             override fun onSuccess() {
                 mainHandler.post {
                     if (stage != Stage.LIVING || isReleased) return@post
-                    if (isMuted || isPaused) seatStore?.muteMicrophone()
+                    if (isMuted) seatStore?.muteMicrophone()
                     startAudioService()
                 }
             }
@@ -421,49 +406,57 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     }
 
     private fun syncRoomMetaToAudience() {
-        val config = pusherConfig ?: return
-        config.metaData =
-            roomSettings.config.metaData + giftRankStore.publishedMetaData() + (VoiceLoungeConfig.PAUSED_META_KEY to if (isPaused) "1" else "0")
-        AtomicPusher.shared().setMetaData(config.metaData)
+        val config = loungeConfig ?: return
+        config.metaData = roomSettings.config.metaData + giftRankStore.publishedMetaData()
+        lounge.setMetaData(config.metaData)
     }
 
-    private fun subscribePusher() {
-        clearPusherSubscriptions()
-        val pusher = AtomicPusher.shared()
-        val listener = object : PusherListener() {
-            override fun liveEnded(reason: EndedReason, summary: PusherSummary?) {
+    private fun subscribeLounge() {
+        clearLoungeSubscriptions()
+        val listener = object : VoiceLoungeListener() {
+            override fun loungeError(code: LoungeCode, message: String) {
                 mainHandler.post {
-                    if (pusherListener !== this) return@post
-                    endSummary = summary
+                    if (loungeListener !== this || code == LoungeCode.OK) return@post
+                    LOGGER.error("lounge error code=$code message=$message")
+                    if (code == LoungeCode.ERROR_CREATE_FAILED && !hasConnected && !isEndingLive) {
+                        returnToPrepareAfterStartFailure()
+                    }
+                    LiveToast.show(context, loungeErrorMessage(code, message))
+                }
+            }
+
+            override fun onLoungeEnded(reason: EndedReason) {
+                mainHandler.post {
+                    if (loungeListener !== this) return@post
+                    endSummary = LiveSummaryStore.create(liveID).liveSummaryState.summaryData.value
                     enterSummary()
                 }
             }
 
-            override fun kickedOut(reason: KickedOutReason, message: String) {
+            override fun onKickedOut(reason: KickedOutReason, message: String) {
                 mainHandler.post {
-                    if (pusherListener !== this) return@post
+                    if (loungeListener !== this) return@post
                     endSummary = null
                     enterSummary()
                 }
             }
         }
-        pusherListener = listener
-        pusher.addListener(listener)
+        loungeListener = listener
+        lounge.addListener(listener)
         val scope = newSessionScope()
         scope.launch {
-            pusher.state.totalViewerCount.collect { totalViewerCount = maxOf(0, it) }
-        }
-        scope.launch {
-            pusher.state.networkState.collect { network ->
-                if (network == PusherConnectState.CONNECTED) onPusherConnected()
+            lounge.state.connectState.collect { connect ->
+                if (connect == ConnectState.CONNECTED) onLoungeConnected()
             }
         }
     }
 
-    private fun onPusherConnected() {
+    private fun onLoungeConnected() {
         val seatStore = seatStore ?: return
+        hasConnected = true
         if (hasConfiguredSeatMode || stage != Stage.LIVING) return
         hasConfiguredSeatMode = true
+        applyHifiAudioConfig()
         coGuest.activate(liveID, role)
         seatUIStore.enableStaleCleanup()
         activateInteractions(selfUserID)
@@ -477,74 +470,116 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         })
     }
 
-    private fun clearPusherSubscriptions() {
+    private fun loungeErrorMessage(code: LoungeCode, message: String): String {
+        val resourceID = when (code) {
+            LoungeCode.ERROR_CREATE_FAILED, LoungeCode.ERROR_UPDATE_FAILED -> {
+                val isContentRejected = Regex("""^\s*error_code:\s*100026(?:\s*[,|]|\s*$)""").containsMatchIn(message)
+                when {
+                    isContentRejected -> R.string.livekit_voicelounge_error_content_rejected
+                    code == LoungeCode.ERROR_CREATE_FAILED -> R.string.livekit_voicelounge_error_start_failed
+                    else -> R.string.livekit_voicelounge_error_update_failed
+                }
+            }
+
+            else -> R.string.livekit_voicelounge_error_operation_failed
+        }
+        return context.getString(resourceID)
+    }
+
+    private fun clearLoungeSubscriptions() {
         cancelSessionScope()
-        pusherListener?.let { AtomicPusher.shared().removeListener(it) }
-        pusherListener = null
+        loungeListener?.let { lounge.removeListener(it) }
+        loungeListener = null
+    }
+
+    private fun returnToPrepareAfterStartFailure() {
+        // The SDK already stops the failed attempt; keep the shared pusher available for a retry.
+        clearLoungeSubscriptions()
+        stopAudioService()
+        coGuest.deactivate()
+        deactivateInteractions()
+        seatUIStore.deactivate()
+        seatStore = null
+        loungeConfig = null
+        hasConnected = false
+        hasConfiguredSeatMode = false
+        liveClock.stop()
+        stage = Stage.PREPARE
+        updateScreenAwake()
+        livingView.visibility = View.GONE
+        summaryView.visibility = View.GONE
+        prepareView.visibility = View.VISIBLE
     }
 
     private fun releasePushSession() {
-        clearPusherSubscriptions()
+        clearLoungeSubscriptions()
         coGuest.deactivate()
         deactivateInteractions()
         DeviceStore.shared().closeLocalMicrophone()
         stopAudioService()
+        hasConnected = false
         hasConfiguredSeatMode = false
-        pusherConfig = null
+        loungeConfig = null
         seatStore = null
         seatUIStore.deactivate()
-        isPaused = false
-        pauseView.setPaused(false)
-        AtomicPusher.shared().release()
+        VoiceLoungeSession.release(liveID)
     }
 
     private fun bindLivingActions() {
         livingActions.isMuted = { isMuted }
-        livingActions.pauseLive = { pauseLive() }
         livingActions.toggleMute = { handleLivingToggleMute() }
         livingActions.changeLayout = { layout ->
-            if (layout == VoiceLoungeSeatLayout.DUO) confirmSwitchToDuo(layout) else applyLivingLayout(layout)
+            if (layout == VoiceLoungeSeatLayout.DUO) {
+                livingView.dismissOverlays()
+                confirmSwitchToDuo(layout)
+            } else {
+                applyLivingLayout(layout)
+            }
         }
         livingActions.changeTopic = { topic -> commitTopic(topic) }
-        livingActions.toggleTranscriber = { isOn -> setTranscriberEnabled(isOn) }
+        livingActions.updateTranscriber = { state -> applyTranscriberState(state) }
+        livingActions.showTranscriberPanel = { presentTranscriberPanel() }
         livingActions.confirm = { title, message, confirmTitle, action ->
             alertView.show(title, message, confirmTitle, roomSettings.skin, action)
         }
     }
 
-    private fun setTranscriberEnabled(isOn: Boolean) {
-        if (roomSettings.config.isTranscriberEnabled == isOn) return
-        roomSettings.config = roomSettings.config.copy(isTranscriberEnabled = isOn)
-        syncRoomMetaToAudience()
+    private fun applyTranscriberState(
+        state: com.trtc.uikit.livekit.voicelounge.settings.aitranscriber.VoiceLoungeAITranscriberPanel.State,
+    ) {
+        val current = roomSettings.config
+        val next = current.copy(
+            isTranscriberEnabled = state.isEnabled,
+            transcriberShowOriginal = state.showOriginal,
+            transcriberScale = state.scale,
+            transcriberLanguage = state.language,
+        )
+        if (next != current) roomSettings.config = next
+        if (state.saveAsDefault) {
+            com.trtc.uikit.livekit.voicelounge.settings.VoiceLoungeTranscriberDefaults.save(
+                context,
+                com.trtc.uikit.livekit.voicelounge.settings.VoiceLoungeTranscriberDefaults(
+                    isEnabled = state.isEnabled,
+                    showOriginal = state.showOriginal,
+                    scale = state.scale,
+                    language = state.language,
+                ),
+            )
+        }
     }
 
-    private fun pauseLive() {
-        if (isPaused) return
-        isPaused = true
-        liveClock.pause()
-        pauseView.setPaused(true)
-        livingView.setHostPaused(true)
-        wasMutedBeforePause = isMuted
-        if (!isMuted) seatStore?.muteMicrophone()
-        isMuted = true
-        DeviceStore.shared().closeLocalMicrophone()
-        syncHostMicOff()
-        coGuest.broadcastPause(true)
-        syncRoomMetaToAudience()
-    }
-
-    private fun resumeLive() {
-        if (!isPaused) return
-        liveClock.resume()
-        isPaused = false
-        pauseView.setPaused(false)
-        livingView.setHostPaused(false)
-        isMuted = wasMutedBeforePause
-        openHostMicrophone()
-        if (!wasMutedBeforePause) seatStore?.unmuteMicrophone(null)
-        syncHostMicOff()
-        coGuest.broadcastPause(false)
-        syncRoomMetaToAudience()
+    private fun presentTranscriberPanel() {
+        val panel = transcriberPanel
+        val initialState =
+            com.trtc.uikit.livekit.voicelounge.settings.aitranscriber.VoiceLoungeAITranscriberPanel.State(
+                isEnabled = roomSettings.isTranscriberEnabled,
+                showOriginal = roomSettings.transcriberShowOriginal,
+                scale = roomSettings.transcriberScale,
+                language = roomSettings.transcriberLanguage,
+                saveAsDefault = false,
+            )
+        panel.onStateChanged = { state -> applyTranscriberState(state) }
+        panel.show(initialState, roomSettings.skin)
     }
 
     private fun handleLivingToggleMute() {
@@ -560,9 +595,9 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
 
     private fun confirmSwitchToDuo(layout: VoiceLoungeSeatLayout) {
         alertView.show(
-            context.getString(R.string.livekit_voiceroom_layout_duo_confirm_title),
-            context.getString(R.string.livekit_voiceroom_layout_duo_confirm_message),
-            context.getString(R.string.livekit_voiceroom_layout_duo_confirm_ok),
+            context.getString(R.string.livekit_voicelounge_layout_duo_confirm_title),
+            context.getString(R.string.livekit_voicelounge_layout_duo_confirm_message),
+            context.getString(R.string.livekit_voicelounge_layout_duo_confirm_ok),
             roomSettings.skin,
         ) { kickAllGuestsThenApply(layout) }
     }
@@ -570,8 +605,9 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     private fun kickAllGuestsThenApply(layout: VoiceLoungeSeatLayout) {
         seatStore?.let { store ->
             val selfID = selfUserID
-            seatUIStore.seatList.map { it.userInfo.userID }.filter { it.isNotEmpty() && it != selfID }
-                .forEach { store.kickUserOutOfSeat(it, null) }
+            seatUIStore.seatList.map { it.userInfo.userID }.filter { it.isNotEmpty() && it != selfID }.forEach {
+                store.kickUserOutOfSeat(it, null)
+            }
         }
         applyLivingLayout(layout)
     }
@@ -581,10 +617,14 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         if (trimmed == roomSettings.topic) return
         roomSettings.config = roomSettings.config.copy(topic = trimmed)
         syncRoomMetaToAudience()
+        loungeConfig?.let { config ->
+            config.notice = trimmed
+            lounge.updateLoungeInfo(config, listOf(VoiceLoungeInfo.ModifyFlag.NOTICE))
+        }
         val text = if (trimmed.isEmpty()) {
-            context.getString(R.string.livekit_voiceroom_topic_cleared)
+            context.getString(R.string.livekit_voicelounge_topic_cleared)
         } else {
-            context.getString(R.string.livekit_voiceroom_topic_changed, trimmed)
+            context.getString(R.string.livekit_voicelounge_topic_changed, trimmed)
         }
         BarrageStore.create(liveID).sendTextMessage(text, null, object : CompletionHandler {
             override fun onSuccess() = Unit
@@ -596,16 +636,14 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     }
 
     private fun bindJoinSession() {
+        livingActions.showTranscriberPanel = { presentTranscriberPanel() }
         livingView.onClose = { leaveRoom() }
-        pauseView.onResume = { leaveRoom() }
-        coGuest.onHostPauseChanged = { paused -> applyHostPause(paused) }
         coGuest.onMicOpenRequested = handler@{
             if (coGuest.guestStatus != VoiceLoungeCoGuestStore.GuestStatus.ON_SEAT) return@handler
             val selfID = selfUserID
             val info = seatUIStore.seatList.firstOrNull { it.userInfo.userID == selfID }?.userInfo
             if (info?.allowOpenMicrophone == false || info?.microphoneStatus == DeviceStatus.ON) return@handler
             seatStore?.unmuteMicrophone(null)
-            LiveToast.show(context, context.getString(R.string.livekit_player_coguest_microphone_unlocked))
         }
     }
 
@@ -613,8 +651,10 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         isLiving = true
         updateScreenAwake()
         liveClock.start()
-        roomSettings.config =
-            VoiceLoungeConfig(roomName = context.getString(R.string.livekit_voiceroom_room_loading_name))
+        roomSettings.config = VoiceLoungeConfig(
+            roomName = context.getString(R.string.livekit_voicelounge_room_loading_name),
+            isTranscriberEnabled = true,
+        )
         syncHostInfo()
         startPlay()
         subscribeRoom()
@@ -630,65 +670,49 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
     }
 
     private fun startPlay() {
-        player.setView(livingView.coreView)
-        if (!isPlaying) {
-            isPlaying = true
-            player.startPlay("livekit://liveid=$liveID")
-        }
         sessionToken += 1
-        val token = sessionToken
-        LiveListStore.shared().joinLive(liveID, object : LiveInfoCompletionHandler {
-            override fun onSuccess(liveInfo: LiveInfo) {
-                mainHandler.post {
-                    if (token != sessionToken) return@post
-                    hasJoinedLive = true
-                    activateInteractions(liveInfo.liveOwner.userID.ifEmpty { hostUserID })
-                    coGuest.activate(liveID, role)
-                    seatUIStore.activateAudienceList()
-                    applyLiveInfo(liveInfo)
-                    queryRoomMeta()
-                }
-            }
-
-            override fun onFailure(code: Int, desc: String) {
-                LOGGER.error("joinLive failed liveID=$liveID code=$code message=$desc")
-                mainHandler.post {
-                    if (token == sessionToken) ErrorLocalized.onError(code)
-                }
-            }
-        })
-        LiveListStore.shared().fetchLiveInfo(liveID, object : LiveInfoCompletionHandler {
-            override fun onSuccess(liveInfo: LiveInfo) {
-                mainHandler.post { if (token == sessionToken) applyLiveInfo(liveInfo) }
-            }
-
-            override fun onFailure(code: Int, desc: String) {
-                LOGGER.error("fetchLiveInfo failed liveID=$liveID code=$code message=$desc")
-            }
-        })
+        isPlaying = true
+        lounge.join(liveID)
         seatStore = LiveSeatStore.create(liveID)
         seatUIStore.activate()
+    }
+
+    private fun onAudienceJoined() {
+        if (hasJoinedLive) return
+        hasJoinedLive = true
+        val info = lounge.state.currentLounge.value
+        applyHifiAudioConfig()
+        activateInteractions(info.ownerInfo.userID.ifEmpty { hostUserID })
+        coGuest.activate(liveID, role)
+        seatUIStore.activateAudienceList()
+        applyLoungeInfo(info)
+        livingView.showOpeningTopic()
     }
 
     private fun subscribeRoom() {
         val scope = newSessionScope()
         scope.launch {
-            LiveListStore.shared().liveState.currentLive.collect { info ->
-                if (info.liveID.isNotEmpty() && info.liveID == liveID) applyLiveInfo(info)
+            lounge.state.currentLounge.collect { info ->
+                if (info.loungeID.isNotEmpty() && info.loungeID == liveID) applyLoungeInfo(info)
+            }
+        }
+        if (!isCreating) {
+            scope.launch {
+                lounge.state.connectState.collect { connect ->
+                    if (connect == ConnectState.CONNECTED) onAudienceJoined()
+                }
             }
         }
 
         val seatEvents = object : LiveSeatListener() {
             override fun onLocalMicrophoneClosedByAdmin() {
                 mainHandler.post {
-                    LiveToast.show(context, context.getString(R.string.livekit_player_coguest_microphone_locked))
                     seatStore?.muteMicrophone()
                 }
             }
 
             override fun onLocalMicrophoneOpenedByAdmin(policy: DeviceControlPolicy) {
                 mainHandler.post {
-                    LiveToast.show(context, context.getString(R.string.livekit_player_coguest_microphone_unlocked))
                     if (coGuest.guestStatus != VoiceLoungeCoGuestStore.GuestStatus.ON_SEAT) return@post
                     seatStore?.unmuteMicrophone(null)
                 }
@@ -697,34 +721,23 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         seatListener = seatEvents
         seatStore?.addLiveSeatEventListener(seatEvents)
 
-        val listEvents = object : LiveListListener() {
-            override fun onLiveEnded(liveID: String, reason: LiveEndedReason, message: String) {
+        val loungeEvents = object : VoiceLoungeListener() {
+            override fun onLoungeEnded(reason: EndedReason) {
                 mainHandler.post {
-                    if (liveID != this@VoiceLoungeView.liveID) return@post
-                    if (isCreating) leaveRoom() else showAudienceEnd(message)
-                }
-            }
-        }
-        liveListListener = listEvents
-        LiveListStore.shared().addLiveListListener(listEvents)
-
-        val playerEvents = object : PlayerListener() {
-            override fun liveEnded(reason: EndedReason) {
-                mainHandler.post {
-                    if (playerListener !== this) return@post
-                    showAudienceEnd(null)
+                    if (loungeListener !== this) return@post
+                    if (isCreating) leaveRoom() else showAudienceEnd(null)
                 }
             }
 
-            override fun kickedOut(reason: KickedOutReason, message: String) {
+            override fun onKickedOut(reason: KickedOutReason, message: String) {
                 mainHandler.post {
-                    if (playerListener !== this) return@post
+                    if (loungeListener !== this) return@post
                     val resID = when (reason) {
                         KickedOutReason.BY_ADMIN -> R.string.livekit_player_interruption_removed
                         KickedOutReason.BY_LOGGED_ON_OTHER_DEVICE -> R.string.livekit_player_interruption_other_device
                         KickedOutReason.BY_SERVER -> R.string.livekit_player_interruption_server
                         KickedOutReason.FOR_NETWORK_DISCONNECTED -> R.string.livekit_player_interruption_network
-                        KickedOutReason.FOR_LIVE_CHANNEL_EXPIRED -> R.string.livekit_player_interruption_expired
+                        KickedOutReason.FOR_LOUNGE_CHANNEL_EXPIRED -> R.string.livekit_player_interruption_expired
                     }
                     val text = context.getString(resID)
                     showAudienceEnd(text)
@@ -732,53 +745,28 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
                 }
             }
         }
-        playerListener?.let { player.removeListener(it) }
-        playerListener = playerEvents
-        player.addListener(playerEvents)
+        loungeListener?.let { lounge.removeListener(it) }
+        loungeListener = loungeEvents
+        lounge.addListener(loungeEvents)
     }
 
-    private fun applyLiveInfo(info: LiveInfo) {
-        hostName = info.liveOwner.userName
-        hostAvatarURL = info.liveOwner.avatarURL
-        val ownerID = info.liveOwner.userID
+    private fun applyLoungeInfo(info: VoiceLoungeInfo) {
+        if (info.ownerInfo.userID.isNotEmpty()) latestLoungeInfo = info
+        hostName = info.ownerInfo.userName
+        hostAvatarURL = info.ownerInfo.avatarURL
+        val ownerID = info.ownerInfo.userID
         if (ownerID.isNotEmpty() && ownerID != hostUserID) {
             hostUserID = ownerID
             livingView.updateHostUserID(ownerID)
         }
         syncHostInfo()
 
-        var config = roomSettings.config.copy(roomName = info.liveName.ifEmpty { liveID })
+        var config = roomSettings.config.copy(roomName = info.loungeName.ifEmpty { liveID })
         if (VoiceLoungeConfig.hasMeta(info.metaData)) config = config.applyingMeta(info.metaData)
+        if (!VoiceLoungeConfig.hasTopicMeta(info.metaData) && info.notice.isNotEmpty()) {
+            config = config.copy(topic = info.notice)
+        }
         roomSettings.config = config
-        info.metaData[VoiceLoungeConfig.PAUSED_META_KEY]?.let { applyHostPause(it == "1") }
-    }
-
-    private fun queryRoomMeta() {
-        val keys = VoiceLoungeConfig.metaKeys + VoiceLoungeConfig.PAUSED_META_KEY
-        val token = sessionToken
-        LiveListStore.shared().queryMetaData(keys, object : MetaDataCompletionHandler {
-            override fun onSuccess(metaData: HashMap<String, String>) {
-                mainHandler.post {
-                    if (token != sessionToken) return@post
-                    metaData[VoiceLoungeConfig.PAUSED_META_KEY]?.let { applyHostPause(it == "1") }
-                    if (VoiceLoungeConfig.hasMeta(metaData)) {
-                        roomSettings.config = roomSettings.config.applyingMeta(metaData)
-                    }
-                    livingView.showOpeningTopic()
-                }
-            }
-
-            override fun onFailure(code: Int, desc: String) {
-                LOGGER.error("queryMetaData failed liveID=$liveID code=$code message=$desc")
-                mainHandler.post { if (token == sessionToken) livingView.showOpeningTopic() }
-            }
-        })
-    }
-
-    private fun applyHostPause(paused: Boolean) {
-        if (!isLiving) return
-        pauseView.setPaused(paused)
-        if (paused) livingView.dismissOverlays()
     }
 
     private fun showAudienceEnd(reason: String?) {
@@ -788,9 +776,7 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         liveClock.stop()
         livingView.dismissOverlays()
         livingView.deactivateInteractions()
-        val info = LiveListStore.shared().liveState.currentLive.value
-        val resolved = if (info.liveID.isNotEmpty()) info else LiveInfo().also { it.liveID = liveID }
-        audienceEndView.show(resolved, reason?.ifEmpty { null })
+        audienceEndView.show(latestLoungeInfo, reason?.ifEmpty { null })
         audienceEndView.bringToFront()
     }
 
@@ -807,7 +793,7 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
                         it.liveID.isNotEmpty() && it.liveID != currentID && it.liveOwner.userID != selfID
                     }
                     if (next != null && onSwitchLive != null) onSwitchLive?.invoke(next)
-                    else LiveToast.show(context, context.getString(R.string.livekit_voiceroom_no_more_live))
+                    else LiveToast.show(context, context.getString(R.string.livekit_voicelounge_no_more_live))
                 }
             }
 
@@ -828,25 +814,29 @@ class VoiceLoungeView(context: Context, mode: Mode) : FrameLayout(context) {
         cancelSessionScope()
         seatListener?.let { seatStore?.removeLiveSeatEventListener(it) }
         seatListener = null
-        liveListListener?.let { LiveListStore.shared().removeLiveListListener(it) }
-        liveListListener = null
-        playerListener?.let { player.removeListener(it) }
-        playerListener = null
-        pauseView.setPaused(false)
-        if (isPlaying) {
-            player.stopPlay()
-            isPlaying = false
-        }
+        loungeListener?.let { lounge.removeListener(it) }
+        loungeListener = null
+        isPlaying = false
         if (hasJoinedLive) {
-            LiveListStore.shared().leaveLive(null)
+            lounge.leave()
             hasJoinedLive = false
         }
         seatStore = null
         seatUIStore.deactivate()
+        VoiceLoungeSession.release(liveID)
+    }
+
+    private fun applyHifiAudioConfig() {
+        val cloud = TRTCCloud.sharedInstance(context) ?: return
+        cloud.callExperimentalAPI(HIFI_AUDIO_QUALITY_JSON)
+        cloud.callExperimentalAPI(HIFI_PRIVATE_CONFIG_JSON)
     }
 
     private companion object {
         val LOGGER = LiveKitLog.getComponentLogger("VoiceLoungeView")
         const val FETCH_LIST_COUNT = 20
+        const val HIFI_AUDIO_QUALITY_JSON = "{\"api\":\"setAudioQualityEx\",\"params\":{\"audioScene\":18}}"
+        const val HIFI_PRIVATE_CONFIG_JSON =
+            "{\"api\":\"setPrivateConfig\",\"params\":{\"configs\":[" + "{\"key\":\"Liteav.Audio.common.agc.version\",\"default\":\"0\",\"value\":\"6\"}," + "{\"key\":\"Liteav.Audio.common.ai.ec.model.type\",\"default\":\"0\",\"value\":\"6\"}" + "]}}"
     }
 }

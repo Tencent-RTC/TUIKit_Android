@@ -1,0 +1,22 @@
+<resources>
+    <string name="voice_message_translate">ترجمة</string>
+    <string name="voice_message_undo_translate">إلغاء الترجمة</string>
+    <string name="voice_message_switch_language">تبديل اللغة</string>
+    <string name="voice_message_read_aloud">قراءة بصوت عالٍ</string>
+    <string name="voice_message_stop">إيقاف</string>
+    <string name="voice_message_select_language">اختر اللغة</string>
+    <string name="voice_message_translate_failed">فشلت الترجمة</string>
+    <string name="voice_message_speak_failed">فشلت القراءة الصوتية</string>
+    <string name="voice_message_listen_from_here">استمع</string>
+    <string name="voice_message_listen_self_speaker">أنا</string>
+    <string name="voice_message_listen_says">"%1$s قال: "</string>
+    <string name="voice_message_listen_sent_image">%1$s أرسل صورة</string>
+    <string name="voice_message_listen_sent_video">%1$s أرسل فيديو</string>
+    <string name="voice_message_listen_sent_file">%1$s أرسل ملفًا</string>
+    <string name="voice_message_listen_sent_merged">%1$s أرسل: %2$s</string>
+    <string name="voice_message_voice_default">افتراضي</string>
+    <string name="voice_message_voice_xiaoxu">شياو شيو (ذكر)</string>
+    <string name="voice_message_voice_xiaomei">شياو مي (أنثى)</string>
+    <string name="voice_message_voice_xiaoxin">شياو شين (أنثى)</string>
+    <string name="voice_message_voice_xiaoyue">شياو يوي (أنثى)</string>
+</resources>

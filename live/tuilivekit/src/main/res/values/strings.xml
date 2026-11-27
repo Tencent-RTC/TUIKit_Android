@@ -7,6 +7,10 @@
     <string name="common_send_message_enable">You have been unmuted in the current room</string>
     <string name="common_unmute_audio">Unmute</string>
     <string name="live_barrage_anchor">Host</string>
+    <string name="livekit_barrage_emoji_title">Emoji</string>
+    <string name="livekit_barrage_emoji_page_down">Next page</string>
+    <string name="livekit_barrage_emoji_delete">Delete</string>
+    <string name="livekit_barrage_emoji_keyboard">Keyboard</string>
     <string name="live_barrage_error_content_is_long">The content is too long, please reduce the content and try again</string>
     <string name="live_barrage_error_disable_message_by_admin">You have been muted in the current room</string>
     <string name="live_barrage_error_freq_limit">Request Rate Limited, Please Try Again Later</string>
@@ -92,6 +96,7 @@
     <string name="livekit_pusher_music_happy">Upbeat</string>
     <string name="livekit_pusher_music_sad">Melancholy</string>
     <string name="livekit_pusher_music_wonder_world">Wonder World</string>
+    <string name="livekit_pusher_music_rain">Rain</string>
     <string name="common_people_volume">Voice volume</string>
     <string name="common_reverb">Reverb</string>
     <string name="common_reverb_metallic_sound">Metallic</string>

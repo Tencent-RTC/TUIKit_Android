@@ -43,7 +43,7 @@ import kotlin.random.Random
 internal class VoiceLoungeSeatAreaView(
     context: Context,
     private val store: VoiceLoungeSeatStore,
-    transcriberStore: VoiceLoungeAITranscriberStore,
+    private val transcriberStore: VoiceLoungeAITranscriberStore,
     private val livingActions: VoiceLoungeLivingActions,
 ) : FrameLayout(context) {
     var onSendGift: ((userID: String, name: String) -> Unit)? = null
@@ -54,6 +54,7 @@ internal class VoiceLoungeSeatAreaView(
     }
     private val bag = VoiceLoungeBag()
     private var layout: VoiceLoungeSeatLayout? = null
+    private var lastTranscriberVisible = false
     private var seats: List<VoiceLoungeSeat> = emptyList()
     private val seatItems = HashMap<Int, VoiceLoungeSeatView>()
 
@@ -106,13 +107,29 @@ internal class VoiceLoungeSeatAreaView(
         tapHandler.onConfirm = { title, message, confirmTitle, action ->
             livingActions.confirm(title, message, confirmTitle, action)
         }
+        transcriberView.onTap = { livingActions.showTranscriberPanel() }
+        lastTranscriberVisible = transcriberStore.isVisible
         render()
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        if (bag.isEmpty) store.changes.subscribe { render() }.addTo(bag)
+        if (bag.isEmpty) {
+            store.changes.subscribe { render() }.addTo(bag)
+            transcriberStore.changes.subscribe { onTranscriberChanged() }.addTo(bag)
+        }
         render()
+    }
+
+    private fun onTranscriberChanged() {
+        val nowVisible = transcriberStore.isVisible
+        if (nowVisible != lastTranscriberVisible) {
+            lastTranscriberVisible = nowVisible
+            if (layout == VoiceLoungeSeatLayout.ONE_V8) {
+                rebuild(VoiceLoungeSeatLayout.ONE_V8)
+                requestLayout()
+            }
+        }
     }
 
     override fun onDetachedFromWindow() {
@@ -134,9 +151,9 @@ internal class VoiceLoungeSeatAreaView(
     private fun renderWelcome() {
         val topic = store.settings.topic
         welcomeLabel.text = if (topic.isEmpty()) {
-            context.getString(R.string.livekit_voiceroom_room_welcome)
+            context.getString(R.string.livekit_voicelounge_room_welcome)
         } else {
-            context.getString(R.string.livekit_voiceroom_room_welcome_topic_format, topic)
+            context.getString(R.string.livekit_voicelounge_room_welcome_topic_format, topic)
         }
     }
 
@@ -190,6 +207,7 @@ internal class VoiceLoungeSeatAreaView(
             item.onTap = { tapHandler.handleTap(it) }
             seatItems[seat.index] = item
         }
+        transcriberView.fitsContent = layout == VoiceLoungeSeatLayout.ONE_V8X
         when (layout) {
             VoiceLoungeSeatLayout.ONE_V8 -> layoutFocusGrid(cohost = false)
             VoiceLoungeSeatLayout.TWO_V8 -> layoutFocusGrid(cohost = true)
@@ -210,10 +228,10 @@ internal class VoiceLoungeSeatAreaView(
 
     private fun emptyTitle(role: VoiceLoungeSeat.Role): String = context.getString(
         when (role) {
-            VoiceLoungeSeat.Role.HOST -> R.string.livekit_voiceroom_seat_host
-            VoiceLoungeSeat.Role.COHOST -> R.string.livekit_voiceroom_layout_cohost
-            VoiceLoungeSeat.Role.GUEST -> if (store.role == VoiceLoungeRole.HOST) R.string.livekit_voiceroom_seat_invite
-            else R.string.livekit_voiceroom_seat_join
+            VoiceLoungeSeat.Role.HOST -> R.string.livekit_voicelounge_seat_host
+            VoiceLoungeSeat.Role.COHOST -> R.string.livekit_voicelounge_layout_cohost
+            VoiceLoungeSeat.Role.GUEST -> if (store.role == VoiceLoungeRole.HOST) R.string.livekit_voicelounge_seat_invite
+            else R.string.livekit_voicelounge_seat_join
         },
     )
 
@@ -242,10 +260,17 @@ internal class VoiceLoungeSeatAreaView(
             val inset = dp(6) + focusWidth + dp(8)
             topRow.addView(transcriberView, frameParams(MATCH, MATCH, start = inset, end = inset))
         } else {
-            topRow.addView(host, frameParams(focusWidth, focusHeight, Gravity.CENTER_VERTICAL, start = dp(10)))
-            topRow.addView(
-                transcriberView, frameParams(MATCH, MATCH, start = dp(10) + focusWidth + dp(14), end = dp(6))
-            )
+            val transcriberVisible = transcriberStore.isVisible
+            if (transcriberVisible) {
+                topRow.addView(host, frameParams(focusWidth, focusHeight, Gravity.CENTER_VERTICAL, start = dp(10)))
+                topRow.addView(
+                    transcriberView, frameParams(MATCH, MATCH, start = dp(10) + focusWidth + dp(14), end = dp(6))
+                )
+            } else {
+                topRow.addView(
+                    host, frameParams(focusWidth, focusHeight, Gravity.CENTER),
+                )
+            }
         }
 
         column.addView(welcomeBar, linearParams(MATCH, WRAP, top = dp(12)))

@@ -15,55 +15,13 @@
         tools:replace="android:allowBackup"
         tools:targetApi="31">
         <activity
-            android:name=".live.WaterfallActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
-            android:name=".live.PlayerActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:supportsPictureInPicture="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
-            android:name=".live.PusherActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|locale|layoutDirection"
-            android:supportsPictureInPicture="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
-            android:name=".live.VoiceLoungeActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
             android:name=".main.ComingActivity"
             android:exported="false" />
         <activity
-            android:name=".call.entry.CallEntryActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/CallAccessTheme"
-            android:windowSoftInputMode="adjustNothing" />
-        <activity
-            android:name=".call.settings.CallSettingsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/CallAccessTheme"
-            android:windowSoftInputMode="adjustNothing" />
-        <activity
             android:name=".main.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".login.LoginActivity"
             android:exported="true"
@@ -89,7 +47,6 @@
             android:name=".setting.LanguageSelectActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.app_uikit"
@@ -99,21 +56,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
-
-        <activity
-            android:name=".room.RoomHomeActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".room.RoomQuickStartActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".room.RoomJoinActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

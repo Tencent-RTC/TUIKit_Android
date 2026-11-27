@@ -3,6 +3,7 @@ package com.trtc.uikit.livekit.pusher.settings
 
 internal data class PusherSettingsState(
     val isMirrorEnabled: Boolean = true,
+    val isFrontCamera: Boolean = true,
     val isMuted: Boolean = false,
     val captureVolume: Int = 100,
 )

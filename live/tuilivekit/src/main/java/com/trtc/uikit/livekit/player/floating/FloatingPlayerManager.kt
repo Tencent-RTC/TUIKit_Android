@@ -6,6 +6,8 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.Gravity
 import android.view.WindowManager
@@ -25,6 +27,8 @@ object FloatingPlayerManager {
     private var floatingView: FloatingPlayerView? = null
     private var windowManager: WindowManager? = null
     private var windowParams: WindowManager.LayoutParams? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val dismissListeners = mutableSetOf<(String) -> Unit>()
 
     fun enterFloatingView(
         context: Context,
@@ -45,7 +49,7 @@ object FloatingPlayerManager {
             return false
         }
 
-        releaseSession()
+        releaseSession(false, false)
         val appContext = context.applicationContext
         val manager = appContext.getSystemService(Context.WINDOW_SERVICE) as? WindowManager ?: return false
         val width = ScreenUtil.dip2px(WINDOW_WIDTH_DP)
@@ -94,6 +98,19 @@ object FloatingPlayerManager {
         return entered
     }
 
+    fun isFloating(liveID: String = ""): Boolean =
+        floatingView != null && (liveID.isEmpty() || session?.liveID == liveID)
+
+    fun addFloatingDismissListener(listener: (String) -> Unit): () -> Unit {
+        dismissListeners.add(listener)
+        return { dismissListeners.remove(listener) }
+    }
+
+    private fun notifyFloatingDismissed(liveID: String) {
+        if (liveID.isEmpty()) return
+        mainHandler.post { dismissListeners.toList().forEach { it(liveID) } }
+    }
+
     private fun enterPlayerPage(context: Context, liveID: String) {
         val intent = Intent(context, PlayerActivity::class.java).putExtra(PlayerActivity.EXTRA_LIVE_ID, liveID)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -110,10 +127,16 @@ object FloatingPlayerManager {
     }
 
     fun releaseSession(onlyUnclaimed: Boolean = false) {
+        releaseSession(onlyUnclaimed, true)
+    }
+
+    private fun releaseSession(onlyUnclaimed: Boolean, notifyDismiss: Boolean) {
         if (onlyUnclaimed && floatingView != null) return
+        val dismissedLiveID = if (floatingView != null) session?.liveID.orEmpty() else ""
         releaseWindow()
         releasePlayback()
         session = null
+        if (notifyDismiss && dismissedLiveID.isNotEmpty()) notifyFloatingDismissed(dismissedLiveID)
     }
 
     private fun Context.finishActivity() {

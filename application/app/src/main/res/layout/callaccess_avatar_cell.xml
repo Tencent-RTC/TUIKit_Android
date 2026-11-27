@@ -11,7 +11,6 @@
         android:layout_height="56dp"
         android:layout_gravity="center"
         android:background="@drawable/callaccess_bg_avatar_circle"
-        android:clipToOutline="true"
         android:contentDescription="@null"
         android:outlineProvider="background"
         android:scaleType="centerCrop" />

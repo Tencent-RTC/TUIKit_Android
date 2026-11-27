@@ -16,11 +16,6 @@ internal class CallAccessToggle @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    enum class Style {
-        SETTINGS,
-        CAPTION
-    }
-
     internal var onChange: ((Boolean) -> Unit)? = null
 
     var isOn: Boolean = false
@@ -32,7 +27,6 @@ internal class CallAccessToggle @JvmOverloads constructor(
             applyState(animated = true)
         }
 
-    private var style: Style = Style.SETTINGS
     private val knob: View
     private var knobAnimator: ValueAnimator? = null
 
@@ -54,29 +48,17 @@ internal class CallAccessToggle @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        // 用固定规格走 FrameLayout 测量流程，确保 knob 子 View 被测量（否则尺寸为 0 不可见）
         super.onMeasure(
             MeasureSpec.makeMeasureSpec(46.dp(context), MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(28.dp(context), MeasureSpec.EXACTLY)
         )
     }
 
-    fun setStyle(value: Style) {
-        style = value
-        applyState(animated = false)
-    }
-
     private fun applyState(animated: Boolean) {
-        val trackColor = when {
-            isOn && style == Style.CAPTION -> R.color.callaccess_brand
-            isOn -> R.color.callaccess_green
-            style == Style.CAPTION -> R.color.callaccess_caption_switch_off
-            else -> R.color.callaccess_switch_off
-        }
+        val trackColor = if (isOn) R.color.callaccess_green else R.color.callaccess_switch_off
         val track: Drawable? = background
         track?.let { DrawableCompat.setTint(DrawableCompat.wrap(it), ContextCompat.getColor(context, trackColor)) }
 
-        // knob 布局已含 2dp 左边距；ON 态目标 x=20dp（对齐 iOS），故平移 18dp
         val targetX = if (isOn) 18.dp(context).toFloat() else 0f
         knobAnimator?.cancel()
         if (animated) {

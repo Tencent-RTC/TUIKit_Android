@@ -29,11 +29,11 @@ internal data class VoiceLoungeSkin(
 
     companion object {
         val all: List<VoiceLoungeSkin> = listOf(
-            make("blue", R.string.livekit_voiceroom_skin_blue, 0x0052D9, 0x4A9EFF, 0x7EE8FF),
-            make("red", R.string.livekit_voiceroom_skin_red, 0xC9162B, 0xFF5B5B, 0xFFB199),
-            make("green", R.string.livekit_voiceroom_skin_green, 0x06A35A, 0x3ED598, 0xA8F0C6),
-            make("purple", R.string.livekit_voiceroom_skin_purple, 0x0052D9, 0x7B4DFF, 0xFF5B7A),
-            make("gold", R.string.livekit_voiceroom_skin_gold, 0xA66A00, 0xF5C542, 0xFFE9A8),
+            make("blue", R.string.livekit_voicelounge_skin_blue, 0x0052D9, 0x4A9EFF, 0x7EE8FF),
+            make("red", R.string.livekit_voicelounge_skin_red, 0xC9162B, 0xFF5B5B, 0xFFB199),
+            make("green", R.string.livekit_voicelounge_skin_green, 0x06A35A, 0x3ED598, 0xA8F0C6),
+            make("purple", R.string.livekit_voicelounge_skin_purple, 0x0052D9, 0x7B4DFF, 0xFF5B7A),
+            make("gold", R.string.livekit_voicelounge_skin_gold, 0xA66A00, 0xF5C542, 0xFFE9A8),
         )
 
         const val DEFAULT_ID = "blue"
@@ -67,39 +67,39 @@ internal data class VoiceLoungeBackground(
     companion object {
         val all: List<VoiceLoungeBackground> = listOf(
             VoiceLoungeBackground(
-                "sakura", R.string.livekit_voiceroom_bg_sakura, R.drawable.livekit_voicebg_sakura,
+                "sakura", R.string.livekit_voicelounge_bg_sakura, R.drawable.livekit_voicebg_sakura,
                 R.drawable.livekit_voicebg_sakura_preview, R.raw.livekit_voicebg_sakura,
             ),
             VoiceLoungeBackground(
-                "cyberpunk", R.string.livekit_voiceroom_bg_cyberpunk, R.drawable.livekit_voicebg_cyberpunk,
+                "cyberpunk", R.string.livekit_voicelounge_bg_cyberpunk, R.drawable.livekit_voicebg_cyberpunk,
                 R.drawable.livekit_voicebg_cyberpunk_preview, R.raw.livekit_voicebg_cyberpunk,
             ),
             VoiceLoungeBackground(
-                "aurora", R.string.livekit_voiceroom_bg_aurora, R.drawable.livekit_voicebg_aurora,
+                "aurora", R.string.livekit_voicelounge_bg_aurora, R.drawable.livekit_voicebg_aurora,
                 R.drawable.livekit_voicebg_aurora_preview, R.raw.livekit_voicebg_aurora,
             ),
             VoiceLoungeBackground(
-                "moonlit", R.string.livekit_voiceroom_bg_moonlit, R.drawable.livekit_voicebg_moonlit,
+                "moonlit", R.string.livekit_voicelounge_bg_moonlit, R.drawable.livekit_voicebg_moonlit,
                 R.drawable.livekit_voicebg_moonlit_preview, R.raw.livekit_voicebg_moonlit,
             ),
             VoiceLoungeBackground(
-                "mountain", R.string.livekit_voiceroom_bg_mountain, R.drawable.livekit_voicebg_mountain,
+                "mountain", R.string.livekit_voicelounge_bg_mountain, R.drawable.livekit_voicebg_mountain,
                 R.drawable.livekit_voicebg_mountain_preview, R.raw.livekit_voicebg_mountain,
             ),
             VoiceLoungeBackground(
-                "sea", R.string.livekit_voiceroom_bg_sea, R.drawable.livekit_voicebg_sea,
+                "sea", R.string.livekit_voicelounge_bg_sea, R.drawable.livekit_voicebg_sea,
                 R.drawable.livekit_voicebg_sea_preview, R.raw.livekit_voicebg_sea,
             ),
             VoiceLoungeBackground(
-                "space", R.string.livekit_voiceroom_bg_space, R.drawable.livekit_voicebg_space,
+                "space", R.string.livekit_voicelounge_bg_space, R.drawable.livekit_voicebg_space,
                 R.drawable.livekit_voicebg_space_preview, null,
             ),
             VoiceLoungeBackground(
-                "travel", R.string.livekit_voiceroom_bg_travel, R.drawable.livekit_voicebg_travel,
+                "travel", R.string.livekit_voicelounge_bg_travel, R.drawable.livekit_voicebg_travel,
                 R.drawable.livekit_voicebg_travel_preview, null,
             ),
             VoiceLoungeBackground(
-                "party", R.string.livekit_voiceroom_bg_party, R.drawable.livekit_voicebg_party,
+                "party", R.string.livekit_voicelounge_bg_party, R.drawable.livekit_voicebg_party,
                 R.drawable.livekit_voicebg_party_preview, R.raw.livekit_voicebg_party,
             ),
         )
@@ -119,6 +119,10 @@ internal object VoiceLoungeColor {
     val overlayMarked = whiteAlpha(0.14f)
 
     val card = blackAlpha(0.28f)
+
+    val transcriberCard = rgb(1.0f, 1.0f, 1.0f, 0.12f)
+
+    val transcriberNameGradient = intArrayOf(rgb(1.0f, 0.5f, 0.62f), rgb(0.7f, 0.62f, 1.0f))
 
     val brandCyan = rgb(0.49f, 0.91f, 1f)
     val brandBlue = rgb(0.29f, 0.62f, 1f)

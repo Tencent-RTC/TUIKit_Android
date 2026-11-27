@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:id="@+id/home_broadcast_row" android:layout_width="232dp" android:layout_height="48dp" android:layout_gravity="center" android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_broadcast_video" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:paddingBottom="8dp" android:gravity="center" android:textSize="18sp" android:text="@string/home_broadcast_video"/>
+        <Space android:id="@+id/home_broadcast_gap1" android:layout_width="20dp" android:layout_height="1dp"/>
+        <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_broadcast_voice" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:paddingBottom="8dp" android:gravity="center" android:textSize="18sp" android:text="@string/home_broadcast_voice"/>
+        <Space android:id="@+id/home_broadcast_gap2" android:layout_width="20dp" android:layout_height="1dp"/>
+        <androidx.appcompat.widget.AppCompatTextView android:id="@+id/home_broadcast_game" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:paddingBottom="8dp" android:gravity="center" android:textSize="18sp" android:text="@string/home_broadcast_game"/>
+    </LinearLayout>
+    <View android:id="@+id/home_broadcast_indicator" android:layout_width="24dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="5dp" android:background="@drawable/home_broadcast_indicator"/>
+</merge>

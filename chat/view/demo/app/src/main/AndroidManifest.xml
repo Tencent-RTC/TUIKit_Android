@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!--
+        默认不放开明文 HTTP。体验包需要用公网 IP + HTTP 访问客服目录时，由蓝盾构建脚本给 application 补上：
+            android:networkSecurityConfig="@xml/demo_network_security_config"
+            tools:replace="android:networkSecurityConfig"
+        aideskcustomer 也声明了 networkSecurityConfig，需要 tools:replace 覆盖。
+    -->
+    <application
+        android:name="io.trtc.tuikit.chat.demo.Application"
+        android:icon="@drawable/demo_ic_launcher"
+        android:label="@string/demo_app_name"
+        android:roundIcon="@drawable/demo_ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/demo_Theme_ChatView">
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.login.LoginActivity"
+            android:exported="true"
+            android:theme="@style/Chat_UIKit_Theme"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.main.MainActivity"
+            android:exported="true"
+            android:theme="@style/Chat_UIKit_Theme"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.chat.ChatActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.chat.ChatSettingActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.settings.SelfDetailActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.settings.AboutActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.settings.CancelAccountActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.settings.VoiceMessageSettingActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.settings.VoiceCloneActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.ai.DemoWebActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.settings.VoiceSelectActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.search.SearchActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <activity
+            android:name="io.trtc.tuikit.chat.demo.login.TelephoneAreaCodeSelectorActivity"
+            android:exported="false"
+            android:theme="@style/Chat_UIKit_Theme" />
+
+    </application>
+</manifest>

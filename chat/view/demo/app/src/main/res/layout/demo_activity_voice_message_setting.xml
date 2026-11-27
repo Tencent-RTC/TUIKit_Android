@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/demo_voiceSettingRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="locale"
+    android:orientation="vertical">
+
+    <include layout="@layout/demo_widget_chat_header" />
+
+    <ScrollView
+        android:id="@+id/demo_voiceSettingScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="locale"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <LinearLayout
+                android:id="@+id/demo_voiceSettingGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/demo_itemVoiceClone"
+                    layout="@layout/demo_item_settings_entry" />
+
+                <View
+                    android:id="@+id/demo_voiceSettingDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp" />
+
+                <include
+                    android:id="@+id/demo_itemVoiceSelect"
+                    layout="@layout/demo_item_settings_entry" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

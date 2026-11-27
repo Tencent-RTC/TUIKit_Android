@@ -3,6 +3,7 @@ package com.tencent.uikit.app.call.entry
 import android.content.Context
 import com.tencent.uikit.app.R
 import io.trtc.tuikit.atomicxcore.api.device.VideoQuality
+import java.util.Locale
 
 class CallEntryState(context: Context) {
 
@@ -11,40 +12,27 @@ class CallEntryState(context: Context) {
         AUDIO
     }
 
-    enum class Resolution(val displayNameRes: Int) {
-        SD(R.string.callaccess_resolution_sd),
-        HD(R.string.callaccess_resolution_hd),
-        FHD(R.string.callaccess_resolution_fhd),
-        PREMIUM_2K(R.string.callaccess_resolution_2k);
-
-        val videoQuality: VideoQuality?
-            get() = when (this) {
-                SD -> VideoQuality.QUALITY_540P
-                HD -> VideoQuality.QUALITY_720P
-                FHD -> VideoQuality.QUALITY_1080P
-                PREMIUM_2K -> null
-            }
+    enum class Resolution(val displayNameRes: Int, val videoQuality: VideoQuality) {
+        SD(R.string.callaccess_resolution_sd, VideoQuality.QUALITY_540P),
+        HD(R.string.callaccess_resolution_hd, VideoQuality.QUALITY_720P),
+        FHD(R.string.callaccess_resolution_fhd, VideoQuality.QUALITY_1080P),
     }
 
     private val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    var userIDs: List<String> = emptyList()
-    var media: Media = Media.VIDEO
-    var resolution: Resolution = Resolution.SD
     var captionOn: Boolean = true
 
     var ringtone: String = ""
     var bannerOn: Boolean = true
     var showFloatButton: Boolean = true
     var blurBackgroundOn: Boolean = true
-    var proBeautyOn: Boolean = true
 
     var muteModeEnabled: Boolean
         get() = preferences.getBoolean(KEY_MUTE_MODE, false)
         set(value) = preferences.edit().putBoolean(KEY_MUTE_MODE, value).apply()
 
     var roomID: String = ""
-    var timeoutSeconds: Int = 60
+    var timeoutSeconds: Int = 30
     var extendedInfo: String = ""
 
     fun ringtoneLabel(context: Context): String {
@@ -57,21 +45,21 @@ class CallEntryState(context: Context) {
 
     companion object {
         const val MAX_CALLEE_IDS = 8
-        const val RINGTONE_BUILTIN = "phone_ringing.mp3"
+        const val RINGTONE_BUILTIN = "rain.mp3"
 
         private const val PREFS_NAME = "com.tencent.uikit.app.call.entry"
         private const val KEY_MUTE_MODE = "callkit.access.muteMode"
-        private val SEPARATORS = charArrayOf(' ', '\t', '\n', ',', '，', ';', '；', '、')
+        private val SEPARATOR = Regex("[\\s,，;；、]+")
 
         fun parseIDs(raw: String): List<String> {
             val seen = mutableSetOf<String>()
             val result = mutableListOf<String>()
-            for (part in raw.split(*SEPARATORS)) {
+            for (part in raw.split(SEPARATOR)) {
                 val id = part.trim()
                 if (id.isEmpty()) {
                     continue
                 }
-                if (!seen.add(id.lowercase())) {
+                if (!seen.add(id.lowercase(Locale.ROOT))) {
                     continue
                 }
                 result.add(id)
@@ -80,7 +68,16 @@ class CallEntryState(context: Context) {
         }
 
         fun containsSeparator(text: String): Boolean {
-            return text.any { it in SEPARATORS }
+            return SEPARATOR.containsMatchIn(text.trim())
         }
+
+        fun sameID(lhs: String, rhs: String): Boolean = lhs.equals(rhs, ignoreCase = true)
     }
+}
+
+/** 入口页本次呼叫的选择（被叫、媒体类型、分辨率），由入口页持有，页面销毁即丢弃。 */
+class CallEntrySelection {
+    var userIDs: List<String> = emptyList()
+    var media: CallEntryState.Media = CallEntryState.Media.VIDEO
+    var resolution: CallEntryState.Resolution = CallEntryState.Resolution.HD
 }
