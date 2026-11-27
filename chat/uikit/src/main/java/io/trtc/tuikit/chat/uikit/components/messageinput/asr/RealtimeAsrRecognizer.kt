@@ -188,7 +188,7 @@ internal class RealtimeAsrRecognizer(
         pendingUpload.addAll(preRoll.drain())
         val tail = ArrayList(pendingUpload)
         pendingUpload.clear()
-        val chunks = tail.chunked(RealtimeAsrSpec.UPLOAD_MAX_FRAMES_PER_CALL)
+        val chunks = tail.chunked(RealtimeAsrSpec.UPLOAD_MAX_PACKETS_PER_CALL)
         if (chunks.isEmpty()) {
             stopSession(id)
             return
@@ -299,7 +299,7 @@ internal class RealtimeAsrRecognizer(
             val id = sessionID
             if (uploading && sessionStage == SessionStage.READY && id != null) {
                 pendingUpload.add(packet)
-                if (pendingUpload.size >= RealtimeAsrSpec.UPLOAD_BATCH_FRAMES) {
+                if (pendingUpload.size >= RealtimeAsrSpec.UPLOAD_BATCH_PACKETS) {
                     flushPendingUpload(id)
                 }
             } else if (sessionStage != SessionStage.DRAINING) {
@@ -316,7 +316,7 @@ internal class RealtimeAsrRecognizer(
         pendingUpload.clear()
         // 补推积压时这一批会比实时节奏长，切片发：失败的话丢的只是一片而不是全部。
         // 切出来的几片是并行在飞的，不会因为分片而变慢。
-        batch.chunked(RealtimeAsrSpec.UPLOAD_MAX_FRAMES_PER_CALL).forEach { chunk ->
+        batch.chunked(RealtimeAsrSpec.UPLOAD_MAX_PACKETS_PER_CALL).forEach { chunk ->
             RealtimeAsrExperimental.feed(id, chunk) { code, desc ->
                 // 丢包容忍：记日志继续，不中断会话
                 Log.w(TAG, "feedRealtimeAudioData failed: $code $desc")

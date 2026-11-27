@@ -22,6 +22,7 @@
     <string name="uikit_ai_call_send_failed">送信に失敗しました。再試行してください</string>
     <string name="uikit_ai_call_reply_timeout">アシスタントが応答しませんでした。再試行してください</string>
     <string name="uikit_ai_call_audio_unavailable">マイクを利用できません</string>
+    <string name="uikit_ai_call_voiceprint_enrolled">あなたの声を記憶しました。今後はあなたの声にのみ応答します</string>
     <string name="uikit_ai_call_playback_unavailable">音声再生を利用できません。返信はテキストで表示されます</string>
     <string name="uikit_ai_call_debug_toggle">LOG</string>
     <string name="uikit_ai_call_try_saying">話しかけてみよう：「%1$s」</string>

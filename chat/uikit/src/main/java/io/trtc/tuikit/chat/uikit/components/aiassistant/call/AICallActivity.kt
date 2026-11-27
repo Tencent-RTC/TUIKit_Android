@@ -324,6 +324,11 @@ class AICallActivity : AppCompatActivity() {
                 showAsrServiceUnavailableDialog()
             }
 
+            override fun onVoiceprintEnrolled() {
+                Toast.makeText(this@AICallActivity, R.string.uikit_ai_call_voiceprint_enrolled, Toast.LENGTH_SHORT)
+                    .show()
+            }
+
             override fun onDebugLog(line: String) {
                 // 浮层在 release 打不开，这里再攒行就是纯浪费
                 if (BuildConfig.DEBUG) {

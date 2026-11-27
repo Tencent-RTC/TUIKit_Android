@@ -116,13 +116,13 @@ class AsrSession(private val listener: Listener) {
     }
 
     /**
-     * 送入一个裸 Opus packet。攒够 [AIConstants.UPLOAD_BATCH_FRAMES] 个（100ms）自动上行一次。
+     * 送入一个裸 Opus packet。攒够 [AIConstants.UPLOAD_BATCH_PACKETS] 个（120ms）自动上行一次。
      * 会话尚未就绪时直接丢弃，startRealtimeTranscriber 成功后才开麦。
      */
     fun pushPacket(packet: ByteArray) {
         val id = currentSessionId ?: return
         pendingPackets.add(packet)
-        if (pendingPackets.size >= AIConstants.UPLOAD_BATCH_FRAMES) {
+        if (pendingPackets.size >= AIConstants.UPLOAD_BATCH_PACKETS) {
             flush(id)
         }
     }

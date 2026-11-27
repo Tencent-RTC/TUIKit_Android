@@ -16,7 +16,6 @@ private const val TAG = "SystemOpusDecoder"
 /**
  * 系统 [MediaCodec] 裸 Opus 解码器：TTS 下行 packet → 16kHz / 单声道 PCM16。
  *
- * 与 [io.trtc.tuikit.chat.uikit.components.messageinput.asr.SystemOpusEncoder] 对称，
  * 不用第三方库。后台分片帧长不保证是 20ms；部分机型解码器固定出 48kHz，这里会折回 16kHz。
  *
  * 非线程安全，只在解码线程上使用。

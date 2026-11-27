@@ -22,6 +22,7 @@
     <string name="uikit_ai_call_send_failed">发送失败，请重试</string>
     <string name="uikit_ai_call_reply_timeout">助手没有响应，请重试</string>
     <string name="uikit_ai_call_audio_unavailable">麦克风不可用</string>
+    <string name="uikit_ai_call_voiceprint_enrolled">我已记住你的声音，后续说话只会响应你的声音</string>
     <string name="uikit_ai_call_playback_unavailable">语音播放不可用，回复将以文字显示</string>
     <string name="uikit_ai_call_debug_toggle">LOG</string>
     <string name="uikit_ai_call_try_saying">试试说：“%1$s”</string>

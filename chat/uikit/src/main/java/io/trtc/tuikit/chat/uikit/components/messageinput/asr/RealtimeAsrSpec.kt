@@ -9,25 +9,31 @@ internal object RealtimeAsrSpec {
     const val SAMPLE_RATE = 16000
     const val CHANNEL_COUNT = 1
 
-    /** 20ms @ 16kHz */
+    /** PCM 帧：20ms @ 16kHz，供 VAD 与音量动画使用。 */
     const val FRAME_SAMPLES = 320
     const val FRAME_BYTES = FRAME_SAMPLES * 2
     const val FRAME_DURATION_MS = 20
 
-    /** 每 5 帧（100ms）上行一次，兼顾识别延迟与调用频率。 */
-    const val UPLOAD_BATCH_FRAMES = 5
+    /**
+     * VoiceAI SDK 输出的一个 Opus packet 的时长（`onReceiveLocalOpus` 的 frameDurationMs）。
+     * 与 PCM 帧长不同，按时长换算 packet 数时必须用这个值。
+     */
+    const val OPUS_PACKET_DURATION_MS = 40
+
+    /** 每 3 个 packet（120ms）上行一次，兼顾识别延迟与调用频率。 */
+    const val UPLOAD_BATCH_PACKETS = 3
 
     /**
-     * 补推积压音频时，单次 sendASRAudioData 最多带这么多帧（100 帧 = 2 秒）。
+     * 补推积压音频时，单次 sendASRAudioData 最多带这么多 packet（50 个 = 2 秒）。
      *
      * 会话就绪时要把 [PRE_ROLL_CAPACITY] 那点缓冲一次推完。全塞进一个请求失败了整段一起丢；
-     * 照实时节奏按 [UPLOAD_BATCH_FRAMES] 切又会一次性打出上百个请求。取两者之间——切出来的
+     * 照实时节奏按 [UPLOAD_BATCH_PACKETS] 切又会一次性打出几十个请求。取两者之间——切出来的
      * 几片是并行在飞的，实测 9 秒音频 5 片 111ms 全部 ack。
      *
-     * 注意 sendASRAudioData 的文档建议单次 5~10 帧，那说的是实时推流时「延迟 vs 调用
-     * 频率」的取舍，不是包体上限；补推是一次性追赶，属于另一种情形。100 帧约 6KB。
+     * 注意 sendASRAudioData 的文档建议单次 100~200ms 音频，那说的是实时推流时「延迟 vs 调用
+     * 频率」的取舍，不是包体上限；补推是一次性追赶，属于另一种情形。
      */
-    const val UPLOAD_MAX_FRAMES_PER_CALL = 100
+    const val UPLOAD_MAX_PACKETS_PER_CALL = 50
 
     /**
      * 按下就把音频推上去，而不是等手指滑到「转文字」。
@@ -52,7 +58,7 @@ internal object RealtimeAsrSpec {
      * 不要按整段录音时长来定：后台不会加速消化突发音频，攒得再多也换不来文字。
      */
     val PRE_ROLL_CAPACITY: Int
-        get() = ((START_TIMEOUT_MS + 1000L) / FRAME_DURATION_MS).toInt()
+        get() = ((START_TIMEOUT_MS + 1000L) / OPUS_PACKET_DURATION_MS).toInt()
 
     /** startASR 迟迟不回时放弃本次识别，回落到「上传整段音频再识别」。 */
     const val START_TIMEOUT_MS = 5000L
